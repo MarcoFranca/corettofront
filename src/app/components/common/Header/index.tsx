@@ -1,0 +1,28 @@
+import styles from "./styles.module.css";
+import Link from "next/link";
+import Image from "next/image";
+import LogoImage from "../../../../../public/assets/coretto color horizontal.png";
+import UserImage from "../../../../../public/assets/user.png";
+
+export function Header(){
+    return(
+        <header className={styles.header}>
+            <nav className={styles.navigation}>
+                <Link href={'/'}>
+                    <Image
+                        className={styles.logo}
+                        src={LogoImage}
+                        alt="logo"
+                        priority
+                    />
+                </Link>
+                <ul className={styles.menu}>
+                    <Link href={"/login"}>
+                        <Image className={styles.user} src={UserImage} alt={'user'} priority />
+                        <li>Login</li>
+                    </Link>
+                </ul>
+            </nav>
+        </header>
+    )
+}
