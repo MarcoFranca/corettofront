@@ -1,36 +1,140 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CorettoCRM
 
-## Getting Started
+## Visão Geral
+CorettoCRM é uma aplicação CRM para corretores de imóveis.
 
-First, run the development server:
-
+## Estrutura do Projeto
+```plaintext
+your-crm-project/
+├── src/
+│   ├── app/
+│   │   ├── components/
+│   │   │   └── common/
+│   │   │       └── Header/
+│   │   │           ├── index.tsx
+│   │   │           └── styles.module.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── axios.ts
+├── public/
+├── tsconfig.json
+├── next.config.js
+└── package.json
+```
+# Configuração
+## Pré-requisitos
+- Node.js
+- Yarn
+## Instalação
 ```bash
-npm run dev
-# or
+git clone https://github.com/MarcoFranca/corettofront.git
+cd corettofront
+yarn install
+```
+## Execução
+```bash
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+## Funcionalidades
+### Login
+- Descrição das funcionalidades de login.
+- Como testar o login.
+### Dependências Principais
+- Next.js
+- Styled-components
+- Axios
+### Implementação da Funcionalidade de Login
+
+1. **Criação do Componente de Login**:
+    - Estruture o formulário de login e adicione validação.
+```tsx
+// src/app/components/LoginForm/index.tsx
+'use client';
+
+import { useState } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  margin: auto;
+`;
+
+const Input = styled.input`
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+`;
+
+const Button = styled.button`
+  padding: 10px;
+  border: none;
+  background-color: #0070f3;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #005bb5;
+  }
+`;
+```
+```javascript
+const LoginForm = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('/api/login', { email, password });
+      console.log('Login successful', response.data);
+    } catch (error) {
+      console.error('Login failed', error);
+    }
+  };
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <Input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <Button type="submit">Login</Button>
+    </Form>
+  );
+};
+export default LoginForm;
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Integração do Componente de Login na Página:**
+```tsx
+// src/app/page.tsx
+import Header from './components/common/Header';
+import LoginForm from './components/LoginForm';
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+const Home = () => {
+  return (
+    <div>
+      <Header />
+      <main>
+        <h1>Bem-vindo ao CRM para Corretores</h1>
+        <LoginForm />
+      </main>
+    </div>
+  );
+};
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+export default Home;
+```
