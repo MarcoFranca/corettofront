@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '../../axios';
+import api from '../../api/axios';
 import styles from './styles.module.css';
-import {Header} from "@/app/components/common/Header";
+import SimpleNavBar from "@/app/components/common/Header/SimpleNavBar";
+
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
@@ -39,7 +40,7 @@ const RegisterPage = () => {
 
     return (
         <>
-            <Header/>
+            <SimpleNavBar/>
             <div className={styles.container}>
                 <h1>Cadastro</h1>
                 <form onSubmit={handleSubmit} className={styles.form}>

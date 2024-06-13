@@ -1,16 +1,15 @@
 import Image from "next/image";
 import HeroImage from "../../public/assets/hero.png";
 import styles from "./page.module.css";
-import {Header} from "./components/common/Header";
 import Link from "next/link";
-
+import SimpleNavBar from "@/app/components/common/Header/SimpleNavBar";
 
 
 export default function Home() {
 
     return (
         <>
-            <Header />
+            <SimpleNavBar/>
             <main className={styles.main}>
                 <Image
                     className={styles.hero}

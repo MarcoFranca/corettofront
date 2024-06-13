@@ -1,54 +1,42 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { logout, setUserFromLocalStorage } from '@/store/slices/authSlice';
+import DashboardHeader from "@/app/components/common/Header/NavBarDashboard";
+import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
 import styles from './styles.module.css';
-import {Header} from "@/app/components/common/Header";
-import {logout} from "@/app/utils/auth";
-
-interface User {
-    id: number;
-    username: string;
-    email: string;
-    token: {
-        refresh: string;
-        access: string;
-    };
-}
 
 const DashboardPage = () => {
+    const dispatch = useDispatch();
+    const user = useSelector((state: RootState) => state.auth.user);
     const router = useRouter();
-    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            setUser(JSON.parse(userData));
-        } else {
-            router.push('/login');
-        }
-    }, [router]);
+        dispatch(setUserFromLocalStorage());
+    }, [dispatch]);
 
-    const handleLogout = () => {
-        logout();
-        router.push('/login');
-    };
+    useEffect(() => {
+        if (!user) {
+            router.push('/');
+        }
+    }, [user, router]);
 
     if (!user) {
         return null; // Ou um indicador de carregamento
     }
 
     return (
-        <>
-            <Header/>
-            <div className={styles.container}>
+        <div className={styles.dashboardLayout}>
+            <DashboardHeader />
+            <DashboardSidebar />
+            <main className={styles.mainContent}>
                 <h1>Bem-vindo, {user.username}</h1>
                 {/* Adicione aqui os componentes e funcionalidades do dashboard */}
-                <button onClick={handleLogout} className={styles.buttonLogout}>
-                    Logout
-                </button>
-            </div>
-        </>
+            </main>
+        </div>
     );
 };
 
