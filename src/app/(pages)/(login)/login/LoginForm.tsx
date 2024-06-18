@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import api from '../../api/axios';
+import api from '@/app/api/axios';
 import { setUser, setToken } from '@/store/slices/authSlice';
 import styles from './styles.module.css';
 import Link from "next/link";
+import Image from "next/image";
+import LogoImag from '@/../public/assets/Ativo 2.png'
 
 const LoginForm = () => {
     const [username, setUsernameState] = useState('');
@@ -40,27 +42,33 @@ const LoginForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className={styles.form}>
-            <input
-                type="text"
-                placeholder="Nome de Usuário"
-                value={username}
-                onChange={(e) => setUsernameState(e.target.value)}
-                className={styles.input}
-                required
-            />
-            <input
-                type="password"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPasswordState(e.target.value)}
-                className={styles.input}
-                required
-            />
-            <button type="submit" className={styles.button}>Login</button>
-            <Link href={'/register'}>Já tem cadastro? Clique aqui!</Link>
-            {message && <p className={styles.message}>{message}</p>}
-        </form>
+        <div className={styles.container_form}>
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <Image src={LogoImag} alt={'logotipo'} className={styles.image}/>
+                <input
+                    type="text"
+                    placeholder="Nome de Usuário"
+                    value={username}
+                    onChange={(e) => setUsernameState(e.target.value)}
+                    className={styles.input}
+                    required
+                />
+                <input
+                    type="password"
+                    placeholder="Senha"
+                    value={password}
+                    onChange={(e) => setPasswordState(e.target.value)}
+                    className={styles.input}
+                    required
+                />
+                <button type="submit" className={styles.button}>Entrar</button>
+                <Link href={'/reset-password'} className={styles.sword}>esqueceu a senha?</Link>
+                {message && <p className={styles.message}>{message}</p>}
+            </form>
+            <div className={styles.cadastre}>
+                <p >Não tem conta?<Link href={'/register'} > Cadastre-se</Link></p>
+            </div>
+        </div>
     );
 };
 

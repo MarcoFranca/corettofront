@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '../../api/axios';
+import api from '@/app/api/axios';
 import styles from './styles.module.css';
 
 const ChangePasswordPage = () => {

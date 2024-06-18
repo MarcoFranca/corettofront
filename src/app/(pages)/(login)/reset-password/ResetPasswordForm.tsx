@@ -1,12 +1,13 @@
-// src/app/pages/reset-password/page.tsx
-'use client';
+'use client'
+import React, {useState} from "react";
+import api from "@/app/api/axios";
+import styles from "@/app/(pages)/(login)/reset-password/styles.module.css";
+import CadeadoImage from "@/../public/assets/cadeado.png";
+import Image from "next/image";
+import Link from "next/link";
 
-import { useState } from 'react';
-import api from '../../api/axios';
-import styles from './styles.module.css';
-import SimpleNavBar from "@/app/components/common/Header/SimpleNavBar";
+export default function ResetPasswordForm() {
 
-const ResetPasswordPage = () => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
 
@@ -22,12 +23,12 @@ const ResetPasswordPage = () => {
         }
     };
 
-    return (
-        <>
-            <SimpleNavBar/>
-        <div className={styles.container}>
-            <h1>Recuperar Senha</h1>
+    return(
+        <div className={styles.container_form}>
             <form onSubmit={handleSubmit} className={styles.form}>
+                <Image src={CadeadoImage} alt={'Cadeado'} className={styles.image}/>
+                <h1>Problemas para entrar?</h1>
+                <p>Insira o seu email e enviaremos um link para você voltar a acessar a sua conta.</p>
                 <input
                     type="email"
                     placeholder="Email"
@@ -36,12 +37,12 @@ const ResetPasswordPage = () => {
                     className={styles.input}
                     required
                 />
-                <button type="submit" className={styles.button}>Enviar Link de Redefinição</button>
+                <button type="submit" className={styles.button}>Enviar Link para login</button>
+                <p>ou</p>
+                <Link href={'/register'}>Criar nova conta</Link>
+                {message && <p className={styles.message}>{message}</p>}
             </form>
-            {message && <p className={styles.message}>{message}</p>}
+               <Link className={styles.login} href={'/login'}> Voltar ao Login</Link>
         </div>
-        </>
-    );
-};
-
-export default ResetPasswordPage;
+    )
+}

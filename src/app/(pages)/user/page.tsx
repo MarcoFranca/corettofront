@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-const DynamicHeader = dynamic(() => import('../../components/common/(header)/Header'), { ssr: false });
+const DynamicHeader = dynamic(() => import('@/app/components/common/Header/DashboardSidebar'), { ssr: false });
 
 interface User {
     id: number;

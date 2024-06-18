@@ -16,9 +16,6 @@ const SimpleHeader = () => {
                             <Image className={styles.user} src={UserImage} alt='user' priority />
                             <li>Login</li>
                     </Link>
-                    <Link href='/register' className={styles.link}>
-                            <li>Criar Conta</li>
-                    </Link>
                 </ul>
             </nav>
         </header>

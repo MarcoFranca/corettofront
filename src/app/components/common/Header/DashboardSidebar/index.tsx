@@ -1,38 +1,21 @@
-import Link from 'next/link';
 import styles from './styles.module.css';
-import UserImage from '@/../public/assets/user.png';
+import LogoImage from '@/../public/assets/Ativo 1.png';
+import DashboardImage from '@/../public/assets/dashboard.png';
+import DolarImage from '@/../public/assets/dolar.png';
 import Image from 'next/image';
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "@/store";
+import Cell from "@/app/components/common/Header/DashboardSidebar/cell";
 
 const DashboardSidebar = () => {
-    const dispatch = useDispatch();
-    // @ts-ignore
-    const {email, username} = useSelector((state: RootState) => state.auth.user);
+
     return (
         <aside className={styles.sidebar}>
             <div className={styles.profile}>
-                <Image
-                    src={UserImage}
-                    alt="user"
-                    className={styles.userImage}
-                />
-                <div className={styles.profileDetails}>
-                    <h3>{username}</h3>
-                    <p>{email}</p>
-                </div>
+            <Image src={LogoImage} alt={'logo'} className={styles.logo}/>
             </div>
             <nav>
                 <ul>
-                    <li>
-                        <Link href="/dashboard">Dashboard</Link>
-                    </li>
-                    <li>
-                        <Link href="/dashboard/clients">Clientes</Link>
-                    </li>
-                    <li>
-                        <Link href="/dashboard/leads">Leads</Link>
-                    </li>
+                    <Cell image={DashboardImage} alt="Dashboard" link={'/dashboard'} text={'Dashboard'}/>
+                    <Cell image={DolarImage} alt="Dolar" link={'/dashboard/leads'} text={'Leads'}/>
                     {/* Adicione mais links conforme necessário */}
                 </ul>
             </nav>

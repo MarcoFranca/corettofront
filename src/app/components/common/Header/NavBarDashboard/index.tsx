@@ -20,19 +20,26 @@ const DashboardHeader = () => {
         router.push('/');
     };
 
-    const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen);
+    const toggleDropdown = (open: boolean) => {
+        setDropdownOpen(open);
     };
 
     return (
         <header className={styles.header}>
             <div className={styles.headerBar}>
-                <div className={styles.userMenu}>
+                <div className={styles.profile}>
+                    <h2>{user?.username ?? 'usuario'}</h2>
+                    <p>{user?.email ?? 'email.exempo.com'}</p>
+                </div>
+                <div
+                    className={styles.userMenu}
+                    onMouseEnter={() => toggleDropdown(true)}
+                    onMouseLeave={() => toggleDropdown(false)}
+                >
                     <Image
                         src={UserImage}
                         alt="user"
                         className={styles.userImage}
-                        onClick={toggleDropdown}
                     />
                     {dropdownOpen && (
                         <div className={styles.dropdownMenu}>
