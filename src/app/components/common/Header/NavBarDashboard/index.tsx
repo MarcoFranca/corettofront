@@ -27,10 +27,10 @@ const DashboardHeader = () => {
     return (
         <header className={styles.header}>
             <div className={styles.headerBar}>
-                <div className={styles.profile}>
-                    <h2>{user?.username ?? 'usuario'}</h2>
-                    <p>{user?.email ?? 'email.exempo.com'}</p>
-                </div>
+                <button className={styles.button}>
+                    + NOVO LEAD
+                </button>
+
                 <div
                     className={styles.userMenu}
                     onMouseEnter={() => toggleDropdown(true)}
@@ -43,6 +43,7 @@ const DashboardHeader = () => {
                     />
                     {dropdownOpen && (
                         <div className={styles.dropdownMenu}>
+                            <p>{user?.username ?? 'usuario'}</p>
                             <button onClick={() => router.push('/edit-profile')}>Editar Perfil</button>
                             <button onClick={handleLogout}>Logout</button>
                         </div>

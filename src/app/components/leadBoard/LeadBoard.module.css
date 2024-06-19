@@ -1,4 +1,57 @@
 .board {
     display: flex;
-    justify-content: space-around;
+    overflow-x: scroll;
+    padding: 8px;
+    height: 100%;
+    width: 100%;
+    gap: 32px;
+}
+
+.column {
+    margin: 8px;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+.column > h3{
+    text-align: center;
+    border-bottom: 5px solid #005bb5;
+    border-radius: 5px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.leadList {
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+}
+
+.lead {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px;
+    padding: 8px;
+    border: 1px solid lightgrey;
+    border-radius: 15px;
+    background-color: white;
+    cursor: grab;
+}
+
+.leadList{
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.leadList > h2 {
+    color: #005bb5;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.userImage{
+    width: 48px;
+    height: auto;
 }

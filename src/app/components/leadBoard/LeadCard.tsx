@@ -1,22 +1,22 @@
-import React from 'react';
-import { Draggable } from 'react-beautiful-dnd';
-import styles from './LeadCard.module.css';
+'use client';
+import LeadBoard from "@/app/components/leadBoard/LeadBoard";
+import styles from "@/app/(pages)/dashboard/styles.module.css";
+import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
+import DashboardHeader from "@/app/components/common/Header/NavBarDashboard";
+import React from "react";
 
-const LeadCard = ({ lead, index }: any) => {
+export default function Leads() {
     return (
-        <Draggable draggableId={lead.id} index={index}>
-        {(provided) => (
-        <div
-            className={styles.card}
-    {...provided.draggableProps}
-    {...provided.dragHandleProps}
-    ref={provided.innerRef}
-        >
-        {lead.content}
-        </div>
-)}
-    </Draggable>
-);
-};
-
-export default LeadCard;
+        <>
+            <div className={styles.dashboardLayout}>
+                <DashboardSidebar />
+                <div className={styles.canva}>
+                    <DashboardHeader />
+                    <main className={styles.mainContent}>
+                        <LeadBoard />
+                    </main>
+                </div>
+            </div>
+        </>
+    );
+}

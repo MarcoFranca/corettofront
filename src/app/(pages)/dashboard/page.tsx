@@ -7,11 +7,26 @@ import { setUser, setToken } from '@/store/slices/authSlice';
 import DashboardHeader from "@/app/components/common/Header/NavBarDashboard";
 import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
 import styles from './styles.module.css';
+import LeadBoard from "@/app/components/leadBoard/LeadBoard";
 
 const DashboardPage = () => {
     const dispatch = useDispatch();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('dashboard');
+
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'dashboard':
+                return <h1>{"Bem - vindo!"}</h1>;
+            case 'leads':
+                return <LeadBoard />;
+            case 'clients':
+                return <div>Conteúdo de Clientes</div>;
+            default:
+                return <div>Conteúdo do Dashboard</div>;
+        }
+    };
 
     useEffect(() => {
         const user = localStorage.getItem('user');
@@ -31,16 +46,15 @@ const DashboardPage = () => {
     }
 
     return (
-        <div className={styles.dashboardLayout}>
-            <DashboardSidebar />
-            <div className={styles.canva}>
+        <main className={styles.dashboardLayout}>
+            <DashboardSidebar setActiveTab={setActiveTab} />
+            <section className={styles.canvaLayout}>
                 <DashboardHeader />
                 <main className={styles.mainContent}>
-                    <h1>{"Bem - vindo!" }</h1>
-                    {/* Adicione aqui os componentes e funcionalidades do dashboard */}
+                    {renderContent()}
                 </main>
-            </div>
-        </div>
+            </section>
+        </main>
     );
 };
 

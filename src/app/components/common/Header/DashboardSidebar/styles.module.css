@@ -1,13 +1,12 @@
 .sidebar {
-    width: 250px;
-    height: 100vh;
-    background-color: #f5f5f5;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+    width: 250px;
+    height: 100vh;
     padding: 1rem;
-    position: fixed;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    /*background-color: #f5f5f5;*/
 }
 
 .profile {
@@ -41,23 +40,21 @@
     font-size: 0.8rem;
 }
 
-.sidebar nav ul {
+.sidebar > nav > ul {
+    display: flex;
+    flex-direction: column;
     list-style: none;
-    padding: 0;
+    gap: 16px;
 }
 
-.sidebar nav ul li {
-    margin-bottom: 1rem;
-}
-
-.sidebar nav ul li a {
+.sidebar nav ul button {
     color: #333;
-    text-decoration: none;
     transition: color 0.3s;
 }
 
-.sidebar nav ul li a:hover {
+.sidebar nav ul button:hover {
     color: #000;
+    background-color: #f5f5f5;
 }
 
 /*celulas*/
@@ -65,11 +62,12 @@
 .cell{
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     color: #494c4e;
     border: 1px solid #cccccc;
     padding: 0.5rem;
     border-radius: 0.8rem;
+    cursor: pointer;
 }
 
 .iconImage {

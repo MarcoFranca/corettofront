@@ -1,12 +1,14 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import LeadColumn from './LeadColumn';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import styles from './LeadBoard.module.css';
+import Image from "next/image";
+import UserImage from '@/../public/assets/user.png'
 
 interface Lead {
     id: string;
     content: string;
+    name: string;
 }
 
 interface Column {
@@ -15,56 +17,49 @@ interface Column {
     leadIds: string[];
 }
 
-interface BoardData {
-    leads: {
-        [key: string]: Lead;
-    };
-    columns: {
-        [key: string]: Column;
-    };
+interface Data {
+    leads: { [key: string]: Lead };
+    columns: { [key: string]: Column };
     columnOrder: string[];
 }
 
-const initialData: BoardData = {
+const initialData: Data = {
     leads: {
-        'lead-1': { id: 'lead-1', content: 'Consulta de Marketing' },
-        'lead-2': { id: 'lead-2', content: 'Sessão de estratégia' },
-        // Adicione mais leads aqui
+        'lead-1': { id: 'lead-1', content: 'Consulta de Marketing', name:'José Capilé' },
+        'lead-2': { id: 'lead-2', content: 'Sessão de estratégia', name:'João e o pé de feijão' },
     },
     columns: {
         'column-1': {
             id: 'column-1',
-            title: 'Leads de Entrada',
+            title: 'LEADS DE ENTRADA',
             leadIds: ['lead-1', 'lead-2'],
         },
         'column-2': {
             id: 'column-2',
-            title: 'Decidindo',
+            title: 'DECIDINDO',
             leadIds: [],
         },
         'column-3': {
             id: 'column-3',
-            title: 'Discussão de Contrato',
+            title: 'DISCUSSÃO DE CONTRATO',
             leadIds: [],
         },
         'column-4': {
             id: 'column-4',
-            title: 'Decisão Final',
+            title: 'DECISÃO FINAL',
             leadIds: [],
         },
     },
     columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'],
 };
 
-const LeadBoard = () => {
-    const [data, setData] = useState<BoardData>(initialData);
+const LeadBoard: React.FC = () => {
+    const [data, setData] = useState<Data>(initialData);
 
     const onDragEnd = (result: DropResult) => {
         const { destination, source, draggableId } = result;
 
-        if (!destination) {
-            return;
-        }
+        if (!destination) return;
 
         if (
             destination.droppableId === source.droppableId &&
@@ -73,8 +68,8 @@ const LeadBoard = () => {
             return;
         }
 
-        const start = data.columns[source.droppableId as keyof typeof data.columns];
-        const finish = data.columns[destination.droppableId as keyof typeof data.columns];
+        const start = data.columns[source.droppableId];
+        const finish = data.columns[destination.droppableId];
 
         if (start === finish) {
             const newLeadIds = Array.from(start.leadIds);
@@ -126,14 +121,82 @@ const LeadBoard = () => {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className={styles.board}>
-                {data.columnOrder.map((columnId) => {
-                    const column = data.columns[columnId];
-                    const leads = column.leadIds.map((leadId) => data.leads[leadId]);
+            <Droppable
+                droppableId="all-columns"
+                direction="horizontal"
+                type="COLUMN"
+            >
+                {(provided) => (
+                    <div
+                        className={styles.board}
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                    >
+                        {data.columnOrder.map((columnId, index) => {
+                            const column = data.columns[columnId];
+                            const leads = column.leadIds.map(
+                                (leadId) => data.leads[leadId]
+                            );
 
-                    return <LeadColumn key={column.id} column={column} leads={leads} />;
-                })}
-            </div>
+                            return (
+                                <Draggable
+                                    draggableId={column.id}
+                                    index={index}
+                                    key={column.id}
+                                >
+                                    {(provided) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            className={styles.column}
+                                        >
+                                            <h3>{column.title}</h3>
+                                            <Droppable
+                                                droppableId={column.id}
+                                                type="LEAD"
+                                            >
+                                                {(provided) => (
+                                                    <div
+                                                        className={styles.leadList}
+                                                        {...provided.droppableProps}
+                                                        ref={provided.innerRef}
+                                                    >
+                                                        {leads.map((lead, index) => (
+                                                            <Draggable
+                                                                key={lead.id}
+                                                                draggableId={lead.id}
+                                                                index={index}
+                                                            >
+                                                                {(provided) => (
+                                                                    <div
+                                                                        ref={provided.innerRef}
+                                                                        {...provided.draggableProps}
+                                                                        {...provided.dragHandleProps}
+                                                                        className={styles.lead}
+                                                                    >
+                                                                        <Image className={styles.userImage} src={UserImage} alt={'user'} priority/>
+                                                                        <div className={styles.leadList}>
+                                                                            <p>{lead.name}</p>
+                                                                            <h2>{lead.content}</h2>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </Draggable>
+                                                        ))}
+                                                        {provided.placeholder}
+                                                    </div>
+                                                )}
+                                            </Droppable>
+                                        </div>
+                                    )}
+                                </Draggable>
+                            );
+                        })}
+                        {provided.placeholder}
+                    </div>
+                )}
+            </Droppable>
         </DragDropContext>
     );
 };
