@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchLeads, updateLead } from '@/store/slices/leadsSlice';
@@ -38,6 +39,8 @@ const LeadBoard: React.FC = () => {
         },
         columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'],
     });
+    const router = useRouter();
+    let clickTimer: NodeJS.Timeout | null = null;
 
     useEffect(() => {
         dispatch(fetchLeads());
@@ -129,6 +132,17 @@ const LeadBoard: React.FC = () => {
         }
     };
 
+    const handleLeadClick = (leadId: string) => {
+        if (clickTimer) clearTimeout(clickTimer);
+        clickTimer = setTimeout(() => {
+            router.push(`/lead/${leadId}`);
+        }, 200);
+    };
+
+    const handleLeadDragStart = () => {
+        if (clickTimer) clearTimeout(clickTimer);
+    };
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable
@@ -184,6 +198,8 @@ const LeadBoard: React.FC = () => {
                                                                         {...provided.draggableProps}
                                                                         {...provided.dragHandleProps}
                                                                         className={styles.lead}
+                                                                        onClick={() => handleLeadClick(lead.id)}
+                                                                        onDragStart={handleLeadDragStart}
                                                                     >
                                                                         <Image className={styles.userImage} src={UserImage} alt={'user'} priority/>
                                                                         <div className={styles.leadList}>
