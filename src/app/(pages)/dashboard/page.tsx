@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
-import { setUser, setToken } from '@/store/slices/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { setUserFromLocalStorage } from '@/store/slices/authSlice';
 import DashboardHeader from "@/app/components/common/Header/NavBarDashboard";
 import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
 import styles from './styles.module.css';
@@ -14,6 +15,8 @@ const DashboardPage = () => {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('dashboard');
+    const user = useSelector((state: RootState) => state.auth.user);
+    const token = useSelector((state: RootState) => state.auth.token);
 
     const renderContent = () => {
         switch (activeTab) {
@@ -29,17 +32,16 @@ const DashboardPage = () => {
     };
 
     useEffect(() => {
-        const user = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
+        dispatch(setUserFromLocalStorage());
+        setLoading(false);
+    }, [dispatch]);
 
-        if (user && token) {
-            dispatch(setUser(JSON.parse(user)));
-            dispatch(setToken(JSON.parse(token)));
-            setLoading(false);
-        } else {
+    useEffect(() => {
+        if (loading) return; // Aguarda a finalização do carregamento
+        if (!user || !token?.access || !token?.refresh) {
             router.push('/');
         }
-    }, [dispatch, router]);
+    }, [user, token, router]);
 
     if (loading) {
         return <div>Carregando...</div>; // Ou qualquer indicador de carregamento

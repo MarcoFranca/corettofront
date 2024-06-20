@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
+import axios, { AxiosError } from 'axios';  // Import AxiosError
 import api from '@/app/api/axios';
 import { setUser, setToken } from '@/store/slices/authSlice';
 import styles from './styles.module.css';
 import Link from "next/link";
 import Image from "next/image";
-import LogoImag from '@/../public/assets/Ativo 2.png'
+import LogoImag from '@/../public/assets/Ativo 2.png';
 
 const LoginForm = () => {
     const [username, setUsernameState] = useState('');
@@ -36,7 +37,11 @@ const LoginForm = () => {
             setMessage('Login bem-sucedido!');
             router.push('/dashboard');
         } catch (error) {
-            setMessage('Erro ao fazer login. Verifique suas credenciais e tente novamente.');
+            if (axios.isAxiosError(error)) {
+                setMessage('Erro ao fazer login. Verifique suas credenciais e tente novamente.');
+            } else {
+                setMessage('Ocorreu um erro. Tente novamente mais tarde.');
+            }
             console.error('Erro ao fazer login:', error);
         }
     };
@@ -62,11 +67,11 @@ const LoginForm = () => {
                     required
                 />
                 <button type="submit" className={styles.button}>Entrar</button>
-                <Link href={'/reset-password'} className={styles.sword}>esqueceu a senha?</Link>
+                <Link href={'/reset-password'} className={styles.sword}>Esqueceu a senha?</Link>
                 {message && <p className={styles.message}>{message}</p>}
             </form>
             <div className={styles.cadastre}>
-                <p >Não tem conta?<Link href={'/register'} > Cadastre-se</Link></p>
+                <p>Não tem conta?<Link href={'/register'}> Cadastre-se</Link></p>
             </div>
         </div>
     );

@@ -1,46 +1,81 @@
-'use client';
+import React, { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { fetchLeads, createLead, updateLead, deleteLead } from '@/store/slices/leadsSlice';
+import styles from './Leads.module.css';
 
-import React, { useState } from 'react';
-import LeadBoard from '@/app/components/leadBoard/LeadBoard';
-import LeadModal from '@/app/components/Modal/LeadModal';
-import styles from './styles.module.css';
-import DashboardSidebar from '@/app/components/common/Header/DashboardSidebar';
-import DashboardHeader from '@/app/components/common/Header/NavBarDashboard';
+interface Lead {
+    id?: number;
+    nome: string;
+    contato: string;
+    telefone: string;
+    email: string;
+    endereco: string;
+    status: string;
+}
 
 const Leads = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const dispatch = useAppDispatch();
+    const leads = useAppSelector((state) => state.leads.leads);
+    const leadStatus = useAppSelector((state) => state.leads.status);
+    const error = useAppSelector((state) => state.leads.error);
 
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
+    useEffect(() => {
+        if (leadStatus === 'idle') {
+            dispatch(fetchLeads());
+        }
+    }, [leadStatus, dispatch]);
+
+    const handleCreateLead = async () => {
+        const newLead: Lead = {
+            nome: 'Novo Lead',
+            contato: 'Contato Lead',
+            telefone: '123456789',
+            email: 'novo.lead@example.com',
+            endereco: 'Endereço Lead',
+            status: 'lead',
+        };
+        await dispatch(createLead(newLead));
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
+    const handleUpdateLead = async (id: number) => {
+        const updatedLead: Lead = {
+            nome: 'Lead Atualizado',
+            contato: 'Contato Atualizado',
+            telefone: '987654321',
+            email: 'lead.atualizado@example.com',
+            endereco: 'Endereço Atualizado',
+            status: 'lead',
+        };
+        await dispatch(updateLead({ id, updatedLead }));
     };
 
-    const handleSubmitLead = async (leadData: any) => {
-        // Adicione aqui a lógica para enviar os dados do lead para a API
-        console.log('Dados do lead:', leadData);
-        // Fechar o modal após o envio
-        handleCloseModal();
+    const handleDeleteLead = async (id: number) => {
+        await dispatch(deleteLead(id));
     };
+
+    if (leadStatus === 'loading') {
+        return <div>Loading...</div>;
+    }
+
+    if (leadStatus === 'failed') {
+        return <div>Error: {error}</div>;
+    }
 
     return (
-        <>
-            <div className={styles.dashboardLayout}>
-                <DashboardSidebar />
-                <div className={styles.canvaLayout}>
-                    <DashboardHeader />
-                    <main className={styles.mainContent}>
-                        <button onClick={handleOpenModal} className={styles.addButton}>
-                            + Cadastrar Lead
-                        </button>
-                        <LeadBoard />
-                    </main>
+        <div className={styles.leadsContainer}>
+            <button onClick={handleCreateLead}>Criar Lead</button>
+            {leads.map((lead: Lead) => (
+                <div key={lead.id} className={styles.leadCard}>
+                    <h3>{lead.nome}</h3>
+                    <p>{lead.contato}</p>
+                    <p>{lead.telefone}</p>
+                    <p>{lead.email}</p>
+                    <p>{lead.endereco}</p>
+                    <button onClick={() => handleUpdateLead(lead.id!)}>Atualizar</button>
+                    <button onClick={() => handleDeleteLead(lead.id!)}>Deletar</button>
                 </div>
-            </div>
-            <LeadModal isOpen={isModalOpen} onRequestClose={handleCloseModal} onSubmit={handleSubmitLead} />
-        </>
+            ))}
+        </div>
     );
 };
 

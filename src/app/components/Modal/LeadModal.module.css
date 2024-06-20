@@ -1,4 +1,16 @@
-/* src/app/components/Modal/LeadModal.module.css */
+.modalContent {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 100%;
+}
+
 .modalOverlay {
     background-color: rgba(0, 0, 0, 0.75);
     position: fixed;
@@ -11,12 +23,37 @@
     align-items: center;
 }
 
-.modalContent {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
+.modalContent > form {
+    display: flex;
+    flex-direction: column;
+    /*background-color: #020f60;*/
 }
+
+.modalContent > form > label {
+    margin-bottom: 1rem;
+}
+
+.modalContent > form > label > input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.modalContent > form > button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+.modalContent > form > button:hover {
+    background-color: rgba(0, 123, 255, 0.85);
+}
+
+/* src/app/components/Modal/LeadModal.module.css */
+
+

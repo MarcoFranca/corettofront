@@ -4,13 +4,16 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { logout } from '@/store/slices/authSlice';
+import { createLead } from '@/store/slices/leadsSlice';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './styles.module.css';
 import UserImage from '@/../public/assets/user.png';
+import LeadModal from '@/app/components/Modal/LeadModal';
 
 const DashboardHeader = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.auth.user);
     const router = useRouter();
@@ -24,10 +27,24 @@ const DashboardHeader = () => {
         setDropdownOpen(open);
     };
 
+    const openModal = () => {
+        setModalIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
+
+    const handleLeadSubmit = async (leadData: any) => {
+        // @ts-ignore
+        await dispatch(createLead(leadData));
+        closeModal();
+    };
+
     return (
         <header className={styles.header}>
             <div className={styles.headerBar}>
-                <button className={styles.button}>
+                <button className={styles.button} onClick={openModal}>
                     + NOVO LEAD
                 </button>
 
@@ -50,6 +67,12 @@ const DashboardHeader = () => {
                     )}
                 </div>
             </div>
+
+            <LeadModal
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                onSubmit={handleLeadSubmit}
+            />
         </header>
     );
 };

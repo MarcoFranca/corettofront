@@ -1,18 +1,18 @@
-// src/store/slices/fornecedorSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '@/app/utils/auth';
+import api from '@/app/api/axios';
 
-interface Leads {
+interface Lead {
     id?: number;
     nome: string;
     contato: string;
     telefone: string;
     email: string;
     endereco: string;
+    status: string;
 }
 
 interface LeadsState {
-    leads: Leads[];
+    leads: Lead[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
 }
@@ -23,18 +23,28 @@ const initialState: LeadsState = {
     error: null,
 };
 
-export const fetchLeads = createAsyncThunk('fornecedores/fetchFornecedores', async () => {
-    const response = await axiosInstance.get('/api/v1/suppliers/suppliers/');
+// Fetch Leads
+export const fetchLeads = createAsyncThunk('leads/fetchLeads', async () => {
+    const response = await api.get('/clientes/');
     return response.data;
 });
 
-export const createLeads = createAsyncThunk('fornecedores/createFornecedor', async (novoLead: Leads) => {
-    const response = await axiosInstance.post('/api/v1/leads/leads/', novoLead, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-        },
-    });
+// Create Lead
+export const createLead = createAsyncThunk('leads/createLead', async (novoLead: Lead) => {
+    const response = await api.post('/clientes/', novoLead);
     return response.data;
+});
+
+// Update Lead
+export const updateLead = createAsyncThunk('leads/updateLead', async ({ id, updatedLead }: { id: number; updatedLead: Lead }) => {
+    const response = await api.put(`/clientes/${id}/`, updatedLead);
+    return response.data;
+});
+
+// Delete Lead
+export const deleteLead = createAsyncThunk('leads/deleteLead', async (id: number) => {
+    await api.delete(`/clientes/${id}/`);
+    return id;
 });
 
 const leadsSlice = createSlice({
@@ -54,8 +64,15 @@ const leadsSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.error.message || null;
             })
-            .addCase(createLeads.fulfilled, (state, action) => {
+            .addCase(createLead.fulfilled, (state, action) => {
                 state.leads.push(action.payload);
+            })
+            .addCase(updateLead.fulfilled, (state, action) => {
+                const index = state.leads.findIndex(lead => lead.id === action.payload.id);
+                state.leads[index] = action.payload;
+            })
+            .addCase(deleteLead.fulfilled, (state, action) => {
+                state.leads = state.leads.filter(lead => lead.id !== action.payload);
             });
     },
 });

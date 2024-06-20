@@ -1,4 +1,3 @@
-// src/app/components/Modal/LeadModal.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -12,13 +11,16 @@ interface LeadModalProps {
 }
 
 const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
-    const [name, setName] = useState('');
+    const [nome, setNome] = useState('');
+    const [contato, setContato] = useState('');
+    const [telefone, setTelefone] = useState('');
     const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
+    const [endereco, setEndereco] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit({ name, email, phone });
+        onSubmit({ nome, contato, telefone, email, endereco, status: 'lead' });
+        onRequestClose();
     };
 
     return (
@@ -28,14 +30,31 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
             className={styles.modalContent}
             overlayClassName={styles.modalOverlay}
         >
-            <h2>Cadastrar Lead</h2>
             <form onSubmit={handleSubmit}>
                 <label>
                     Nome:
                     <input
                         type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                        required
+                    />
+                </label>
+                <label>
+                    Contato:
+                    <input
+                        type="text"
+                        value={contato}
+                        onChange={(e) => setContato(e.target.value)}
+
+                    />
+                </label>
+                <label>
+                    Telefone:
+                    <input
+                        type="text"
+                        value={telefone}
+                        onChange={(e) => setTelefone(e.target.value)}
                         required
                     />
                 </label>
@@ -45,19 +64,19 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        required
+
                     />
                 </label>
                 <label>
-                    Telefone:
+                    Endereço:
                     <input
                         type="text"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
+                        value={endereco}
+                        onChange={(e) => setEndereco(e.target.value)}
+
                     />
                 </label>
-                <button type="submit">Cadastrar</button>
+                <button type="submit">Cadastrar Lead</button>
             </form>
         </ReactModal>
     );

@@ -34,23 +34,27 @@ const authSlice = createSlice({
         setToken: (state, action: PayloadAction<{ access: string; refresh: string } | null>) => {
             state.token = action.payload;
             if (action.payload) {
-                localStorage.setItem('token', JSON.stringify(action.payload));
+                localStorage.setItem('accessToken', action.payload.access);
+                localStorage.setItem('refreshToken', action.payload.refresh);
             } else {
-                localStorage.removeItem('token');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
             }
         },
         logout: (state) => {
             state.user = null;
             state.token = null;
             localStorage.removeItem('user');
-            localStorage.removeItem('token');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
         },
         setUserFromLocalStorage: (state) => {
             const user = localStorage.getItem('user');
-            const token = localStorage.getItem('token');
-            if (user && token) {
+            const accessToken = localStorage.getItem('accessToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (user && accessToken && refreshToken) {
                 state.user = JSON.parse(user);
-                state.token = JSON.parse(token);
+                state.token = { access: accessToken, refresh: refreshToken };
             }
         },
     },

@@ -12,7 +12,7 @@ const DashboardSidebar = ({setActiveTab}) => {
     return (
         <aside className={styles.sidebar}>
             <div className={styles.profile}>
-            <Image src={LogoImage} alt={'logo'} className={styles.logo}/>
+            <Image src={LogoImage} alt={'logo'} className={styles.logo} priority/>
             </div>
             <nav >
                 <ul>
