@@ -42,7 +42,7 @@ api.interceptors.response.use(
         if (error.response?.status === 401) {
             // Redireciona para a página de login se houver erro de autorização e o usuário estiver logado
             store.dispatch(logout());
-            window.location.href = '/';
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }

@@ -13,6 +13,7 @@ interface Lead {
     email: string;
     endereco: string;
     status: string;
+    pipeline_stage: string;
 }
 
 const LeadDetails = ({ params }: { params: { leadId: string } }) => {
@@ -45,6 +46,7 @@ const LeadDetails = ({ params }: { params: { leadId: string } }) => {
             <p>Email: {lead.email}</p>
             <p>Endereço: {lead.endereco}</p>
             <p>Status: {lead.status}</p>
+            <p>Stagio: {lead.pipeline_stage}</p>
             <button onClick={() => router.push('/dashboard')}>Voltar</button>
         </div>
     );

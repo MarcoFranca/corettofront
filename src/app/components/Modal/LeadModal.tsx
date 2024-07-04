@@ -12,14 +12,15 @@ interface LeadModalProps {
 
 const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
     const [nome, setNome] = useState('');
-    const [contato, setContato] = useState('');
+    const [profissao, setProfissao] = useState('');
     const [telefone, setTelefone] = useState('');
     const [email, setEmail] = useState('');
     const [endereco, setEndereco] = useState('');
 
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit({ nome, contato, telefone, email, endereco, status: 'lead' });
+        onSubmit({ nome, profissao, telefone, email, endereco, status: 'lead', pipeline_stage: 'leads de entrada'});
         onRequestClose();
     };
 
@@ -41,11 +42,11 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
                     />
                 </label>
                 <label>
-                    Contato:
+                    Profissão:
                     <input
                         type="text"
-                        value={contato}
-                        onChange={(e) => setContato(e.target.value)}
+                        value={profissao}
+                        onChange={(e) => setProfissao(e.target.value)}
 
                     />
                 </label>
