@@ -18,7 +18,8 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
     const [endereco, setEndereco] = useState('');
 
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const
+        handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit({ nome, profissao, telefone, email, endereco, status: 'lead', pipeline_stage: 'leads de entrada'});
         onRequestClose();

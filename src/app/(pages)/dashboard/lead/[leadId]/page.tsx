@@ -27,7 +27,7 @@ const LeadDetails = ({ params }: { params: { leadId: string } }) => {
                 setLead(response.data);
             } catch (error) {
                 console.error('Erro ao buscar os detalhes do lead:', error);
-                router.push('/dashboard');
+                router.push('/dashboard/lead');
             }
         };
 
@@ -47,7 +47,7 @@ const LeadDetails = ({ params }: { params: { leadId: string } }) => {
             <p>Endereço: {lead.endereco}</p>
             <p>Status: {lead.status}</p>
             <p>Stagio: {lead.pipeline_stage}</p>
-            <button onClick={() => router.push('/dashboard')}>Voltar</button>
+            <button onClick={() => router.push('/dashboard/lead')}>Voltar</button>
         </div>
     );
 };

@@ -1,14 +1,5 @@
 import axios from 'axios';
-
-interface Lead {
-    id?: number;
-    nome: string;
-    contato: string;
-    telefone: string;
-    email: string;
-    endereco: string;
-    status: string; // Incluindo o campo status
-}
+import {Lead} from "@/types/interfaces";
 
 export const logout = () => {
     localStorage.removeItem('accessToken');

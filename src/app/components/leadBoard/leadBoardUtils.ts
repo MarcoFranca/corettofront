@@ -2,35 +2,15 @@ import { DropResult } from '@hello-pangea/dnd';
 import { Dispatch } from '@reduxjs/toolkit';
 import { updateLeadStatus } from '@/store/slices/leadsSlice';
 import React from "react";
-
-interface Lead {
-    id: string;
-    status: string;
-    name: string;
-    pipeline_stage?: string; // Novo campo
-    email?: string;
-    telefone?: string;
-}
-
-interface Column {
-    id: string;
-    title: string;
-    leadIds: string[];
-}
-
-interface Data {
-    leads: { [key: string]: Lead };
-    columns: { [key: string]: Column };
-    columnOrder: string[];
-}
+import {Column, Data, Lead} from "@/types/interfaces";
 
 export const initializeData = (leadsFromStore: any[] = []): Data => {
     const leads: { [key: string]: Lead } = {};
     const columns: { [key: string]: Column } = {
         'column-1': { id: 'column-1', title: 'LEADS DE ENTRADA', leadIds: [] },
-        'column-2': { id: 'column-2', title: 'DECIDINDO', leadIds: [] },
-        'column-3': { id: 'column-3', title: 'DISCUSSÃO DE CONTRATO', leadIds: [] },
-        'column-4': { id: 'column-4', title: 'DECISÃO FINAL', leadIds: [] },
+        'column-2': { id: 'column-2', title: 'NEGOCIANDO', leadIds: [] },
+        'column-3': { id: 'column-3', title: 'FINALIZAÇÃO', leadIds: [] },
+        'column-4': { id: 'column-4', title: 'POUCO INTERESSE', leadIds: [] },
     };
 
     leadsFromStore.forEach((lead) => {
@@ -38,10 +18,15 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
             leads[lead.id.toString()] = {
                 id: lead.id.toString(),
                 status: lead.status,
-                name: lead.nome,
+                nome: lead.nome,
                 email: lead.email,
                 telefone: lead.telefone,
+                endereco: lead.endereco,
+                contato: lead.contato,
                 pipeline_stage: lead.pipeline_stage || 'entrada',
+                status_reuniao: lead.status_reuniao,
+                created_at: lead.created_at,
+                updated_at: lead.updated_at,
             };
             const columnKey = Object.keys(columns).find(
                 key => columns[key].title.toLowerCase() === (lead.pipeline_stage || 'entrada')

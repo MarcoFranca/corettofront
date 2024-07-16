@@ -1,0 +1,166 @@
+.container {
+    padding: 20px;
+    background-color: #fafafa;
+    width: 100%;
+    height: 100%;
+}
+
+.card {
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 8px 6px 21px 1px rgba(18, 18, 18, 1);
+}
+
+.addButton {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cccccc;
+    border-radius: 14px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.addButton:hover {
+    background-color: #e3c563;
+}
+
+.addButton img {
+    width: 30px;
+    height: auto;
+    margin-right: 12px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.taskTitle {
+    display: flex;
+    align-items: center;
+}
+
+.taskTitle input[type='checkbox'] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.taskTitle span {
+    font-size: 16px;
+    color: #333;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.actionButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.actionButton img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.actionButton img:hover {
+    transform: scale(1.2);
+}
+
+/* Urgency Styles */
+.low {
+    color: green;
+}
+
+.medium {
+    color: orange;
+}
+
+.high {
+    color: red;
+}
+
+.critical {
+    color: darkred;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    background: rgba(0, 0, 0, 0.75);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContent {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.closeModalButton {
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.closeModalButton:hover {
+    background: #c82333;
+}

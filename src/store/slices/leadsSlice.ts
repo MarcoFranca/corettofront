@@ -18,8 +18,8 @@ export const createLead = createAsyncThunk<Lead, Lead>('leads/createLead', async
     return response.data;
 });
 
-export const updateLead = createAsyncThunk<Lead, { id: string; updatedLead: Lead }>('leads/updateLead', async ({ id, updatedLead }) => {
-    const response = await api.put(`/clientes/${id}/`, updatedLead);
+export const updateLead = createAsyncThunk<Lead, { id: string; updatedLead: Partial<Lead> }>('leads/updateLead', async ({ id, updatedLead }) => {
+    const response = await api.patch(`/clientes/${id}/`, updatedLead);
     return response.data;
 });
 

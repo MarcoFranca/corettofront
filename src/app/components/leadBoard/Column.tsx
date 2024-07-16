@@ -2,30 +2,10 @@ import React from 'react';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 import Lead from './Lead';
 import styles from './LeadBoard.module.css';
+import { ColumnProps } from "@/types/interfaces";
 
-interface Lead {
-    id: string;
-    status: string;
-    name: string;
-    pipeline_stage?: string;
-    email?: string;
-    telefone?: string;
-}
-
-interface ColumnProps {
-    column: {
-        id: string;
-        title: string;
-        leadIds: string[];
-    };
-    leads: { [key: string]: Lead };
-    index: number;
-    handleLeadClick: (leadId: string) => void;
-    handleLeadDragStart: () => void;
-}
-
-const Column: React.FC<ColumnProps> = ({ column, leads, index, handleLeadClick, handleLeadDragStart }) => {
-    const isLastColumn = column.id === 'column-4'; // Identifique a última coluna
+const Column: React.FC<ColumnProps> = ({ column, leads, index, handleLeadClick, handleLeadDragStart, tooltipContainerRef }) => {
+    const isLastColumn = column.id === 'column-4';
 
     if (!column || !column.id) {
         console.error('Column or column.id is undefined', column);
@@ -41,6 +21,7 @@ const Column: React.FC<ColumnProps> = ({ column, leads, index, handleLeadClick, 
                     {...provided.dragHandleProps}
                     className={styles.column}
                 >
+                                <div className={styles.fadeTop}></div>
                     <h3>{column.title}</h3>
                     <Droppable droppableId={column.id} type="LEAD">
                         {(provided) => (
@@ -52,13 +33,15 @@ const Column: React.FC<ColumnProps> = ({ column, leads, index, handleLeadClick, 
                                         index={index}
                                         handleLeadClick={handleLeadClick}
                                         handleLeadDragStart={handleLeadDragStart}
-                                        isLastColumn={isLastColumn} // Passe a prop para o componente Lead
+                                        isLastColumn={isLastColumn}
+                                        tooltipContainerRef={tooltipContainerRef} // Passe a ref do contêiner de tooltips para o Lead
                                     />
                                 ))}
                                 {provided.placeholder}
                             </div>
                         )}
                     </Droppable>
+                                <div className={styles.fadeBottom}></div>
                 </div>
             )}
         </Draggable>
