@@ -2,7 +2,7 @@
 import React, {useState} from "react";
 import api from "@/app/api/axios";
 import styles from "@/app/(pages)/(login)/reset-password/styles.module.css";
-import CadeadoImage from "@/../public/assets/cadeado.png";
+import CadeadoImage from "../../../../../public/assets/common/cadeado.png";
 import Image from "next/image";
 import Link from "next/link";
 

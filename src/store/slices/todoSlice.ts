@@ -50,7 +50,7 @@ const todoSlice = createSlice({
             })
             .addCase(updateTask.fulfilled, (state, action) => {
                 const index = state.tasks.findIndex(task => task.id === action.payload.id);
-                state.tasks[index] = { ...state.tasks[index], ...action.payload }; // Atualiza apenas os campos alterados
+                state.tasks[index] = { ...state.tasks[index], ...action.payload };
             })
             .addCase(deleteTask.fulfilled, (state, action) => {
                 state.tasks = state.tasks.filter(task => task.id !== action.payload);

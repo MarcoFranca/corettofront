@@ -8,7 +8,7 @@ import { createLead } from '@/store/slices/leadsSlice';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './styles.module.css';
-import UserImage from '@/../public/assets/user.png';
+import UserImage from '../../../../../../public/assets/common/user.png';
 import LeadModal from '@/app/components/Modal/LeadModal';
 
 const DashboardHeader = () => {

@@ -47,21 +47,16 @@
 }
 
 .button:hover {
-    color: rgba(198, 165, 46);
     transform: scale(1.1);
-    filter: invert(64%) sepia(66%) saturate(465%) hue-rotate(9deg) brightness(90%) contrast(88%);
 }
 
 .menu > a:hover {
-    color: rgba(198, 165, 46);
     transform: scale(1.1);
-    filter: invert(64%) sepia(66%) saturate(465%) hue-rotate(9deg) brightness(90%) contrast(88%);
 }
 
 .user {
     height: 2rem;
     width: auto;
-    filter: invert(100%) sepia(0%) saturate(4427%) hue-rotate(54deg) brightness(123%) contrast(97%);
 }
 
 .user:hover {

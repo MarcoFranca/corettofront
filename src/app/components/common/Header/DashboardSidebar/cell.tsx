@@ -1,6 +1,6 @@
 import styles from "@/app/components/common/Header/DashboardSidebar/styles.module.css";
 import Image from "next/image";
-import ArrowImage from "../../../../../../public/assets/arrow.png";
+import ArrowImage from "../../../../../../public/assets/pages/leads/arrow.png";
 import {useRouter} from "next/navigation";
 
 

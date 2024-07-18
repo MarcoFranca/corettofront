@@ -7,7 +7,7 @@ import { initializeData, handleDragEnd } from './leadBoardUtils';
 import Column from './Column';
 import styles from './LeadBoard.module.css';
 import LeadModal from "@/app/components/Modal/LeadModal";
-import CadastroLead from '@/../public/assets/cadastroLead.svg';
+import CadastroLead from '../../../../public/assets/pages/leads/cadastroLead.svg';
 import Image from "next/image";
 
 const LeadBoard: React.FC = () => {

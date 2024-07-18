@@ -7,7 +7,7 @@
     padding: 1rem;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     z-index: 1;
-    /*background-color: #f5f5f5;*/
+    background-color: rgb(5, 26, 53);
 }
 
 .profile {
@@ -21,13 +21,61 @@
     margin-bottom: 2rem;
 }
 
+.userMenu{
+    display: flex;
+    flex-direction: column;
+    /*color: #e0e0e0;*/
+    padding: 1.5rem 0;
+}
+
+.userMenuAcecces{
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    color: #e0e0e0;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 .userImage {
     height: 1.9rem;
     width: auto;
-    border-radius: 50%;
     margin-right: 1rem;
 }
 
+.dropdownMenu{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    margin-top: 1rem;
+
+}
+
+.dropdownBar{
+    height: 2px;
+    width: 80%;
+    background-color: #5f94c9;
+    margin: 1rem 0 1.5rem 0;
+    border-radius: 2rem;
+}
+
+.dropdownButton{
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+    width: 100%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.dropdownButton img {
+    width: 2rem;
+    height: auto;
+}
 .profileDetails {
     display: flex;
     flex-direction: column;
@@ -55,7 +103,7 @@
 
 .sidebar nav ul button:hover {
     color: #000;
-    background-color: #f5f5f5;
+    background-color: #cccccc;
 }
 
 /*celulas*/

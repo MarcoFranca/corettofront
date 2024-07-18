@@ -1,15 +1,6 @@
 'use client'
 import styles from './styles.module.css';
-import LogoImage from '@/../public/assets/Ativo 1.png';
-import DashboardImage from '@/../public/assets/dashboard.svg';
-import DolarImage from '@/../public/assets/Leads.svg';
-import CarteiraImage from '@/../public/assets/carteira.svg';
-import TodoImage from '@/../public/assets/Tarefas.svg';
-import ConfigImage from '@/../public/assets/engrenagem.svg';
-import AgendaImage from '@/../public/assets/agenda2.svg';
-import Image from 'next/image';
 import Cell from "@/app/components/common/Header/DashboardSidebar/cell";
-import UserImage from "../../../../../../public/assets/user.png";
 import LeadModal from "@/app/components/Modal/LeadModal";
 import React, {useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/hooks/hooks";
@@ -18,7 +9,19 @@ import {RootState} from "@/store";
 import {useRouter} from "next/navigation";
 import {logout} from "@/store/slices/authSlice";
 import {createLead} from "@/store/slices/leadsSlice";
-import {DropResult} from "@hello-pangea/dnd";
+import Image from 'next/image';
+
+// imagens
+import UserImage from "../../../../../../public/assets/common/user.svg";
+import EditUserImage from "../../../../../../public/assets/common/editar_usuario_branco.svg";
+import LogoutImage from "../../../../../../public/assets/login/logout_branco.svg";
+import LogoImage from '../../../../../../public/assets/logoIcons/Ativo 4.png';
+import DashboardImage from '../../../../../../public/assets/asideButtons/dashboard.svg';
+import DolarImage from '../../../../../../public/assets/asideButtons/Leads.svg';
+import CarteiraImage from '../../../../../../public/assets/asideButtons/carteira.svg';
+import TodoImage from '../../../../../../public/assets/asideButtons/todo.svg';
+import ConfigImage from '../../../../../../public/assets/asideButtons/engrenagem.svg';
+import AgendaImage from '../../../../../../public/assets/asideButtons/agenda2.svg';
 
 
 
@@ -62,16 +65,25 @@ const DashboardSidebar = () => {
                     onMouseEnter={() => toggleDropdown(true)}
                     onMouseLeave={() => toggleDropdown(false)}
                 >
-                    <Image
-                        src={UserImage}
-                        alt="user"
-                        className={styles.userImage}
-                    />
+                    <div className={styles.userMenuAcecces}>
+                        <Image
+                            src={UserImage}
+                            alt="user"
+                            className={styles.userImage}
+                        />
+                        <p>{user?.username ?? 'usuario'}</p>
+                    </div>
                     {dropdownOpen && (
                         <div className={styles.dropdownMenu}>
-                            <p>{user?.username ?? 'usuario'}</p>
-                            <button onClick={() => router.push('/edit-profile')}>Editar Perfil</button>
-                            <button onClick={handleLogout}>Logout</button>
+                            <div className={styles.dropdownBar}></div>
+                            <div className={styles.dropdownButton} onClick={() => router.push('/edit-profile')}>
+                                <Image src={EditUserImage} alt={'editar usuario'}/>
+                                Editar
+                            </div>
+                            <div className={styles.dropdownButton} onClick={handleLogout}>
+                                <Image src={LogoutImage} alt={'logout'}/>
+                                Logout
+                            </div>
                         </div>
                     )}
                 </div>

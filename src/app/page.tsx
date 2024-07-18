@@ -1,5 +1,5 @@
 import Image from "next/image";
-import HeroImage from "../../public/assets/hero.png";
+import HeroImage from "../../public/assets/pages/site/hero.png";
 import styles from "./page.module.css";
 import Link from "next/link";
 import SimpleNavBar from "@/app/components/common/Header/SimpleNavBar";
@@ -27,7 +27,7 @@ export default function Home() {
                         <Link className={styles.button} href={'/register'}>
                             CRIAR CONTA GRATUITA
                         </Link>
-                        <Link className={styles.buttonVendas} href={'/register'}>
+                        <Link className={styles.buttonVendas} href={'https://wa.me/5521990050220'} target="_blank">
                             CONVERSE COM VENDAS
                         </Link>
                     </div>
