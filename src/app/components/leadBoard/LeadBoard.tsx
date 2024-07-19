@@ -20,7 +20,8 @@ const LeadBoard: React.FC = () => {
     let clickTimer: NodeJS.Timeout | null = null;
 
     useEffect(() => {
-        dispatch(fetchLeads());
+        // Buscar apenas os leads com status 'lead'
+        dispatch(fetchLeads({ status: 'lead' }));
     }, [dispatch]);
 
     useEffect(() => {
@@ -37,7 +38,6 @@ const LeadBoard: React.FC = () => {
     };
 
     const handleLeadSubmit = async (leadData: any) => {
-        // @ts-ignore
         await dispatch(createLead(leadData));
         closeModal();
     };
@@ -65,7 +65,7 @@ const LeadBoard: React.FC = () => {
                     {(provided) => (
                         <div>
                             <div className={styles.headerBar}>
-                                <Image src={CadastroLead} alt={'Cadasto'} className={styles.button} onClick={openModal} />
+                                <Image src={CadastroLead} alt={'Cadastro'} className={styles.button} onClick={openModal} />
                             </div>
                             <div className={styles.board} {...provided.droppableProps} ref={provided.innerRef}>
                                 {data.columnOrder.map((columnId, index) => {
@@ -89,7 +89,7 @@ const LeadBoard: React.FC = () => {
                                                 index={index}
                                                 handleLeadClick={handleLeadClick}
                                                 handleLeadDragStart={handleLeadDragStart}
-                                                tooltipContainerRef={tooltipContainerRef} // Passe a ref do contêiner de tooltips para o Column
+                                                tooltipContainerRef={tooltipContainerRef}
                                             />
                                         </>
                                     );

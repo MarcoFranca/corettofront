@@ -38,6 +38,24 @@ export interface LeadProps {
     tooltipContainerRef: RefObject<HTMLDivElement>;
 }
 
+//clients
+export interface Cliente {
+    id: string;
+    nome: string;
+    email: string;
+    telefone: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ClientesState {
+    clientes: Cliente[];
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    error: string | null;
+}
+
+
 // Auth Interfaces
 export interface User {
     id: number;

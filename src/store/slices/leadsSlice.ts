@@ -8,10 +8,13 @@ const initialState: LeadsState = {
     error: null,
 };
 
-export const fetchLeads = createAsyncThunk<Lead[]>('leads/fetchLeads', async () => {
-    const response = await api.get('/clientes/');
-    return response.data;
-});
+export const fetchLeads = createAsyncThunk<Lead[], { status?: string }>(
+    'leads/fetchLeads',
+    async ({ status }) => {
+        const response = await api.get(`/clientes/?status=${status || ''}`);
+        return response.data;
+    }
+);
 
 export const createLead = createAsyncThunk<Lead, Lead>('leads/createLead', async (novoLead) => {
     const response = await api.post('/clientes/', novoLead);
@@ -23,6 +26,7 @@ export const updateLead = createAsyncThunk<Lead, { id: string; updatedLead: Part
     return response.data;
 });
 
+// Adicionando de volta a função updateLeadStatus
 export const updateLeadStatus = createAsyncThunk<Lead, { id: string; status: string }>('leads/updateLeadStatus', async ({ id, status }) => {
     const response = await api.patch(`/clientes/${id}/`, { pipeline_stage: status });
     return response.data;
@@ -36,7 +40,13 @@ export const deleteLead = createAsyncThunk<string, string>('leads/deleteLead', a
 const leadsSlice = createSlice({
     name: 'leads',
     initialState,
-    reducers: {},
+    reducers: {
+        resetLeads: (state) => {
+            state.leads = [];
+            state.status = 'idle';
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchLeads.pending, (state) => {
@@ -69,4 +79,5 @@ const leadsSlice = createSlice({
     },
 });
 
+export const { resetLeads } = leadsSlice.actions;
 export default leadsSlice.reducer;

@@ -2,13 +2,14 @@
 
 import styles from './styles.module.css';
 import DashboardLayout from "@/app/components/layouts/DashboardLayout";
+import ClientesTable from "@/app/components/carteira/ClientesTable";
 
 const LeadPage = () => {
 
     return (
         <main className={styles.dashboardLayout}>
             <DashboardLayout>
-                <h1>Carteira</h1>
+                <ClientesTable/>
             </DashboardLayout>
         </main>
     );

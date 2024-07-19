@@ -31,7 +31,13 @@ export const deleteMeeting = createAsyncThunk<string, string>('meetings/deleteMe
 const agendaSlice = createSlice({
     name: 'meetings',
     initialState,
-    reducers: {},
+    reducers: {
+        resetAgenda: (state) => {
+            state.meetings = [];
+            state.status = 'idle';
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchMeetings.pending, (state) => {
@@ -58,4 +64,5 @@ const agendaSlice = createSlice({
     },
 });
 
+export const { resetAgenda } = agendaSlice.actions;
 export default agendaSlice.reducer;

@@ -2,7 +2,7 @@ import { DropResult } from '@hello-pangea/dnd';
 import { Dispatch } from '@reduxjs/toolkit';
 import { updateLeadStatus } from '@/store/slices/leadsSlice';
 import React from "react";
-import {Column, Data, Lead} from "@/types/interfaces";
+import { Column, Data, Lead } from "@/types/interfaces";
 
 export const initializeData = (leadsFromStore: any[] = []): Data => {
     const leads: { [key: string]: Lead } = {};
@@ -96,6 +96,13 @@ export const handleDragEnd = (
         leadIds: finishLeadIds,
     };
 
+    // Ordenar leads pela data de atualização
+    newFinish.leadIds.sort((a, b) => {
+        const leadA = data.leads[a];
+        const leadB = data.leads[b];
+        return new Date(leadA.updated_at).getTime() - new Date(leadB.updated_at).getTime();
+    });
+
     const newState = {
         ...data,
         columns: {
@@ -109,8 +116,8 @@ export const handleDragEnd = (
 
     const updatedLead = leadsFromStore.find((lead) => lead.id?.toString() === draggableId);
     if (updatedLead) {
-        const newStatus = newFinish.title.toLowerCase(); // Formate o título da coluna para corresponder aos valores de pipeline_stage
-        console.log(`Updating lead ID ${draggableId} to pipeline_stage ${newStatus}`); // Log para depuração
-        dispatch(updateLeadStatus({ id: draggableId, status: newStatus })); // Use pipeline_stage
+        const newStatus = newFinish.title.toLowerCase();
+        console.log(`Updating lead ID ${draggableId} to pipeline_stage ${newStatus}`);
+        dispatch(updateLeadStatus({ id: draggableId, status: newStatus }));
     }
 };

@@ -31,7 +31,13 @@ export const deleteTask = createAsyncThunk<string, string>('tasks/deleteTask', a
 const todoSlice = createSlice({
     name: 'tasks',
     initialState,
-    reducers: {},
+    reducers: {
+        resetTodos:(state)=>{
+                state.tasks = [];
+                state.status = 'idle';
+                state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchTasks.pending, (state) => {
@@ -58,4 +64,5 @@ const todoSlice = createSlice({
     },
 });
 
+export const { resetTodos } = todoSlice.actions;
 export default todoSlice.reducer;
