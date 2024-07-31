@@ -3,16 +3,17 @@
 import styles from './styles.module.css';
 import LeadBoard from "@/app/components/leadBoard/LeadBoard";
 import DashboardLayout from "@/app/components/layouts/DashboardLayout";
+import Agenda from "@/app/components/agenda/Agenda";
 
-const LeadPage = () => {
+const AgendaPage = () => {
 
     return (
         <main className={styles.dashboardLayout}>
             <DashboardLayout>
-                <h1>Tarefas</h1>
+                <Agenda />
             </DashboardLayout>
         </main>
     );
 };
 
-export default LeadPage;
+export default AgendaPage;

@@ -4,8 +4,8 @@ import React from "react";
 
 
 export const metadata: Metadata = {
-    title: 'Cadastre-se - Coretto CRM',
-    description: 'Faça seu cadastro no Coretto CRM',
+    title: 'Cadastre-se - Corretor Lab',
+    description: 'Faça seu cadastro no Corretor Lab',
 };
 
 export default function RootLayout({

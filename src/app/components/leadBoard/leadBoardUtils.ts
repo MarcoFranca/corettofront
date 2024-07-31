@@ -1,12 +1,11 @@
 import { DropResult } from '@hello-pangea/dnd';
 import { Dispatch } from '@reduxjs/toolkit';
 import { updateLeadStatus } from '@/store/slices/leadsSlice';
-import React from "react";
-import { Column, Data, Lead } from "@/types/interfaces";
+import { Data, Lead } from "@/types/interfaces";
 
 export const initializeData = (leadsFromStore: any[] = []): Data => {
     const leads: { [key: string]: Lead } = {};
-    const columns: { [key: string]: Column } = {
+    const columns: { [key: string]: { id: string, title: string, leadIds: string[] } } = {
         'column-1': { id: 'column-1', title: 'LEADS DE ENTRADA', leadIds: [] },
         'column-2': { id: 'column-2', title: 'NEGOCIANDO', leadIds: [] },
         'column-3': { id: 'column-3', title: 'FINALIZAÇÃO', leadIds: [] },
@@ -95,13 +94,6 @@ export const handleDragEnd = (
         ...finish,
         leadIds: finishLeadIds,
     };
-
-    // Ordenar leads pela data de atualização
-    newFinish.leadIds.sort((a, b) => {
-        const leadA = data.leads[a];
-        const leadB = data.leads[b];
-        return new Date(leadA.updated_at).getTime() - new Date(leadB.updated_at).getTime();
-    });
 
     const newState = {
         ...data,

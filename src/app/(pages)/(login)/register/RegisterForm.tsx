@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {useRouter} from "next/navigation";
 import api from "@/app/api/axios";
 import styles from './styles.module.css';
-import LogoImag from "../../../../../public/assets/logoIcons/Ativo 2.png";
+import LogoImag from "../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg";
 import Image from "next/image";
 import Link from "next/link";
 

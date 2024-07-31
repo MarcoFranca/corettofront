@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import leadsReducer from './slices/leadsSlice';
 import todoReducer from "@/store/slices/todoSlice";
+import meetingReducer  from "@/store/slices/meetingSlice";
 import agendaReducer from "@/store/slices/agendaSlice";
 import clientesReducer from '@/store/slices/clientesSlice';
 import logoutMiddleware from '@/middleware/logoutMiddleware';
@@ -11,6 +12,7 @@ const store = configureStore({
         auth: authReducer,
         clientes: clientesReducer,
         leads: leadsReducer,
+        meetings: meetingReducer,
         agenda: agendaReducer,
         tasks:todoReducer,
     },

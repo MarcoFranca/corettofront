@@ -132,6 +132,7 @@
 }
 
 .logo{
-    width: 12rem;
+    min-width: 12rem;
+    width: 100%;
     height: auto;
 }

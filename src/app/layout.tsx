@@ -8,10 +8,10 @@ import React from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Coretto - CRM",
+    title: "Corretor Lab - CRM",
     description: "CRM inteligente feito para corretores",
     icons: {
-        icon: '/icon.png',
+        icon: '/icon.svg',
     },
 };
 

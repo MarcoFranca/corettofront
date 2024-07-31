@@ -12,13 +12,6 @@ const Column: React.FC<ColumnProps> = ({ column, leads, index, handleLeadClick, 
         return null;
     }
 
-    // Ordenar leads pela data de atualização antes de renderizar
-    const sortedLeads = column.leadIds.slice().sort((a, b) => {
-        const leadA = leads[a];
-        const leadB = leads[b];
-        return new Date(leadA.updated_at).getTime() - new Date(leadB.updated_at).getTime();
-    });
-
     return (
         <div className={styles.column}>
             <h3>{column.title}</h3>
@@ -27,7 +20,7 @@ const Column: React.FC<ColumnProps> = ({ column, leads, index, handleLeadClick, 
             <Droppable droppableId={column.id} type="LEAD">
                 {(provided) => (
                     <div className={styles.leadList} {...provided.droppableProps} ref={provided.innerRef}>
-                        {sortedLeads.map((leadId, index) => (
+                        {column.leadIds.map((leadId, index) => (
                             <Lead
                                 key={leadId}
                                 lead={leads[leadId]}

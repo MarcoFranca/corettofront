@@ -15,7 +15,7 @@ import Image from 'next/image';
 import UserImage from "../../../../../../public/assets/common/user.svg";
 import EditUserImage from "../../../../../../public/assets/common/editar_usuario_branco.svg";
 import LogoutImage from "../../../../../../public/assets/login/logout_branco.svg";
-import LogoImage from '../../../../../../public/assets/logoIcons/Ativo 4.png';
+import LogoImage from '../../../../../../public/assets/logoIcons/Logo_transparente_clara_horizontal.svg';
 import DashboardImage from '../../../../../../public/assets/asideButtons/dashboard.svg';
 import DolarImage from '../../../../../../public/assets/asideButtons/Leads.svg';
 import CarteiraImage from '../../../../../../public/assets/asideButtons/carteira.svg';

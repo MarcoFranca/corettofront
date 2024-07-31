@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
-import { createMeeting } from '@/store/slices/agendaSlice';
+import { createMeeting } from '@/store/slices/meetingSlice';
 import { Meeting } from '@/types/interfaces';
 import styles from './ScheduleMeetingForm.module.css';
 
@@ -47,62 +47,69 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ leadId, leadN
     return (
         <div className={styles.modal}>
             <div className={styles.modalContent}>
-                <h3>Agendar Reunião com {leadName}</h3>
+                <h3>Agendar Reunião Com: <span className={styles.leadName}>{leadName}</span></h3>
                 <form onSubmit={handleSubmit} className={styles.form}>
-                    <label>
-                        Descrição:
+                    <label className={styles.label}>
+                        <p>Descrição:</p>
                         <textarea
+                            className={styles.textarea}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             required
                         />
                     </label>
-                    <label>
+                    <label className={styles.label}>
                         Data:
                         <input
+                            className={styles.input}
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
                             required
                         />
                     </label>
-                    <label>
+                    <label className={styles.label}>
                         Hora de Início:
                         <input
+                            className={styles.input}
                             type="time"
                             value={startTime}
                             onChange={(e) => setStartTime(e.target.value)}
                             required
                         />
                     </label>
-                    <label>
+                    <label className={styles.label}>
                         Hora de Término:
                         <input
+                            className={styles.input}
                             type="time"
                             value={endTime}
                             onChange={(e) => setEndTime(e.target.value)}
                             required
                         />
                     </label>
-                    <label>
-                        Adicionar ao Google Calendar:
+                    <label className={`${styles.label} ${styles.labelSelect}`}>
+                        <p>Adicionar ao Google Calendar:</p>
                         <input
+                            className={styles.select}
                             type="checkbox"
                             checked={addToGoogleCalendar}
                             onChange={(e) => setAddToGoogleCalendar(e.target.checked)}
                         />
                     </label>
-                    <label>
-                        Adicionar ao Google Meet:
+                    <label className={`${styles.label} ${styles.labelSelect}`}>
+                        <p>Adicionar ao Google Meet:</p>
                         <input
+                            className={styles.select}
                             type="checkbox"
                             checked={addToGoogleMeet}
                             onChange={(e) => setAddToGoogleMeet(e.target.checked)}
                         />
                     </label>
-                    <label>
-                        Adicionar ao Zoom:
+                    <label className={`${styles.label} ${styles.labelSelect}`}>
+                        <p>Adicionar ao Zoom:</p>
                         <input
+                            className={styles.select}
                             type="checkbox"
                             checked={addToZoom}
                             onChange={(e) => setAddToZoom(e.target.checked)}

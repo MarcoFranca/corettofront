@@ -128,3 +128,38 @@ export interface MeetingsState {
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
 }
+
+//meeting inteface
+
+export interface Meeting {
+    id: string;
+    title: string;
+    description: string;
+    start_time: string;
+    end_time: string;
+    cliente: string;
+    is_meeting: boolean;
+}
+
+export interface MeetingsState {
+    meetings: Meeting[];
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    error: string | null;
+}
+
+export interface AgendaItem {
+    id: string;
+    title: string;
+    description: string;
+    start_time: string;
+    end_time: string;
+    cliente: string;
+    is_meeting: boolean;
+}
+
+export interface AgendaState {
+    items: AgendaItem[];
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    error: string | null;
+}
+

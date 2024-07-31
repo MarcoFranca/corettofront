@@ -9,7 +9,7 @@ import { setUser, setToken } from '@/store/slices/authSlice';
 import styles from './styles.module.css';
 import Link from "next/link";
 import Image from "next/image";
-import LogoImag from '../../../../../public/assets/logoIcons/Ativo 2.png';
+import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
 
 const LoginForm = () => {
     const [username, setUsernameState] = useState('');

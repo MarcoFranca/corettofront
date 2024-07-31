@@ -20,7 +20,7 @@ export default function Home() {
                 <div className={styles.heroContant}>
                     <h1>CRM para corretores</h1>
                     <p>
-                        Escale a operação de vendas da sua corretora com inteligência. Conte com o CORETTO CRM para
+                        Escale a operação de vendas da sua corretora com inteligência. Conte com a Corretor Lab para
                         controlar todas as etapas e tarefas das suas negociações com o cliente.
                     </p>
                     <div className={styles.heroContantButton}>

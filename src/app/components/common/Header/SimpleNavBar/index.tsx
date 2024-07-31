@@ -1,7 +1,7 @@
 import styles from './styles.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
-import LogoImage from '../../../../../../public/assets/logoIcons/coretto_color_horizontal.png';
+import LogoImage from '../../../../../../public/assets/logoIcons/Logo_transparente_clara_horizontal.svg';
 import UserImage from '../../../../../../public/assets/login/login_Branco.svg';
 
 const SimpleHeader = () => {
