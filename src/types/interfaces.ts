@@ -40,10 +40,20 @@ export interface LeadProps {
 
 //clients
 export interface Cliente {
+    uf?: string;
+    status_reuniao: string;
+    cidade?: string;
+    numero_endereco?: string;
+    observacoes?: string;
+    sexo?: string;
+    cpf?: string;
+    data_nascimento?: string;
+    profissao?: string;
     id: string;
     nome: string;
     email: string;
     telefone: string;
+    endereco: string;
     status: string;
     created_at: string;
     updated_at: string;
@@ -51,8 +61,11 @@ export interface Cliente {
 
 export interface ClientesState {
     clientes: Cliente[];
+    clienteDetalhe: Cliente | null; // Novo estado para armazenar os detalhes do cliente
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    statusDetalhe: 'idle' | 'loading' | 'succeeded' | 'failed'; // Novo estado para o status do detalhe
     error: string | null;
+    errorDetalhe: string | null; // Novo estado para o erro do detalhe
 }
 
 

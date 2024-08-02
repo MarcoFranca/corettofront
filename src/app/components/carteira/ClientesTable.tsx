@@ -9,6 +9,7 @@ import { formatPhoneNumber } from '@/utils/utils'; // Importa a função de form
 
 import DeleteIcon from '@/../public/assets/common/delete.svg';
 import UpdateIcon from '@/../public/assets/common/editar_usuario_dark.svg';
+import InfoClientIcon from '@/../public/assets/common/infoclient.svg';
 import PhoneIcon from '@/../public/assets/common/whats2.svg';
 import MailIcon from '@/../public/assets/common/mail.svg';
 
@@ -21,7 +22,6 @@ const ClientesTable: React.FC = () => {
     const [search, setSearch] = useState<string>('');
 
     useEffect(() => {
-        console.log('Fetching clientes with filter:', filter, 'and search:', search);  // Adiciona log para verificar os parâmetros
         dispatch(fetchClientes({ status: filter, search }));
     }, [dispatch, filter, search]);
 
@@ -88,7 +88,12 @@ const ClientesTable: React.FC = () => {
                         <td>{cliente.status}</td>
                         <td>
                             <div className={styles.actions}>
-                                <Image className={styles.actionIcons} src={UpdateIcon} alt="Editar" onClick={() => handleDelete(cliente.id)} priority />
+                                <Link href={`/infoclient/cadastro/${cliente.id}`} passHref>
+                                    <Image className={styles.actionIcons} src={InfoClientIcon} alt="Info Client" priority />
+                                </Link>
+                                <Link href={`/dashboard/cliente/${cliente.id}`} passHref>
+                                    <Image className={styles.actionIcons} src={UpdateIcon} alt="Detalhes Cliente" priority />
+                                </Link>
                                 <Image className={styles.actionIcons} src={DeleteIcon} alt="Deletar" onClick={() => handleDelete(cliente.id)} priority />
                             </div>
                         </td>

@@ -1,0 +1,97 @@
+/* ClientProfile.module.css */
+
+.profileContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    background-color: #f4f4f4;
+    min-height: 100vh;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin: 1rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.profileHeader {
+    text-align: center;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profileImage {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.headerText {
+    text-align: center;
+}
+
+.status {
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(0, 91, 181, 0.8);
+}
+
+.profileDetails{
+    display: flex;
+    flex-direction: column;
+}
+
+.creationDate {
+    margin-top: 4px;
+    justify-self: end;
+    font-size: 0.8rem;
+    color: #999;
+    align-self: end;
+    border: none !important;
+}
+
+.profileCell{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px 0;
+    gap: 1rem;
+}
+
+.profileCell > h3, .profileCell > p{
+    border-bottom: 1px solid #cccccc;
+    width: 50%;
+}
+.titleDetails{
+    font-weight: bold;
+    width: 50%;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+}
+
+.profileDetails, .contactDetails, .addressDetails {
+    width: 100%;
+    text-align: left;
+}
+
+.profileDetails p, .contactDetails p, .addressDetails p {
+    font-size: 1rem;
+    color: #555;
+    margin: 0.5rem 0;
+}
+
+.error {
+    color: red;
+}

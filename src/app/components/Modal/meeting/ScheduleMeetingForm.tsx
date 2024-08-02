@@ -6,12 +6,13 @@ import { Meeting } from '@/types/interfaces';
 import styles from './ScheduleMeetingForm.module.css';
 
 interface ScheduleMeetingFormProps {
-    leadId: string;
-    leadName: string;
+    entityId: string;
+    entityName: string;
+    entityType: 'lead' | 'cliente';
     onClose: () => void;
 }
 
-const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ leadId, leadName, onClose }) => {
+const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, entityName, entityType, onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
@@ -24,14 +25,13 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ leadId, leadN
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Verificar se a data está sendo enviada corretamente
         if (!date) {
             alert('A data de vencimento é obrigatória.');
             return;
         }
 
         const newMeeting: Partial<Meeting> = {
-            cliente: leadId,
+            cliente: entityId,
             descricao: description,
             data_reuniao_agendada: date,
             horario_inicio: startTime,
@@ -47,17 +47,8 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ leadId, leadN
     return (
         <div className={styles.modal}>
             <div className={styles.modalContent}>
-                <h3>Agendar Reunião Com: <span className={styles.leadName}>{leadName}</span></h3>
+                <h3>Agendar Reunião Com: <span className={styles.entityName}>{entityName}</span></h3>
                 <form onSubmit={handleSubmit} className={styles.form}>
-                    <label className={styles.label}>
-                        <p>Descrição:</p>
-                        <textarea
-                            className={styles.textarea}
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            required
-                        />
-                    </label>
                     <label className={styles.label}>
                         Data:
                         <input
@@ -85,6 +76,15 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ leadId, leadN
                             type="time"
                             value={endTime}
                             onChange={(e) => setEndTime(e.target.value)}
+                            required
+                        />
+                    </label>
+                    <label className={styles.label}>
+                        <p>Descrição:</p>
+                        <textarea
+                            className={styles.textarea}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             required
                         />
                     </label>

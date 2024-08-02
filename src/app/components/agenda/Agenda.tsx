@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, momentLocalizer, Views, View, NavigateAction } from 'react-big-calendar';
+import { Calendar, momentLocalizer, Views, View, NavigateAction, SlotInfo } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css'; // Importa o CSS padrão
 import './CustomCalendarStyles.css'; // Importa o CSS personalizado
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchAgendaItems } from '@/store/slices/agendaSlice';
-import { fetchMeetings } from '@/store/slices/meetingSlice';
-import { fetchTasks } from '@/store/slices/todoSlice';
+import { fetchMeetings, createMeeting } from '@/store/slices/meetingSlice';
+import { fetchTasks, createTask } from '@/store/slices/todoSlice';
 import { RootState } from '@/store';
 import styles from './Agenda.module.css';
+import Modal from 'react-modal';
 
 moment.locale('pt-BR');
 const localizer = momentLocalizer(moment);
@@ -21,6 +22,8 @@ const Agenda: React.FC = () => {
     const [events, setEvents] = useState<any[]>([]);
     const [view, setView] = useState<View>(Views.MONTH);
     const [date, setDate] = useState(new Date());
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [newEvent, setNewEvent] = useState({ title: '', description: '', start: new Date(), end: new Date(), type: 'task' });
 
     useEffect(() => {
         dispatch(fetchAgendaItems());
@@ -53,6 +56,28 @@ const Agenda: React.FC = () => {
         setView(newView);
     };
 
+    const handleSelectSlot = (slotInfo: SlotInfo) => {
+        setNewEvent({ ...newEvent, start: slotInfo.start, end: slotInfo.end });
+        setModalIsOpen(true);
+    };
+
+    const handleSave = () => {
+        const event = {
+            title: newEvent.title,
+            description: newEvent.description,
+            start: newEvent.start,
+            end: newEvent.end,
+        };
+
+        if (newEvent.type === 'task') {
+            dispatch(createTask(event));
+        } else if (newEvent.type === 'meeting') {
+            dispatch(createMeeting(event));
+        }
+
+        setModalIsOpen(false);
+    };
+
     return (
         <div className={`${styles.container} agenda-container`}>
             <h2>Agenda</h2>
@@ -68,6 +93,8 @@ const Agenda: React.FC = () => {
                 date={date}
                 onNavigate={handleNavigate}
                 toolbar={true}
+                selectable
+                onSelectSlot={handleSelectSlot}
                 messages={{
                     today: 'Hoje',
                     previous: 'Anterior',
@@ -78,6 +105,32 @@ const Agenda: React.FC = () => {
                     agenda: 'Agenda',
                 }}
             />
+            <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={() => setModalIsOpen(false)}
+                contentLabel="Novo Evento"
+            >
+                <h2>Novo Evento</h2>
+                <form>
+                    <label>
+                        Título:
+                        <input type="text" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} />
+                    </label>
+                    <label>
+                        Descrição:
+                        <input type="text" value={newEvent.description} onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })} />
+                    </label>
+                    <label>
+                        Tipo:
+                        <select value={newEvent.type} onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}>
+                            <option value="task">Tarefa</option>
+                            <option value="meeting">Reunião</option>
+                        </select>
+                    </label>
+                    <button type="button" onClick={handleSave}>Salvar</button>
+                    <button type="button" onClick={() => setModalIsOpen(false)}>Cancelar</button>
+                </form>
+            </Modal>
         </div>
     );
 };

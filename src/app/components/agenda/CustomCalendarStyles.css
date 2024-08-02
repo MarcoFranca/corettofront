@@ -2,3 +2,74 @@
     cursor: pointer;
 }
 
+/* Estilos para o calendário */
+.agenda-container {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    height: 100vh;
+}
+
+.agenda-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilos para o modal */
+.ReactModal__Overlay {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 1000;
+}
+
+.ReactModal__Content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: white;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ReactModal__Content h2 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.ReactModal__Content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.ReactModal__Content label {
+    margin-bottom: 10px;
+}
+
+.ReactModal__Content input,
+.ReactModal__Content select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-top: 4px;
+}
+
+.ReactModal__Content button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.ReactModal__Content button[type="button"]:first-child {
+    background-color: #3174ad;
+    color: white;
+}
+
+.ReactModal__Content button[type="button"]:last-child {
+    background-color: #ccc;
+}

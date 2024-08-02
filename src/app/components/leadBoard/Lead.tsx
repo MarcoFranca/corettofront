@@ -10,7 +10,7 @@ import DeleteImage from '../../../../public/assets/common/delete.svg';
 import AgendaImage from '../../../../public/assets/pages/agenda/agenda.svg';
 import EditImage from '../../../../public/assets/common/edit.svg';
 import { LeadProps, Lead, StatusReuniao } from "@/types/interfaces";
-import ScheduleMeetingForm from '@/app/components/agenda/ScheduleMeetingForm';
+import ScheduleMeetingForm from '@/app/components/Modal/meeting/ScheduleMeetingForm';
 import EditLeadForm from '@/app/components/leads/EditLeadForm';
 import ReactDOM from 'react-dom';
 
@@ -162,7 +162,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index, handleLeadClick, hand
                 </div>
             )}
             {showScheduleForm && (
-                <ScheduleMeetingForm leadId={currentLead.id} leadName={currentLead.nome} onClose={handleScheduleFormClose} />
+                <ScheduleMeetingForm entityId={currentLead.id} entityName={currentLead.nome} entityType="lead" onClose={handleScheduleFormClose} />
             )}
             {showEditForm && (
                 <EditLeadForm lead={currentLead} onClose={handleEditFormClose} onUpdate={handleUpdateLead} />

@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { setUserFromLocalStorage } from '@/store/slices/authSlice';
-import DashboardHeader from "../common/Header/ClientDashboard";
-import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
+import DashboardSidebar from "@/app/components/common/Header/ClientDashboard";
 import styles from './styles.module.css';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
+    clientId: string;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clientId }) => {
     const dispatch = useDispatch();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
@@ -38,7 +38,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     return (
         <main className={styles.dashboardLayout}>
-            <DashboardSidebar />
+            <DashboardSidebar clientId={clientId} />
             <div className={styles.canvaLayout}>{children}</div>
         </main>
     );

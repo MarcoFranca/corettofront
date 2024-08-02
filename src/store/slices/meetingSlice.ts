@@ -8,8 +8,9 @@ const initialState: MeetingsState = {
     error: null,
 };
 
-export const fetchMeetings = createAsyncThunk<Meeting[]>('meetings/fetchMeetings', async () => {
-    const response = await api.get('/reunioes/');
+// Fetch meetings for a specific client
+export const fetchClientMeetings = createAsyncThunk<Meeting[], string>('meetings/fetchClientMeetings', async (clientId) => {
+    const response = await api.get(`/reunioes/?cliente=${clientId}`);
     return response.data;
 });
 
@@ -40,14 +41,14 @@ const meetingSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchMeetings.pending, (state) => {
+            .addCase(fetchClientMeetings.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(fetchMeetings.fulfilled, (state, action) => {
+            .addCase(fetchClientMeetings.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.meetings = action.payload;
             })
-            .addCase(fetchMeetings.rejected, (state, action) => {
+            .addCase(fetchClientMeetings.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message || null;
             })
@@ -56,7 +57,9 @@ const meetingSlice = createSlice({
             })
             .addCase(updateMeeting.fulfilled, (state, action) => {
                 const index = state.meetings.findIndex(meeting => meeting.id === action.payload.id);
-                state.meetings[index] = { ...state.meetings[index], ...action.payload }; // Atualiza apenas os campos alterados
+                if (index !== -1) {
+                    state.meetings[index] = { ...state.meetings[index], ...action.payload };
+                }
             })
             .addCase(deleteMeeting.fulfilled, (state, action) => {
                 state.meetings = state.meetings.filter(meeting => meeting.id !== action.payload);

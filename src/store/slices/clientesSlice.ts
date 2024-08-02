@@ -4,16 +4,25 @@ import { Cliente, ClientesState } from '@/types/interfaces';
 
 const initialState: ClientesState = {
     clientes: [],
+    clienteDetalhe: null, // Inicialize clienteDetalhe como null
     status: 'idle',
+    statusDetalhe: 'idle', // Adicione statusDetalhe ao estado inicial
     error: null,
+    errorDetalhe: null, // Adicione errorDetalhe ao estado inicial
 };
 
 export const fetchClientes = createAsyncThunk<Cliente[], { status?: string, search?: string } | undefined>(
     'clientes/fetchClientes',
     async (params) => {
-        console.log('Fetching clientes with params:', params);  // Adiciona log para verificar os parâmetros
         const response = await api.get('/clientes/', { params });
-        console.log('API response:', response.data);  // Adiciona log para verificar a resposta da API
+        return response.data;
+    }
+);
+
+export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
+    'clientes/fetchClienteDetalhe',
+    async (id) => {
+        const response = await api.get(`/clientes/${id}/`);
         return response.data;
     }
 );
@@ -45,8 +54,11 @@ const clientesSlice = createSlice({
     reducers: {
         resetClientes: (state) => {
             state.clientes = [];
+            state.clienteDetalhe = null;
             state.status = 'idle';
+            state.statusDetalhe = 'idle';
             state.error = null;
+            state.errorDetalhe = null;
         },
     },
     extraReducers: (builder) => {
@@ -57,12 +69,21 @@ const clientesSlice = createSlice({
             .addCase(fetchClientes.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.clientes = action.payload;
-                console.log('Clientes atualizados:', state.clientes);  // Adiciona log para verificar o estado atualizado
             })
             .addCase(fetchClientes.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message || null;
-                console.log('Erro ao buscar clientes:', state.error);  // Adiciona log para verificar o erro
+            })
+            .addCase(fetchClienteDetalhe.pending, (state) => {
+                state.statusDetalhe = 'loading';
+            })
+            .addCase(fetchClienteDetalhe.fulfilled, (state, action) => {
+                state.statusDetalhe = 'succeeded';
+                state.clienteDetalhe = action.payload;
+            })
+            .addCase(fetchClienteDetalhe.rejected, (state, action) => {
+                state.statusDetalhe = 'failed';
+                state.errorDetalhe = action.error.message || null;
             })
             .addCase(createCliente.fulfilled, (state, action) => {
                 state.clientes.push(action.payload);

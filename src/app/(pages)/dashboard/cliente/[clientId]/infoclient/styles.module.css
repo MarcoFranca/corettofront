@@ -1,0 +1,38 @@
+.dashboardLayout {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ClientDetail.module.css */
+
+.container {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    height: 100%;
+}
+
+h2.container {
+    margin-bottom: 20px;
+}
+
+.clientDetail {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.clientDetail p {
+    margin: 10px 0;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}

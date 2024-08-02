@@ -1,0 +1,45 @@
+/* components/ClientMeetings/ClientMeetings.module.css */
+
+.container {
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.table td {
+    text-align: center;
+}
+
+.error {
+    color: red;
+}
+
+.container button {
+    padding: 10px 20px;
+    background-color: #005bb5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.container button:hover {
+    background-color: #004494;
+}
