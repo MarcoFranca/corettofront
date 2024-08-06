@@ -40,6 +40,8 @@ export interface LeadProps {
 
 //clients
 export interface Cliente {
+    identidade(identidade: any, arg1: string): import("react").ReactNode;
+    idade?: string;
     uf?: string;
     status_reuniao: string;
     cidade?: string;

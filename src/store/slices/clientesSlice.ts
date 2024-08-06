@@ -90,7 +90,12 @@ const clientesSlice = createSlice({
             })
             .addCase(updateCliente.fulfilled, (state, action) => {
                 const index = state.clientes.findIndex(cliente => cliente.id === action.payload.id);
-                state.clientes[index] = action.payload;
+                if (index !== -1) {
+                    state.clientes[index] = action.payload;
+                }
+                if (state.clienteDetalhe && state.clienteDetalhe.id === action.payload.id) {
+                    state.clienteDetalhe = action.payload;
+                }
             })
             .addCase(deleteCliente.fulfilled, (state, action) => {
                 state.clientes = state.clientes.filter(cliente => cliente.id !== action.payload);

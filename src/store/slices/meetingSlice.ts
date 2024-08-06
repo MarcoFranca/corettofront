@@ -8,6 +8,12 @@ const initialState: MeetingsState = {
     error: null,
 };
 
+// Fetch all meetings
+export const fetchMeetings = createAsyncThunk<Meeting[]>('meetings/fetchMeetings', async () => {
+    const response = await api.get('/reunioes/');
+    return response.data;
+});
+
 // Fetch meetings for a specific client
 export const fetchClientMeetings = createAsyncThunk<Meeting[], string>('meetings/fetchClientMeetings', async (clientId) => {
     const response = await api.get(`/reunioes/?cliente=${clientId}`);
@@ -41,6 +47,17 @@ const meetingSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(fetchMeetings.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchMeetings.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.meetings = action.payload;
+            })
+            .addCase(fetchMeetings.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message || null;
+            })
             .addCase(fetchClientMeetings.pending, (state) => {
                 state.status = 'loading';
             })
