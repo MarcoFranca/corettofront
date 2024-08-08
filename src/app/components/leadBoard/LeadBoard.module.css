@@ -6,6 +6,7 @@
     padding: 8px;
     gap: 32px;
     width: 100%;
+    position: relative;
 }
 
 .column {
@@ -223,8 +224,11 @@
 
 .confirmModalContent {
     background-color: white;
-    padding: 20px;
+    align-self: center;
+    justify-self: center;
+    padding: 32px;
     border-radius: 4px;
+    /*min-height: 400px;*/
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     text-align: center;
 }
@@ -235,6 +239,16 @@
 
 .confirmModalContent button {
     margin: 0 10px;
+    background-color: #005bb5;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+.confirmModalContent button:hover {
+    background-color: rgba(0, 91, 181, 0.63);
 }
 
 .container {

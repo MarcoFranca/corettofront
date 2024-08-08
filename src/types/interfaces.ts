@@ -39,8 +39,18 @@ export interface LeadProps {
 }
 
 //clients
+export interface Endereco {
+    logradouro?: string;
+    numero?: string;
+    complemento?: string; // Novo campo para complemento
+    bairro?: string;
+    cidade?: string;
+    uf?: string;
+    cep?: string;
+}
+
 export interface Cliente {
-    identidade(identidade: any, arg1: string): import("react").ReactNode;
+    identidade?: string;
     idade?: string;
     uf?: string;
     status_reuniao: string;
@@ -55,11 +65,12 @@ export interface Cliente {
     nome: string;
     email: string;
     telefone: string;
-    endereco: string;
+    endereco: Endereco; // Atualizado para incluir a interface de Endereco
     status: string;
     created_at: string;
     updated_at: string;
 }
+
 
 export interface ClientesState {
     clientes: Cliente[];

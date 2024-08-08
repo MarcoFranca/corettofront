@@ -1,138 +1,229 @@
 .profileContainer {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 2rem;
-    background-color: #f4f4f4;
-    min-height: 100vh;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.leftCard, .rightCard {
+    flex: 1;
+    margin: 10px;
+    min-width: 48%; /* Ensure both cards take up around 50% of the width */
+    max-height: 100vh; /* Set a maximum height for the cards */
+    overflow-y: auto; /* Add vertical scroll when content overflows */
+}
+
+.profileCellInfo{
+    display: flex;
+}
+
+.IconImage{
+    height: 32px;
+    width: auto;
+}
+
+.editIcon{
+    height: 24px;
+    width: auto;
+    cursor: pointer;
+}
+
+.editIcon:hover{
+    transform: scale(1.1);
+    transition: transform .4s;
+}
+.StaticIcon{
+    height: 32px;
+    width: auto;
 }
 
 .profileHeader {
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-.cardHeader{
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
 }
 
 .profileImage {
-    width: 120px;
-    height: 120px;
     border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-right: 20px;
 }
 
 .headerText {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .status {
-    font-size: 1rem;
-    font-weight: 500;
-    color: rgba(0, 91, 181, 0.8);
+    font-weight: bold;
+    color: green;
 }
 
 .creationDate {
-    text-align: right;
-    font-size: 0.8rem;
-    color: #999;
-    margin-top: -1rem;
-    margin-bottom: 1rem;
-}
-
-.profileSection {
-    border-top: 1px solid #e0e0e0;
-    padding-top: 1rem;
-    margin-top: 1rem;
-    width: 100%;
-}
-
-.sectionTitle {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.profileCell {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.profileCellRow {
-    display: flex;
-    justify-content: space-between;
-    gap: 2rem;
-}
-
-.card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 100%;
-    max-width: 600px;
-    margin: 1rem;
-}
-
-.cardTitle {
-    margin-bottom: 10px;
-    font-size: 1.2em;
-    color: #333;
-}
-
-.cardContent {
-    font-size: 0.9em;
-    color: #666;
+    text-align: end;
+    margin-bottom: 20px;
 }
 
 .error {
     color: red;
+    font-weight: bold;
 }
 
-.updateButton {
-    display: block;
-    margin: 2rem auto;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    color: #fff;
+.profileSectionContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.profileSection {
+    flex: 1;
+    min-width: calc(50% - 10px); /* Ensure cards take up around 50% of the container width */
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.personalSectionContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.sectionTitle {
+    font-size: 1.2em;
+    color: #333;
+    margin: 0;
+}
+
+.profileContactRow {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+.profileCellRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    color: #005bb5;
+    font-weight: 500;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.nascimentoCell{
+    display: flex;
+    gap: 16px;
+    width: 50%;
+}
+
+.profileCellRow p {
+    margin: 0;
+    padding: 5px 0;
+    flex: 1;
+}
+
+.titleImage{
+    height: 24px;
+    width: auto;
+}
+
+.titleHeader{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profileCellRow p strong {
+    color: #555;
+}
+
+
+.IconImage:hover{
+    transition: 800ms;
+    transform: scale(1.2);
+
+}
+
+.cardHeader button {
     background-color: #007bff;
+    color: white;
     border: none;
-    border-radius: 5px;
+    padding: 10px 15px;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.updateButton:hover {
+.cardHeader button:hover {
     background-color: #0056b3;
 }
 
-.modal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    right: auto;
-    bottom: auto;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 80%;
-    max-width: 600px;
-    outline: none;
+.observationSection {
+    margin-top: 20px;
 }
 
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75);
+.observationSection textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+    margin-bottom: 10px;
+    max-height: 150px; /* Maximum height for textarea */
+    overflow-y: auto; /* Scroll when content overflows */
+}
+
+.observationSection button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.observationSection button:hover {
+    background-color: #218838;
+}
+
+.addObservationButton {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.addObservationButton:hover {
+    background-color: #117a8b;
+}
+
+.observationDisplay {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    max-height: 150px; /* Maximum height for observation display */
+    overflow-y: auto; /* Scroll when content overflows */
 }

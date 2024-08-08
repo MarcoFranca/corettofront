@@ -48,6 +48,15 @@ export const deleteCliente = createAsyncThunk<string, string>('clientes/deleteCl
     return id;
 });
 
+export const updateClienteObservacao = createAsyncThunk<Cliente, { id: string; observacoes: string }>(
+    'clientes/updateClienteObservacao',
+    async ({ id, observacoes }, { dispatch }) => {
+        const response = await api.patch(`/clientes/${id}/`, { observacoes });
+        dispatch(fetchClienteDetalhe(id)); // Atualize os detalhes do cliente após a atualização
+        return response.data;
+    }
+);
+
 const clientesSlice = createSlice({
     name: 'clientes',
     initialState,
@@ -89,6 +98,15 @@ const clientesSlice = createSlice({
                 state.clientes.push(action.payload);
             })
             .addCase(updateCliente.fulfilled, (state, action) => {
+                const index = state.clientes.findIndex(cliente => cliente.id === action.payload.id);
+                if (index !== -1) {
+                    state.clientes[index] = action.payload;
+                }
+                if (state.clienteDetalhe && state.clienteDetalhe.id === action.payload.id) {
+                    state.clienteDetalhe = action.payload;
+                }
+            })
+            .addCase(updateClienteObservacao.fulfilled, (state, action) => {
                 const index = state.clientes.findIndex(cliente => cliente.id === action.payload.id);
                 if (index !== -1) {
                     state.clientes[index] = action.payload;

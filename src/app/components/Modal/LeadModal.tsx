@@ -15,13 +15,12 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
     const [profissao, setProfissao] = useState('');
     const [telefone, setTelefone] = useState('');
     const [email, setEmail] = useState('');
-    const [endereco, setEndereco] = useState('');
 
 
     const
         handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit({ nome, profissao, telefone, email, endereco, status: 'lead', pipeline_stage: 'leads de entrada'});
+        onSubmit({ nome, profissao, telefone, email, status: 'lead', pipeline_stage: 'leads de entrada'});
         onRequestClose();
     };
 
@@ -69,15 +68,7 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
 
                     />
                 </label>
-                <label>
-                    Endereço:
-                    <input
-                        type="text"
-                        value={endereco}
-                        onChange={(e) => setEndereco(e.target.value)}
 
-                    />
-                </label>
                 <button type="submit">Cadastrar Lead</button>
             </form>
         </ReactModal>

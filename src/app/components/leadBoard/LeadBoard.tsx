@@ -49,7 +49,7 @@ const LeadBoard: React.FC = () => {
     const handleLeadClick = (leadId: string) => {
         if (clickTimer) clearTimeout(clickTimer);
         clickTimer = setTimeout(() => {
-            router.push(`/dashboard/lead/${leadId}`);
+            router.push(`/dashboard/cliente/${leadId}`);
         }, 200);
     };
 
