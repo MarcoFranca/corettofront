@@ -1,0 +1,44 @@
+/* ApoliceForm.module.css */
+
+.apoliceForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.formGroup label {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.formGroup input,
+.formGroup select {
+    padding: 8px;
+    font-size: 16px;
+}
+
+.formGroup input[type="checkbox"] {
+    width: auto;
+}
+
+.submitButton {
+    padding: 12px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+    background-color: #0056b3;
+}

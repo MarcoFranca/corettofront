@@ -72,7 +72,7 @@ const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({ cliente }) => {
                         <p>{formatDate(cliente.data_nascimento)}</p>
                     </div>
                     <div className={styles.nascimentoCell}>
-                        <Image src={ageImage(cliente.idade)} alt="Idade" className={styles.StaticIcon} priority />
+                        <Image src={ageImage(cliente.idade) } alt="Idade" className={styles.StaticIcon} priority />
                         <p>{`${cliente.idade} anos` || 'Não informada'}</p>
                     </div>
                 </div>

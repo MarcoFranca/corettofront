@@ -89,7 +89,7 @@ const ClientDashboard = ({ clientId }: { clientId: string }) => {
             />
             <nav>
                 <ul>
-                    <Cell url='/dashboard' image={DashboardImage} alt="Dashboard" text={'RETORNAR'} campo={'dashboard'} />
+                    <Cell url='/dashboard/carteira' image={DashboardImage} alt="Dashboard" text={'RETORNAR'} campo={'dashboard'} />
                     <Cell url={`/dashboard/cliente/${clientId}`} image={DolarImage} alt="Ficha do Cliente" campo={'fichaCliente'} text={'FICHA DO CLIENTE'} />
                     <Cell url={`/dashboard/cliente/${clientId}/infoclient`} image={DolarImage} alt="Infoclient" campo={'Infoclient'} text={'INFOCLIENT'} />
                     <Cell url={`/dashboard/cliente/${clientId}/apolice`} image={CarteiraImage} alt="apolice" campo={'apolice'} text={'APOLICES'} />

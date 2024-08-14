@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import styles from './EditClientModal.module.css';
+import styles from '@/app/components/cliente/conta/ClientProfile.module.css';
 import { buscaEnderecoPorCEP } from '@/utils/cep';
 import { profissoes } from '@/utils/profissoes';
-import { applyCPFMask, formatIdentity } from '@/utils/utils';
+import { applyCPFMask, formatIdentity, removeCPFMask, removeIdentityMask } from '@/utils/utils';
 
 interface EditClientModalProps {
     isOpen: boolean;
@@ -51,12 +51,25 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
     };
 
     const handleSave = () => {
-        const updatedData = Object.keys(formData).reduce((acc, key) => {
-            if (formData[key] !== initialData[key]) {
-                acc[key] = formData[key];
+        const cleanedData = {
+            ...formData,
+            cpf: formData.cpf ? removeCPFMask(formData.cpf) : undefined,
+            identidade: formData.identidade ? removeIdentityMask(formData.identidade) : undefined,
+        };
+
+        const updatedData = Object.keys(cleanedData).reduce((acc, key) => {
+            if (cleanedData[key] !== initialData[key]) {
+                acc[key] = cleanedData[key];
             }
             return acc;
         }, {} as any);
+
+        // Remover campos vazios
+        Object.keys(updatedData).forEach(key => {
+            if (updatedData[key] === undefined) {
+                delete updatedData[key];
+            }
+        });
 
         onSave(updatedData);
     };
@@ -88,8 +101,8 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
                         uf: endereco.uf,
                     }
                 });
-            } catch (error) {
-                console.error(error.message);
+            } catch (error: any) {
+                console.error('Erro ao buscar endereço:', error.message);
             }
         }
     };
@@ -106,7 +119,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
             className={styles.modal}
             overlayClassName={styles.overlay}
         >
-            <h2>Atualizar Dados do Cliente</h2>
+            <h2 className={styles.modalTitle}>Atualizar Dados do Cliente</h2>
             <form>
                 {Object.keys(formData).map((key) => {
                     if (key === 'id' || key === 'user') {
@@ -165,6 +178,18 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
                                     </label>
                                 ))}
                             </div>
+                        );
+                    } else if (key === 'altura' || key === 'peso' || key === 'doenca_preexistente' || key === 'historico_familiar_doencas') {
+                        return (
+                            <label key={key}>
+                                {formatLabel(key)}:
+                                <input
+                                    type="text"
+                                    name={key}
+                                    value={formData[key] || ''}
+                                    onChange={handleChange}
+                                />
+                            </label>
                         );
                     } else {
                         return (

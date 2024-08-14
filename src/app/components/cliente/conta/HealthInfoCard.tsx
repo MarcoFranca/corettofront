@@ -1,8 +1,18 @@
-// components/cliente/conta/HealthInfoCard.tsx
 import React, { useState } from 'react';
-import EditClientModal from '@/app/components/Modal/profile/EditClientModal';
+import EditHealthModal from '@/app/components/Modal/profile/EditHealthModal';
 import { Cliente } from '@/types/interfaces';
-import Card from "@/app/components/common/Card";
+import styles from './ClientProfile.module.css';
+import Image from "next/image";
+import EditImage from "../../../../../public/assets/common/edit.svg";
+import SaudeImage from "../../../../../public/assets/common/Saude.svg";
+import CopyIcon from "../../../../../public/assets/common/copy.svg"; // Supondo que você tenha um ícone de copiar
+import AbPesoImage from "../../../../../public/assets/imc/magro.svg";
+import NormalPesoImage from "../../../../../public/assets/imc/no peso.svg";
+import AcPesoImage from "../../../../../public/assets/imc/Sobrepeso.svg";
+import Ob1PesoImage from "../../../../../public/assets/imc/Obesidade grau 1.svg";
+import Ob2PesoImage from "../../../../../public/assets/imc/Obesidade grau 2.svg";
+import AlturaImage from "../../../../../public/assets/imc/altura.svg";
+import BalancaImage from "../../../../../public/assets/imc/balanca.svg";
 
 interface HealthInfoCardProps {
     cliente: Cliente;
@@ -20,75 +30,143 @@ const HealthInfoCard: React.FC<HealthInfoCardProps> = ({ cliente }) => {
     };
 
     const handleSave = (data: any) => {
-        // Dispatch updateCliente action here
         closeModal();
     };
 
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        alert("Texto copiado para a área de transferência");
+    };
+
+    const getImcGrauClass = (imcGrau: string | undefined) => {
+        switch (imcGrau) {
+            case 'Abaixo do peso':
+                return styles.imcAbaixoPeso;
+            case 'Peso normal':
+                return styles.imcPesoNormal;
+            case 'Sobrepeso':
+                return styles.imcSobrepeso;
+            case 'Obesidade grau 1':
+                return styles.imcObesidadeGrau1;
+            case 'Obesidade grau 2':
+                return styles.imcObesidadeGrau2;
+            case 'Obesidade grau 3':
+                return styles.imcObesidadeGrau3;
+            default:
+                return styles.imcDesconhecido;
+        }
+    };
+
+    const imageImc = (imcGrau: string) =>{
+        switch (imcGrau) {
+            case 'Abaixo do peso':
+                return AbPesoImage;
+            case 'Peso normal':
+                return NormalPesoImage;
+            case 'Sobrepeso':
+                return AcPesoImage;
+            case 'Obesidade grau 1':
+                return Ob1PesoImage;
+            case 'Obesidade grau 2':
+                return Ob2PesoImage;
+            case 'Obesidade grau 3':
+                return Ob2PesoImage;
+            default:
+                return NormalPesoImage;
+        }
+    };
+
     return (
-        <Card title="Saúde">
-                {/*<button onClick={openModal}>Editar</button>*/}
-            <div className="card-body">
-                <p><strong>Altura:</strong> {cliente.saude?.altura || 'Não informada'}</p>
-                <p><strong>Peso:</strong> {cliente.saude?.peso || 'Não informado'}</p>
-                <p><strong>IMC:</strong> {cliente.saude?.imc || 'Não calculado'}</p>
+        <div className={styles.cardContainer}>
+            <div className={styles.cardHeader}>
+                <div className={styles.titleContainer}>
+                    <Image src={SaudeImage} alt="Saúde" className={styles.StaticIcon}/>
+                    <h3 className={styles.sectionTitle}>Detalhes de Saúde</h3>
+                </div>
+                <Image src={EditImage} alt={"Editar"} className={styles.editIcon} onClick={openModal} priority />
             </div>
-            <EditClientModal
+            <div className={styles.cardBody}>
+                <div className={styles.profileCellRowIMC}>
+                    <div className={styles.profileCellRowIMCLeft}>
+                        <div className={styles.profileCellRowIMCLeftContent}>
+                            <Image src={AlturaImage} alt="Altura" className={styles.StaticIconSaude}/>
+                            <div className={styles.ImcTexts}>
+                                <h3 className={styles.TitleImc}>Altura</h3>
+                                <p className={styles.FontImc}>{cliente.saude?.altura || 'Não informada'} (M)</p>
+                            </div>
+                        </div>
+                        <div className={styles.profileCellRowIMCLeftContent}>
+                            <Image src={BalancaImage} alt="Peso" className={styles.StaticIconSaude}/>
+                            <div className={styles.ImcTexts}>
+                                <h3 className={styles.TitleImc}>Peso</h3>
+                                <p className={styles.FontImc}>{cliente.saude?.peso || 'Não informado'} Kg</p>
+                            </div>
+                        </div>
+                        <div className={styles.profileCellRowIMCLeftContent}>
+                            {cliente.saude?.imc ? (
+                                <Image src={imageImc(cliente.saude?.imc_grau || '')} alt={'IMC'} className={styles.StaticIconSaude} priority />
+                            ) : ''}
+                            <div className={styles.ImcTexts}>
+                                <h3 className={styles.TitleImc}>IMC</h3>
+                                <p className={styles.FontImc}>{cliente.saude?.imc ? cliente.saude.imc.toFixed(2) : 'Não calculado'}</p>
+                                <h4 className={`${styles.FontImc} ${getImcGrauClass(cliente.saude?.imc_grau)}`}>
+                                    {cliente.saude?.imc_grau || 'Não calculado'}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Doença Preexistente */}
+                <div className={styles.profileCellRowDoenca}>
+                    <div className={styles.titleWithIcon}>
+                        <h4>Doença Preexistente</h4>
+                        {cliente.saude?.doenca_preexistente && (
+                            <Image
+                                src={CopyIcon}
+                                alt="Copiar"
+                                className={styles.copyIcon}
+                                onClick={() => copyToClipboard(cliente.saude?.doenca_preexistente || '')}
+                                priority
+                            />
+                        )}
+                    </div>
+                    <div className={styles.infoCard}>
+                    <p className={styles.infoCard}>{cliente.saude?.doenca_preexistente || 'Nenhuma'}</p>
+
+                    </div>
+                </div>
+
+                {/* Histórico Familiar de Doenças */}
+                <div className={styles.profileCellRowDoenca}>
+                    <div className={styles.titleWithIcon}>
+                        <h4>Histórico Familiar de Doenças</h4>
+                        {cliente.saude?.historico_familiar_doencas && (
+                            <Image
+                                src={CopyIcon}
+                                alt="Copiar"
+                                className={styles.copyIcon}
+                                onClick={() => copyToClipboard(cliente.saude?.historico_familiar_doencas || '')}
+                                priority
+                            />
+                        )}
+                    </div>
+                    <p className={styles.infoCard}>{cliente.saude?.historico_familiar_doencas || 'Nenhum'}</p>
+                </div>
+            </div>
+            <EditHealthModal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 initialData={{
-                    altura: cliente.saude?.altura,
-                    peso: cliente.saude?.peso
+                    altura: cliente.saude?.altura?.toString().replace('.', ',') || '',
+                    peso: cliente.saude?.peso?.toString().replace('.', ',') || '',
+                    doenca_preexistente: cliente.saude?.doenca_preexistente || '',
+                    historico_familiar_doencas: cliente.saude?.historico_familiar_doencas || '',
                 }}
                 onSave={handleSave}
             />
-        </Card>
+        </div>
     );
 };
 
 export default HealthInfoCard;
-// <Card title="">
-//
-//     <div className={styles.profileSection}>
-//         <h3 className={styles.sectionTitle}>Dados de Contato</h3>
-//         <div className={styles.profileCellRow}>
-//             <p><strong>Email:</strong> {formatValue(cliente.email, 'Não informado')}</p>
-//             <p><strong>Telefone:</strong> {formatValue(cliente.telefone, 'Não informado')}</p>
-//         </div>
-//     </div>
-//
-//     <div className={styles.profileSection}>
-//         <h3 className={styles.sectionTitle}>Dados Pessoais</h3>
-//         <div className={styles.profileCellRow}>
-//             <p><strong>Data de
-//                 Nascimento:</strong> {formatValue(cliente.data_nascimento, 'Não informada')}</p>
-//             <p><strong>Sexo:</strong> {cliente.sexo === 'M' ? 'Masculino' : 'Feminino'}</p>
-//         </div>
-//         <div className={styles.profileCellRow}>
-//             <p><strong>Profissão:</strong> {formatValue(cliente.profissao, 'Não informada')}</p>
-//             <p><strong>Idade:</strong> {formatValue(cliente.idade, 'Não informada')}</p>
-//         </div>
-//     </div>
-//
-//     <div className={styles.profileSection}>
-//         <h3 className={styles.sectionTitle}>Documentos</h3>
-//         <div className={styles.profileCellRow}>
-//             <p><strong>CPF:</strong> {formatValue(cliente.cpf, 'Não informado')}</p>
-//             <p><strong>Identidade:</strong> {formatValue(cliente.identidade, 'Não informada')}
-//             </p>
-//         </div>
-//         <div className={styles.profileCellRow}>
-//             <p>
-//                 <strong>Endereço:</strong> {formatValue(cliente.endereco?.logradouro, 'Não informado')}
-//             </p>
-//             <p><strong>Número:</strong> {formatValue(cliente.endereco?.numero, 'Não informado')}
-//             </p>
-//         </div>
-//         <div className={styles.profileCellRow}>
-//             <p><strong>Cidade:</strong> {formatValue(cliente.endereco?.cidade, 'Não informada')}
-//             </p>
-//             <p><strong>UF:</strong> {formatValue(cliente.endereco?.uf, 'Não informado')}</p>
-//             <p><strong>CEP:</strong> {formatValue(cliente.endereco?.cep, 'Não informado')}</p>
-//         </div>
-//     </div>
-// </Card>
-// </div>

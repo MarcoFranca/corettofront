@@ -42,6 +42,15 @@ export const updateCliente = createAsyncThunk<Cliente, { id: string; updatedClie
     }
 );
 
+export const updateClienteSaude = createAsyncThunk<Cliente, { id: string; saudeData: Partial<Cliente['saude']> }>(
+    'clientes/updateClienteSaude',
+    async ({ id, saudeData }, { dispatch }) => {
+        const response = await api.patch(`/clientes/${id}/`, { saude: saudeData });
+        dispatch(fetchClienteDetalhe(id));
+        return response.data;
+    }
+);
+
 export const deleteCliente = createAsyncThunk<string, string>('clientes/deleteCliente', async (id, { dispatch }) => {
     await api.delete(`/clientes/${id}/`);
     dispatch(fetchClientes());
@@ -104,6 +113,11 @@ const clientesSlice = createSlice({
                 }
                 if (state.clienteDetalhe && state.clienteDetalhe.id === action.payload.id) {
                     state.clienteDetalhe = action.payload;
+                }
+            })
+            .addCase(updateClienteSaude.fulfilled, (state, action) => {
+                if (state.clienteDetalhe && state.clienteDetalhe.id === action.payload.id) {
+                    state.clienteDetalhe.saude = action.payload.saude;
                 }
             })
             .addCase(updateClienteObservacao.fulfilled, (state, action) => {

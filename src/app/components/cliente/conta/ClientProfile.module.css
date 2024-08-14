@@ -93,6 +93,18 @@
     justify-content: center;
 }
 
+.cardContainer{
+    height: 100%;
+    background: white;
+    margin-top: -10px;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+    border-bottom: 1px solid #b9b9b9;
+    border-left: 1px solid #b9b9b9;
+    border-right: 1px solid #b9b9b9;
+    z-index: 9999;
+}
+
 .cardHeader {
     display: flex;
     justify-content: space-between;
@@ -104,8 +116,92 @@
 
 .sectionTitle {
     font-size: 1.2em;
-    color: #333;
+    color: #020f60;
     margin: 0;
+}
+
+.titleContainer{
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.imcCell{
+    display: flex;
+    gap: 16px;
+}
+
+.profileCellRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    text-decoration: none;
+    color: #005bb5;
+    font-weight: 500;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.profileCellRowIMC {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+
+}
+
+.profileCellRowIMCLeft{
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.profileCellRowIMCRight{
+    display: flex;
+    gap: 16px;
+    width: 50%;
+}
+
+.profileCellRowIMCLeftContent{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 50%;
+}
+
+.ImcTexts{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.StaticIconSaude{
+    height: 48px;
+    width: auto;
+}
+
+.TitleImc{
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.FontImc{
+    font-weight: 500;
+    color: #005bb5;
+    text-transform: uppercase ;
+}
+
+.cardBody{
+    display: flex;
+    flex-direction: column;
+}
+
+.profileCellRowIMC > p{
+
 }
 
 .profileContactRow {
@@ -114,17 +210,7 @@
     justify-content: space-between;
     margin: 10px 0;
 }
-.profileCellRow {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    text-decoration: none;
-    color: #005bb5;
-    font-weight: 500;
-    margin: 10px 0;
-    width: 100%;
-}
+
 
 .nascimentoCell{
     display: flex;
@@ -226,4 +312,148 @@
     border: 1px solid #ddd;
     max-height: 150px; /* Maximum height for observation display */
     overflow-y: auto; /* Scroll when content overflows */
+}
+
+.errorMessage {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* EditClientModal.module.css */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 100%;
+    z-index: 1000;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.modalTitle{
+    color: #005bb5;
+    font-weight: bold;
+    margin: 16px 0;
+}
+
+.overlay label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.overlay input,
+.overlay select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.overlay button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.overlay button:hover {
+    background-color: #0056b3;
+}
+
+.overlay button[type="button"] {
+    background-color: #6c757d;
+}
+
+.overlay button[type="button"]:hover {
+    background-color: #5a6268;
+}
+
+.imcAbaixoPeso {
+    color: orange;
+}
+
+.imcPesoNormal {
+    color: green;
+}
+
+.imcSobrepeso {
+    color: orange;
+}
+
+.imcObesidadeGrau1 {
+    color: darkorange;
+}
+
+.imcObesidadeGrau2 {
+    color: orangered;
+}
+
+.imcObesidadeGrau3 {
+    color: red;
+}
+
+.imcDesconhecido {
+    color: black;
+}
+
+.profileCellRowDoenca{
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.titleWithIcon {
+    display: flex;
+    align-items: center;
+    background-color:  #f9f9f9;
+    gap: 16px;
+    width: 100%;
+    border-bottom: 1px solid rgba(234, 233, 233, 0.8);
+    padding: 16px ;
+    color: #020f60;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.copyIcon {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.copyIcon:hover{
+    transition: 800ms;
+    transform: scale(1.2);
+}
+
+.infoCard {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    /*margin-top: 5px;*/
+    font-size: 14px;
 }

@@ -39,37 +39,44 @@ export interface LeadProps {
 }
 
 //clients
-export interface Endereco {
-    logradouro?: string;
-    numero?: string;
-    complemento?: string; // Novo campo para complemento
-    bairro?: string;
-    cidade?: string;
-    uf?: string;
-    cep?: string;
-}
 
 export interface Cliente {
-    identidade?: string;
-    idade?: string;
-    uf?: string;
-    status_reuniao: string;
-    cidade?: string;
-    numero_endereco?: string;
-    observacoes?: string;
-    sexo?: string;
-    cpf?: string;
-    data_nascimento?: string;
-    profissao?: string;
     id: string;
+    user: string;
     nome: string;
-    email: string;
+    cpf?: string;
+    identidade?: string;
     telefone: string;
-    endereco: Endereco; // Atualizado para incluir a interface de Endereco
-    status: string;
-    created_at: string;
-    updated_at: string;
+    email: string;
+    data_nascimento?: string;
+    sexo?: string;
+    profissao?: string;
+    observacoes?: string;
+    status_reuniao?: string;
+    status?: string;
+    pipeline_stage?: string;
+    created_at?: string;
+    updated_at?: string;
+    idade?: number;
+    endereco?: {
+        logradouro?: string;
+        numero?: string;
+        complemento?: string;
+        bairro?: string;
+        cidade?: string;
+        uf?: string;
+        cep?: string;
+    };
+    saude?: {
+        peso?: number;
+        altura?: number;
+        imc?: number;
+        imc_grau?:string;
+        doenca_preexistente?: string;
+        historico_familiar_doencas?: string;
+    };
 }
+
 
 
 export interface ClientesState {

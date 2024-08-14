@@ -9,7 +9,8 @@ import PersonalInfoCard from '@/app/components/cliente/conta/PersonalInfoCard';
 import DocumentInfoCard from '@/app/components/cliente/conta/DocumentInfoCard';
 import HealthInfoCard from '@/app/components/cliente/conta/HealthInfoCard';
 import AddressCard from '@/app/components/cliente/conta/AddressCard';
-import ProfileImage from '@/../public/assets/common/user.svg';
+import ProfileImageMan from '@/../public/assets/common/user.svg';
+import ProfileImageWoman from '@/../public/assets/common/PerfilMulher.svg';
 import Image from "next/image";
 import Card from '../../common/Card';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
@@ -114,26 +115,32 @@ const ClientProfile: React.FC = () => {
                     <div className={styles.leftCard}>
                         <Card title="">
                             <div className={styles.profileHeader}>
-                                <Image src={ProfileImage} alt="Foto do Cliente" className={styles.profileImage} priority/>
+                                {cliente.sexo === 'M' ? (
+                                    <Image src={ProfileImageMan} alt="Foto do Cliente" className={styles.profileImage} priority />
+                                ) : (
+                                    <Image src={ProfileImageWoman} alt="Foto do Cliente" className={styles.profileImage} priority />
+                                )}
                                 <div className={styles.headerText}>
                                     <h2>{cliente.nome}</h2>
                                     <p className={styles.status}>{cliente.status}</p>
                                 </div>
                             </div>
-                            <p className={styles.creationDate}>Criado em: {new Date(cliente.created_at).toLocaleDateString()}</p>
+                            <p className={styles.creationDate}>
+                                Criado em: {cliente.created_at ? new Date(cliente.created_at).toLocaleDateString() : 'Data não disponível'}
+                            </p>
                             <div className={styles.profileSectionContainer}>
-                                <ContactInfoCard cliente={cliente}/>
-                                <PersonalInfoCard cliente={cliente}/>
-                                <DocumentInfoCard cliente={cliente}/>
-                                <AddressCard cliente={cliente}/>
+                                <ContactInfoCard cliente={cliente} />
+                                <PersonalInfoCard cliente={cliente} />
+                                <DocumentInfoCard cliente={cliente} />
+                                <AddressCard cliente={cliente} />
                             </div>
                             {showObservation ? (
                                 <div className={styles.observationSection}>
-                                    <textarea
-                                        value={observation}
-                                        onChange={(e) => setObservation(e.target.value)}
-                                        placeholder="Adicione uma observação..."
-                                    />
+                        <textarea
+                            value={observation}
+                            onChange={(e) => setObservation(e.target.value)}
+                            placeholder="Adicione uma observação..."
+                        />
                                     <button onClick={handleSaveObservation}>Salvar Observação</button>
                                 </div>
                             ) : (
@@ -158,12 +165,10 @@ const ClientProfile: React.FC = () => {
                             </TabList>
 
                             <TabPanel>
-                                <HealthInfoCard cliente={cliente}/>
+                                <HealthInfoCard cliente={cliente} />
                             </TabPanel>
                             <TabPanel>
-                                <Card title="Produtos">
-                                    Conteúdo dos produtos
-                                </Card>
+                                <Card title="Produtos">Conteúdo dos produtos</Card>
                             </TabPanel>
                             <TabPanel>
                                 <Card title="Informações Financeiras">
