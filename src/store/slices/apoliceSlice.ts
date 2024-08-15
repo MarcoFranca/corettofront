@@ -93,7 +93,6 @@ const apolicesSlice = createSlice({
 export default apolicesSlice.reducer;
 
 
-
 // Selectors
 export const selectAllApolices = (state: RootState) => state.apolices.apolices;
 export const getApolicesStatus = (state: RootState) => state.apolices.status;
