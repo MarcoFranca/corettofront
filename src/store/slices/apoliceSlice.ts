@@ -1,64 +1,62 @@
-// store/slices/apolicesSlice.ts
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '@/app/api/axios';
-
-interface Apolice {
-    id: string;
-    cliente: string;
-    // Outros campos de apólice genéricos
-}
+import { RootState } from '@/store';
+import { Apolices, Apolice } from '@/types/interfaces';
+import api from "@/app/api/axios";
 
 interface ApolicesState {
-    apolices: Apolice[];
+    apolices: Apolices;
+    apoliceDetalhe: Apolice | null;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
 }
 
 const initialState: ApolicesState = {
-    apolices: [],
+    apolices: {
+        plano_saude: [],
+        seguro_vida: [],
+        previdencia: [],
+        consorcio: [],
+        investimento: [],
+        seguro_profissional: [],
+        seguro_residencial: [],
+    },
+    apoliceDetalhe: null,
     status: 'idle',
     error: null,
 };
 
-// Async thunk para buscar as apólices de um cliente para o tipo de produto específico
-export const fetchApolices = createAsyncThunk<Apolice[], { clientId: string, endpoint: string }>(
+// Thunk para buscar todas as apólices de um cliente
+export const fetchApolices = createAsyncThunk<Apolices, { clientId: string }, { rejectValue: string }>(
     'apolices/fetchApolices',
-    async ({ clientId, endpoint }, { rejectWithValue }) => {
+    async ({ clientId }, { rejectWithValue }) => {
         try {
-            const response = await api.get(endpoint, {
-                params: { cliente: clientId },
-            });
-            return response.data;
+            const response = await api.get(`/clientes/${clientId}/`);
+            return response.data.apolices;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || 'Erro ao buscar apólices');
+            if (!error.response) {
+                throw error;
+            }
+            return rejectWithValue(error.response.data);
         }
     }
 );
 
-// Async thunk para criar uma nova apólice
-export const createApolice = createAsyncThunk<Apolice, { clientId: string; data: any; endpoint: string }>(
-    'apolices/createApolice',
-    async ({ clientId, data, endpoint }, { rejectWithValue }) => {
+// Thunk para buscar os detalhes de uma apólice específica
+export const fetchApoliceDetalhe = createAsyncThunk<any, { produto: string, apoliceId: string }, { rejectValue: string }>(
+    'apolices/fetchApoliceDetalhe',
+    async ({ produto, apoliceId }, { rejectWithValue }) => {
         try {
-            const formData = new FormData();
-            Object.keys(data).forEach((key) => {
-                formData.append(key, data[key]);
-            });
-
-            const response = await api.post(`${endpoint}?cliente=${clientId}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            const response = await api.get(`/apolices/${produto}/${apoliceId}/`);
             return response.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || 'Erro ao criar apólice');
+            if (!error.response) {
+                throw error;
+            }
+            return rejectWithValue(error.response.data);
         }
     }
 );
 
-// Slice de apólices
 const apolicesSlice = createSlice({
     name: 'apolices',
     initialState,
@@ -67,6 +65,7 @@ const apolicesSlice = createSlice({
         builder
             .addCase(fetchApolices.pending, (state) => {
                 state.status = 'loading';
+                state.error = null;
             })
             .addCase(fetchApolices.fulfilled, (state, action) => {
                 state.status = 'succeeded';
@@ -76,10 +75,27 @@ const apolicesSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.payload as string;
             })
-            .addCase(createApolice.fulfilled, (state, action) => {
-                state.apolices.push(action.payload);
+            .addCase(fetchApoliceDetalhe.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(fetchApoliceDetalhe.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.apoliceDetalhe = action.payload;
+            })
+            .addCase(fetchApoliceDetalhe.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload as string;
             });
     },
 });
 
 export default apolicesSlice.reducer;
+
+
+
+// Selectors
+export const selectAllApolices = (state: RootState) => state.apolices.apolices;
+export const getApolicesStatus = (state: RootState) => state.apolices.status;
+export const getApolicesError = (state: RootState) => state.apolices.error;
+export const getApoliceDetalhe = (state: RootState) => state.apolices.apoliceDetalhe;

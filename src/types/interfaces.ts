@@ -39,6 +39,55 @@ export interface LeadProps {
 }
 
 //clients
+export interface Apolice {
+    status_proposta: string;
+    id: string;
+    numero_apolice: number;
+    produto: string;
+    seguradora: string;
+    data_inicio: string;
+    data_vencimento: string;
+    premio_pago: string;
+    periodicidade_pagamento: string;
+    forma_pagamento: string;
+    observacoes: string;
+    arquivo: string;
+    created_at: string;
+    updated_at: string;
+    categoria: string;
+    acomodacao: string;
+    abrangencia: string;
+    valor_reembolso_consulta: string;
+    coparticipacao: boolean;
+    cliente: string;
+}
+
+export interface Apolices {
+    plano_saude: Apolice[];
+    seguro_vida: Apolice[];
+    previdencia: Apolice[];
+    consorcio: Apolice[];
+    investimento: Apolice[];
+    seguro_profissional: Apolice[];
+    seguro_residencial: Apolice[];
+}
+
+
+export interface ApoliceDetalhesSegmento {
+    total_apolices: number;
+    total_valor: number;
+}
+
+export interface ApolicesDetalhes {
+    total_apolices: number;
+    plano_saude: ApoliceDetalhesSegmento;
+    seguro_vida: ApoliceDetalhesSegmento;
+    previdencia: ApoliceDetalhesSegmento;
+    consorcio: ApoliceDetalhesSegmento;
+    investimento: ApoliceDetalhesSegmento;
+    seguro_profissional: ApoliceDetalhesSegmento;
+    seguro_residencial: ApoliceDetalhesSegmento;
+}
 
 export interface Cliente {
     id: string;
@@ -58,6 +107,8 @@ export interface Cliente {
     created_at?: string;
     updated_at?: string;
     idade?: number;
+    apolices: Apolices;
+    apolices_detalhes?: ApolicesDetalhes;
     endereco?: {
         logradouro?: string;
         numero?: string;
@@ -77,15 +128,13 @@ export interface Cliente {
     };
 }
 
-
-
 export interface ClientesState {
     clientes: Cliente[];
-    clienteDetalhe: Cliente | null; // Novo estado para armazenar os detalhes do cliente
+    clienteDetalhe: Cliente | null;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
-    statusDetalhe: 'idle' | 'loading' | 'succeeded' | 'failed'; // Novo estado para o status do detalhe
+    statusDetalhe: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
-    errorDetalhe: string | null; // Novo estado para o erro do detalhe
+    errorDetalhe: string | null;
 }
 
 
@@ -142,19 +191,6 @@ export interface TasksState {
     error: string | null;
 }
 
-export interface Meeting {
-    id: string;
-    cliente: string;
-    descricao: string;
-    data_reuniao_agendada: string;
-    horario_inicio: string;
-    horario_fim: string;
-    add_to_google_calendar: boolean;
-    add_to_google_meet: boolean;
-    add_to_zoom: boolean;
-    created_at: string;
-    updated_at: string;
-}
 
 export interface MeetingsState {
     meetings: Meeting[];
@@ -172,7 +208,13 @@ export interface Meeting {
     end_time: string;
     cliente: string;
     is_meeting: boolean;
+    add_to_google_calendar?: boolean;
+    add_to_google_meet?: boolean;
+    add_to_zoom?: boolean;
+    created_at?: string;
+    updated_at?: string;
 }
+
 
 export interface MeetingsState {
     meetings: Meeting[];

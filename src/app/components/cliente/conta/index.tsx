@@ -25,6 +25,7 @@ import {
     Legend
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import ApolicesTable from "@/app/components/cliente/apoliceClient/ApolicesTable";
 
 ChartJS.register(
     CategoryScale,
@@ -168,8 +169,11 @@ const ClientProfile: React.FC = () => {
                                 <HealthInfoCard cliente={cliente} />
                             </TabPanel>
                             <TabPanel>
-                                <Card title="Produtos">Conteúdo dos produtos</Card>
+                                <Card title="Produtos">
+                                    <ApolicesTable />
+                                </Card>
                             </TabPanel>
+
                             <TabPanel>
                                 <Card title="Informações Financeiras">
                                     <Bar data={financeData} />

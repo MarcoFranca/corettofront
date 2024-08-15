@@ -3,41 +3,31 @@
     font-family: Arial, sans-serif;
 }
 
-.filterContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
     margin-bottom: 20px;
 }
 
-.select {
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-left: 10px;
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
 }
 
-.addButton {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
+.card h4 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #333;
 }
 
-.addButton:hover {
-    background-color: #218838;
-}
-
-.icon {
-    margin-right: 8px;
-    font-size: 18px;
+.card p {
+    margin: 5px 0;
+    font-size: 1em;
+    color: #666;
 }
 
 .table {
@@ -59,16 +49,6 @@
 
 .table tr:hover {
     background-color: #f1f1f1;
-}
-
-.propostaAprovada {
-    color: green;
-    font-weight: bold;
-}
-
-.propostaRejeitada {
-    color: red;
-    font-weight: bold;
 }
 
 .table a {
