@@ -10,6 +10,7 @@ import { Apolices } from "@/types/interfaces";
 import { FaEye, FaDownload, FaPlusCircle, FaInfoCircle } from 'react-icons/fa';
 import styles from './styles.module.css';
 import Link from "next/link";
+import { formatMoney } from '@/utils/utils'; // Importando a função de formatação
 
 type ApoliceTipos = keyof Apolices;
 
@@ -110,14 +111,15 @@ const ApolicePage: React.FC = () => {
                                 <td className={apolice.status_proposta ? styles.propostaAprovada : styles.propostaRejeitada}>
                                     {apolice.status_proposta ? "Aprovada" : "Rejeitada"}
                                 </td>
-                                <td>R$ {parseFloat(apolice.premio_pago).toFixed(2)}</td>
+                                {/* Aplicando a formatação de moeda */}
+                                <td>{formatMoney(parseFloat(apolice.premio_pago))}</td>
                                 <td>
                                     <Link href={`/dashboard/cliente/${clientId}/apolice/${apolice.produto}/${apolice.id}`}>
                                         <FaInfoCircle className={styles.icon} title="Detalhes da Apólice"/>
                                     </Link>
-                                    <a href={`${BASE_URL}${apolice.arquivo}`} target="_blank" rel="noopener noreferrer" title="Visualizar Apólice">
-                                        <FaEye className={styles.icon}/>
-                                    </a>
+                                    {/*<a href={`${BASE_URL}${apolice.arquivo}`} target="_blank" rel="noopener noreferrer" title="Visualizar Apólice">*/}
+                                    {/*    <FaEye className={styles.icon}/>*/}
+                                    {/*</a>*/}
                                     {apolice.arquivo && (
                                         <a href={`${BASE_URL}${apolice.arquivo}`} download title="Baixar Apólice">
                                             <FaDownload className={styles.icon}/>

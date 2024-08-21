@@ -82,45 +82,58 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ onSubmit, errorMessage, clien
     };
 
     return (
-        <>
+        <div className={styles.containerForm}>
             <form className={styles.form} onSubmit={handleSubmit(onSubmitForm)}>
                 <div className={styles.header}>
-                    <FaArrowLeft className={styles.backIcon} onClick={() => router.back()} /> {/* Ícone de voltar */}
+                    <FaArrowLeft className={styles.backIcon} onClick={() => router.back()}/> {/* Ícone de voltar */}
                     <h1 className={styles.title}>
-                        Criar Nova Apólice para {clientName ? clientName : 'Carregando...'}
+                        Criar Nova Apólice para <span className={styles.titleHeader}>{clientName}</span>
                     </h1>
                 </div>
 
-                <h2 className={styles.sectionTitle}>Dados Gerais</h2>
-                <DadosGerais
-                    register={register}
-                    handleDropdownSelect={handleDropdownSelect}
-                    produto={produto} // Passa o produto selecionado para o componente DadosGerais
-                />
+                <div className={styles.sessionCard}>
+                    <h2 className={styles.sectionTitle}>Dados Gerais</h2>
+                    <DadosGerais
+                        register={register}
+                        handleDropdownSelect={handleDropdownSelect}
+                        produto={produto} // Passa o produto selecionado para o componente DadosGerais
+                    />
+                </div>
+                <div className={styles.sessionCard}>
 
-                <h2 className={styles.sectionTitle}>Dados Específicos</h2>
-                <CamposEspecificos
-                    produto={produto}
-                    register={register}
-                    handleDropdownSelect={handleDropdownSelect}
-                />
+                    <h2 className={styles.sectionTitle}>Dados Específicos</h2>
+                    <CamposEspecificos
+                        produto={produto}
+                        register={register}
+                        handleDropdownSelect={handleDropdownSelect}
+                    />
+                </div>
+                <div className={styles.sessionCard}>
 
-                <h2 className={styles.sectionTitle}>Dados Financeiros</h2>
-                <DadosFinanceiros
-                    register={register}
-                    handleDropdownSelect={handleDropdownSelect}
-                />
+                    <h2 className={styles.sectionTitle}>Dados Financeiros</h2>
+                    <DadosFinanceiros
+                        register={register}
+                        handleDropdownSelect={handleDropdownSelect}
+                        setValue={setValue}
+                        watch={watch} // Passando watch para DadosFinanceiros
+                    />
 
-                <div className={styles.formGroup}>
-                    <label htmlFor="arquivo">Importar Apólice:</label>
-                    <input type="file" id="arquivo" accept=".pdf" onChange={handleFileChange} className={styles.fileInput} />
+                </div>
+                <div className={styles.sessionCard}>
+
+                    <div className={styles.formGroup}>
+                        <label htmlFor="arquivo">Importar Apólice:</label>
+                        <input type="file" id="arquivo" accept=".pdf" onChange={handleFileChange}
+                               className={styles.fileInput}/>
+                    </div>
                 </div>
 
                 <label>Observações</label>
                 <textarea {...register('observacoes')} className={styles.textarea}></textarea>
 
                 <button type="submit" className={styles.submitButton}>Salvar Apólice</button>
-                {errorMessage && <p className={styles.errorMessage}>{typeof errorMessage === 'string' ? errorMessage : 'Ocorreu um erro.'}</p>}
+                {errorMessage &&
+                    <p className={styles.errorMessage}>{typeof errorMessage === 'string' ? errorMessage : 'Ocorreu um erro.'}</p>}
             </form>
 
             {/* Modal para capturar os campos faltantes */}
@@ -130,7 +143,7 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ onSubmit, errorMessage, clien
                 initialData={{}} // Aqui você pode passar os dados iniciais se necessário
                 onSave={handleSaveClient}
             />
-        </>
+        </div>
     );
 };
 

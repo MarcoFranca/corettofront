@@ -19,8 +19,7 @@ import {
 } from './ApoliceDetalhes.styles';
 import Link from 'next/link';
 import { Apolice } from '@/types/interfaces';
-import {Container} from "postcss";
-
+import { formatMoney } from '@/utils/utils'; // Importando a função de formatação
 
 const ApoliceDetalhes = () => {
     const dispatch = useAppDispatch();
@@ -71,13 +70,18 @@ const ApoliceDetalhes = () => {
                             <Field><Label>Seguradora:</Label> {apoliceDetalhe.seguradora}</Field>
                             <Field><Label>Início da Vigência:</Label> {apoliceDetalhe.data_inicio}</Field>
                             <Field><Label>Final da Vigência:</Label> {apoliceDetalhe.data_vencimento}</Field>
-                            <Field><Label>Prêmio Pago:</Label> R$ {apoliceDetalhe.premio_pago}</Field>
+                            <Field><Label>Prêmio Pago:</Label> {formatMoney(parseFloat(apoliceDetalhe.premio_pago))}</Field>
                             <Field><Label>Forma de Pagamento:</Label> {apoliceDetalhe.forma_pagamento}</Field>
                             <Field><Label>Periodicidade:</Label> {apoliceDetalhe.periodicidade_pagamento}</Field>
                             {apoliceDetalhe.arquivo && (
                                 <Field>
                                     <Label>Arquivo da Apólice:</Label>
                                     <a href={apoliceDetalhe.arquivo} target="_blank" rel="noopener noreferrer">Visualizar/Download</a>
+                                </Field>
+                            )}
+                            {apoliceDetalhe.observacoes && (
+                                <Field>
+                                    <Label>Observações:</Label> {apoliceDetalhe.observacoes}
                                 </Field>
                             )}
                             {renderSpecificFields(apoliceDetalhe)}
@@ -102,7 +106,7 @@ const renderSpecificFields = (apoliceDetalhe: Apolice) => {
                     <Field><Label>Categoria:</Label> {apoliceDetalhe.categoria}</Field>
                     <Field><Label>Acomodação:</Label> {apoliceDetalhe.acomodacao}</Field>
                     <Field><Label>Abrangência:</Label> {apoliceDetalhe.abrangencia}</Field>
-                    <Field><Label>Valor de Reembolso de Consulta:</Label> R$ {apoliceDetalhe.valor_reembolso_consulta}</Field>
+                    <Field><Label>Valor de Reembolso de Consulta:</Label> {formatMoney(parseFloat(apoliceDetalhe.valor_reembolso_consulta))}</Field>
                     <Field><Label>Coparticipação:</Label> {apoliceDetalhe.coparticipacao ? 'Sim' : 'Não'}</Field>
                 </>
             );
@@ -111,7 +115,7 @@ const renderSpecificFields = (apoliceDetalhe: Apolice) => {
                 <>
                     <Field><Label>Subcategoria:</Label> {apoliceDetalhe.subcategoria}</Field>
                     <Field><Label>Beneficiário:</Label> {apoliceDetalhe.beneficiario}</Field>
-                    <Field><Label>Capital Segurado:</Label> R$ {apoliceDetalhe.capital_segurado}</Field>
+                    <Field><Label>Capital Segurado:</Label> {formatMoney(parseFloat(apoliceDetalhe.capital_segurado))}</Field>
                 </>
             );
         default:

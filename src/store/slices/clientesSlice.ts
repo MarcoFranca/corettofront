@@ -27,6 +27,16 @@ export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
     }
 );
 
+export const updateClienteToActive = createAsyncThunk<Cliente, { id: string; updatedCliente: Partial<Cliente> }>(
+    'clientes/updateClienteToActive',
+    async ({ id, updatedCliente }, { dispatch }) => {
+        // Atualizando o status do cliente para 'ativo' junto com os dados atualizados
+        const response = await api.patch(`/clientes/${id}/`, { ...updatedCliente, status: 'ativo' });
+        dispatch(fetchClientes());
+        return response.data;
+    }
+);
+
 export const createCliente = createAsyncThunk<Cliente, Cliente>('clientes/createCliente', async (novoCliente, { dispatch }) => {
     const response = await api.post('/clientes/', novoCliente);
     dispatch(fetchClientes());
@@ -133,8 +143,18 @@ const clientesSlice = createSlice({
             })
             .addCase(deleteCliente.fulfilled, (state, action) => {
                 state.clientes = state.clientes.filter(cliente => cliente.id !== action.payload);
+            })
+            // Adicionando o case para updateClienteToActive
+            .addCase(updateClienteToActive.fulfilled, (state, action) => {
+                const index = state.clientes.findIndex(cliente => cliente.id === action.payload.id);
+                if (index !== -1) {
+                    state.clientes[index] = action.payload;
+                }
+                if (state.clienteDetalhe && state.clienteDetalhe.id === action.payload.id) {
+                    state.clienteDetalhe = action.payload;
+                }
             });
-    },
+    }
 });
 
 export const { resetClientes } = clientesSlice.actions;

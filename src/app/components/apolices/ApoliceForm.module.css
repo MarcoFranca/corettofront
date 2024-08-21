@@ -1,17 +1,29 @@
 /* ApoliceForm.module.css */
+.containerForm{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #f9f9f9;
+    padding: 30px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    overflow: scroll;
+
+}
 
 .form {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    max-width: 800px;
+    max-width: 1040px;
     width: 100%;
     margin: 0 auto;
-    background-color: #f9f9f9;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    overflow: scroll;
+}
+
+.titleHeader{
+    color: rgba(0, 91, 181, 0.8);
+
 }
 
 .fieldGroup {
@@ -20,6 +32,12 @@
     justify-content: space-between;
     gap: 20px;
     width: 100%;
+}
+
+.session{
+    display: flex;
+    height: auto;
+
 }
 
 .field {
@@ -53,7 +71,7 @@
     cursor: pointer; /* Adicionado cursor de pointer */
 }
 
-.form textarea {
+.textarea {
     resize: vertical;
     min-height: 100px;
 }
@@ -72,7 +90,7 @@
 
 .submitButton {
     padding: 14px 24px;
-    background-color: #007bff;
+    background-color: #020f60;
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -85,7 +103,7 @@
 }
 
 .submitButton:hover {
-    background-color: #020f60;
+    background-color: rgba(0, 91, 181, 0.8);
     transform: translateY(-2px);
 }
 
@@ -139,9 +157,13 @@
 .header {
     display: flex;
     align-items: center;
+    justify-content: center;
     height: 50px;
     gap: 15px;  /* Espaço entre o ícone e o título */
     margin-bottom: 20px;
+    width: 100%;
+    /*max-width: 1040px;*/
+    /*background-color: #020f60;*/
 }
 
 .backIcon {
@@ -174,4 +196,22 @@
     color: #333;
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
+}
+
+
+.sessionCard {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 20px;
+}
+
+.cardContent {
+    font-size: 0.9em;
+    color: #666;
 }

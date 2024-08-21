@@ -10,16 +10,18 @@ interface EditClientModalProps {
     onRequestClose: () => void;
     initialData: any;
     onSave: (data: any) => void;
+    title?: string;  // Novo campo para o título do modal
+    requiredFields?: string[];  // Novo campo para os campos obrigatórios a serem exibidos
 }
 
-const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClose, initialData, onSave }) => {
-    const [formData, setFormData] = useState(initialData);
+const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClose, initialData, onSave, title, requiredFields }) => {
+    const [formData, setFormData] = useState(initialData || {}); // Garante que formData nunca seja null
     const [filteredProfissoes, setFilteredProfissoes] = useState(profissoes);
     const [filter, setFilter] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
 
     useEffect(() => {
-        setFormData(initialData);
+        setFormData(initialData || {});  // Garante que o estado nunca seja null
     }, [initialData]);
 
     useEffect(() => {
@@ -111,17 +113,20 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
         return label.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
     };
 
+    // Filtrar os campos que devem ser exibidos com base na lista de requiredFields
+    const fieldsToShow = requiredFields ? requiredFields : Object.keys(formData);
+
     return (
         <Modal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            contentLabel="Atualizar Dados do Cliente"
+            contentLabel={title || "Atualizar Dados do Cliente"}
             className={styles.modal}
             overlayClassName={styles.overlay}
         >
-            <h2 className={styles.modalTitle}>Atualizar Dados do Cliente</h2>
+            <h2 className={styles.modalTitle}>{title || "Atualizar Dados do Cliente"}</h2>
             <form>
-                {Object.keys(formData).map((key) => {
+                {fieldsToShow.map((key) => {
                     if (key === 'id' || key === 'user') {
                         return null; // Oculta os campos 'id' e 'user'
                     }
@@ -129,7 +134,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
                         return (
                             <label key={key}>
                                 {formatLabel(key)}:
-                                <select name={key} value={formData[key]} onChange={handleChange}>
+                                <select name={key} value={formData[key] || ''} onChange={handleChange}>
                                     <option value="M">Masculino</option>
                                     <option value="F">Feminino</option>
                                 </select>
@@ -171,7 +176,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
                                         <input
                                             type="text"
                                             name={`endereco.${enderecoKey}`}
-                                            value={formData[key][enderecoKey] || ''}
+                                            value={formData[key]?.[enderecoKey] || ''}
                                             onChange={handleChange}
                                             onBlur={enderecoKey === 'cep' ? handleCEPBlur : undefined}
                                         />

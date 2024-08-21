@@ -50,7 +50,6 @@ const DadosGerais: React.FC<DadosGeraisProps> = ({ register, handleDropdownSelec
                     placeholder="Seguradora"
                     onSelect={(value) => handleDropdownSelect('seguradora', value)}
                 />
-            </div>
 
             <FloatingLabelInput
                 id="numero_apolice"
@@ -59,6 +58,7 @@ const DadosGerais: React.FC<DadosGeraisProps> = ({ register, handleDropdownSelec
                 register={register}
                 required
             />
+            </div>
 
             <div className={styles.fieldGroup}>
                 <FloatingLabelInput
