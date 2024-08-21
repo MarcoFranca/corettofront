@@ -17,10 +17,16 @@ const LeadBoard: React.FC = () => {
     const [data, setData] = useState(initializeData());
     const router = useRouter();
     const tooltipContainerRef = useRef<HTMLDivElement>(null);
+    const isFirstRender = useRef(true); // Ref para verificar se é a primeira renderização
     let clickTimer: NodeJS.Timeout | null = null;
 
     useEffect(() => {
-        // Buscar apenas os leads com status 'lead'
+        if (isFirstRender.current) {
+            // Evita que a requisição seja feita na primeira renderização
+            isFirstRender.current = false;
+            return;
+        }
+        // Buscar apenas os leads com status 'lead' após a primeira renderização
         dispatch(fetchLeads({ status: 'lead' }));
     }, [dispatch]);
 

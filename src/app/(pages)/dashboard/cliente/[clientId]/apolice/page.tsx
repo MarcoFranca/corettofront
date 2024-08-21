@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import ClienteDashboardLayout from "@/app/components/layouts/ClienteDashboardLayout";
 import { fetchApolices } from '@/store/slices/apoliceSlice';
-import { fetchClienteDetalhe } from '@/store/slices/clientesSlice'; // Adicione a ação para carregar o cliente
+import { fetchClienteDetalhe } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import { usePathname } from "next/navigation";
 import { Apolices } from "@/types/interfaces";
@@ -17,8 +17,11 @@ const ApolicePage: React.FC = () => {
     const dispatch = useAppDispatch();
     const clienteDetalhe = useAppSelector((state: RootState) => state.clientes.clienteDetalhe);
     const apolices = (clienteDetalhe?.apolices || {}) as Apolices;
-    const status = useAppSelector((state: RootState) => state.apolices.status);
-    const error = useAppSelector((state: RootState) => state.apolices.error);
+
+    // Use um fallback para 'status' e 'error'
+    const status = useAppSelector((state: RootState) => state.apolices?.status || 'idle');
+    const error = useAppSelector((state: RootState) => state.apolices?.error || null);
+
     const pathname = usePathname();
     const pathSegments = pathname.split('/');
     const clientId = pathSegments[3];
@@ -29,13 +32,11 @@ const ApolicePage: React.FC = () => {
 
     useEffect(() => {
         if (clientId) {
-            // Primeiro, carregue os detalhes do cliente
             dispatch(fetchClienteDetalhe(clientId));
         }
     }, [clientId, dispatch]);
 
     useEffect(() => {
-        // Apenas busque as apólices se o clienteDetalhe estiver carregado
         if (clientId && clienteDetalhe) {
             dispatch(fetchApolices({ clientId }));
         }
@@ -80,53 +81,54 @@ const ApolicePage: React.FC = () => {
             {status === 'loading' && <p>Carregando apólices...</p>}
             {status === 'failed' && <p>{error}</p>}
             {status === 'succeeded' && (
-                <table className={styles.table}>
-                    <thead>
-                    <tr>
-                        <th>Número da Apólice</th>
-                        <th>Produto</th>
-                        <th>Seguradora</th>
-                        <th>Data de Início</th>
-                        <th>Data de Vencimento</th>
-                        <th>Forma de Pagamento</th>
-                        <th>Periodicidade</th>
-                        <th>Status Proposta</th>
-                        <th>Valor do Prêmio Pago</th>
-                        <th>Ações</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {apolicesSelecionadas.map((apolice) => (
-                        <tr key={apolice.id}>
-                            <td>{apolice.numero_apolice}</td>
-                            <td>{apolice.produto}</td>
-                            <td>{apolice.seguradora}</td>
-                            <td>{new Date(apolice.data_inicio).toLocaleDateString()}</td>
-                            <td>{new Date(apolice.data_vencimento).toLocaleDateString()}</td>
-                            <td>{apolice.forma_pagamento}</td>
-                            <td>{apolice.periodicidade_pagamento}</td>
-                            <td className={apolice.status_proposta ? styles.propostaAprovada : styles.propostaRejeitada}>
-                                {apolice.status_proposta ? "Aprovada" : "Rejeitada"}
-                            </td>
-                            <td>R$ {parseFloat(apolice.premio_pago).toFixed(2)}</td>
-                            <td>
-                                <Link href={`/dashboard/cliente/${clientId}/apolice/${apolice.id}`}>
-                                    <FaInfoCircle className={styles.icon} title="Detalhes da Apólice"/>
-                                </Link>
-                                <a href={`${BASE_URL}${apolice.arquivo}`} target="_blank" rel="noopener noreferrer"
-                                   title="Visualizar Apólice">
-                                    <FaEye className={styles.icon}/>
-                                </a>
-                                {apolice.arquivo && (
-                                    <a href={`${BASE_URL}${apolice.arquivo}`} download title="Baixar Apólice">
-                                        <FaDownload className={styles.icon}/>
-                                    </a>
-                                )}
-                            </td>
+                <div className={styles.containerTable}>
+                    <table className={styles.table}>
+                        <thead>
+                        <tr>
+                            <th>Número da Apólice</th>
+                            <th>Produto</th>
+                            <th>Seguradora</th>
+                            <th>Data de Início</th>
+                            <th>Data de Vencimento</th>
+                            <th>Forma de Pagamento</th>
+                            <th>Periodicidade</th>
+                            <th>Status Proposta</th>
+                            <th>Valor do Prêmio Pago</th>
+                            <th>Ações</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {apolicesSelecionadas.map((apolice) => (
+                            <tr key={apolice.id}>
+                                <td>{apolice.numero_apolice}</td>
+                                <td>{apolice.produto}</td>
+                                <td>{apolice.seguradora}</td>
+                                <td>{new Date(apolice.data_inicio).toLocaleDateString()}</td>
+                                <td>{new Date(apolice.data_vencimento).toLocaleDateString()}</td>
+                                <td>{apolice.forma_pagamento}</td>
+                                <td>{apolice.periodicidade_pagamento}</td>
+                                <td className={apolice.status_proposta ? styles.propostaAprovada : styles.propostaRejeitada}>
+                                    {apolice.status_proposta ? "Aprovada" : "Rejeitada"}
+                                </td>
+                                <td>R$ {parseFloat(apolice.premio_pago).toFixed(2)}</td>
+                                <td>
+                                    <Link href={`/dashboard/cliente/${clientId}/apolice/${apolice.produto}/${apolice.id}`}>
+                                        <FaInfoCircle className={styles.icon} title="Detalhes da Apólice"/>
+                                    </Link>
+                                    <a href={`${BASE_URL}${apolice.arquivo}`} target="_blank" rel="noopener noreferrer" title="Visualizar Apólice">
+                                        <FaEye className={styles.icon}/>
+                                    </a>
+                                    {apolice.arquivo && (
+                                        <a href={`${BASE_URL}${apolice.arquivo}`} download title="Baixar Apólice">
+                                            <FaDownload className={styles.icon}/>
+                                        </a>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
         </ClienteDashboardLayout>
     );

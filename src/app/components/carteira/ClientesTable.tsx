@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchClientes, deleteCliente } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import styles from './ClientesTable.module.css';
 import Image from "next/image";
 import Link from "next/link";
-import { formatPhoneNumber } from '@/utils/utils'; // Importa a função de formatação
+import { formatPhoneNumber } from '@/utils/utils';
 
 import DeleteIcon from '@/../public/assets/common/delete.svg';
 import UpdateIcon from '@/../public/assets/common/editar_usuario_dark.svg';
@@ -21,7 +21,16 @@ const ClientesTable: React.FC = () => {
     const [filter, setFilter] = useState<string | undefined>();
     const [search, setSearch] = useState<string>('');
 
+    // Ref para verificar se o componente acabou de montar
+    const isFirstRender = useRef(true);
+
     useEffect(() => {
+        if (isFirstRender.current) {
+            // Quando o componente é montado pela primeira vez, evitamos o efeito
+            isFirstRender.current = false;
+            return;
+        }
+        // Faz a requisição apenas após a montagem inicial
         dispatch(fetchClientes({ status: filter, search }));
     }, [dispatch, filter, search]);
 

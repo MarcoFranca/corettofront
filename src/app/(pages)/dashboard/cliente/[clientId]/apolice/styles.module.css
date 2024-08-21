@@ -40,6 +40,11 @@
     font-size: 18px;
 }
 
+.containerTable {
+    overflow: auto;
+
+}
+
 .table {
     width: 100%;
     border-collapse: collapse;

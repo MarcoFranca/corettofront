@@ -1,0 +1,44 @@
+.inputWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.floatingInput {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.floatingInput:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+}
+
+.floatingLabel {
+    position: absolute;
+    left: 12px;
+    top: 30%;
+    transform: translateY(-50%);
+    padding: 0 4px;
+    color: #020f60!important;
+    font-size: 14px;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.floatingInput:focus + .floatingLabel,
+.floatingInput:not(:placeholder-shown) + .floatingLabel {
+    top: -8px;
+    left: 8px;
+    font-size: 12px;
+    color: #007bff;
+    background-color: white;
+    border-radius: 50%;
+}

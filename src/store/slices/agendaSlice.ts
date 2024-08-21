@@ -9,7 +9,7 @@ const initialState: AgendaState = {
 };
 
 export const fetchAgendaItems = createAsyncThunk<AgendaItem[]>('agenda/fetchAgendaItems', async () => {
-    const response = await api.get('/agendas/');
+    const response = await api.get('/agenda/');
     return response.data;
 });
 

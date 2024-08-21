@@ -40,6 +40,9 @@ export interface LeadProps {
 
 //clients
 export interface Apolice {
+    capital_segurado: string;
+    beneficiario: string;
+    subcategoria: string;
     status_proposta: string;
     id: string;
     numero_apolice: number;
@@ -70,7 +73,9 @@ export interface Apolices {
     investimento: Apolice[];
     seguro_profissional: Apolice[];
     seguro_residencial: Apolice[];
+    [key: string]: Apolice[];  // Adicione esta linha para permitir chaves dinâmicas
 }
+
 
 
 export interface ApoliceDetalhesSegmento {
@@ -238,3 +243,9 @@ export interface AgendaState {
     error: string | null;
 }
 
+interface CustomDropdownProps {
+    options: { value: string; label: string }[];
+    placeholder: string;
+    onSelect: (value: string) => void;
+    groups?: { label: string; options: { value: string; label: string }[] }[];  // Tornando `groups` opcional
+}

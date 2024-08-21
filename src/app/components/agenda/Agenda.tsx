@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer, Views, View, NavigateAction, SlotInfo } from 'react-big-calendar';
 import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css'; // Importa o CSS padrão
-import './CustomCalendarStyles.css'; // Importa o CSS personalizado
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import './CustomCalendarStyles.css';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchAgendaItems } from '@/store/slices/agendaSlice';
 import { fetchMeetings, createMeeting } from '@/store/slices/meetingSlice';
@@ -24,8 +24,14 @@ const Agenda: React.FC = () => {
     const [date, setDate] = useState(new Date());
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [newEvent, setNewEvent] = useState({ title: '', description: '', start: new Date(), end: new Date(), type: 'task' });
+    const isFirstRender = useRef(true); // Ref para evitar requisições duplicadas
 
     useEffect(() => {
+        if (isFirstRender.current) {
+            // Evita a requisição na primeira renderização
+            isFirstRender.current = false;
+            return;
+        }
         dispatch(fetchAgendaItems());
         dispatch(fetchMeetings());
         dispatch(fetchTasks());

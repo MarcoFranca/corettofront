@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 import { fetchTasks, deleteTask, updateTask } from '@/store/slices/todoSlice';
@@ -25,7 +25,15 @@ const TaskList: React.FC = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
     const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
+    const isFirstRender = useRef(true); // Ref para verificar se é a primeira renderização
+
     useEffect(() => {
+        if (isFirstRender.current) {
+            // Evita a requisição na primeira renderização
+            isFirstRender.current = false;
+            return;
+        }
+        // Buscar as tarefas após a primeira renderização
         dispatch(fetchTasks());
     }, [dispatch]);
 
@@ -115,10 +123,10 @@ const TaskList: React.FC = () => {
                         <th><div className={styles.titles}>Check</div></th>
                         <th><div className={styles.titles}>Título</div></th>
                         <th>
-                                <div className={`${styles.titles} ${styles.titleSort}`}>
-                                    <Image className={styles.sortButton} onClick={() => setSortCriteria('due_date')} src={SortImage} alt={'ordenar data'}/>
-                                   <p>Data de Vencimento</p>
-                                </div>
+                            <div className={`${styles.titles} ${styles.titleSort}`}>
+                                <Image className={styles.sortButton} onClick={() => setSortCriteria('due_date')} src={SortImage} alt={'ordenar data'}/>
+                                <p>Data de Vencimento</p>
+                            </div>
 
                         </th>
                         <th>
@@ -136,7 +144,7 @@ const TaskList: React.FC = () => {
                     <tbody>
                     {sortTasks(tasks).map((task) => (
                         <tr key={task.id}>
-                        <td>
+                            <td>
                                 <div className={styles.titles}>
                                     <input
                                         type="checkbox"

@@ -79,6 +79,8 @@ const clientesSlice = createSlice({
             state.errorDetalhe = null;
         },
     },
+
+
     extraReducers: (builder) => {
         builder
             .addCase(fetchClientes.pending, (state) => {
