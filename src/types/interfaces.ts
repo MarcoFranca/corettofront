@@ -127,7 +127,7 @@ export interface Cliente {
     pipeline_stage?: string;
     created_at?: string;
     updated_at?: string;
-    idade?: number;
+    idade?: string;
     apolices: Apolices;
     apolices_detalhes?: ApolicesDetalhes;
     endereco?: {
