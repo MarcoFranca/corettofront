@@ -53,7 +53,7 @@ export const SEGURADORAS_SEGURO_RESIDENCIAL = [
 ];
 
 export const SEGURADORAS_CONSORCIO = [
-    { value: 'caixa_seguradora', label: 'Caixa Seguradora' },
+    { value: 'caixa_seguro', label: 'Caixa Seguradora' },
     { value: 'sicoob_seguros', label: 'Sicoob Seguros' },
     { value: 'pan_seguros', label: 'Pan Seguros' },
     { value: 'banco_do_brasil_seguros', label: 'Banco do Brasil Seguros' },
@@ -62,7 +62,6 @@ export const SEGURADORAS_CONSORCIO = [
 ];
 
 export const SEGURADORAS_INVESTIMENTO = [
-    { value: 'previdencia_privada', label: 'Previdência Privada' },
     { value: 'trr_seguros', label: 'TRR Seguros' },
 ];
 

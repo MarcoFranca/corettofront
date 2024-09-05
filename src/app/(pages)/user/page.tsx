@@ -29,7 +29,6 @@ const UserPage = () => {
     }, [router]);
     return(
         <>
-        <DynamicHeader/>
         <main className={styles.main}>
             <h1>Nome de usuario: {user?.username}</h1>
             <h1>Email: {user?.email}</h1>

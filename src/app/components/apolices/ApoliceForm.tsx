@@ -32,6 +32,38 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ onSubmit, errorMessage, clien
     };
 
     const onSubmitForm = (data: any) => {
+        if (!data.numero_apolice || !data.produto || !data.data_inicio || !data.data_vencimento || !data.premio_pago) {
+            alert('Por favor, preencha todos os campos obrigatórios.');
+            return;
+        }
+        data.numero_apolice = parseInt(data.numero_apolice, 10);
+        data.premio_pago = parseFloat(data.premio_pago);
+
+        switch (produto) {
+            case 'plano_saude':
+                data.valor_reembolso_consulta = parseFloat(data.valor_reembolso_consulta);
+                break;
+            case 'seguro_vida':
+                data.capital_segurado = parseFloat(data.capital_segurado);
+                break;
+            case 'previdencia':
+                data.valor_acumulado = parseFloat(data.valor_acumulado);
+                break;
+            case 'consorcio':
+                data.valor_carta = parseFloat(data.valor_carta);
+                break;
+            case 'investimento':
+                data.valor_investido = parseFloat(data.valor_investido);
+                break;
+            case 'seguro_profissional':
+            case 'seguro_residencial':
+                data.franquia = parseFloat(data.franquia);
+                break;
+            default:
+                console.error('Produto não reconhecido.');
+                return;
+        }
+
         if (file) {
             data.arquivo = file;
         }
@@ -45,13 +77,13 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ onSubmit, errorMessage, clien
                 endpoint = '/apolices/seguro_vida/';
                 break;
             case 'previdencia':
-                endpoint = '/apolices/previdencias/';
+                endpoint = '/apolices/previdencia/';
                 break;
             case 'consorcio':
-                endpoint = '/apolices/consorcios/';
+                endpoint = '/apolices/consorcio/';
                 break;
             case 'investimento':
-                endpoint = '/apolices/investimentos/';
+                endpoint = '/apolices/investimento/';
                 break;
             case 'seguro_profissional':
                 endpoint = '/apolices/seguro_profissional/';
@@ -97,6 +129,10 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ onSubmit, errorMessage, clien
                         register={register}
                         handleDropdownSelect={handleDropdownSelect}
                         produto={produto} // Passa o produto selecionado para o componente DadosGerais
+                        initialValues={{
+                            produto:  '',
+                            seguradora:  '',
+                        }}
                     />
                 </div>
                 <div className={styles.sessionCard}>
@@ -106,6 +142,26 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ onSubmit, errorMessage, clien
                         produto={produto}
                         register={register}
                         handleDropdownSelect={handleDropdownSelect}
+                        initialValues={{
+                            produto: '',
+                            acomodacao: '',
+                            categoria: '',
+                            contratacao: '',
+                            tributacao: '',
+                            abrangencia: '',
+                            nomeFundo:'',
+                            valorCarta:'',
+                            valorInvestido:'',
+                            beneficiario:'',
+                            capitalSegurado:'',
+                            franquia:'',
+                            fundo:'',
+                            observacoes :'',
+                            subcategoria:'',
+                            valorAcumulado:'',
+                            valorReembolso:'',
+
+                        }}
                     />
                 </div>
                 <div className={styles.sessionCard}>
@@ -115,7 +171,12 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ onSubmit, errorMessage, clien
                         register={register}
                         handleDropdownSelect={handleDropdownSelect}
                         setValue={setValue}
-                        watch={watch} // Passando watch para DadosFinanceiros
+                        watch={watch}
+                        initialValues={{
+                            premio_pago: '',
+                            periodicidade_pagamento: '',
+                            forma_pagamento: ''
+                        }}
                     />
 
                 </div>

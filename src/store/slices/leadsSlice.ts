@@ -11,10 +11,13 @@ const initialState: LeadsState = {
 export const fetchLeads = createAsyncThunk<Lead[], { status?: string }>(
     'leads/fetchLeads',
     async ({ status }) => {
+        console.log('Fetching leads with status:', status);
         const response = await api.get(`/clientes/?status=${status || ''}`);
+        console.log('Response from fetchLeads:', response.data);
         return response.data;
     }
 );
+
 
 export const createLead = createAsyncThunk<Lead, Lead>('leads/createLead', async (novoLead) => {
     const response = await api.post('/clientes/', novoLead);

@@ -51,6 +51,13 @@ export interface Apolice {
     data_inicio: string;
     data_vencimento: string;
     premio_pago: string;
+    nome_fundo:string;
+    valor_investido:string;
+    valor_carta:string;
+    valor_acumulado:string;
+    fundo:string;
+    franquia:string;
+    capitalSegurado:string;
     periodicidade_pagamento: string;
     forma_pagamento: string;
     observacoes: string;
@@ -62,6 +69,8 @@ export interface Apolice {
     abrangencia: string;
     valor_reembolso_consulta: string;
     coparticipacao: boolean;
+    regime_contratacao?: string;
+    regime_tributacao?: string;
     cliente: string;
 }
 
@@ -85,6 +94,7 @@ export interface ApoliceDetalhesSegmento {
 
 export interface ApolicesDetalhes {
     total_apolices: number;
+    total_valor_apolices?: number;  // Adicionando a propriedade opcional total_valor_apolices
     plano_saude: ApoliceDetalhesSegmento;
     seguro_vida: ApoliceDetalhesSegmento;
     previdencia: ApoliceDetalhesSegmento;
@@ -94,10 +104,16 @@ export interface ApolicesDetalhes {
     seguro_residencial: ApoliceDetalhesSegmento;
 }
 
+
 export interface Cliente {
+    vida_financeira: any;
+    filhos: never[];
+    conjuge: any;
+    estado_civil: string;
     id: string;
     user: string;
     nome: string;
+    sobre_nome: string;
     cpf?: string;
     identidade?: string;
     telefone: string;
@@ -128,6 +144,8 @@ export interface Cliente {
         altura?: number;
         imc?: number;
         imc_grau?:string;
+        tem_doenca_preexistente?:boolean;
+        tem_historico_familiar_doencas?:boolean;
         doenca_preexistente?: string;
         historico_familiar_doencas?: string;
     };

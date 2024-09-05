@@ -4,6 +4,9 @@ import { Inter } from "next/font/google";
 import "./(styles)/globals.css";
 import ReduxProvider from './ReduxProvider';
 import React from "react";
+// _app.tsx ou layout.tsx (se usando App Router)
+import '../styles/antd-styles.css';
+
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { fetchApoliceDetalhe, getApoliceDetalhe, getApolicesStatus, getApolicesError } from '@/store/slices/apoliceSlice';
+import { fetchApoliceDetalhe, deleteApolice, getApoliceDetalhe, getApolicesStatus, getApolicesError } from '@/store/slices/apoliceSlice';
 import ClienteDashboardLayout from "@/app/components/layouts/ClienteDashboardLayout";
 import {
     FichaContainer,
@@ -15,15 +15,23 @@ import {
     StatusCancelada,
     PDFViewer,
     BackButton,
-    PDFContainer, ApoliceContainer, FichaHeader
+    PDFContainer,
+    FichaHeader,
+    ActionButtons,
+    EditButton,
+    DeleteButton
 } from './ApoliceDetalhes.styles';
-import Link from 'next/link';
-import { Apolice } from '@/types/interfaces';
-import { formatMoney } from '@/utils/utils'; // Importando a função de formatação
+import { formatMoney } from '@/utils/utils';
+import { FaEdit, FaTrash } from "react-icons/fa";
+import {Apolice} from "@/types/interfaces";
+import Link from "next/link";
+import ConfirmationModal from "@/app/components/Modal/confirm/ConfirmDeletModal";
 
 const ApoliceDetalhes = () => {
     const dispatch = useAppDispatch();
+    const router = useRouter();
     const params = useParams();
+    const [isModalOpen, setIsModalOpen] = useState(false);  // Adicionando estado do modal
 
     // Garantindo que clientId seja uma string
     const clientId = Array.isArray(params.clientId) ? params.clientId[0] : params.clientId;
@@ -39,6 +47,12 @@ const ApoliceDetalhes = () => {
             dispatch(fetchApoliceDetalhe({ produto: produtoTipo, apoliceId }));
         }
     }, [apoliceId, produtoTipo, dispatch]);
+
+    const handleDelete = () => {
+        dispatch(deleteApolice({ clientId, apoliceId, produto: produtoTipo })).then(() => {
+            router.push(`/dashboard/cliente/${clientId}/apolice`);
+        });
+    };
 
     if (status === 'loading') {
         return <p>Carregando os detalhes da apólice...</p>;
@@ -63,20 +77,23 @@ const ApoliceDetalhes = () => {
                     <>
                         <StatusField>
                             <Label>Status da Apólice:</Label>
-                            {apoliceDetalhe.status_proposta ? <StatusVigente>Vigente</StatusVigente> : <StatusCancelada>Cancelada</StatusCancelada>}
+                            {apoliceDetalhe.status_proposta ? <StatusVigente>Vigente</StatusVigente> :
+                                <StatusCancelada>Cancelada</StatusCancelada>}
                         </StatusField>
                         <GridContainer>
                             <Field><Label>Número da Apólice:</Label> {apoliceDetalhe.numero_apolice}</Field>
                             <Field><Label>Seguradora:</Label> {apoliceDetalhe.seguradora}</Field>
                             <Field><Label>Início da Vigência:</Label> {apoliceDetalhe.data_inicio}</Field>
                             <Field><Label>Final da Vigência:</Label> {apoliceDetalhe.data_vencimento}</Field>
-                            <Field><Label>Prêmio Pago:</Label> {formatMoney(parseFloat(apoliceDetalhe.premio_pago))}</Field>
+                            <Field><Label>Prêmio Pago:</Label> {formatMoney(parseFloat(apoliceDetalhe.premio_pago))}
+                            </Field>
                             <Field><Label>Forma de Pagamento:</Label> {apoliceDetalhe.forma_pagamento}</Field>
                             <Field><Label>Periodicidade:</Label> {apoliceDetalhe.periodicidade_pagamento}</Field>
                             {apoliceDetalhe.arquivo && (
                                 <Field>
                                     <Label>Arquivo da Apólice:</Label>
-                                    <a href={apoliceDetalhe.arquivo} target="_blank" rel="noopener noreferrer">Visualizar/Download</a>
+                                    <a href={apoliceDetalhe.arquivo} target="_blank"
+                                       rel="noopener noreferrer">Visualizar/Download</a>
                                 </Field>
                             )}
                             {apoliceDetalhe.observacoes && (
@@ -86,6 +103,26 @@ const ApoliceDetalhes = () => {
                             )}
                             {renderSpecificFields(apoliceDetalhe)}
                         </GridContainer>
+
+                        {/* Botões de Ação */}
+                        <ActionButtons>
+                            <EditButton href={`/dashboard/cliente/${clientId}/apolice/${produtoTipo}/${apoliceId}/editar`}>
+                                <FaEdit /> Editar
+                            </EditButton>
+                            <DeleteButton onClick={() => setIsModalOpen(true)}>
+                                <FaTrash /> Deletar
+                            </DeleteButton>
+                        </ActionButtons>
+
+                        {/* Modal de Confirmação */}
+                            <ConfirmationModal
+                                isOpen={isModalOpen}
+                                onRequestClose={() => setIsModalOpen(false)}
+                                onConfirm={handleDelete}
+                                title="Confirmar Exclusão"
+                                message="Tem certeza de que deseja excluir esta apólice? Esta ação é permanente."
+                            />
+
                     </>
                 ) : (
                     <p>Não foi possível carregar os detalhes da apólice.</p>

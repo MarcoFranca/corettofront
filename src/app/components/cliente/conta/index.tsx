@@ -169,9 +169,7 @@ const ClientProfile: React.FC = () => {
                                 <HealthInfoCard cliente={cliente} />
                             </TabPanel>
                             <TabPanel>
-                                <Card title="Produtos">
                                     <ApolicesTable />
-                                </Card>
                             </TabPanel>
 
                             <TabPanel>

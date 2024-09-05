@@ -14,9 +14,29 @@ interface CamposEspecificosProps {
     produto: string;
     register: any;
     handleDropdownSelect: (name: string, value: string) => void;
+    initialValues: {
+        observacoes: string ;
+        valorInvestido: string ;
+        valorCarta: string ;
+        fundo: string ;
+        nomeFundo: string ;
+        valorAcumulado: string ;
+        capitalSegurado: string ;
+        beneficiario: string ;
+        subcategoria: string;
+        produto:string;
+        acomodacao: string;
+        abrangencia: string;
+        tributacao:string;
+        contratacao:string;
+        categoria:string;
+        valorReembolso:string;
+        franquia:string;
+
+    }
 }
 
-const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register, handleDropdownSelect }) => {
+const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register, handleDropdownSelect, initialValues }) => {
     switch (produto) {
         case 'plano_saude':
             return (
@@ -28,16 +48,20 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                             placeholder="Categoria"
                             register={register}
                             required
+                            defaultValue={initialValues.categoria}
                         />
                         <CustomDropdown
                             options={ACOMODACAO_ESCOLHIDA}
                             placeholder="Acomodação"
                             onSelect={(value) => handleDropdownSelect('acomodacao', value)}
+                            initialValue={initialValues.acomodacao}  // Passando o valor inicial
                         />
                         <CustomDropdown
                             options={ABRANGENCIA_ESCOLHIDA}
                             placeholder="Abrangência"
                             onSelect={(value) => handleDropdownSelect('abrangencia', value)}
+                            initialValue={initialValues.abrangencia}  // Passando o valor inicial
+
                         />
                     </div>
                     <div className={styles.fieldGroup}>
@@ -47,6 +71,7 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                             placeholder="Valor Reembolso Consulta"
                             register={register}
                             required
+                            defaultValue={initialValues.valorReembolso}
                         />
                         <div className={`${styles.field} ${styles.halfWidth}`}>
                             <label className={styles.field}>Coparticipação
@@ -65,6 +90,8 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                         placeholder="Subcategoria"
                         register={register}
                         required
+                        defaultValue={initialValues.subcategoria}
+
                     />
                     <FloatingLabelInput
                         id="beneficiario"
@@ -72,6 +99,8 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                         placeholder="Beneficiário"
                         register={register}
                         required
+                        defaultValue={initialValues.beneficiario}
+
                     />
                     <FloatingLabelInput
                         id="capital_segurado"
@@ -79,6 +108,8 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                         placeholder="Capital Segurado"
                         register={register}
                         required
+                        defaultValue={initialValues.capitalSegurado}
+
                     />
                 </div>
             );
@@ -92,6 +123,7 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                             placeholder="Valor Acumulado"
                             register={register}
                             required
+                            defaultValue={initialValues.valorAcumulado}
                         />
                         <FloatingLabelInput
                             id="nome_fundo"
@@ -99,6 +131,8 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                             placeholder="Nome do Fundo"
                             register={register}
                             required
+                            defaultValue={initialValues.nomeFundo}
+
                         />
                         <FloatingLabelInput
                             id="fundo"
@@ -106,6 +140,8 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                             placeholder="Fundo"
                             register={register}
                             required
+                            defaultValue={initialValues.fundo}
+
                         />
                     </div>
                     <div className={styles.fieldGroup}>
@@ -113,11 +149,15 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                             options={TRIBUTACAO_ESCOLHIDA}
                             placeholder="Regime de Tributação"
                             onSelect={(value) => handleDropdownSelect('regime_tributacao', value)}
+                            initialValue={initialValues.tributacao}  // Passando o valor inicial
+
                         />
                         <CustomDropdown
                             options={CONTRATACAO_ESCOLHIDO}
                             placeholder="Regime de Contratação"
                             onSelect={(value) => handleDropdownSelect('regime_contratacao', value)}
+                            initialValue={initialValues.contratacao}  // Passando o valor inicial
+
                         />
                     </div>
                 </>
@@ -131,11 +171,14 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                         placeholder="Valor Carta"
                         register={register}
                         required
+                        defaultValue={initialValues.valorCarta}
+
                     />
                     <CustomDropdown
                         options={CATEGORIA_ESCOLHIDA}
                         placeholder="Categoria"
                         onSelect={(value) => handleDropdownSelect('categoria', value)}
+                        initialValue={initialValues.categoria}  // Passando o valor inicial
                     />
                 </div>
             );
@@ -148,12 +191,16 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                         placeholder="Valor Investido"
                         register={register}
                         required
+                        defaultValue={initialValues.valorInvestido}
+
                     />
                     <FloatingLabelInput
                         id="observacoes"
                         type="text"
                         placeholder="Observações"
                         register={register}
+                        defaultValue={initialValues.observacoes}
+
                     />
                 </div>
             );
@@ -166,10 +213,11 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                         placeholder="Franquia"
                         register={register}
                         required
+                        defaultValue={initialValues.franquia}
                     />
                 </div>
             );
-            case 'seguro_residencial':
+        case 'seguro_residencial':
             return (
                 <div className={styles.fieldGroup}>
                     <FloatingLabelInput
@@ -178,6 +226,7 @@ const CamposEspecificos: React.FC<CamposEspecificosProps> = ({ produto, register
                         placeholder="Franquia"
                         register={register}
                         required
+                        defaultValue={initialValues.franquia}
                     />
                 </div>
             );

@@ -1,12 +1,11 @@
 'use client'
-import React, {useState} from "react";
-import {useRouter} from "next/navigation";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import api from "@/app/api/axios";
 import styles from './styles.module.css';
 import LogoImag from "../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg";
 import Image from "next/image";
 import Link from "next/link";
-
 
 export default function RegisterForm() {
     const [username, setUsername] = useState('');
@@ -18,24 +17,42 @@ export default function RegisterForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Verifica se as senhas coincidem
+        if (password !== confirmPassword) {
+            setMessage('As senhas não coincidem.');
+            return;
+        }
+
         try {
-            const response = await api.post('/create_user/', {
+            // Criação do usuário
+            await api.post('/create_user/', {
                 username,
                 email,
                 password
             });
 
-            // Supondo que a resposta inclui um token JWT
-            const user = response.data;
-            localStorage.setItem('user', JSON.stringify(user));
+            // Após criar o usuário, vamos autenticar o novo usuário
+            const { data } = await api.post('/o/token/', {
+                grant_type: 'password',
+                username,
+                password,
+                client_id: process.env.NEXT_PUBLIC_CLIENT_ID,  // Use o client_id
+                client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET  // Use o client_secret
+            });
 
-            setMessage('Usuário cadastrado com sucesso!');
+            // Armazenar os tokens no localStorage
+            localStorage.setItem('accessToken', data.access_token);
+            localStorage.setItem('refreshToken', data.refresh_token);
+            localStorage.setItem('user', JSON.stringify({ username, email }));
+
+            setMessage('Usuário cadastrado e autenticado com sucesso!');
 
             // Redirecionar para o dashboard
             router.push('/dashboard');
         } catch (error) {
-            setMessage('Erro ao cadastrar usuário. Verifique os dados e tente novamente.');
-            console.error('Erro ao cadastrar usuário:', error);
+            setMessage('Erro ao cadastrar ou autenticar usuário. Verifique os dados e tente novamente.');
+            console.error('Erro ao cadastrar ou autenticar usuário:', error);
         }
     };
 
@@ -80,10 +97,8 @@ export default function RegisterForm() {
                 {message && <p className={styles.message}>{message}</p>}
             </form>
             <div className={styles.conecte}>
-                <p>tem uma conta?<Link href={'/login'}> Conecte-se</Link></p>
+                <p>Tem uma conta? <Link href={'/login'}>Conecte-se</Link></p>
             </div>
-
         </div>
-    )
-
+    );
 }

@@ -5,21 +5,37 @@ interface FloatingLabelInputProps {
     id: string;
     type: string;
     placeholder: string;
-    register: any; // A função `register` do react-hook-form
+    register?: any; // A função `register` do react-hook-form é opcional
     required?: boolean;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; // Adicionando a prop onChange
-    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void; // Adicionando a prop onBlur
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+    defaultValue?: string;
+    value?: string; // Adicionando prop value para inputs controlados
 }
 
-const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({ id, type, placeholder, register, required, onChange }) => {
+const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
+                                                                   id,
+                                                                   type,
+                                                                   placeholder,
+                                                                   register,
+                                                                   required,
+                                                                   onChange,
+                                                                   onBlur,
+                                                                   defaultValue,
+                                                                   value, // Usando value para inputs controlados
+                                                               }) => {
     return (
         <div className={styles.inputWrapper}>
             <input
                 id={id}
                 className={styles.floatingInput}
                 type={type}
-                placeholder=" " // Placeholder vazio para manter o espaço
-                {...register(id, { required, onChange })} // Adicionando onChange e onBlur ao register
+                placeholder=" "
+                defaultValue={defaultValue}
+                value={value} // Usando value para inputs controlados
+                onChange={onChange} // Usando onChange diretamente, se fornecido
+                onBlur={onBlur} // Usando onBlur diretamente, se fornecido
+                {...(register ? register(id, { required }) : {})} // Usando register apenas se fornecido
             />
             <label htmlFor={id} className={styles.floatingLabel}>
                 {placeholder}

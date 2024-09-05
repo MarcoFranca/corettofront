@@ -9,7 +9,7 @@
     flex: 1;
     margin: 10px;
     min-width: 48%; /* Ensure both cards take up around 50% of the width */
-    max-height: 100vh; /* Set a maximum height for the cards */
+    max-height: 95vh; /* Set a maximum height for the cards */
     overflow-y: auto; /* Add vertical scroll when content overflows */
 }
 

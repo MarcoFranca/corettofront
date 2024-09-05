@@ -16,10 +16,10 @@ interface DadosGeraisProps {
     register: any;
     handleDropdownSelect: (name: string, value: string) => void;
     produto: string; // Recebe o produto selecionado
+    initialValues: { produto: string; seguradora: string };  // Novo prop para os valores iniciais
 }
 
-const DadosGerais: React.FC<DadosGeraisProps> = ({ register, handleDropdownSelect, produto }) => {
-    // Função para filtrar seguradoras com base no produto selecionado
+const DadosGerais: React.FC<DadosGeraisProps> = ({ register, handleDropdownSelect, produto, initialValues }) => {
     const getSeguradorasOptions = () => {
         switch (produto) {
             case 'plano_saude':
@@ -44,20 +44,22 @@ const DadosGerais: React.FC<DadosGeraisProps> = ({ register, handleDropdownSelec
                     options={PRODUTO_ESCOLHIDO}
                     placeholder="Produto"
                     onSelect={(value) => handleDropdownSelect('produto', value)}
+                    initialValue={initialValues.produto}  // Passando o valor inicial
                 />
                 <CustomDropdown
-                    options={getSeguradorasOptions()} // Passa as seguradoras filtradas com base no produto selecionado
+                    options={getSeguradorasOptions()}
                     placeholder="Seguradora"
                     onSelect={(value) => handleDropdownSelect('seguradora', value)}
+                    initialValue={initialValues.seguradora}  // Passando o valor inicial
                 />
 
-            <FloatingLabelInput
-                id="numero_apolice"
-                type="text"
-                placeholder="Número da Apólice"
-                register={register}
-                required
-            />
+                <FloatingLabelInput
+                    id="numero_apolice"
+                    type="text"
+                    placeholder="Número da Apólice"
+                    register={register}
+                    required
+                />
             </div>
 
             <div className={styles.fieldGroup}>

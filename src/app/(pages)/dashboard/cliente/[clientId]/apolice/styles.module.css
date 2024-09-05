@@ -7,7 +7,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Torna responsivo */
 }
 
 .select {
@@ -29,6 +31,7 @@
     display: flex;
     align-items: center;
     text-decoration: none;
+    transition: background-color 0.3s ease; /* Suaviza a mudança de cor no hover */
 }
 
 .addButton:hover {
@@ -39,20 +42,35 @@
     margin-right: 8px;
     font-size: 18px;
 }
+.actionIcon {
+    margin-right: 8px;
+    font-size: 18px;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.actionIcon:hover {
+    color: rgba(0, 123, 255, 0.85);
+    transition: 0.3s ease;
+    transform: scale(1.1);
+}
 
 .containerTable {
     overflow: auto;
     max-height: 100%; /* Define a altura máxima para que a tabela possa ser rolada */
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    font-size: 14px; /* Melhora a legibilidade */
 }
 
 .table th, .table td {
-    padding: 10px;
+    padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
@@ -63,19 +81,20 @@
     position: sticky;
     top: 0; /* Fixa o cabeçalho no topo quando rola */
     z-index: 1; /* Garante que o cabeçalho fique sobre as células da tabela ao rolar */
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); /* Adiciona sombra para dar um destaque sutil */
 }
 
 .table tr:hover {
-    background-color: #f1f1f1;
+    background-color: #e9f7ef; /* Muda para uma cor mais suave ao passar o mouse */
 }
 
 .propostaAprovada {
-    color: green;
+    color: #28a745;
     font-weight: bold;
 }
 
 .propostaRejeitada {
-    color: red;
+    color: #dc3545;
     font-weight: bold;
 }
 
@@ -89,9 +108,99 @@
 }
 
 .table tbody tr:nth-child(even) {
-    background-color: #f4f4f4; /* Cor de fundo mais clara para as linhas pares */
+    background-color: #f8f9fa; /* Cor de fundo mais clara para as linhas pares */
 }
 
 .table tbody tr:nth-child(odd) {
     background-color: #ffffff; /* Cor de fundo padrão para as linhas ímpares */
+}
+
+/* Botão de Exclusão */
+.deleteButton {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deleteButton:hover {
+    background-color: #c82333;
+}
+
+/* Modal de Confirmação */
+/* Modal de Confirmação */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Fundo semitransparente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Garante que o modal fique acima de outros elementos */
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px; /* Limita a largura do modal */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out; /* Animação suave na exibição */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modalHeader {
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.modalButtons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modalButton {
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.confirmButton {
+    background-color: #28a745;
+    color: white;
+}
+
+.confirmButton:hover {
+    background-color: #218838;
+}
+
+.cancelButton {
+    background-color: #6c757d;
+    color: white;
+}
+
+.cancelButton:hover {
+    background-color: #5a6268;
 }

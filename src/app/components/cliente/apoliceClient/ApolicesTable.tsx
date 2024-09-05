@@ -4,11 +4,12 @@ import { RootState } from '@/store';
 import styles from './ApolicesTable.module.css';
 import { FaEye, FaDownload } from 'react-icons/fa';
 import { Apolices } from "@/types/interfaces";
+import { formatMoney } from "@/utils/utils";
 
 const ApolicesTable: React.FC = () => {
     const clienteDetalhe = useSelector((state: RootState) => state.clientes.clienteDetalhe);
-    const apolices = (clienteDetalhe?.apolices || {}) as Apolices;
     const apolicesDetalhes = clienteDetalhe?.apolices_detalhes;
+    const apolices = (clienteDetalhe?.apolices || {}) as Apolices;
 
     // Juntando todas as apólices de diferentes tipos em um único array
     const todasApolices = [
@@ -27,49 +28,49 @@ const ApolicesTable: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h3>Apólices</h3>
-
             {/* Exibindo Totais e Quantidades por Segmento */}
             {apolicesDetalhes && (
                 <div className={styles.dashboard}>
                     <div className={styles.card}>
                         <h4>Total de Apólices</h4>
                         <p>{apolicesDetalhes.total_apolices}</p>
+                        {/* Verificando se o valor total existe antes de formatar */}
+                        <p>Valor Total: {apolicesDetalhes.total_valor_apolices ? formatMoney(apolicesDetalhes.total_valor_apolices) : 'Valor não disponível'}</p>
                     </div>
                     <div className={styles.card}>
                         <h4>Plano de Saúde</h4>
                         <p>Quantidade: {apolicesDetalhes.plano_saude.total_apolices}</p>
-                        <p>Valor Total: R$ {apolicesDetalhes.plano_saude.total_valor.toFixed(2)}</p>
+                        <p>Valor Total: {formatMoney(apolicesDetalhes.plano_saude.total_valor)}</p>
                     </div>
                     <div className={styles.card}>
                         <h4>Seguro de Vida</h4>
                         <p>Quantidade: {apolicesDetalhes.seguro_vida.total_apolices}</p>
-                        <p>Valor Total: R$ {apolicesDetalhes.seguro_vida.total_valor.toFixed(2)}</p>
+                        <p>Valor Total: {formatMoney(apolicesDetalhes.seguro_vida.total_valor)}</p>
                     </div>
                     <div className={styles.card}>
                         <h4>Previdência</h4>
                         <p>Quantidade: {apolicesDetalhes.previdencia.total_apolices}</p>
-                        <p>Valor Total: R$ {apolicesDetalhes.previdencia.total_valor.toFixed(2)}</p>
+                        <p>Valor Total: {formatMoney(apolicesDetalhes.previdencia.total_valor)}</p>
                     </div>
                     <div className={styles.card}>
                         <h4>Consórcio</h4>
                         <p>Quantidade: {apolicesDetalhes.consorcio.total_apolices}</p>
-                        <p>Valor Total: R$ {apolicesDetalhes.consorcio.total_valor.toFixed(2)}</p>
+                        <p>Valor Total: {formatMoney(apolicesDetalhes.consorcio.total_valor)}</p>
                     </div>
                     <div className={styles.card}>
                         <h4>Investimento</h4>
                         <p>Quantidade: {apolicesDetalhes.investimento.total_apolices}</p>
-                        <p>Valor Total: R$ {apolicesDetalhes.investimento.total_valor.toFixed(2)}</p>
+                        <p>Valor Total: {formatMoney(apolicesDetalhes.investimento.total_valor)}</p>
                     </div>
                     <div className={styles.card}>
                         <h4>Seguro Profissional</h4>
                         <p>Quantidade: {apolicesDetalhes.seguro_profissional.total_apolices}</p>
-                        <p>Valor Total: R$ {apolicesDetalhes.seguro_profissional.total_valor.toFixed(2)}</p>
+                        <p>Valor Total: {formatMoney(apolicesDetalhes.seguro_profissional.total_valor)}</p>
                     </div>
                     <div className={styles.card}>
                         <h4>Seguro Residencial</h4>
                         <p>Quantidade: {apolicesDetalhes.seguro_residencial.total_apolices}</p>
-                        <p>Valor Total: R$ {apolicesDetalhes.seguro_residencial.total_valor.toFixed(2)}</p>
+                        <p>Valor Total: {formatMoney(apolicesDetalhes.seguro_residencial.total_valor)}</p>
                     </div>
                 </div>
             )}

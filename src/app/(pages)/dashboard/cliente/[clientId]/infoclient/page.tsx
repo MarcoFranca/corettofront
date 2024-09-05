@@ -1,21 +1,20 @@
 'use client';
 
-import styles from './styles.module.css';
-import ClientDetail from '@/app/components/cliente/conta';
-import DashboardLayout from '@/app/components/layouts/DashboardLayout';
+
 import { usePathname } from 'next/navigation';
 import ClienteDashboardLayout from "@/app/components/layouts/ClienteDashboardLayout";
+import MultiStepForm from "@/app/components/infoclient/MultiStepForm";
 
-const ClientPage = () => {
+const InfoClientPage = () => {
     const pathname = usePathname();
     const pathSegments = pathname.split('/');
-    const clientId = pathSegments[pathSegments.length - 1];
+    const clientId = pathSegments[3];
 
     return (
         <ClienteDashboardLayout clientId={clientId}>
-            <ClientDetail />
+            <MultiStepForm clientId={clientId} />
         </ClienteDashboardLayout>
     );
 };
 
-export default ClientPage;
+export default InfoClientPage;

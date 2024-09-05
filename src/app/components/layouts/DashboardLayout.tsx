@@ -22,15 +22,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     useEffect(() => {
         dispatch(setUserFromLocalStorage());
-        setLoading(false);
     }, [dispatch]);
 
     useEffect(() => {
-        if (loading) return; // Aguarda a finalização do carregamento
-        if (!user || !token?.access || !token?.refresh) {
-            router.push('/');
+        if (user && token?.access) {
+            setLoading(false);
+        } else {
+            if (!loading) {
+                router.push('/');
+            }
         }
-    }, [user, token, router]);
+    }, [user, token, router, loading]);
 
     if (loading) {
         return <div>Carregando...</div>; // Ou qualquer indicador de carregamento

@@ -1,0 +1,24 @@
+.steps {
+    margin-bottom: 24px;
+    padding: 24px 48px;
+
+}
+
+.stepContent {
+    padding: 20px;
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 24px;
+    max-height: calc(100vh - 150px);
+    overflow: auto;
+}
+
+.stepsAction {
+    margin-top: 24px;
+    text-align: right;
+}
+
+.buttonStep {
+    margin-top: 24px;
+}

@@ -2,34 +2,34 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import ClienteDashboardLayout from "@/app/components/layouts/ClienteDashboardLayout";
-import { fetchApolices } from '@/store/slices/apoliceSlice';
+import { fetchApolices, deleteApolice } from '@/store/slices/apoliceSlice';
 import { fetchClienteDetalhe } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import { usePathname } from "next/navigation";
-import { Apolices } from "@/types/interfaces";
-import { FaEye, FaDownload, FaPlusCircle, FaInfoCircle } from 'react-icons/fa';
+import { Apolices, Apolice } from "@/types/interfaces";
+import { FaEye, FaDownload, FaPlusCircle, FaInfoCircle, FaTrash } from 'react-icons/fa';
 import styles from './styles.module.css';
 import Link from "next/link";
-import { formatMoney } from '@/utils/utils'; // Importando a função de formatação
-
-type ApoliceTipos = keyof Apolices;
+import { formatMoney } from '@/utils/utils';
+import ConfirmationModal from "@/app/components/Modal/confirm/ConfirmDeletModal";
 
 const ApolicePage: React.FC = () => {
     const dispatch = useAppDispatch();
     const clienteDetalhe = useAppSelector((state: RootState) => state.clientes.clienteDetalhe);
     const apolices = (clienteDetalhe?.apolices || {}) as Apolices;
 
-    // Use um fallback para 'status' e 'error'
     const status = useAppSelector((state: RootState) => state.apolices?.status || 'idle');
     const error = useAppSelector((state: RootState) => state.apolices?.error || null);
+    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
     const pathname = usePathname();
     const pathSegments = pathname.split('/');
     const clientId = pathSegments[3];
 
-    const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-
-    const [endpoint, setEndpoint] = useState<ApoliceTipos | 'todos'>('todos');
+    const [endpoint, setEndpoint] = useState<keyof Apolices | 'todos'>('todos');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [apoliceToDelete, setApoliceToDelete] = useState<{ id: string, produto: string } | null>(null);
+    const [apolicesSelecionadas, setApolicesSelecionadas] = useState<Apolice[]>([]);
 
     useEffect(() => {
         if (clientId) {
@@ -43,22 +43,47 @@ const ApolicePage: React.FC = () => {
         }
     }, [clientId, clienteDetalhe, dispatch]);
 
+    useEffect(() => {
+        const novasApolicesSelecionadas =
+            endpoint === 'todos'
+                ? [
+                    ...(apolices.plano_saude || []),
+                    ...(apolices.seguro_vida || []),
+                    ...(apolices.previdencia || []),
+                    ...(apolices.consorcio || []),
+                    ...(apolices.investimento || []),
+                    ...(apolices.seguro_profissional || []),
+                    ...(apolices.seguro_residencial || []),
+                ]
+                : apolices[endpoint] || [];
+
+        setApolicesSelecionadas(novasApolicesSelecionadas);
+    }, [apolices, endpoint]);
+
     const handleProdutoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setEndpoint(e.target.value as ApoliceTipos);
+        setEndpoint(e.target.value as keyof Apolices);
     };
 
-    const apolicesSelecionadas =
-        endpoint === 'todos'
-            ? [
-                ...(apolices.plano_saude || []),
-                ...(apolices.seguro_vida || []),
-                ...(apolices.previdencia || []),
-                ...(apolices.consorcio || []),
-                ...(apolices.investimento || []),
-                ...(apolices.seguro_profissional || []),
-                ...(apolices.seguro_residencial || []),
-            ]
-            : apolices[endpoint as ApoliceTipos] || [];
+    const handleDeleteClick = (id: string, produto: string) => {
+        setApoliceToDelete({ id, produto });
+        setIsModalOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (apoliceToDelete) {
+            dispatch(deleteApolice({
+                clientId,
+                apoliceId: apoliceToDelete.id,
+                produto: apoliceToDelete.produto
+            })).then(() => {
+                setApolicesSelecionadas((prevApolices) =>
+                    prevApolices.filter(apolice => apolice.id !== apoliceToDelete.id)
+                );
+                setIsModalOpen(false);
+                setApoliceToDelete(null);
+            });
+        }
+    };
 
     return (
         <ClienteDashboardLayout clientId={clientId}>
@@ -111,20 +136,21 @@ const ApolicePage: React.FC = () => {
                                 <td className={apolice.status_proposta ? styles.propostaAprovada : styles.propostaRejeitada}>
                                     {apolice.status_proposta ? "Aprovada" : "Rejeitada"}
                                 </td>
-                                {/* Aplicando a formatação de moeda */}
                                 <td>{formatMoney(parseFloat(apolice.premio_pago))}</td>
                                 <td>
                                     <Link href={`/dashboard/cliente/${clientId}/apolice/${apolice.produto}/${apolice.id}`}>
-                                        <FaInfoCircle className={styles.icon} title="Detalhes da Apólice"/>
+                                        <FaInfoCircle className={styles.actionIcon} title="Detalhes da Apólice"/>
                                     </Link>
-                                    {/*<a href={`${BASE_URL}${apolice.arquivo}`} target="_blank" rel="noopener noreferrer" title="Visualizar Apólice">*/}
-                                    {/*    <FaEye className={styles.icon}/>*/}
-                                    {/*</a>*/}
                                     {apolice.arquivo && (
-                                        <a href={`${BASE_URL}${apolice.arquivo}`} download title="Baixar Apólice">
-                                            <FaDownload className={styles.icon}/>
-                                        </a>
+                                        <Link href={`${BASE_URL}${apolice.arquivo}`}  target='_blank' download title="Baixar Apólice">
+                                            <FaDownload className={styles.actionIcon}/>
+                                        </Link>
                                     )}
+                                    <FaTrash
+                                        className={styles.actionIcon}
+                                        title="Excluir Apólice"
+                                        onClick={() => handleDeleteClick(apolice.id, apolice.produto)}
+                                    />
                                 </td>
                             </tr>
                         ))}
@@ -132,6 +158,14 @@ const ApolicePage: React.FC = () => {
                     </table>
                 </div>
             )}
+
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                onRequestClose={() => setIsModalOpen(false)}
+                onConfirm={confirmDelete}
+                title="Confirmar Exclusão"
+                message="Tem certeza de que deseja excluir esta apólice? Esta ação é permanente."
+            />
         </ClienteDashboardLayout>
     );
 };

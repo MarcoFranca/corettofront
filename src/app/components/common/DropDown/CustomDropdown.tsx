@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './CustomDropdown.module.css';
 
 interface Option {
@@ -16,11 +16,19 @@ interface CustomDropdownProps {
     groups?: GroupedOptions[];  // Novo campo para suportar grupos de opções
     placeholder?: string;
     onSelect: (value: string) => void;
+    initialValue?: string;  // Adicionamos o valor inicial
 }
 
-const CustomDropdown: React.FC<CustomDropdownProps> = ({ options = [], groups = [], placeholder, onSelect }) => {
+const CustomDropdown: React.FC<CustomDropdownProps> = ({ options = [], groups = [], placeholder, onSelect, initialValue }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState<Option | null>(null);
+
+    useEffect(() => {
+        if (initialValue) {
+            const initialOption = options.find(option => option.value === initialValue) || null;
+            setSelected(initialOption);
+        }
+    }, [initialValue, options]);
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);

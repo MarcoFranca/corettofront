@@ -58,11 +58,7 @@ export const createApolice = createAsyncThunk<Apolice, { formData: FormData; end
             // Criação da apólice
             formData.append('cliente', clientId);
             formData.append('status_proposta', 'true');
-            const response = await api.post(endpoint, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            const response = await api.post(endpoint, formData, );
 
             // Pegando o estado global para obter as informações do cliente
             const state = getState() as RootState;
@@ -91,7 +87,8 @@ export const createApolice = createAsyncThunk<Apolice, { formData: FormData; end
 
             return response.data;  // Retorna a apólice criada
         } catch (error: any) {
-            console.error('Erro ao criar apólice ou atualizar cliente:', error);
+            console.error('Erro ao criar apólice ou atualizar cliente:', error.response?.data);
+            // console.error('Erro ao criar apólice ou atualizar cliente:', error);
             // Disparar a ação para abrir o modal se houver erro de campos obrigatórios
             if (error.response?.data?.cpf || error.response?.data?.telefone || error.response?.data?.email) {
                 dispatch(openModal());
@@ -100,6 +97,45 @@ export const createApolice = createAsyncThunk<Apolice, { formData: FormData; end
         }
     }
 );
+
+export const deleteApolice = createAsyncThunk<
+    { apoliceId: string, produto: string }, // O que retornamos
+    { clientId: string, apoliceId: string, produto: string }, // Parâmetros
+    { rejectValue: string }
+>(
+    'apolices/deleteApolice',
+    async ({ clientId, apoliceId, produto }, { rejectWithValue }) => {
+        try {
+            const response = await api.delete(`/apolices/${produto}/${apoliceId}/`);
+            return { apoliceId, produto };
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || 'Erro ao deletar apólice.');
+        }
+    }
+);
+
+export const updateApolice = createAsyncThunk<
+    Apolice, // O que retornamos
+    { formData: FormData; endpoint: string; clientId: string; apoliceId: string; produto: string }, // Parâmetros
+    { rejectValue: string }
+>(
+    'apolices/updateApolice',
+    async ({ formData, endpoint, clientId, apoliceId, produto }, { rejectWithValue }) => {
+        try {
+            const response = await api.patch(`${endpoint}${apoliceId}/`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data; // Retorna a apólice atualizada
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || 'Erro ao atualizar apólice.');
+        }
+    }
+);
+// Continue com a configuração normal do slice
+
+
 
 const apolicesSlice = createSlice({
     name: 'apolices',
@@ -154,6 +190,41 @@ const apolicesSlice = createSlice({
                 state.apolices[produto].push(action.payload);
             })
             .addCase(createApolice.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload as string;
+            })
+            .addCase(updateApolice.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(updateApolice.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                const produto = action.payload.produto;
+
+                // Encontrar e atualizar a apólice no estado
+                const index = state.apolices[produto]?.findIndex(apolice => apolice.id === action.payload.id);
+                if (index !== undefined && index !== -1) {
+                    state.apolices[produto][index] = action.payload;
+                }
+            })
+            .addCase(updateApolice.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload as string;
+            })
+            .addCase(deleteApolice.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(deleteApolice.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                const produto = action.payload.produto;
+
+                // Remover a apólice deletada do estado
+                state.apolices[produto] = state.apolices[produto].filter(
+                    apolice => apolice.id !== action.payload.apoliceId
+                );
+            })
+            .addCase(deleteApolice.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload as string;
             });

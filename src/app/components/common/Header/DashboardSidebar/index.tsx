@@ -28,7 +28,7 @@ import AgendaImage from '../../../../../../public/assets/asideButtons/agenda2.sv
 const DashboardSidebar = () => {
     const dispatch = useAppDispatch();
     const user = useSelector((state: RootState) => state.auth.user);
-    const leadsFromStore = useAppSelector((state) => state.leads.leads);
+    // const leadsFromStore = useAppSelector((state) => state.leads.leads);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const router = useRouter();
