@@ -17,6 +17,15 @@ export interface Lead {
     updated_at: string;
 }
 
+export interface Reuniao {
+    dataReuniaoAgendada: string;
+    horarioInicio: string;
+    horarioFim: string;
+    assunto: string;
+    local: string;
+}
+
+
 export interface Column {
     id: string;
     title: string;
@@ -86,7 +95,6 @@ export interface Apolices {
 }
 
 
-
 export interface ApoliceDetalhesSegmento {
     total_apolices: number;
     total_valor: number;
@@ -104,10 +112,15 @@ export interface ApolicesDetalhes {
     seguro_residencial: ApoliceDetalhesSegmento;
 }
 
+export interface Filho {
+    nome: string;
+    dataNascimento: string;
+}
 
 export interface Cliente {
+    reunioes?: Reuniao[];
     vida_financeira: any;
-    filhos: never[];
+    filhos: Filho[];
     conjuge: any;
     estado_civil: string;
     id: string;
@@ -265,9 +278,9 @@ export interface AgendaState {
     error: string | null;
 }
 
-interface CustomDropdownProps {
-    options: { value: string; label: string }[];
-    placeholder: string;
-    onSelect: (value: string) => void;
-    groups?: { label: string; options: { value: string; label: string }[] }[];  // Tornando `groups` opcional
-}
+// interface CustomDropdownProps {
+//     options: { value: string; label: string }[];
+//     placeholder: string;
+//     onSelect: (value: string) => void;
+//     groups?: { label: string; options: { value: string; label: string }[] }[];  // Tornando `groups` opcional
+// }

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Steps, Button } from 'antd';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { RootState } from '@/store';
-import {createCliente, fetchClienteDetalhe, updateCliente} from '@/store/slices/clientesSlice';
+import { fetchClienteDetalhe, updateCliente} from '@/store/slices/clientesSlice';
 import Step1 from './steps/Step1';
 import Step2 from './steps/Step2';
 import Step3 from './steps/Step3';
 import Step4 from './steps/Step4';
 import styles from './MultiStepForm.module.css';
+import {Cliente, Filho} from "@/types/interfaces";
 
 const { Step } = Steps;
 
@@ -33,7 +34,8 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
         nomeConjuge: '',
         dataNascimentoConjuge: '',
         profissaoConjuge: '',
-        filhos: [],  // Array de filhos
+        filhos: [] as Filho[],
+        reunioes: [] as { dataReuniaoAgendada: string; horarioInicio: string; horarioFim: string; assunto: string; local: string }[],  // Tipo de `reunioes`
         custoMensal: '',  // Propriedades de vida financeira
         rendaMensal: '',
         trabalho: '',
@@ -94,10 +96,11 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                 doencaPreexistente: clienteDetalhe.saude?.doenca_preexistente || '',
                 temHistoricoFamiliarDoencas: clienteDetalhe.saude?.tem_historico_familiar_doencas || false,
                 historicoFamiliarDoencas: clienteDetalhe.saude?.historico_familiar_doencas || '',
-                // Adicione outros campos se necessário, como `endereco`, `reunioes`, etc.
+                reunioes: clienteDetalhe.reunioes || [],  // Inclua a propriedade `reunioes`, mesmo que seja um array vazio
             });
         }
     }, [clienteDetalhe]);
+
 
     // Ajuste do handleChange para aceitar tanto strings quanto eventos
     const handleChange = (input: string) => (e: string | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -112,7 +115,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
         setFormData({ ...formData, [input]: value });
     };
 
-    const removeEmptyFields = (obj) => {
+    const removeEmptyFields = (obj: any): any => {
         if (Array.isArray(obj)) {
             return obj.filter(item => item != null).map(item => removeEmptyFields(item));
         } else if (obj !== null && typeof obj === 'object') {
@@ -126,54 +129,53 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
     };
 
 
-
     const handleSubmit = async () => {
         try {
             if (clientId) {
                 // Preparando os dados para envio ao backend
-                let clienteData = {
+                let clienteData: Partial<Cliente> = {
                     nome: formData.nome,
                     sobre_nome: formData.sobreNome,
                     telefone: formData.telefone,
                     email: formData.email,
-                    cpf: formData.cpf,
-                    data_nascimento: formData.dataNascimento,
-                    sexo: formData.sexo,
-                    profissao: formData.profissao,
+                    cpf: formData.cpf || undefined,  // Usar undefined em vez de null
+                    data_nascimento: formData.dataNascimento || undefined,  // Usar undefined em vez de null
+                    sexo: formData.sexo || undefined,
+                    profissao: formData.profissao || undefined,
                     status: "ativo",
 
                     vida_financeira: {
-                        custo_mensal: formData.custoMensal ? parseFloat(formData.custoMensal) : null,
-                        renda_mensal: formData.rendaMensal ? parseFloat(formData.rendaMensal) : null,
-                        trabalho: formData.trabalho,
-                        nivel_concurso: formData.trabalho === 'concursado' ? formData.nivelConcurso : null,
-                        local_trabalho: formData.localTrabalho || null,
-                        moradia: formData.moradia || null,
-                        valor_moradia: formData.moradia !== 'nao_tem' && formData.valorMoradia ? parseFloat(formData.valorMoradia) : null,
-                        custo_filhos: formData.custoFilhos ? parseFloat(formData.custoFilhos) : null,
-                        patrimonio: formData.patrimonio ? parseFloat(formData.patrimonio) : null,
-                        dividas: formData.dividas ? parseFloat(formData.dividas) : null,
-                        projetos_futuros: formData.projetosFuturos || null,
+                        custo_mensal: formData.custoMensal ? parseFloat(formData.custoMensal) : undefined,  // Garantir undefined
+                        renda_mensal: formData.rendaMensal ? parseFloat(formData.rendaMensal) : undefined,
+                        trabalho: formData.trabalho || undefined,
+                        nivel_concurso: formData.trabalho === 'concursado' ? formData.nivelConcurso : undefined,
+                        local_trabalho: formData.localTrabalho || undefined,
+                        moradia: formData.moradia || undefined,
+                        valor_moradia: formData.moradia !== 'nao_tem' && formData.valorMoradia ? parseFloat(formData.valorMoradia) : undefined,
+                        custo_filhos: formData.custoFilhos ? parseFloat(formData.custoFilhos) : undefined,
+                        patrimonio: formData.patrimonio ? parseFloat(formData.patrimonio) : undefined,
+                        dividas: formData.dividas ? parseFloat(formData.dividas) : undefined,
+                        projetos_futuros: formData.projetosFuturos || undefined,
                     },
 
                     saude: {
-                        peso: formData.peso ? parseFloat(formData.peso) : null,
-                        altura: formData.altura ? parseFloat(formData.altura) : null,
+                        peso: formData.peso ? parseFloat(formData.peso) : undefined,  // Garantir undefined
+                        altura: formData.altura ? parseFloat(formData.altura) : undefined,
                         tem_doenca_preexistente: formData.temDoencaPreexistente,
-                        doenca_preexistente: formData.doencaPreexistente || null,
+                        doenca_preexistente: formData.doencaPreexistente || undefined,
                         tem_historico_familiar_doencas: formData.temHistoricoFamiliarDoencas,
-                        historico_familiar_doencas: formData.historicoFamiliarDoencas || null,
+                        historico_familiar_doencas: formData.historicoFamiliarDoencas || undefined,
                     },
 
                     filhos: formData.filhos.map(filho => ({
                         nome: filho.nome,
-                        data_nascimento: filho.dataNascimento,
+                        dataNascimento: filho.dataNascimento,
                     })),
 
-                    reunioes: formData.reunioes?.map(reuniao => ({
-                        data_reuniao_agendada: reuniao.dataReuniaoAgendada,
-                        horario_inicio: reuniao.horarioInicio,
-                        horario_fim: reuniao.horarioFim,
+                    reunioes: formData.reunioes.map(reuniao => ({
+                        dataReuniaoAgendada: reuniao.dataReuniaoAgendada,
+                        horarioInicio: reuniao.horarioInicio,
+                        horarioFim: reuniao.horarioFim,
                         assunto: reuniao.assunto,
                         local: reuniao.local,
                     })),
@@ -192,7 +194,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
             } else {
                 console.error('Cliente ID não encontrado. Não é possível atualizar.');
             }
-        } catch (error) {
+        } catch (error: any) {
             if (error.response) {
                 console.error('Erro na resposta da API:', error.response.data);
             } else if (error.request) {
@@ -202,6 +204,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
             }
         }
     };
+
 
 
     const next = () => {
