@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import api from '@/app/api/axios';
@@ -9,6 +9,8 @@ import styles from './styles.module.css';
 import Link from "next/link";
 import Image from "next/image";
 import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
+import axios from 'axios';
+
 
 const LoginForm = () => {
     const [username, setUsernameState] = useState('');
@@ -55,7 +57,11 @@ const LoginForm = () => {
             router.push('/dashboard');
         } catch (error) {
             setMessage('Erro ao fazer login. Verifique suas credenciais e tente novamente.');
-            console.error('Erro ao fazer login:', error.response ? error.response.data : error.message);
+            if (axios.isAxiosError(error)) {
+                console.error('Erro ao fazer login:', error.response ? error.response.data : error.message);
+            } else {
+                console.error('Erro inesperado ao fazer login:', error);
+            }
         }
     };
 
