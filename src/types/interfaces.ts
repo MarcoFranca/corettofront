@@ -231,9 +231,13 @@ export interface Meeting {
     end_time: string;
     cliente: string;
     is_meeting: boolean;
+    data_reuniao_agendada?: string;
+    horario_inicio?: string;
+    horario_fim?: string;
     add_to_google_calendar?: boolean;
     add_to_google_meet?: boolean;
     add_to_zoom?: boolean;
+    descricao?: string;
     created_at?: string;
     updated_at?: string;
 }
