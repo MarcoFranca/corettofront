@@ -30,6 +30,8 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
             onRequestClose={onRequestClose}
             className={styles.modalContent}
             overlayClassName={styles.modalOverlay}
+            bodyOpenClassName=""
+            htmlOpenClassName=""
         >
             <form onSubmit={handleSubmit}>
                 <label>
