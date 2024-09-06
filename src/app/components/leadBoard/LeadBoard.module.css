@@ -6,7 +6,17 @@
     padding: 8px;
     gap: 32px;
     width: 100%;
+    /*position: relative;*/
+}
+
+.leadModalContainer{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
     position: relative;
+
 }
 
 .column {

@@ -1,4 +1,5 @@
 .modalContent {
+    position: fixed;
     background-color: #fff;
     padding: 2rem;
     border-radius: 0.5rem;

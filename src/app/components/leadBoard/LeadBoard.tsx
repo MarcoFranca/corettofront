@@ -83,11 +83,13 @@ const LeadBoard: React.FC = () => {
 
                                     return (
                                         <>
+
                                             <LeadModal
                                                 isOpen={modalIsOpen}
                                                 onRequestClose={closeModal}
                                                 onSubmit={handleLeadSubmit}
                                             />
+
                                             <Column
                                                 key={columnId}
                                                 column={column}
