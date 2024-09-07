@@ -11,11 +11,11 @@ import Image from "next/image";
 import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
 import axios from 'axios';
 
-
 const LoginForm = () => {
     const [username, setUsernameState] = useState('');
     const [password, setPasswordState] = useState('');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false); // Estado de carregamento
     const router = useRouter();
     const dispatch = useDispatch();
     const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -23,6 +23,9 @@ const LoginForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true); // Inicia o carregamento
+        setMessage(''); // Limpa mensagens anteriores
+
         try {
             const response = await api.post('/o/token/',
                 {
@@ -48,7 +51,6 @@ const LoginForm = () => {
 
             dispatch(setUser(userResponse.data));
 
-            // Armazenando no local storage
             localStorage.setItem('accessToken', access);
             localStorage.setItem('refreshToken', refresh);
             localStorage.setItem('user', JSON.stringify(userResponse.data));
@@ -62,6 +64,8 @@ const LoginForm = () => {
             } else {
                 console.error('Erro inesperado ao fazer login:', error);
             }
+        } finally {
+            setLoading(false); // Encerra o carregamento
         }
     };
 
@@ -89,9 +93,12 @@ const LoginForm = () => {
                     className={styles.input}
                     required
                 />
-                <button type="submit" className={styles.button}>Entrar</button>
-                <Link href={'/reset-password'} className={styles.sword}>Esqueceu a senha?</Link>
+                <button type="submit" className={styles.button} disabled={loading}>
+                    {loading ? 'Entrando...' : 'Entrar'}
+                    {loading && <div className={styles.spinner}></div>}
+                </button>
                 {message && <p className={styles.message}>{message}</p>}
+                <Link href={'/reset-password'} className={styles.sword}>Esqueceu a senha?</Link>
             </form>
             <div className={styles.cadastre}>
                 <p>Não tem conta?<Link href={'/register'}> Cadastre-se</Link></p>

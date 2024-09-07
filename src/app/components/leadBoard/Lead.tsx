@@ -38,7 +38,6 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index, handleLeadClick, hand
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
     const [currentLead, setCurrentLead] = useState(lead);
-    const leadRef = useRef<HTMLDivElement>(null);
 
     const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -103,6 +102,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index, handleLeadClick, hand
         return (
             <div
                 className={isLastColumn ? styles.tooltipLeft : styles.tooltip}
+                key={currentLead.id}
                 style={{ top: `${tooltipPosition.top}px`, left: `${tooltipPosition.left}px` }}
             >
                 <p><strong>Nome:</strong> {currentLead.nome}</p>

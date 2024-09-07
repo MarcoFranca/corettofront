@@ -14,25 +14,24 @@ const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
     const leadsFromStore = useAppSelector((state) => state.leads.leads);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [data, setData] = useState(initializeData());
+    const [data, setData] = useState(() => initializeData());  // Inicia o estado com `initializeData`
     const router = useRouter();
     const tooltipContainerRef = useRef<HTMLDivElement>(null);
-    const isFirstRender = useRef(true); // Ref para verificar se é a primeira renderização
     let clickTimer: NodeJS.Timeout | null = null;
 
+    // Carregar os leads apenas se ainda não estiverem carregados
     useEffect(() => {
-        if (isFirstRender.current) {
-            // Evita que a requisição seja feita na primeira renderização
-            isFirstRender.current = false;
-            return;
+        if (leadsFromStore.length === 0) {  // Verifica se os leads já estão no Redux
+            dispatch(fetchLeads({ status: 'lead' }));
         }
-        // Buscar apenas os leads com status 'lead' após a primeira renderização
-        dispatch(fetchLeads({ status: 'lead' }));
-    }, [dispatch]);
+    }, [dispatch, leadsFromStore.length]);
 
+    // Atualizar o estado dos dados quando os leads no store forem alterados
     useEffect(() => {
-        const updatedData = initializeData(leadsFromStore);
-        setData(updatedData);
+        if (leadsFromStore.length > 0) {
+            const updatedData = initializeData(leadsFromStore);
+            setData(updatedData);
+        }
     }, [leadsFromStore]);
 
     const openModal = () => {
@@ -83,7 +82,6 @@ const LeadBoard: React.FC = () => {
 
                                     return (
                                         <>
-
                                             <LeadModal
                                                 isOpen={modalIsOpen}
                                                 onRequestClose={closeModal}

@@ -2,8 +2,9 @@ import axios from 'axios';
 import store from '@/store';
 import { logout } from '@/store/slices/authSlice';
 
+// Instância principal do axios com base na URL do .env
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,  // URL única definida no .env
 });
 
 api.interceptors.request.use(
@@ -28,23 +29,22 @@ api.interceptors.response.use(
             const refreshToken = localStorage.getItem('refreshToken');
             if (refreshToken) {
                 try {
-                    // Criar uma instância separada para o OAuth2, sem baseURL
                     const oauthApi = axios.create();
 
-                    // Requisição para o endpoint de refresh do OAuth2
-                    const { data } = await oauthApi.post('http://localhost:8000/api/v1/o/token/', {
-                        grant_type: 'refresh_token',
-                        refresh_token: refreshToken,
-                        client_id: process.env.NEXT_PUBLIC_CLIENT_ID,  // Adicionar o client_id
-                        client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,  // Adicionar o client_secret
-                    });
+                    const { data } = await oauthApi.post(
+                        `${process.env.NEXT_PUBLIC_API_BASE_URL}/o/token/`,  // Usando a URL base
+                        {
+                            grant_type: 'refresh_token',
+                            refresh_token: refreshToken,
+                            client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
+                            client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
+                        }
+                    );
 
-                    // Atualiza o token de acesso no localStorage e nos headers
                     localStorage.setItem('accessToken', data.access_token);
                     api.defaults.headers.Authorization = `Bearer ${data.access_token}`;
                     originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
 
-                    // Reenvia a requisição original com o novo token de acesso
                     return api(originalRequest);
                 } catch (err) {
                     store.dispatch(logout());

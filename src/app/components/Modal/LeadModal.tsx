@@ -12,6 +12,7 @@ interface LeadModalProps {
 
 const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
     const [nome, setNome] = useState('');
+    const [sexo, setSexo] = useState('');
     const [profissao, setProfissao] = useState('');
     const [telefone, setTelefone] = useState('');
     const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
     const
         handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            onSubmit({ nome, profissao, telefone, email, status: 'lead', pipeline_stage: 'leads de entrada'});
+            onSubmit({ nome, sexo, profissao, telefone, email, status: 'lead', pipeline_stage: 'leads de entrada'});
             onRequestClose();
         };
 
@@ -41,6 +42,15 @@ const LeadModal = ({ isOpen, onRequestClose, onSubmit }: LeadModalProps) => {
                             type="text"
                             value={nome}
                             onChange={(e) => setNome(e.target.value)}
+                            required
+                        />
+                    </label>
+                    <label>
+                        Genero:
+                        <input
+                            type="text"
+                            value={sexo}
+                            onChange={(e) => setSexo(e.target.value)}
                             required
                         />
                     </label>

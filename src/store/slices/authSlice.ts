@@ -38,12 +38,22 @@ const authSlice = createSlice({
         setUserFromLocalStorage: (state) => {
             const user = localStorage.getItem('user');
             const accessToken = localStorage.getItem('accessToken');
-            const refreshToken = localStorage.getItem('refreshToken');
-            if (user && accessToken && refreshToken) {
+            const refreshToken = localStorage.getItem('refreshToken'); // Isso pode estar ausente
+
+
+            // Atualize o estado do Redux mesmo se o refreshToken estiver ausente
+            if (user && accessToken) {
                 state.user = JSON.parse(user);
-                state.token = { access: accessToken, refresh: refreshToken };
+                state.token = {
+                    access: accessToken,
+                    refresh: refreshToken || '', // Se o refreshToken estiver ausente, pode ser uma string vazia
+                };
+            } else {
+                console.log("Usuário ou accessToken ausente no LocalStorage.");
             }
         },
+
+
         updateAccessToken: (state, action: PayloadAction<string>) => {
             if (state.token) {
                 state.token.access = action.payload;

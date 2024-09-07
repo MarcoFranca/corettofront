@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '@/app/api/axios';
 import { Lead, LeadsState } from '@/types/interfaces';
+import api from '@/app/api/axios';
 
 const initialState: LeadsState = {
     leads: [],
