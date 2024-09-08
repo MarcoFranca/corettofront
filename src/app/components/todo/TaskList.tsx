@@ -9,6 +9,7 @@ import styles from './TaskList.module.css';
 import { Task } from "@/types/interfaces";
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
+import moment from 'moment-timezone';
 
 import PlusImage from '@/../public/assets/common/plus.svg';
 import SortImage from '@/../public/assets/common/sort3.svg';
@@ -97,8 +98,13 @@ const TaskList: React.FC = () => {
     };
 
     const formatDate = (dateString: string) => {
-        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        return new Date(dateString).toLocaleDateString('pt-BR', options);
+        if (!dateString) return '';
+
+        // Define o fuso horário correto
+        const timeZone = 'America/Sao_Paulo';
+
+        // Converte a data para o fuso horário local e formata no estilo desejado
+        return moment.tz(dateString, timeZone).format('DD/MM/YYYY');
     };
 
     return (
@@ -127,12 +133,11 @@ const TaskList: React.FC = () => {
                                 <Image className={styles.sortButton} onClick={() => setSortCriteria('due_date')} src={SortImage} alt={'ordenar data'}/>
                                 <p>Data de Vencimento</p>
                             </div>
-
                         </th>
                         <th>
                             <div className={`${styles.titles} ${styles.titleSort}`}>
                                 <Image className={styles.sortButton} onClick={() => setSortCriteria('urgency')}
-                                       src={SortImage} alt={'ordenar data'}/>
+                                       src={SortImage} alt={'ordenar urgência'}/>
                                 <p>Urgência</p>
                             </div>
                         </th>

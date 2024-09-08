@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer, Views, View, NavigateAction, SlotInfo } from 'react-big-calendar';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './CustomCalendarStyles.css';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchAgendaItems } from '@/store/slices/agendaSlice';
-import { fetchMeetings, createMeeting } from '@/store/slices/meetingSlice';
-import { fetchTasks, createTask } from '@/store/slices/todoSlice';
 import { RootState } from '@/store';
 import styles from './Agenda.module.css';
 import Modal from 'react-modal';
@@ -14,11 +12,12 @@ import Modal from 'react-modal';
 moment.locale('pt-BR');
 const localizer = momentLocalizer(moment);
 
+// Defina o fuso horário que você deseja usar
+const timeZone = 'America/Sao_Paulo';
+
 const Agenda: React.FC = () => {
     const dispatch = useAppDispatch();
     const agendaItems = useAppSelector((state: RootState) => state.agenda.items);
-    const meetings = useAppSelector((state: RootState) => state.meetings.meetings);
-    const tasks = useAppSelector((state: RootState) => state.tasks.tasks);
     const [events, setEvents] = useState<any[]>([]);
     const [view, setView] = useState<View>(Views.MONTH);
     const [date, setDate] = useState(new Date());
@@ -27,31 +26,39 @@ const Agenda: React.FC = () => {
     const isFirstRender = useRef(true); // Ref para evitar requisições duplicadas
 
     useEffect(() => {
-        if (isFirstRender.current) {
-            // Evita a requisição na primeira renderização
-            isFirstRender.current = false;
-            return;
-        }
-        dispatch(fetchAgendaItems());
-        dispatch(fetchMeetings());
-        dispatch(fetchTasks());
+        dispatch(fetchAgendaItems()); // Faz a requisição para buscar os itens da agenda
     }, [dispatch]);
 
-    useEffect(() => {
-        const formatEvent = (item: any) => ({
+    // Função para formatar os eventos com conversão de fuso horário
+    const formatEvent = (item: any) => {
+        // Verifica se a data já está em UTC e converte para o fuso horário correto
+        const startZoned = moment.tz(item.start, timeZone).toDate();
+        const endZoned = moment.tz(item.end, timeZone).toDate();
+
+        return {
             id: item.id,
-            title: item.title || item.descricao,
-            start: new Date(item.start_time || item.due_date || item.data_reuniao_agendada),
-            end: new Date(item.end_time || item.due_date || item.data_reuniao_agendada),
-            description: item.description || item.descricao,
-        });
+            title: item.title,
+            start: startZoned,
+            end: endZoned,
+            description: item.description,
+        };
+    };
 
+
+    // Atualiza os eventos quando os dados da agenda forem alterados
+    useEffect(() => {
         const formattedAgendaItems = agendaItems.map(formatEvent);
-        const formattedMeetings = meetings.map(formatEvent);
-        const formattedTasks = tasks.map(formatEvent);
 
-        setEvents([...formattedAgendaItems, ...formattedMeetings, ...formattedTasks]);
-    }, [agendaItems, meetings, tasks]);
+        // Adicione log para verificar os eventos convertidos
+        console.log("Eventos formatados:", formattedAgendaItems);
+
+        // Remover duplicatas usando o ID único de cada evento
+        const uniqueEvents = Array.from(new Set(formattedAgendaItems.map(event => event.id)))
+            .map(id => formattedAgendaItems.find(event => event.id === id));
+
+        setEvents(uniqueEvents);
+    }, [agendaItems]);
+
 
     const handleViewChange = (newView: View) => {
         setView(newView);
@@ -75,10 +82,11 @@ const Agenda: React.FC = () => {
             end: newEvent.end,
         };
 
+        // Lógica para criar uma nova task ou reunião
         if (newEvent.type === 'task') {
-            dispatch(createTask(event));
+            // Dispatch createTask
         } else if (newEvent.type === 'meeting') {
-            dispatch(createMeeting(event));
+            // Dispatch createMeeting
         }
 
         setModalIsOpen(false);
@@ -86,13 +94,12 @@ const Agenda: React.FC = () => {
 
     return (
         <div className={`${styles.container} agenda-container`}>
-            <h2>Agenda</h2>
             <Calendar
                 localizer={localizer}
                 events={events}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: 600, width: '100%' }}
+                style={{ height: '100%', width: '100%' }}
                 views={['month', 'week', 'day', 'agenda']}
                 view={view}
                 onView={handleViewChange}

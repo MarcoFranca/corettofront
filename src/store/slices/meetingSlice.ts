@@ -52,25 +52,19 @@ const meetingSlice = createSlice({
             })
             .addCase(fetchMeetings.fulfilled, (state, action) => {
                 state.status = 'succeeded';
+                // Substituímos toda a lista de meetings para evitar duplicação
                 state.meetings = action.payload;
             })
             .addCase(fetchMeetings.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message || null;
             })
-            .addCase(fetchClientMeetings.pending, (state) => {
-                state.status = 'loading';
-            })
-            .addCase(fetchClientMeetings.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.meetings = action.payload;
-            })
-            .addCase(fetchClientMeetings.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.error.message || null;
-            })
             .addCase(createMeeting.fulfilled, (state, action) => {
-                state.meetings.push(action.payload);
+                // Adiciona o novo meeting apenas se ele não existir
+                const exists = state.meetings.some(meeting => meeting.id === action.payload.id);
+                if (!exists) {
+                    state.meetings.push(action.payload);
+                }
             })
             .addCase(updateMeeting.fulfilled, (state, action) => {
                 const index = state.meetings.findIndex(meeting => meeting.id === action.payload.id);

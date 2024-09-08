@@ -697,11 +697,6 @@ date-arithmetic@^4.1.0:
   resolved "https://registry.yarnpkg.com/date-arithmetic/-/date-arithmetic-4.1.0.tgz#e5d6434e9deb71f79760a37b729e4a515e730ddf"
   integrity sha512-QWxYLR5P/6GStZcdem+V1xoto6DMadYWpMXU82ES3/RfR3Wdwr3D0+be7mgOJ+Ov0G9D5Dmb9T17sNLQYj9XOg==
 
-date-fns@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
-  integrity sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==
-
 dayjs@^1.11.11:
   version "1.11.13"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
@@ -859,7 +854,7 @@ mime-types@^2.1.12:
   dependencies:
     mime-db "1.52.0"
 
-moment-timezone@^0.5.40:
+moment-timezone@^0.5.40, moment-timezone@^0.5.45:
   version "0.5.45"
   resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.45.tgz#cb685acd56bac10e69d93c536366eb65aa6bcf5c"
   integrity sha512-HIWmqA86KcmCAhnMAN0wuDOARV/525R2+lOLotuGFzn4HO+FH+/645z2wx0Dt3iDv6/p61SIvKnDstISainhLQ==
@@ -1320,10 +1315,10 @@ react-beautiful-dnd@^13.1.1:
     redux "^4.0.4"
     use-memo-one "^1.1.1"
 
-react-big-calendar@^1.13.1:
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/react-big-calendar/-/react-big-calendar-1.13.1.tgz#d9b1af0ecbdfef4059e100969599209c27ef5efd"
-  integrity sha512-6qg2ivBPnGPE+iJTJ6nNG/Kol0XElNzywWkwjjN0GtXjooHcS+9/UnpiCDuKzbele3iB6fWeobkSHWhI6xxKYw==
+react-big-calendar@1.13.4:
+  version "1.13.4"
+  resolved "https://registry.yarnpkg.com/react-big-calendar/-/react-big-calendar-1.13.4.tgz#8b79d392ed4099321d8441bbbb6756c820869a7a"
+  integrity sha512-eTc67wNHrEbtK7SW2dKlAWjPTcaMfg8BaL5ei4BQ/5FKzVOt3LrmBiq7hr9sOxOYtOfMRxWYMkjkZRvrlRWRBw==
   dependencies:
     "@babel/runtime" "^7.20.7"
     clsx "^1.2.1"
