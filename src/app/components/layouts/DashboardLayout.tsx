@@ -16,27 +16,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const dispatch = useDispatch();
     const router = useRouter();
     const [loading, setLoading] = useState(true); // Estado inicial de loading
-    const [isLoaded, setIsLoaded] = useState(false); // Variável para garantir que o Redux atualizou
     const user = useSelector((state: RootState) => state.auth.user);
     const token = useSelector((state: RootState) => state.auth.token);
 
     // Carrega o usuário e o token do LocalStorage quando o componente é montado
     useEffect(() => {
         dispatch(setUserFromLocalStorage());
-        setIsLoaded(true); // Marcamos como "carregado" após despachar a ação
     }, [dispatch]);
 
     // Verifica se o usuário e o token foram carregados corretamente após o estado do Redux ter sido atualizado
     useEffect(() => {
-        if (isLoaded) {
-            if (user && token?.access) {
-                setLoading(false); // O carregamento termina quando o usuário e o token são encontrados
-            } else if (user === null || token === null) {
-                setLoading(false); // Também termina o carregamento se o usuário e o token estiverem ausentes
-                router.push('/'); // Redireciona se não houver usuário ou token
-            }
+        console.log("Verificando user e token...");
+        if (!loading && (!user || !token?.access)) {
+            console.log("Redirecionando para a home...");
+            router.push('/');
+        } else if (user && token?.access) {
+            console.log("Usuário autenticado, prosseguindo...");
+            setLoading(false);
         }
-    }, [user, token, isLoaded, router]);
+    }, [user, token, router, loading]);
 
     // Exibe o indicador de carregamento até que os dados estejam prontos
     if (loading) {
@@ -46,7 +44,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             </div>
         );
     }
-
 
     return (
         <main className={styles.dashboardLayout}>

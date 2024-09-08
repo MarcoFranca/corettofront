@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchClientes, deleteCliente } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
@@ -22,14 +22,8 @@ const ClientesTable: React.FC = () => {
     const [search, setSearch] = useState<string>('');
 
     // Ref para verificar se o componente acabou de montar
-    const isFirstRender = useRef(true);
 
     useEffect(() => {
-        if (isFirstRender.current) {
-            // Quando o componente é montado pela primeira vez, evitamos o efeito
-            isFirstRender.current = false;
-            return;
-        }
         // Faz a requisição apenas após a montagem inicial
         dispatch(fetchClientes({ status: filter, search }));
     }, [dispatch, filter, search]);

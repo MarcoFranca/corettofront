@@ -2,7 +2,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import ApoliceForm from '@/app/components/apolices/ApoliceForm';
-import { createApolice } from '@/store/slices/apoliceSlice';
+import { createApolice, fetchApolices } from '@/store/slices/apoliceSlice'; // Import fetchApolices
 import { RootState } from '@/store';
 import { useState, useEffect } from 'react';
 import { fetchClienteDetalhe, updateClienteToActive } from '@/store/slices/clientesSlice';
@@ -33,7 +33,6 @@ const NovaApolicePage = () => {
     useEffect(() => {
         // Verifica os campos obrigatórios quando o cliente é carregado
         if (clienteDetalhe?.status === 'lead') {
-            // Campos obrigatórios devem ser acessados com chave que corresponde às propriedades do tipo Cliente
             const camposObrigatorios: (keyof Cliente)[] = ['email', 'cpf', 'data_nascimento', 'sexo', 'profissao'];
             const camposFaltantes = camposObrigatorios.filter(campo => !clienteDetalhe[campo]);
 
@@ -45,27 +44,22 @@ const NovaApolicePage = () => {
     }, [clienteDetalhe]);
 
     const handleSaveClient = async (updatedData: Partial<Cliente>) => {
-        // Combine os dados obrigatórios já existentes com os dados atualizados
         const fullData = {
-            nome: clienteDetalhe?.nome,         // Incluindo o nome existente
-            telefone: clienteDetalhe?.telefone, // Incluindo o telefone existente
-            email: clienteDetalhe?.email,       // Incluindo o email existente
-            sexo: clienteDetalhe?.sexo,         // Incluindo o sexo existente
-            ...updatedData                      // Incluindo os novos dados preenchidos no modal
+            nome: clienteDetalhe?.nome,
+            telefone: clienteDetalhe?.telefone,
+            email: clienteDetalhe?.email,
+            sexo: clienteDetalhe?.sexo,
+            ...updatedData
         };
-
-        console.log('Dados enviados ao backend:', fullData);  // Log dos dados enviados
 
         const updateResult = await dispatch(updateClienteToActive({ id: clientId, updatedCliente: fullData }));
 
         if (updateResult.meta.requestStatus === 'rejected') {
             setErrorMessage("Erro ao atualizar o cliente para ativo.");
-            console.log('Erro no backend:', updateResult.payload);  // Log do erro
         } else {
             setIsModalOpen(false);
         }
     };
-
 
     const handleSubmit = async (data: any, endpoint: string) => {
         try {
@@ -77,6 +71,10 @@ const NovaApolicePage = () => {
             const resultAction = await dispatch(createApolice({ clientId, formData, endpoint }));
 
             if (createApolice.fulfilled.match(resultAction)) {
+                // Atualiza a lista de apólices após o cadastro
+                await dispatch(fetchApolices({ clientId }));
+
+                // Redireciona para a página de apólices
                 router.push(`/dashboard/cliente/${clientId}/apolice`);
             } else if (createApolice.rejected.match(resultAction)) {
                 setErrorMessage("Erro ao criar a apólice.");
@@ -98,7 +96,6 @@ const NovaApolicePage = () => {
                 <p>Carregando...</p>
             )}
 
-            {/* Modal para capturar os campos faltantes */}
             <EditClientModal
                 isOpen={isModalOpen}
                 onRequestClose={() => setIsModalOpen(false)}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { fetchClienteDetalhe, updateClienteObservacao, updateCliente } from '@/store/slices/clientesSlice';
+import { fetchClienteDetalhe, updateClienteObservacao } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import styles from './ClientProfile.module.css';
 import ContactInfoCard from '@/app/components/cliente/conta/ContactInfoCard';
@@ -55,10 +55,11 @@ const ClientProfile: React.FC = () => {
     }, [pathname]);
 
     useEffect(() => {
-        if (clientId) {
+        if (clientId && (!cliente || cliente.id !== clientId)) {
+            // Só faz a requisição se o cliente ainda não estiver carregado no estado ou se o ID for diferente
             dispatch(fetchClienteDetalhe(clientId));
         }
-    }, [clientId, dispatch]);
+    }, [clientId, cliente, dispatch]);
 
     useEffect(() => {
         if (cliente) {
@@ -169,7 +170,7 @@ const ClientProfile: React.FC = () => {
                                 <HealthInfoCard cliente={cliente} />
                             </TabPanel>
                             <TabPanel>
-                                    <ApolicesTable />
+                                <ApolicesTable />
                             </TabPanel>
 
                             <TabPanel>

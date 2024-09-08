@@ -7,7 +7,7 @@ import { fetchClienteDetalhe } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import { usePathname } from "next/navigation";
 import { Apolices, Apolice } from "@/types/interfaces";
-import { FaEye, FaDownload, FaPlusCircle, FaInfoCircle, FaTrash } from 'react-icons/fa';
+import { FaDownload, FaPlusCircle, FaInfoCircle, FaTrash } from 'react-icons/fa';
 import styles from './styles.module.css';
 import Link from "next/link";
 import { formatMoney } from '@/utils/utils';
@@ -31,18 +31,21 @@ const ApolicePage: React.FC = () => {
     const [apoliceToDelete, setApoliceToDelete] = useState<{ id: string, produto: string } | null>(null);
     const [apolicesSelecionadas, setApolicesSelecionadas] = useState<Apolice[]>([]);
 
+    // Fetch cliente detalhe uma vez
     useEffect(() => {
         if (clientId) {
             dispatch(fetchClienteDetalhe(clientId));
         }
     }, [clientId, dispatch]);
 
+    // Fetch apolices após clienteDetalhe estar carregado (sem depender de clienteDetalhe diretamente)
     useEffect(() => {
-        if (clientId && clienteDetalhe) {
+        if (clientId && clienteDetalhe?.id) {
             dispatch(fetchApolices({ clientId }));
         }
-    }, [clientId, clienteDetalhe, dispatch]);
+    }, [clientId, dispatch, clienteDetalhe?.id]); // Observe apenas o `clienteDetalhe?.id`
 
+    // Atualizar as apólices selecionadas com base no endpoint
     useEffect(() => {
         const novasApolicesSelecionadas =
             endpoint === 'todos'
@@ -106,7 +109,7 @@ const ApolicePage: React.FC = () => {
             </div>
             {status === 'loading' && <p>Carregando apólices...</p>}
             {status === 'failed' && <p>{error}</p>}
-            {status === 'succeeded' && (
+            {status === 'succeeded' && apolicesSelecionadas.length > 0 ? (
                 <div className={styles.containerTable}>
                     <table className={styles.table}>
                         <thead>
@@ -157,7 +160,9 @@ const ApolicePage: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
-            )}
+            ) : status === 'succeeded' && apolicesSelecionadas.length === 0 ? (
+                <p>Nenhuma apólice encontrada.</p>
+            ) : null }
 
             <ConfirmationModal
                 isOpen={isModalOpen}

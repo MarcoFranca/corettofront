@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { setUserFromLocalStorage } from '@/store/slices/authSlice';
@@ -27,7 +27,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clientId })
 
     useEffect(() => {
         if (loading) return; // Aguarda a finalização do carregamento
-        if (!user || !token?.access || !token?.refresh) {
+        if (!user || !token?.access) {
             router.push('/');
         }
     }, [user, token, router]);

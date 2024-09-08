@@ -8,7 +8,7 @@ import Step2 from './steps/Step2';
 import Step3 from './steps/Step3';
 import Step4 from './steps/Step4';
 import styles from './MultiStepForm.module.css';
-import {Cliente, Filho} from "@/types/interfaces";
+import { Cliente, Filho } from "@/types/interfaces";
 
 const { Step } = Steps;
 
@@ -57,10 +57,11 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
 
     // Captura os dados do cliente assim que o componente for montado
     useEffect(() => {
-        if (clientId) {
+        if (clientId && (!clienteDetalhe || clienteDetalhe.id !== clientId)) {
+            // Só faz a requisição se o cliente ainda não estiver no estado ou o ID não corresponder
             dispatch(fetchClienteDetalhe(clientId));
         }
-    }, [dispatch, clientId]);
+    }, [dispatch, clientId, clienteDetalhe]);
 
     // Preenche os dados do formulário automaticamente quando o clienteDetalhe é carregado
     useEffect(() => {
@@ -101,8 +102,6 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
         }
     }, [clienteDetalhe]);
 
-
-    // Ajuste do handleChange para aceitar tanto strings quanto eventos
     const handleChange = (input: string) => (e: string | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         let value: string | boolean;
 
@@ -128,24 +127,22 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
         return obj;
     };
 
-
     const handleSubmit = async () => {
         try {
             if (clientId) {
-                // Preparando os dados para envio ao backend
                 let clienteData: Partial<Cliente> = {
                     nome: formData.nome,
                     sobre_nome: formData.sobreNome,
                     telefone: formData.telefone,
                     email: formData.email,
-                    cpf: formData.cpf || undefined,  // Usar undefined em vez de null
-                    data_nascimento: formData.dataNascimento || undefined,  // Usar undefined em vez de null
+                    cpf: formData.cpf || undefined,
+                    data_nascimento: formData.dataNascimento || undefined,
                     sexo: formData.sexo || undefined,
                     profissao: formData.profissao || undefined,
                     status: "ativo",
 
                     vida_financeira: {
-                        custo_mensal: formData.custoMensal ? parseFloat(formData.custoMensal) : undefined,  // Garantir undefined
+                        custo_mensal: formData.custoMensal ? parseFloat(formData.custoMensal) : undefined,
                         renda_mensal: formData.rendaMensal ? parseFloat(formData.rendaMensal) : undefined,
                         trabalho: formData.trabalho || undefined,
                         nivel_concurso: formData.trabalho === 'concursado' ? formData.nivelConcurso : undefined,
@@ -159,7 +156,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                     },
 
                     saude: {
-                        peso: formData.peso ? parseFloat(formData.peso) : undefined,  // Garantir undefined
+                        peso: formData.peso ? parseFloat(formData.peso) : undefined,
                         altura: formData.altura ? parseFloat(formData.altura) : undefined,
                         tem_doenca_preexistente: formData.temDoencaPreexistente,
                         doenca_preexistente: formData.doencaPreexistente || undefined,
@@ -181,7 +178,6 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                     })),
                 };
 
-                // Limpa os campos com valores nulos
                 clienteData = removeEmptyFields(clienteData);
 
                 // Atualizando cliente existente
@@ -204,8 +200,6 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
             }
         }
     };
-
-
 
     const next = () => {
         setCurrent(current + 1);
