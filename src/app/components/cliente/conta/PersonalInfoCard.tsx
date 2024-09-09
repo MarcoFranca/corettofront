@@ -4,8 +4,8 @@ import { Cliente } from '@/types/interfaces';
 import styles from '@/app/components/cliente/conta/ClientProfile.module.css';
 import { useAppDispatch } from '@/hooks/hooks';
 import { updateCliente } from '@/store/slices/clientesSlice';
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import moment from 'moment';
+import 'moment/locale/pt-br'; // Importa o locale pt-BR
 import NascimentoImage from '@/../public/assets/common/Aniversario.svg';
 import GeneroImage from '@/../public/assets/common/gender.svg';
 import JobImage from '@/../public/assets/pages/profile/job.svg';
@@ -40,7 +40,7 @@ const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({ cliente }) => {
     };
 
     const formatDate = (date: string | undefined) => {
-        return date ? format(parseISO(date), 'dd/MM/yyyy', { locale: ptBR }) : 'Não informada';
+        return date ? moment(date).format('DD/MM/YYYY') : 'Não informada';
     };
 
     const ageImage = (clienteAge: string | undefined) => {
