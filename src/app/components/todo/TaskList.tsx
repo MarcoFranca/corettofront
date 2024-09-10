@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 import { fetchTasks, deleteTask, updateTask } from '@/store/slices/todoSlice';
@@ -26,14 +26,8 @@ const TaskList: React.FC = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
     const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
-    const isFirstRender = useRef(true); // Ref para verificar se é a primeira renderização
 
     useEffect(() => {
-        if (isFirstRender.current) {
-            // Evita a requisição na primeira renderização
-            isFirstRender.current = false;
-            return;
-        }
         // Buscar as tarefas após a primeira renderização
         dispatch(fetchTasks());
     }, [dispatch]);
