@@ -9,7 +9,6 @@ import { formatPhoneNumber } from '@/utils/utils';
 
 import DeleteIcon from '@/../public/assets/common/delete.svg';
 import UpdateIcon from '@/../public/assets/common/editar_usuario_dark.svg';
-import InfoClientIcon from '@/../public/assets/common/infoclient.svg';
 import PhoneIcon from '@/../public/assets/common/whats2.svg';
 import MailIcon from '@/../public/assets/common/mail.svg';
 
@@ -91,9 +90,7 @@ const ClientesTable: React.FC = () => {
                         <td>{cliente.status}</td>
                         <td>
                             <div className={styles.actions}>
-                                <Link href={`/infoclient/cadastro/${cliente.id}`} passHref>
-                                    <Image className={styles.actionIcons} src={InfoClientIcon} alt="Info Client" priority />
-                                </Link>
+
                                 <Link href={`/dashboard/cliente/${cliente.id}`} passHref>
                                     <Image className={styles.actionIcons} src={UpdateIcon} alt="Detalhes Cliente" priority />
                                 </Link>
