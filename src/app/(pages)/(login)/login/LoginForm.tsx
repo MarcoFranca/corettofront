@@ -70,8 +70,45 @@ const LoginForm = () => {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}google/login/`;
+        window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}google/login/?scope=openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events`;
     };
+
+    const handleGoogleCallback = async () => {
+        const params = new URLSearchParams(window.location.search);
+        const authCode = params.get('code');
+        if (authCode) {
+            try {
+                const response = await api.post('/google/callback/', { code: authCode }, {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const { token, user, refresh_token } = response.data;
+
+                // Garantir que um refresh token seja passado, mesmo que seja uma string vazia
+                dispatch(setToken({ access: token, refresh: refresh_token || '' }));
+                localStorage.setItem('accessToken', token);
+                if (refresh_token) {
+                    localStorage.setItem('refreshToken', refresh_token);
+                }
+                localStorage.setItem('user', JSON.stringify(user));
+
+                router.push('/dashboard');
+            } catch (error) {
+                console.error('Erro ao fazer login com Google:', error);
+                setMessage('Erro ao fazer login com Google.');
+            }
+        }
+    };
+
+
+
+
+    // Verifica se existe o parâmetro "code" na URL e chama o callback do Google.
+    React.useEffect(() => {
+        if (window.location.search.includes('code')) {
+            handleGoogleCallback();
+        }
+    }, []);
 
     return (
         <div className={styles.container_form}>

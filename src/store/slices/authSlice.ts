@@ -18,16 +18,28 @@ const authSlice = createSlice({
                 localStorage.removeItem('user');
             }
         },
-        setToken: (state, action: PayloadAction<{ access: string; refresh: string } | null>) => {
-            state.token = action.payload;
+        setToken: (state, action: PayloadAction<{ access: string; refresh?: string } | null>) => {
+            state.token = action.payload
+                ? {
+                    access: action.payload.access,
+                    refresh: action.payload.refresh || '', // Se refresh não for fornecido, define como string vazia
+                }
+                : null;
+
             if (action.payload) {
                 localStorage.setItem('accessToken', action.payload.access);
-                localStorage.setItem('refreshToken', action.payload.refresh);
+                if (action.payload.refresh) {
+                    localStorage.setItem('refreshToken', action.payload.refresh);
+                } else {
+                    localStorage.removeItem('refreshToken');
+                }
             } else {
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
             }
         },
+
+
         logout: (state) => {
             state.user = null;
             state.token = null;
@@ -38,22 +50,18 @@ const authSlice = createSlice({
         setUserFromLocalStorage: (state) => {
             const user = localStorage.getItem('user');
             const accessToken = localStorage.getItem('accessToken');
-            const refreshToken = localStorage.getItem('refreshToken'); // Isso pode estar ausente
+            const refreshToken = localStorage.getItem('refreshToken');
 
-
-            // Atualize o estado do Redux mesmo se o refreshToken estiver ausente
             if (user && accessToken) {
                 state.user = JSON.parse(user);
                 state.token = {
                     access: accessToken,
-                    refresh: refreshToken || '', // Se o refreshToken estiver ausente, pode ser uma string vazia
+                    refresh: refreshToken || '', // Caso não exista o refresh token, ele é uma string vazia
                 };
             } else {
                 console.log("Usuário ou accessToken ausente no LocalStorage.");
             }
         },
-
-
         updateAccessToken: (state, action: PayloadAction<string>) => {
             if (state.token) {
                 state.token.access = action.payload;
@@ -62,6 +70,7 @@ const authSlice = createSlice({
         },
     },
 });
+
 
 export const { setUser, setToken, logout, setUserFromLocalStorage, updateAccessToken } = authSlice.actions;
 export default authSlice.reducer;
