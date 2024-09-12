@@ -77,3 +77,25 @@
   border: 1px solid transparent;
 
 }
+
+.footer {
+  background-color: #040c3b;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  /*margin-top: 20px;*/
+}
+
+.footerLinks {
+  margin-top: 10px;
+}
+
+.footerLinks a {
+  color: #5f94c9;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+.footerLinks a:hover {
+  text-decoration: underline;
+}

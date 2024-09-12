@@ -4,12 +4,10 @@ import styles from "./page.module.css";
 import Link from "next/link";
 import SimpleNavBar from "@/app/components/common/Header/SimpleNavBar";
 
-
 export default function Home() {
-
     return (
         <>
-            <SimpleNavBar/>
+            <SimpleNavBar />
             <main className={styles.main}>
                 <Image
                     className={styles.hero}
@@ -33,6 +31,19 @@ export default function Home() {
                     </div>
                 </div>
             </main>
+
+            {/* Rodapé com link para a Política de Privacidade e Termos de Serviço */}
+            <footer className={styles.footer}>
+                <p>&copy; 2024 Corretor Lab. Todos os direitos reservados.</p>
+                <div className={styles.footerLinks}>
+                    <Link href={"/privacy_policy"}>
+                        Política de Privacidade
+                    </Link>
+                    <Link href={"/terms_of_service"}>
+                        Termos de Serviço
+                    </Link>
+                </div>
+            </footer>
         </>
     );
 }
