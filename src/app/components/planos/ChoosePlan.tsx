@@ -49,17 +49,17 @@ export default function ChoosePlan() {
     return (
         <div>
             <h2>Escolha seu Plano</h2>
-            {plans.map((plan) => (
-                <div key={plan.id}>
-                    <h3>{plan.nome}</h3>
-                    <p>{plan.descricao}</p>
-                    <p>Preço: {plan.preco}</p>
-                    <button onClick={() => handleCheckout(plan.stripe_price_id)}>
-                        Selecionar
-                    </button>
-                </div>
-            ))}
-            {message && <p>{message}</p>}
+            {/*{plans.map((plan) => (*/}
+            {/*    <div key={plan.id}>*/}
+            {/*        <h3>{plan.nome}</h3>*/}
+            {/*        <p>{plan.descricao}</p>*/}
+            {/*        <p>Preço: {plan.preco}</p>*/}
+            {/*        <button onClick={() => handleCheckout(plan.stripe_price_id)}>*/}
+            {/*            Selecionar*/}
+            {/*        </button>*/}
+            {/*    </div>*/}
+            {/*))}*/}
+            {/*{message && <p>{message}</p>}*/}
         </div>
     );
 }

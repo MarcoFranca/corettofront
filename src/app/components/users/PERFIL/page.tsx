@@ -9,7 +9,7 @@ export default function ProfilePage() {
         first_name: string;
         last_name: string;
         foto: string | File;
-        isAccountActive: boolean;
+        assinatura_status: string;
         plano?: {
             nome: string;
             descricao: string;
@@ -19,7 +19,7 @@ export default function ProfilePage() {
         first_name: '',
         last_name: '',
         foto: '',
-        isAccountActive: false,
+        assinatura_status: 'pendente',
         plano: null,
     });
 
@@ -92,10 +92,15 @@ export default function ProfilePage() {
         setShowEditModal(false);
     };
 
+    const assinaturaStatus = () => {
+        return profile.assinatura_status !== 'active';
+    };
+
+
     return (
         <div className={styles.profileContainer}>
             {/* Tarja de Status da Conta */}
-            {!profile.isAccountActive && (
+            {assinaturaStatus() && (
                 <div className={styles.notificationBar}>
                     Sua conta está inativa. <button onClick={() => router.push('/planos')}>Escolher Plano</button>
                 </div>
