@@ -94,6 +94,14 @@ export interface Apolices {
     [key: string]: Apolice[];  // Adicione esta linha para permitir chaves dinâmicas
 }
 
+export interface Profile {
+    nome: string;
+    sobrenome: string;
+    foto: string | File;  // Permitir que foto seja uma string ou um arquivo
+    telefone: string;
+    isAccountActive: boolean;
+}
+
 
 export interface ApoliceDetalhesSegmento {
     total_apolices: number;

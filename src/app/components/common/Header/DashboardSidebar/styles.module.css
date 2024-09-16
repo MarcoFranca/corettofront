@@ -39,9 +39,10 @@
 }
 
 .userImage {
-    height: 1.9rem;
+    height: 68px;
     width: auto;
     margin-right: 1rem;
+    border-radius: 50%;
 }
 
 .dropdownMenu{

@@ -9,6 +9,7 @@ import styles from './styles.module.css';
 import Link from "next/link";
 import Image from "next/image";
 import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
+import GoogleImag from '../../../../../public/assets/common/GoogleIcon.svg';
 import axios from 'axios';
 
 const LoginForm = () => {
@@ -135,15 +136,21 @@ const LoginForm = () => {
                     {loading && <div className={styles.spinner}></div>}
                 </button>
                 {message && <p className={styles.message}>{message}</p>}
+                <div className={styles.lineContainer}>
+                    <div className={styles.line}/>
+                    <p>ou</p>
+                    <div className={styles.line}/>
+                </div>
+                <div className={styles.social_login}>
+                    <button onClick={handleGoogleLogin} className={styles.googleButton}>
+                        <Image src={GoogleImag} alt={'google Icon'} className={styles.social_image}/>
+                        Entrar com Google
+                    </button>
+                </div>
                 <Link href={'/reset-password'} className={styles.sword}>Esqueceu a senha?</Link>
             </form>
             <div className={styles.cadastre}>
                 <p>Não tem conta?<Link href={'/register'}> Cadastre-se</Link></p>
-            </div>
-            <div className={styles.social_login}>
-                <button onClick={handleGoogleLogin} className={styles.googleButton}>
-                    Entrar com Google
-                </button>
             </div>
         </div>
     );

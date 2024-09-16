@@ -1,18 +1,15 @@
 'use client'
+import React, { useState, useEffect } from 'react';
+import api from '@/app/api/axios';
 import styles from './styles.module.css';
+import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import Cell from "@/app/components/common/Header/DashboardSidebar/cell";
-import LeadModal from "@/app/components/Modal/LeadModal";
-import React, {useState} from "react";
-import {useAppDispatch, useAppSelector} from "@/hooks/hooks";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store";
-import {useRouter} from "next/navigation";
-import {logout} from "@/store/slices/authSlice";
-import {createLead} from "@/store/slices/leadsSlice";
+import { logout } from "@/store/slices/authSlice";
 import Image from 'next/image';
 
-// imagens
-import UserImage from "../../../../../../public/assets/common/user.svg";
+// Importações de imagens
+import DefaultUserImage from "../../../../../../public/assets/common/user.svg"; // Imagem padrão
 import EditUserImage from "../../../../../../public/assets/common/editar_usuario_branco.svg";
 import LogoutImage from "../../../../../../public/assets/login/logout_branco.svg";
 import LogoImage from '../../../../../../public/assets/logoIcons/Logo_transparente_clara_horizontal.svg';
@@ -23,15 +20,26 @@ import TodoImage from '../../../../../../public/assets/asideButtons/todo.svg';
 import ConfigImage from '../../../../../../public/assets/asideButtons/engrenagem.svg';
 import AgendaImage from '../../../../../../public/assets/asideButtons/agenda2.svg';
 
-
-
 const DashboardSidebar = () => {
     const dispatch = useAppDispatch();
-    const user = useSelector((state: RootState) => state.auth.user);
-    // const leadsFromStore = useAppSelector((state) => state.leads.leads);
+    const user = useAppSelector((state) => state.auth.user);
+    const [profileImage, setProfileImage] = useState<string | null>(null); // Estado para armazenar a imagem do perfil
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [modalIsOpen, setModalIsOpen] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        // Função para buscar a imagem de perfil do usuário
+        async function fetchProfileImage() {
+            try {
+                const response = await api.get('/profiles/me/');
+                setProfileImage(response.data.image); // Define a imagem de perfil do usuário
+            } catch (error) {
+                console.error('Erro ao carregar a imagem do perfil:', error);
+            }
+        }
+
+        fetchProfileImage();
+    }, []);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -42,24 +50,12 @@ const DashboardSidebar = () => {
         setDropdownOpen(open);
     };
 
-
-    const closeModal = () => {
-        setModalIsOpen(false);
-    };
-
-    const handleLeadSubmit = async (leadData: any) => {
-        // @ts-ignore
-        await dispatch(createLead(leadData));
-        closeModal();
-    };
-
     return (
         <aside className={styles.sidebar}>
             <div className={styles.profile}>
-                <Image src={LogoImage} alt={'logo'} className={styles.logo} priority/>
+                <Image src={LogoImage} alt={'logo'} className={styles.logo} priority />
             </div>
             <div className={styles.headerBar}>
-
                 <div
                     className={styles.userMenu}
                     onMouseEnter={() => toggleDropdown(true)}
@@ -67,42 +63,37 @@ const DashboardSidebar = () => {
                 >
                     <div className={styles.userMenuAcecces}>
                         <Image
-                            src={UserImage}
+                            src={profileImage || DefaultUserImage} // Usa a imagem do perfil ou a imagem padrão
                             alt="user"
                             className={styles.userImage}
+                            width={50} // Define largura
+                            height={50} // Define altura
                         />
-                        <p>{user?.username ?? 'usuario'}</p>
+                        <p>{user?.username ?? 'Usuário'}</p>
                     </div>
                     {dropdownOpen && (
                         <div className={styles.dropdownMenu}>
                             <div className={styles.dropdownBar}></div>
                             <div className={styles.dropdownButton} onClick={() => router.push('/edit-profile')}>
-                                <Image src={EditUserImage} alt={'editar usuario'}/>
+                                <Image src={EditUserImage} alt={'editar usuario'} />
                                 Editar
                             </div>
                             <div className={styles.dropdownButton} onClick={handleLogout}>
-                                <Image src={LogoutImage} alt={'logout'}/>
+                                <Image src={LogoutImage} alt={'logout'} />
                                 Logout
                             </div>
                         </div>
                     )}
                 </div>
             </div>
-
-            <LeadModal
-                isOpen={modalIsOpen}
-                onRequestClose={closeModal}
-                onSubmit={handleLeadSubmit}
-            />
             <nav>
                 <ul>
-                    <Cell url='/dashboard' image={DashboardImage} alt="Dashboard" text={'DASHBOARD'}
-                          campo={'dashboard'}/>
-                    <Cell url='/dashboard/lead' image={DolarImage} alt="Lead" campo={'leads'} text={'LEADS'}/>
-                    <Cell url='/dashboard/carteira' image={CarteiraImage} alt="Carteira" campo={'carteira'} text={'CARTEIRA'}/>
-                    <Cell url='/dashboard/tarefas' image={TodoImage} alt="Tarefas" campo={'tarefas'} text={'TAREFAS'}/>
-                    <Cell url='/dashboard/agenda' image={AgendaImage} alt="Agenda" campo={'agenda'} text={'AGENDA'}/>
-                    <Cell url='/dashboard/config' image={ConfigImage} alt="Engrenagem" campo={'config'} text={'CONFIGURAÇÃO'}/>
+                    <Cell url='/dashboard' image={DashboardImage} alt="Dashboard" text={'DASHBOARD'} campo={'dashboard'} />
+                    <Cell url='/dashboard/lead' image={DolarImage} alt="Lead" campo={'leads'} text={'LEADS'} />
+                    <Cell url='/dashboard/carteira' image={CarteiraImage} alt="Carteira" campo={'carteira'} text={'CARTEIRA'} />
+                    <Cell url='/dashboard/tarefas' image={TodoImage} alt="Tarefas" campo={'tarefas'} text={'TAREFAS'} />
+                    <Cell url='/dashboard/agenda' image={AgendaImage} alt="Agenda" campo={'agenda'} text={'AGENDA'} />
+                    <Cell url='/dashboard/config' image={ConfigImage} alt="Engrenagem" campo={'config'} text={'CONFIGURAÇÃO'} />
                 </ul>
             </nav>
         </aside>
