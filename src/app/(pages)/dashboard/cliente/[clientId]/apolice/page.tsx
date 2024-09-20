@@ -90,6 +90,7 @@ const ApolicePage: React.FC = () => {
 
     return (
         <ClienteDashboardLayout clientId={clientId}>
+            <div className={styles.container}>
             <h1>Apólices</h1>
             <div className={styles.filterContainer}>
                 <label htmlFor="produtoSelect">Filtrar por Produto:</label>
@@ -163,6 +164,7 @@ const ApolicePage: React.FC = () => {
             ) : status === 'succeeded' && apolicesSelecionadas.length === 0 ? (
                 <p>Nenhuma apólice encontrada.</p>
             ) : null }
+            </div>
 
             <ConfirmationModal
                 isOpen={isModalOpen}
