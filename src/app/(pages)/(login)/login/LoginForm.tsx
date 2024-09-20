@@ -57,7 +57,7 @@ const LoginForm = () => {
             localStorage.setItem('user', JSON.stringify(userResponse.data));
 
             setMessage('Login bem-sucedido!');
-            router.push('/dashboard');
+            router.push('/dashboard/perfil');
         } catch (error) {
             setMessage('Erro ao fazer login. Verifique suas credenciais e tente novamente.');
             if (axios.isAxiosError(error)) {
