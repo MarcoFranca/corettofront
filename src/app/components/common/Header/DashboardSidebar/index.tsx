@@ -88,7 +88,7 @@ const DashboardSidebar = () => {
             </div>
             <nav>
                 <ul>
-                    <Cell url='/dashboard' image={DashboardImage} alt="Dashboard" text={'DASHBOARD'} campo={'dashboard'} />
+                    <Cell url='/dashboard/perfil' image={DashboardImage} alt="Dashboard" text={'DASHBOARD'} campo={'dashboard'} />
                     <Cell url='/dashboard/lead' image={DolarImage} alt="Lead" campo={'leads'} text={'LEADS'} />
                     <Cell url='/dashboard/carteira' image={CarteiraImage} alt="Carteira" campo={'carteira'} text={'CARTEIRA'} />
                     <Cell url='/dashboard/tarefas' image={TodoImage} alt="Tarefas" campo={'tarefas'} text={'TAREFAS'} />
