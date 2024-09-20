@@ -65,7 +65,7 @@ export default function RegisterForm() {
             setMessage('Usuário cadastrado e autenticado com sucesso!');
 
             // Redirecionar para o dashboard
-            router.push('/dashboard');
+            router.push('/dashboard/perfil');
         }catch (error: any) {
             if (error.response && error.response.data) {
                 // Exibe a mensagem de erro específica vinda do backend
