@@ -221,7 +221,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
     ];
 
     return (
-        <div>
+        <div className={styles.container}>
             <Steps current={current} onChange={onStepChange} className={styles.steps}>
                 {steps.map((item) => (
                     <Step key={item.title} title={item.title} />

@@ -43,6 +43,7 @@
 }
 
 .notificationBarButton:hover {
+    transition: 0.3s ease;
     background: linear-gradient(260deg, #2196F3 4%, rgb(8, 33, 68) 50%, #000000 70%, #E91E63 100%); /* Aumentando a proporção do preto */
 }
 

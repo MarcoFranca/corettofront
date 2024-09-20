@@ -1,9 +1,17 @@
 .dashboardLayout {
     box-sizing: border-box;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
+    overflow: hidden;
+}
+
+.dashboardLayoutContaint{
+    box-sizing: border-box;
+    margin-top: -17px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
     overflow: hidden;
 }
 
@@ -37,4 +45,60 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+}
+
+.notificationBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px 27px 20px;
+    /*margin-bottom: -15px;*/
+    background: linear-gradient(90deg, #2196F3 4%, rgb(8, 33, 68) 30%, #000000 90%, #E91E63 100%); /* Aumentando a proporção do preto */
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+}
+
+
+.notificationBarContent {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaço entre o texto e o botão */
+}
+
+.notificationBarText {
+    font-weight: bold;
+    margin: 0;
+}
+
+.notificationBarButton {
+    background: linear-gradient(90deg, #2196F3 4%, rgb(8, 33, 68) 50%, #000000 70%, #E91E63 100%); /* Aumentando a proporção do preto */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px; /* Botão com bordas arredondadas */
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.notificationBarButton:hover {
+    transition: 0.3s ease;
+    background: linear-gradient(260deg, #2196F3 4%, rgb(8, 33, 68) 50%, #000000 70%, #E91E63 100%); /* Aumentando a proporção do preto */
+}
+
+.cardsContainer {
+    margin-top: -20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: start;
+    background-color: #ffffff;
+    min-height: 100vh;
+    border-radius: 1rem;
+    padding: 1rem;
+    gap: 20px;
 }

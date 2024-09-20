@@ -92,24 +92,24 @@ export default function ProfilePage() {
         setShowEditModal(false);
     };
 
-    const assinaturaStatus = () => {
-        return profile.assinatura_status !== 'active';
-    };
+    // const assinaturaStatus = () => {
+    //     return profile.assinatura_status !== 'active';
+    // };
 
 
     return (
         <div className={styles.profileContainer}>
             {/* Tarja de Status da Conta */}
-            {assinaturaStatus() && (
-                <div className={styles.notificationBar}>
-                    <div className={styles.notificationBarContent}>
-                        <p className={styles.notificationBarText}>Sua conta está inativa.</p>
-                        <button className={styles.notificationBarButton} onClick={() => router.push('/planos')}>Escolher
-                            seu Plano
-                        </button>
-                    </div>
-                </div>
-            )}
+            {/*{assinaturaStatus() && (*/}
+            {/*    <div className={styles.notificationBar}>*/}
+            {/*        <div className={styles.notificationBarContent}>*/}
+            {/*            <p className={styles.notificationBarText}>Sua conta está inativa.</p>*/}
+            {/*            <button className={styles.notificationBarButton} onClick={() => router.push('/planos')}>Escolher*/}
+            {/*                seu Plano*/}
+            {/*            </button>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*)}*/}
 
             {/* Informações do Perfil */}
             <div className={styles.cardsContainer}>
