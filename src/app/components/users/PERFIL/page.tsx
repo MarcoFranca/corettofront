@@ -102,15 +102,23 @@ export default function ProfilePage() {
             {/* Tarja de Status da Conta */}
             {assinaturaStatus() && (
                 <div className={styles.notificationBar}>
-                    Sua conta está inativa. <button onClick={() => router.push('/planos')}>Escolher Plano</button>
+                    <div className={styles.notificationBarContent}>
+                        <p className={styles.notificationBarText}>Sua conta está inativa.</p>
+                        <button className={styles.notificationBarButton} onClick={() => router.push('/planos')}>Escolher
+                            seu Plano
+                        </button>
+                    </div>
                 </div>
             )}
 
             {/* Informações do Perfil */}
             <div className={styles.cardsContainer}>
                 <div className={styles.card}>
-                    <h3>Plano Atual</h3>
-                    {profile.plano ? ( // Exibir informações do plano se existir
+                    <div className={styles.cardTitle}>
+                        <h3>Plano Atual</h3>
+                        <button className={styles.button} onClick={() => router.push('/planos')}>Escolher Plano</button>
+                    </div>
+                    {profile.plano ? (
                         <>
                             <p>Nome do Plano: {profile.plano.nome}</p>
                             <p>Descrição: {profile.plano.descricao}</p>
@@ -119,18 +127,17 @@ export default function ProfilePage() {
                     ) : (
                         <p>Escolha um plano para ativar sua conta.</p>
                     )}
-                    <button onClick={() => router.push('/planos')}>Escolher Plano</button>
                 </div>
 
                 <div className={styles.card}>
                     <div className={styles.cardTitle}>
                         <h3>Informações do Perfil</h3>
-                        <button onClick={() => openEditModal('profile')}>Editar</button>
+                        <button className={styles.button} onClick={() => openEditModal('profile')}>Editar</button>
                     </div>
-                    <div>
+                    <div className={styles.perfilCardCell}>
                         <p>Nome: </p><p>{profile.first_name}</p>
                     </div>
-                    <div>
+                    <div className={styles.perfilCardCell}>
                         <p>Sobrenome:</p><p>{profile.last_name}</p>
                     </div>
                 </div>
@@ -173,5 +180,6 @@ export default function ProfilePage() {
             </div>
             {message && <p>{message}</p>}
         </div>
+
     );
 }

@@ -1,22 +1,62 @@
-/* styles.module.css */
 .profileContainer {
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
 }
 
 .notificationBar {
-    background-color: #ffefc1;
-    color: #856404;
-    padding: 10px;
-    text-align: center;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px 30px 20px;
+    /*padding-bottom: 20px;*/
+    background: linear-gradient(90deg, #2196F3 4%, rgb(8, 33, 68) 30%, #000000 90%, #E91E63 100%); /* Aumentando a proporção do preto */
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+}
+
+
+.notificationBarContent {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaço entre o texto e o botão */
+}
+
+.notificationBarText {
+    font-weight: bold;
+    margin: 0;
+}
+
+.notificationBarButton {
+    background: linear-gradient(90deg, #2196F3 4%, rgb(8, 33, 68) 50%, #000000 70%, #E91E63 100%); /* Aumentando a proporção do preto */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px; /* Botão com bordas arredondadas */
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.notificationBarButton:hover {
+    background: linear-gradient(260deg, #2196F3 4%, rgb(8, 33, 68) 50%, #000000 70%, #E91E63 100%); /* Aumentando a proporção do preto */
 }
 
 .cardsContainer {
+    margin-top: -20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: start;
+    background-color: #ffffff;
+    min-height: 100vh;
+    border-radius: 1rem;
+    padding: 1rem;
     gap: 20px;
 }
 
@@ -25,19 +65,29 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
 }
 
 .button {
-    background-color: #007bff;
+    background-color: #6200EA;
     color: white;
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-bottom: 10px;
 }
 
 .button:hover {
-    background-color: #0056b3;
+    background-color: #3700B3;
+}
+
+.perfilCardCell{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 /* Modal */
@@ -60,12 +110,13 @@
 
 .cardTitle{
     display: flex;
+    align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #dad0d0;
-    margin: 16px 0;
 }
 
 .cardTitle > h3{
     font-weight: bold;
     font-size: 20px;
+    margin-right: 10px;
 }
