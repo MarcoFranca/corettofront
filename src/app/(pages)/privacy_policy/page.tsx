@@ -38,6 +38,11 @@ export default function PoliticasPage() {
                     coletadas dessas integrações são utilizadas apenas para facilitar a gestão de eventos e não são
                     compartilhadas com terceiros sem o seu consentimento, exceto quando exigido por lei.</p>
 
+                <h2>Retenção e Exclusão de Dados</h2>
+                <p>Retemos as informações dos usuários pelo período necessário para fornecer nossos serviços de maneira eficaz,
+                    de acordo com a finalidade para a qual foram coletadas, ou conforme exigido por lei. Você pode solicitar a exclusão de suas informações pessoais a qualquer momento, enviando um e-mail para <a href="mailto:contato@corretorlab.com">contato@corretorlab.com</a>. Após a solicitação, os dados serão removidos de nossos sistemas, exceto nos casos em que a retenção for exigida por motivos legais ou para cumprir obrigações contratuais.</p>
+                <p>Os dados relacionados ao Google Calendar e Google Meet também podem ser removidos diretamente nas configurações de sua conta Google.</p>
+
                 <h2>Proteção de Dados</h2>
                 <p>O Corretor Lab adota medidas de segurança para proteger suas informações contra acessos não autorizados,
                     uso indevido ou divulgação. No entanto, nenhum sistema de segurança é 100% seguro, e não podemos garantir a
