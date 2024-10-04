@@ -58,7 +58,7 @@ const DashboardSidebar = () => {
             <div className={styles.headerBar}>
                 <div
                     className={styles.userMenu}
-                    onMouseEnter={() => toggleDropdown(true)}
+                    onClick={() => toggleDropdown(true)}
                     onMouseLeave={() => toggleDropdown(false)}
                 >
                     <div className={styles.userMenuAcecces}>
