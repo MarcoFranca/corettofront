@@ -19,7 +19,6 @@ export default function RegisterForm() {
     const dispatch = useDispatch();
     const router = useRouter();
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true); // Inicia o carregamento
@@ -27,6 +26,7 @@ export default function RegisterForm() {
 
         if (password !== confirmPassword) {
             setMessage('As senhas não coincidem.');
+            setLoading(false);
             return;
         }
 
@@ -64,9 +64,24 @@ export default function RegisterForm() {
 
             setMessage('Usuário cadastrado e autenticado com sucesso!');
 
-            // Redirecionar para o dashboard
-            router.push('/dashboard/perfil');
-        }catch (error: any) {
+            // Após a autenticação, iniciar o processo de checkout para o plano escolhido
+            const price_id = "price_1Q4Yc3RpwSFVPEXY79g453lp";  // Aqui você pode ajustar conforme o preço do plano selecionado
+            const plano_id = "e35bc77f-6ad7-4022-9af5-7be0a485801b";  // Ajuste para o ID do plano desejado
+
+            // Iniciar sessão de checkout com a API de pagamentos
+            const response = await api.post('/pagamentos/create-checkout-session/', {
+                price_id,
+                plano_id
+            });
+
+            if (response.data && response.data.checkout_url) {
+                // Redirecionar o usuário para a página de checkout
+                router.push(response.data.checkout_url);
+            } else {
+                setMessage('Erro ao redirecionar para o pagamento. Tente novamente mais tarde.');
+            }
+
+        } catch (error: any) {
             if (error.response && error.response.data) {
                 // Exibe a mensagem de erro específica vinda do backend
                 setMessage(Object.values(error.response.data).join(' '));
@@ -74,10 +89,9 @@ export default function RegisterForm() {
                 setMessage('Erro ao cadastrar ou autenticar usuário. Verifique os dados e tente novamente.');
             }
         } finally {
-                setLoading(false); // Encerra o carregamento
-            }
+            setLoading(false); // Encerra o carregamento
+        }
     };
-
 
     return (
         <div className={styles.container_form}>
@@ -119,7 +133,7 @@ export default function RegisterForm() {
                 <button type="submit" className={styles.button} disabled={loading}>
                     {loading ? 'Entrando...' : 'Cadastre-se'}
                     {loading && <div className={styles.spinner}></div>}
-                    </button>
+                </button>
                 {message && <p className={styles.message}>{message}</p>}
             </form>
             <div className={styles.conecte}>
