@@ -28,13 +28,9 @@ const LoginForm = () => {
         setMessage(''); // Limpa mensagens anteriores
 
         try {
-            const response = await api.post('/o/token/',
-                {
-                    grant_type: 'password',
+            const response = await api.post('/login/',{
                     username,
-                    password,
-                    client_id: clientId,
-                    client_secret: clientSecret,
+                    password
                 },
                 {
                     headers: {
@@ -71,7 +67,16 @@ const LoginForm = () => {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}google/login/?scope=openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events`;
+        const redirectUri = `${process.env.NEXT_PUBLIC_API_BASE_URL}google/callback/`;
+        const scope = [
+            'openid',
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/calendar',
+            'https://www.googleapis.com/auth/calendar.events',
+        ].join(' ');
+
+        window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}google/login/?scope=${scope}&redirect_uri=${redirectUri}`;
     };
 
     const handleGoogleCallback = async () => {
@@ -85,7 +90,6 @@ const LoginForm = () => {
 
                 const { token, user, refresh_token } = response.data;
 
-                // Garantir que um refresh token seja passado, mesmo que seja uma string vazia
                 dispatch(setToken({ access: token, refresh: refresh_token || '' }));
                 localStorage.setItem('accessToken', token);
                 if (refresh_token) {
@@ -101,10 +105,6 @@ const LoginForm = () => {
         }
     };
 
-
-
-
-    // Verifica se existe o parâmetro "code" na URL e chama o callback do Google.
     React.useEffect(() => {
         if (window.location.search.includes('code')) {
             handleGoogleCallback();
@@ -114,7 +114,7 @@ const LoginForm = () => {
     return (
         <div className={styles.container_form}>
             <form onSubmit={handleSubmit} className={styles.form}>
-                <Image src={LogoImag} alt={'logotipo'} className={styles.image}/>
+                <Image src={LogoImag} alt={'logotipo'} className={styles.image} />
                 <input
                     type="text"
                     placeholder="Nome de Usuário"
@@ -137,13 +137,13 @@ const LoginForm = () => {
                 </button>
                 {message && <p className={styles.message}>{message}</p>}
                 <div className={styles.lineContainer}>
-                    <div className={styles.line}/>
+                    <div className={styles.line} />
                     <p>ou</p>
-                    <div className={styles.line}/>
+                    <div className={styles.line} />
                 </div>
                 <div className={styles.social_login}>
                     <button onClick={handleGoogleLogin} className={styles.googleButton}>
-                        <Image src={GoogleImag} alt={'google Icon'} className={styles.social_image}/>
+                        <Image src={GoogleImag} alt={'google Icon'} className={styles.social_image} />
                         Entrar com Google
                     </button>
                 </div>
