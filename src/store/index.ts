@@ -6,6 +6,7 @@ import meetingReducer  from "@/store/slices/meetingSlice";
 import agendaReducer from "@/store/slices/agendaSlice";
 import clientesReducer from '@/store/slices/clientesSlice';
 import apoliceReducer from '@/store/slices/apoliceSlice';
+import profileReducer from '@/store/slices/profileSlice';
 import logoutMiddleware from '@/middleware/logoutMiddleware';
 
 const store = configureStore({
@@ -17,6 +18,7 @@ const store = configureStore({
         agenda: agendaReducer,
         tasks: todoReducer,
         apolices: apoliceReducer,
+        profile: profileReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(logoutMiddleware),

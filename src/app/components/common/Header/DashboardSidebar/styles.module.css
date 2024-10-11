@@ -24,7 +24,6 @@
 .userMenu{
     display: flex;
     flex-direction: column;
-    /*color: #e0e0e0;*/
     padding: 1.5rem 0;
 }
 

@@ -1,12 +1,12 @@
-'use client'
-import React, { useState, useEffect } from 'react';
-import api from '@/app/api/axios';
-import styles from './styles.module.css';
+'use client';
+
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import Cell from "@/app/components/common/Header/DashboardSidebar/cell";
 import { logout } from "@/store/slices/authSlice";
 import Image from 'next/image';
+import Cell from "@/app/components/common/Header/DashboardSidebar/cell";
+import styles from './styles.module.css';
 
 // Importações de imagens
 import DefaultUserImage from "../../../../../../public/assets/common/user.svg"; // Imagem padrão
@@ -20,26 +20,14 @@ import TodoImage from '../../../../../../public/assets/asideButtons/todo.svg';
 import ConfigImage from '../../../../../../public/assets/asideButtons/engrenagem.svg';
 import AgendaImage from '../../../../../../public/assets/asideButtons/agenda2.svg';
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => {
     const dispatch = useAppDispatch();
-    const user = useAppSelector((state) => state.auth.user);
-    const [profileImage, setProfileImage] = useState<string | null>(null); // Estado para armazenar a imagem do perfil
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const router = useRouter();
 
-    useEffect(() => {
-        // Função para buscar a imagem de perfil do usuário
-        async function fetchProfileImage() {
-            try {
-                const response = await api.get('/profiles/me/');
-                setProfileImage(response.data.image); // Define a imagem de perfil do usuário
-            } catch (error) {
-                console.error('Erro ao carregar a imagem do perfil:', error);
-            }
-        }
+    const auth = useAppSelector((state) => state.auth);
+    const user = auth?.user || null;
 
-        fetchProfileImage();
-    }, []);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -66,15 +54,15 @@ const DashboardSidebar = () => {
                             src={profileImage || DefaultUserImage} // Usa a imagem do perfil ou a imagem padrão
                             alt="user"
                             className={styles.userImage}
-                            width={50} // Define largura
-                            height={50} // Define altura
+                            width={50}
+                            height={50}
                         />
                         <p>{user?.username ?? 'Usuário'}</p>
                     </div>
                     {dropdownOpen && (
                         <div className={styles.dropdownMenu}>
                             <div className={styles.dropdownBar}></div>
-                            <div className={styles.dropdownButton} onClick={() => router.push('/edit-profile')}>
+                            <div className={styles.dropdownButton} onClick={() => router.push('/dashboard/perfil')}>
                                 <Image src={EditUserImage} alt={'editar usuario'} />
                                 Editar
                             </div>

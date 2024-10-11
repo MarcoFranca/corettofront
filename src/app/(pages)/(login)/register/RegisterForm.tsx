@@ -66,7 +66,7 @@ export default function RegisterForm() {
 
             // Após a autenticação, iniciar o processo de checkout para o plano escolhido
             const price_id = "price_1Q4Yc3RpwSFVPEXY79g453lp";  // Aqui você pode ajustar conforme o preço do plano selecionado
-            const plano_id = "e35bc77f-6ad7-4022-9af5-7be0a485801b";  // Ajuste para o ID do plano desejado
+            const plano_id = "e73c825e-b8f4-43b2-8227-94a2c8715181";  // Ajuste para o ID do plano desejado
 
             // Iniciar sessão de checkout com a API de pagamentos
             const response = await api.post('/pagamentos/create-checkout-session/', {

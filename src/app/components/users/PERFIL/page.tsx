@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import api from '@/app/api/axios';
-import { useRouter } from 'next/navigation';
 import styles from './styles.module.css';
+import {router} from "next/client";
 
 export default function ProfilePage() {
     const [profile, setProfile] = useState<{
@@ -14,7 +14,8 @@ export default function ProfilePage() {
             nome: string;
             descricao: string;
             preco: string;
-        } | null; // Adicionando o plano ao estado
+            status: string; // Adiciona o status do plano aqui
+        } | null;
     }>({
         first_name: '',
         last_name: '',
@@ -26,8 +27,8 @@ export default function ProfilePage() {
     const [message, setMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
     const [currentField, setCurrentField] = useState<string>('');
-    const router = useRouter();
 
+    // Carrega o perfil do usuário ao montar o componente
     useEffect(() => {
         async function fetchProfile() {
             try {
@@ -36,8 +37,7 @@ export default function ProfilePage() {
                     ...response.data,
                     first_name: response.data.user.first_name,
                     last_name: response.data.user.last_name,
-                    isAccountActive: response.data.user.is_active,
-                    plano: response.data.plano, // Definindo o plano
+                    plano: response.data.plano, // Inclui o plano no perfil
                 });
             } catch (error) {
                 console.error('Erro ao carregar perfil:', error);
@@ -92,53 +92,54 @@ export default function ProfilePage() {
         setShowEditModal(false);
     };
 
-    // const assinaturaStatus = () => {
-    //     return profile.assinatura_status !== 'active';
-    // };
-
+    const assinaturaInativa = profile.assinatura_status !== 'active' && profile.assinatura_status !== 'trialing';
 
     return (
         <div className={styles.profileContainer}>
-            {/* Tarja de Status da Conta */}
-            {/*{assinaturaStatus() && (*/}
-            {/*    <div className={styles.notificationBar}>*/}
-            {/*        <div className={styles.notificationBarContent}>*/}
-            {/*            <p className={styles.notificationBarText}>Sua conta está inativa.</p>*/}
-            {/*            <button className={styles.notificationBarButton} onClick={() => router.push('/planos')}>Escolher*/}
-            {/*                seu Plano*/}
-            {/*            </button>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*)}*/}
-
-            {/* Informações do Perfil */}
+            {/* Informações do Plano */}
             <div className={styles.cardsContainer}>
                 <div className={styles.card}>
                     <div className={styles.cardTitle}>
                         <h3>Plano Atual</h3>
-                        <button className={styles.button} onClick={() => router.push('/planos')}>Escolher Plano</button>
+                        {assinaturaInativa ? (
+                            <button
+                                className={styles.button}
+                                onClick={() => router.push('/planos')}
+                            >
+                                Escolher Plano
+                            </button>
+                        ) : null}
                     </div>
                     {profile.plano ? (
                         <>
-                            <p>Nome do Plano: {profile.plano.nome}</p>
-                            <p>Descrição: {profile.plano.descricao}</p>
-                            <p>Preço: R$ {profile.plano.preco}</p>
+                            <p><strong>Nome do Plano:</strong> {profile.plano.nome}</p>
+                            <p><strong>Descrição:</strong> {profile.plano.descricao}</p>
+                            <p><strong>Preço:</strong> R$ {profile.plano.preco}</p>
+                            <p><strong>Status:</strong> {profile.assinatura_status === 'trialing' ? 'Em período de teste' : 'Ativo'}</p>
                         </>
                     ) : (
                         <p>Escolha um plano para ativar sua conta.</p>
                     )}
                 </div>
 
+                {/* Informações do Perfil */}
                 <div className={styles.card}>
                     <div className={styles.cardTitle}>
                         <h3>Informações do Perfil</h3>
-                        <button className={styles.button} onClick={() => openEditModal('profile')}>Editar</button>
+                        <button
+                            className={styles.button}
+                            onClick={() => openEditModal('profile')}
+                        >
+                            Editar
+                        </button>
                     </div>
                     <div className={styles.perfilCardCell}>
-                        <p>Nome: </p><p>{profile.first_name}</p>
+                        <p>Nome: </p>
+                        <p>{profile.first_name}</p>
                     </div>
                     <div className={styles.perfilCardCell}>
-                        <p>Sobrenome:</p><p>{profile.last_name}</p>
+                        <p>Sobrenome:</p>
+                        <p>{profile.last_name}</p>
                     </div>
                 </div>
 
@@ -172,14 +173,21 @@ export default function ProfilePage() {
                                     />
                                 </>
                             )}
-                            <button className={styles.button} type="submit">Salvar</button>
-                            <button className={styles.button} type="button" onClick={closeEditModal}>Cancelar</button>
+                            <button className={styles.button} type="submit">
+                                Salvar
+                            </button>
+                            <button
+                                className={styles.button}
+                                type="button"
+                                onClick={closeEditModal}
+                            >
+                                Cancelar
+                            </button>
                         </form>
                     </div>
                 )}
             </div>
             {message && <p>{message}</p>}
         </div>
-
     );
 }
