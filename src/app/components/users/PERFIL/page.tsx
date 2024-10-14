@@ -2,9 +2,10 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import api from '@/app/api/axios';
 import styles from './styles.module.css';
-import {router} from "next/client";
+import { useRouter } from 'next/navigation'; // Importando useRouter corretamente
 
 export default function ProfilePage() {
+    const router = useRouter(); // Usando o hook useRouter
     const [profile, setProfile] = useState<{
         first_name: string;
         last_name: string;
@@ -104,7 +105,11 @@ export default function ProfilePage() {
                         {assinaturaInativa ? (
                             <button
                                 className={styles.button}
-                                onClick={() => router.push('/planos')}
+                                onClick={() => {
+                                    if (typeof window !== 'undefined') { // Garante que o código só roda no cliente
+                                        router.push('/planos');
+                                    }
+                                }}
                             >
                                 Escolher Plano
                             </button>
