@@ -20,18 +20,28 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     const user = useSelector((state: RootState) => state.auth?.user);
     const token = useSelector((state: RootState) => state.auth?.token);
-    const [profileImage, setProfileImage] = useState<string | null>(localStorage.getItem('profileImage') || null);
+    const [profileImage, setProfileImage] = useState<string | null>(null); // Inicialmente nulo
 
     // Função para carregar os dados do localStorage e atualizar o Redux
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
-            dispatch(setUserFromLocalStorage());
-            dispatch(setTokenFromLocalStorage());
-        } else {
-            router.push('/');
+        if (typeof window !== "undefined") {
+            const accessToken = localStorage.getItem('accessToken');
+            const storedProfileImage = localStorage.getItem('profileImage');
+
+            if (accessToken) {
+                dispatch(setUserFromLocalStorage());
+                dispatch(setTokenFromLocalStorage());
+            } else {
+                router.push('/');
+            }
+
+            // Configura a imagem de perfil
+            if (storedProfileImage) {
+                setProfileImage(storedProfileImage);
+            }
+
+            setLoading(false);
         }
-        setLoading(false);
     }, [dispatch, router]);
 
     // Função para carregar a imagem de perfil se ela não estiver no localStorage
@@ -42,7 +52,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 const imageUrl = response.data.image;
                 if (imageUrl) {
                     setProfileImage(imageUrl);
-                    localStorage.setItem('profileImage', imageUrl); // Armazena no localStorage
+                    if (typeof window !== "undefined") {
+                        localStorage.setItem('profileImage', imageUrl); // Armazena no localStorage
+                    }
                 }
             } catch (error) {
                 console.error('Erro ao carregar a imagem de perfil:', error);
