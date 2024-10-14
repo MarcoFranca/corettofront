@@ -60,7 +60,12 @@ export default function RegisterForm() {
             const userDetails = await api.get('/user_detail/');
 
             // Armazenar os detalhes do usuário no Redux
-            dispatch(setUser({ id: userDetails.data.id, username, email }));
+            dispatch(setUser({
+                id: userDetails.data.id,
+                username,
+                email,
+                profileImage: userDetails.data.profileImage || '' // Adiciona profileImage ou valor padrão
+            }));
 
             setMessage('Usuário cadastrado e autenticado com sucesso!');
 
