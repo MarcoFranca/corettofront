@@ -70,8 +70,8 @@ export default function RegisterForm() {
             setMessage('Usuário cadastrado e autenticado com sucesso!');
 
             // Após a autenticação, iniciar o processo de checkout para o plano escolhido
-            const price_id = process.env.PRICE_ID ;  // Aqui você pode ajustar conforme o preço do plano selecionado
-            const plano_id = process.env.PLANO_ID ;  // Ajuste para o ID do plano desejado
+            const price_id = process.env.NEXT_PUBLIC_PRICE_ID ;  // Aqui você pode ajustar conforme o preço do plano selecionado
+            const plano_id = process.env.NEXT_PUBLIC_PLANO_ID ;  // Ajuste para o ID do plano desejado
 
             // Iniciar sessão de checkout com a API de pagamentos
             const response = await api.post('/pagamentos/create-checkout-session/', {
