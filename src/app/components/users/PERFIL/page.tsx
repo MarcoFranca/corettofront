@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import api from '@/app/api/axios';
 import styles from './styles.module.css';
@@ -28,6 +28,8 @@ export default function ProfilePage() {
     const [message, setMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
     const [currentField, setCurrentField] = useState<string>('');
+    const [loadingPortal, setLoadingPortal] = useState(false);
+    const [errorPortal, setErrorPortal] = useState('');
 
     // Carrega o perfil do usuário ao montar o componente
     useEffect(() => {
@@ -93,6 +95,23 @@ export default function ProfilePage() {
         setShowEditModal(false);
     };
 
+    const handleOpenPortal = async () => {
+        setLoadingPortal(true);
+        try {
+            const response = await api.post('pagamentos/customer-portal/');
+            const { url } = response.data;
+            if (url) {
+                window.location.href = url; // Redireciona o usuário para o portal do cliente
+            } else {
+                setErrorPortal('Erro ao redirecionar para o portal de pagamentos.');
+            }
+        } catch (err) {
+            setErrorPortal('Erro ao abrir o portal do cliente.');
+        } finally {
+            setLoadingPortal(false);
+        }
+    };
+
     const assinaturaInativa = profile.assinatura_status !== 'active' && profile.assinatura_status !== 'trialing';
 
     return (
@@ -121,6 +140,11 @@ export default function ProfilePage() {
                             <p><strong>Descrição:</strong> {profile.plano.descricao}</p>
                             <p><strong>Preço:</strong> R$ {profile.plano.preco}</p>
                             <p><strong>Status:</strong> {profile.assinatura_status === 'trialing' ? 'Em período de teste' : 'Ativo'}</p>
+                            {/* Botão para abrir o portal de pagamentos do Stripe */}
+                            <button onClick={handleOpenPortal} disabled={loadingPortal}>
+                                {loadingPortal ? 'Abrindo portal...' : 'Ver Pagamentos e Recibos'}
+                            </button>
+                            {errorPortal && <p className={styles.error}>{errorPortal}</p>}
                         </>
                     ) : (
                         <p>Escolha um plano para ativar sua conta.</p>

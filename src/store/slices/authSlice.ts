@@ -10,8 +10,8 @@ const initialState: AuthState = {
 };
 
 // Adicione as credenciais do cliente aqui (você pode configurá-las em variáveis de ambiente para maior segurança)
-const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID || 'hn9sCCN9ceHIuXjYshPYrct3Xw3hDwP5kpXsDAOa';
-const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET || 'HEmcyueQ5aP2AdabL1fhBdyIlrVQanoWl2ZKhawrf4dAUndZBINPAFVI6asBnw9Zp8qJCKb44BH87smCYJ3ZrBmPl2VMPmNcdfWvvjDjGSHcqr3zHJe5SGdptsNXFzky';
+const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
+const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET;
 
 const authSlice = createSlice({
     name: 'auth',
