@@ -77,7 +77,6 @@ export default function RegisterForm() {
             const response = await api.post('/pagamentos/create-checkout-session/', {
                 price_id,
                 plano_id,
-                coupon_id: couponCode  // Inclui o cupom no corpo da requisição
             });
 
             if (response.data && response.data.checkout_url) {
