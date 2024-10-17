@@ -19,8 +19,6 @@ const LoginForm = () => {
     const [loading, setLoading] = useState(false); // Estado de carregamento
     const router = useRouter();
     const dispatch = useDispatch();
-    const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
-    const clientSecret = process.env.NEXT_PUBLIC_CLIENT_SECRET;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -67,7 +65,7 @@ const LoginForm = () => {
     };
 
     const handleGoogleLogin = () => {
-        const redirectUri = `${process.env.NEXT_PUBLIC_API_BASE_URL}google/callback/`;
+        const redirectUri = `${process.env.NEXT_PUBLIC_API_BASE_URL}/google/callback/`;
         const scope = [
             'openid',
             'https://www.googleapis.com/auth/userinfo.email',
@@ -76,7 +74,7 @@ const LoginForm = () => {
             'https://www.googleapis.com/auth/calendar.events',
         ].join(' ');
 
-        window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}google/login/?scope=${scope}&redirect_uri=${redirectUri}`;
+        window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/google/login/?scope=${scope}&redirect_uri=${redirectUri}`;
     };
 
     const handleGoogleCallback = async () => {
