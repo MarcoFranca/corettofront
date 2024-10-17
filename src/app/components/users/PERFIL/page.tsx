@@ -1,37 +1,43 @@
-"use client";
+'use client';
+
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import api from '@/app/api/axios';
 import styles from './styles.module.css';
-import { useRouter } from 'next/navigation'; // Importando useRouter corretamente
+import { useRouter } from 'next/navigation';
+import { Plano } from '@/types/interfaces';
 
 export default function ProfilePage() {
-    const router = useRouter(); // Usando o hook useRouter
+    const router = useRouter();
     const [profile, setProfile] = useState<{
         first_name: string;
         last_name: string;
+        username: string;
         foto: string | File;
-        assinatura_status: string;
-        plano?: {
-            nome: string;
-            descricao: string;
-            preco: string;
-            status: string; // Adiciona o status do plano aqui
-        } | null;
+        assinatura_status: 'active' | 'trialing' | 'inactive';
+        plano?: Plano | null;
     }>({
         first_name: '',
         last_name: '',
+        username: '', // Adicionando o campo de username
         foto: '',
-        assinatura_status: 'pendente',
+        assinatura_status: 'inactive',
         plano: null,
     });
+
 
     const [message, setMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
     const [currentField, setCurrentField] = useState<string>('');
     const [loadingPortal, setLoadingPortal] = useState(false);
     const [errorPortal, setErrorPortal] = useState('');
+    const [subUser, setSubUser] = useState({
+        username: '',
+        password: '',
+        role: 'subuser',
+    });
+    const [loadingSubUser, setLoadingSubUser] = useState(false);
+    const [subUsers, setSubUsers] = useState<any[]>([]);  // List of sub-users
 
-    // Carrega o perfil do usuário ao montar o componente
     useEffect(() => {
         async function fetchProfile() {
             try {
@@ -40,7 +46,8 @@ export default function ProfilePage() {
                     ...response.data,
                     first_name: response.data.user.first_name,
                     last_name: response.data.user.last_name,
-                    plano: response.data.plano, // Inclui o plano no perfil
+                    username: response.data.user.username, // Adicionando o username vindo da API
+                    plano: response.data.plano,
                 });
             } catch (error) {
                 console.error('Erro ao carregar perfil:', error);
@@ -52,6 +59,11 @@ export default function ProfilePage() {
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setProfile({ ...profile, [name]: value });
+    };
+
+    const handleSubUserChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setSubUser({ ...subUser, [name]: value });
     };
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +113,7 @@ export default function ProfilePage() {
             const response = await api.post('pagamentos/customer-portal/');
             const { url } = response.data;
             if (url) {
-                window.location.href = url; // Redireciona o usuário para o portal do cliente
+                window.location.href = url;
             } else {
                 setErrorPortal('Erro ao redirecionar para o portal de pagamentos.');
             }
@@ -112,111 +124,155 @@ export default function ProfilePage() {
         }
     };
 
-    const assinaturaInativa = profile.assinatura_status !== 'active' && profile.assinatura_status !== 'trialing';
+    const handleAddSubUser = async (e: FormEvent) => {
+        e.preventDefault();
+        setLoadingSubUser(true);
+        try {
+            const response = await api.post('/subusuarios/', subUser);
+            setMessage('Subusuário adicionado com sucesso!');
+            setSubUsers([...subUsers, response.data]);  // Atualiza a lista de subusuários
+            setSubUser({ username: '', password: '', role: 'subuser' });
+        } catch (error) {
+            const errorMessage = (error as any)?.response?.data?.detail || 'Erro ao adicionar subusuário.';
+            setMessage(errorMessage);
+            console.error('Erro ao adicionar subusuário:', error);
+        } finally {
+            setLoadingSubUser(false);
+        }
+    };
+
+    const displayName = profile.first_name || profile.last_name
+        ? `${profile.first_name} ${profile.last_name}`.trim()
+        : profile.username; // Exibe o username caso nome e sobrenome estejam vazios
+
+    const assinaturaInativa = profile.assinatura_status === 'inactive';
 
     return (
         <div className={styles.profileContainer}>
-            {/* Informações do Plano */}
+            <h2 className={styles.greeting}>Bem-vindo, {displayName}!</h2>
+
             <div className={styles.cardsContainer}>
+                {/* Card do Plano */}
                 <div className={styles.card}>
                     <div className={styles.cardTitle}>
                         <h3>Plano Atual</h3>
-                        {assinaturaInativa ? (
-                            <button
-                                className={styles.button}
-                                onClick={() => {
-                                    if (typeof window !== 'undefined') { // Garante que o código só roda no cliente
-                                        router.push('/planos');
-                                    }
-                                }}
-                            >
-                                Escolher Plano
-                            </button>
-                        ) : null}
                     </div>
-                    {profile.plano ? (
-                        <>
-                            <p><strong>Nome do Plano:</strong> {profile.plano.nome}</p>
-                            <p><strong>Descrição:</strong> {profile.plano.descricao}</p>
-                            <p><strong>Preço:</strong> R$ {profile.plano.preco}</p>
-                            <p><strong>Status:</strong> {profile.assinatura_status === 'trialing' ? 'Em período de teste' : 'Ativo'}</p>
-                            {/* Botão para abrir o portal de pagamentos do Stripe */}
-                            <button onClick={handleOpenPortal} disabled={loadingPortal}>
-                                {loadingPortal ? 'Abrindo portal...' : 'Ver Pagamentos e Recibos'}
-                            </button>
-                            {errorPortal && <p className={styles.error}>{errorPortal}</p>}
-                        </>
-                    ) : (
-                        <p>Escolha um plano para ativar sua conta.</p>
-                    )}
+                    <p>
+                        <strong>Status:</strong> {profile.assinatura_status === 'trialing' ? 'Em período de teste' : profile.assinatura_status === 'active' ? 'Ativo' : 'Inativo'}
+                    </p>
+                    <p><strong>Nome do Plano:</strong> {profile.plano?.nome || 'Nenhum plano escolhido'}</p>
+                    <p><strong>Preço:</strong> R$ {profile.plano?.preco || 'N/A'}</p>
+                    <button className={styles.button} onClick={handleOpenPortal} disabled={loadingPortal}>
+                        {loadingPortal ? 'Abrindo portal...' : 'Ver Pagamentos e Recibos'}
+                    </button>
+                    {errorPortal && <p className={styles.error}>{errorPortal}</p>}
                 </div>
 
-                {/* Informações do Perfil */}
+                {/* Card de Informações do Perfil */}
                 <div className={styles.card}>
                     <div className={styles.cardTitle}>
                         <h3>Informações do Perfil</h3>
-                        <button
-                            className={styles.button}
-                            onClick={() => openEditModal('profile')}
-                        >
-                            Editar
-                        </button>
+                        <button className={styles.button} onClick={() => openEditModal('profile')}>Editar</button>
                     </div>
-                    <div className={styles.perfilCardCell}>
-                        <p>Nome: </p>
-                        <p>{profile.first_name}</p>
-                    </div>
-                    <div className={styles.perfilCardCell}>
-                        <p>Sobrenome:</p>
-                        <p>{profile.last_name}</p>
-                    </div>
+                    <p><strong>Nome:</strong> {profile.first_name}</p>
+                    <p><strong>Sobrenome:</strong> {profile.last_name}</p>
                 </div>
-
-                {/* Modal de Edição */}
-                {showEditModal && (
-                    <div className={styles.modal}>
-                        <form onSubmit={handleSubmit} className={styles.profileForm}>
-                            <h2>Editar {currentField}</h2>
-                            {currentField === 'profile' && (
-                                <>
-                                    <input
-                                        type="text"
-                                        name="first_name"
-                                        placeholder="Nome"
-                                        value={profile.first_name}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="last_name"
-                                        placeholder="Sobrenome"
-                                        value={profile.last_name}
-                                        onChange={handleInputChange}
-                                    />
-                                    <input
-                                        type="file"
-                                        name="foto"
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                    />
-                                </>
-                            )}
-                            <button className={styles.button} type="submit">
-                                Salvar
-                            </button>
-                            <button
-                                className={styles.button}
-                                type="button"
-                                onClick={closeEditModal}
-                            >
-                                Cancelar
-                            </button>
-                        </form>
-                    </div>
-                )}
             </div>
-            {message && <p>{message}</p>}
+
+            {/* Tabela de Subusuários */}
+            {!assinaturaInativa && (
+                <div className={styles.subuserTableContainer}>
+                    <h3>Subusuários</h3>
+                    <table className={styles.subuserTable}>
+                        <thead>
+                        <tr>
+                            <th>Nome de Usuário</th>
+                            <th>Função</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {subUsers.length === 0 ? (
+                            <tr>
+                                <td colSpan={3}>Nenhum subusuário cadastrado.</td>
+                            </tr>
+                        ) : (
+                            subUsers.map((user) => (
+                                <tr key={user.id}>
+                                    <td>{user.username}</td>
+                                    <td>{user.role}</td>
+                                    <td><button className={styles.tableButton}>Remover</button></td>
+                                </tr>
+                            ))
+                        )}
+                        </tbody>
+                    </table>
+
+                    {/* Formulário de Adição de Subusuário */}
+                    <form onSubmit={handleAddSubUser} className={styles.subuserForm}>
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Nome de usuário"
+                            value={subUser.username}
+                            onChange={handleSubUserChange}
+                            required
+                        />
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Senha"
+                            value={subUser.password}
+                            onChange={handleSubUserChange}
+                            required
+                        />
+                        <button className={styles.button} type="submit" disabled={loadingSubUser}>
+                            {loadingSubUser ? 'Adicionando...' : 'Adicionar Subusuário'}
+                        </button>
+                    </form>
+                    {message && <p>{message}</p>}
+                </div>
+            )}
+
+            {/* Modal de Edição */}
+            {showEditModal && (
+                <div className={styles.modal}>
+                    <form onSubmit={handleSubmit} className={styles.profileForm}>
+                        <h2>Editar {currentField}</h2>
+                        {currentField === 'profile' && (
+                            <>
+                                <input
+                                    type="text"
+                                    name="first_name"
+                                    placeholder="Nome"
+                                    value={profile.first_name}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    name="last_name"
+                                    placeholder="Sobrenome"
+                                    value={profile.last_name}
+                                    onChange={handleInputChange}
+                                />
+                                <input
+                                    type="file"
+                                    name="foto"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                />
+                            </>
+                        )}
+                        <button className={styles.button} type="submit">
+                            Salvar
+                        </button>
+                        <button className={styles.button} type="button" onClick={closeEditModal}>
+                            Cancelar
+                        </button>
+                    </form>
+                </div>
+            )}
         </div>
     );
 }
