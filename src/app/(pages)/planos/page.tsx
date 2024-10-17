@@ -4,15 +4,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { setTokenFromLocalStorage, setUserFromLocalStorage } from '@/store/slices/authSlice';
+import {AuthState, Plano} from "@/types/interfaces";  // Importe o tipo RootState
 
 export default function PlansPage() {
-    const [plans, setPlans] = useState([]);
+    const [plans, setPlans] = useState<Plano[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const router = useRouter();
     const dispatch = useDispatch();
 
-    const { token } = useSelector((state) => state.auth);
+    // Defina o tipo do estado corretamente
+    const { token } = useSelector((state: { auth: AuthState }) => state.auth);
     const isAuthenticated = !!token?.access;
 
     useEffect(() => {
@@ -35,7 +37,7 @@ export default function PlansPage() {
         fetchPlans();
     }, []);
 
-    const handleSelectPlan = async (price_id, plano_id) => {
+    const handleSelectPlan = async (price_id: string, plano_id: string) => {
         if (!isAuthenticated) {
             router.push('/login');
             return;

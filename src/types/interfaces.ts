@@ -287,9 +287,10 @@ export interface AgendaState {
     error: string | null;
 }
 
-// interface CustomDropdownProps {
-//     options: { value: string; label: string }[];
-//     placeholder: string;
-//     onSelect: (value: string) => void;
-//     groups?: { label: string; options: { value: string; label: string }[] }[];  // Tornando `groups` opcional
-// }
+export interface Plano {
+    id: string;
+    nome: string;
+    descricao: string;
+    preco: number;
+    stripe_price_id: string;
+}
