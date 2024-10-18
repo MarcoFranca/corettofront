@@ -1,29 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import api from '@/app/api/axios';
-import styles from './styles.module.css';
+import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
+import { AppDispatch } from '@/store'; // Importe a tipagem do dispatch
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { Plano } from '@/types/interfaces';
+import { RootState } from '@/store';
+import { fetchProfile, fetchSubUsers, updateProfile } from '@/store/slices/profileSlice';
+import styles from './styles.module.css';
+import api from '@/app/api/axios';
 
 export default function ProfilePage() {
+    const dispatch: AppDispatch = useDispatch();
     const router = useRouter();
-    const [profile, setProfile] = useState<{
-        first_name: string;
-        last_name: string;
-        username: string;
-        foto: string | File;
-        assinatura_status: 'active' | 'trialing' | 'inactive';
-        plano?: Plano | null;
-    }>({
-        first_name: '',
-        last_name: '',
-        username: '', // Adicionando o campo de username
-        foto: '',
-        assinatura_status: 'inactive',
-        plano: null,
-    });
 
+    const { data: profile, subUserData, subUsers, loading, error } = useSelector((state: RootState) => state.profile);
 
     const [message, setMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
@@ -33,35 +23,26 @@ export default function ProfilePage() {
     const [subUser, setSubUser] = useState({
         username: '',
         password: '',
-        role: 'subuser',
+        role: 'secretaria',
     });
     const [loadingSubUser, setLoadingSubUser] = useState(false);
-    const [subUsers, setSubUsers] = useState<any[]>([]);  // List of sub-users
 
     useEffect(() => {
-        async function fetchProfile() {
-            try {
-                const response = await api.get('/profiles/me/');
-                setProfile({
-                    ...response.data,
-                    first_name: response.data.user.first_name,
-                    last_name: response.data.user.last_name,
-                    username: response.data.user.username, // Adicionando o username vindo da API
-                    plano: response.data.plano,
-                });
-            } catch (error) {
-                console.error('Erro ao carregar perfil:', error);
-            }
+        dispatch(fetchProfile());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (profile && !subUserData) {
+            dispatch(fetchSubUsers());
         }
-        fetchProfile();
-    }, []);
+    }, [profile, subUserData, dispatch]);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setProfile({ ...profile, [name]: value });
+        dispatch(updateProfile({ user: { ...profile?.user, [name]: value } }));
     };
 
-    const handleSubUserChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleSubUserChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setSubUser({ ...subUser, [name]: value });
     };
@@ -77,10 +58,10 @@ export default function ProfilePage() {
         e.preventDefault();
         try {
             const formData = new FormData();
-            formData.append('user.first_name', profile.first_name);
-            formData.append('user.last_name', profile.last_name);
+            formData.append('user.first_name', profile?.user.first_name || '');
+            formData.append('user.last_name', profile?.user.last_name || '');
 
-            if (profile.foto && typeof profile.foto !== 'string') {
+            if (profile?.foto && typeof profile.foto !== 'string') {
                 formData.append('image', profile.foto);
             }
 
@@ -95,6 +76,41 @@ export default function ProfilePage() {
         } catch (error) {
             setMessage('Erro ao atualizar perfil. Tente novamente.');
             console.error('Erro ao atualizar perfil:', error);
+        }
+    };
+
+    const handleAddSubUser = async (e: FormEvent) => {
+        e.preventDefault();
+        setLoadingSubUser(true);
+
+        const maxSubUsers = profile?.plano?.limite_subusuarios || 0;
+        if (subUsers.length >= maxSubUsers) {
+            setMessage(`Limite de ${maxSubUsers} subusuários atingido. Não é possível adicionar mais subusuários.`);
+            setLoadingSubUser(false);
+            return;
+        }
+
+        try {
+            const response = await api.post('/subusuarios/', subUser);
+            setMessage('Subusuário adicionado com sucesso!');
+            dispatch(fetchSubUsers());
+            setSubUser({ username: '', password: '', role: 'secretaria' });
+        } catch (error) {
+            const errorMessage = (error as any)?.response?.data?.[0] || 'Erro ao adicionar subusuário.';
+            setMessage(errorMessage);
+        } finally {
+            setLoadingSubUser(false);
+        }
+    };
+
+    const handleDeleteSubUser = async (id: string) => {
+        try {
+            await api.delete(`/subusuarios/${id}/`);
+            dispatch(fetchSubUsers());
+            setMessage('Subusuário removido com sucesso!');
+        } catch (error) {
+            const errorMessage = (error as any)?.response?.data?.detail || 'Erro ao remover subusuário.';
+            setMessage(errorMessage);
         }
     };
 
@@ -124,63 +140,51 @@ export default function ProfilePage() {
         }
     };
 
-    const handleAddSubUser = async (e: FormEvent) => {
-        e.preventDefault();
-        setLoadingSubUser(true);
-        try {
-            const response = await api.post('/subusuarios/', subUser);
-            setMessage('Subusuário adicionado com sucesso!');
-            setSubUsers([...subUsers, response.data]);  // Atualiza a lista de subusuários
-            setSubUser({ username: '', password: '', role: 'subuser' });
-        } catch (error) {
-            const errorMessage = (error as any)?.response?.data?.detail || 'Erro ao adicionar subusuário.';
-            setMessage(errorMessage);
-            console.error('Erro ao adicionar subusuário:', error);
-        } finally {
-            setLoadingSubUser(false);
-        }
-    };
+    const displayName = profile?.user.first_name || profile?.user.last_name
+        ? `${profile?.user.first_name} ${profile?.user.last_name}`.trim()
+        : profile?.user.username;
 
-    const displayName = profile.first_name || profile.last_name
-        ? `${profile.first_name} ${profile.last_name}`.trim()
-        : profile.username; // Exibe o username caso nome e sobrenome estejam vazios
-
-    const assinaturaInativa = profile.assinatura_status === 'inactive';
+    const assinaturaInativa = profile?.assinatura_status === 'inactive';
+    const isSubUser = !!subUserData;
 
     return (
         <div className={styles.profileContainer}>
             <h2 className={styles.greeting}>Bem-vindo, {displayName}!</h2>
 
             <div className={styles.cardsContainer}>
-                {/* Card do Plano */}
                 <div className={styles.card}>
                     <div className={styles.cardTitle}>
                         <h3>Plano Atual</h3>
                     </div>
-                    <p>
-                        <strong>Status:</strong> {profile.assinatura_status === 'trialing' ? 'Em período de teste' : profile.assinatura_status === 'active' ? 'Ativo' : 'Inativo'}
-                    </p>
-                    <p><strong>Nome do Plano:</strong> {profile.plano?.nome || 'Nenhum plano escolhido'}</p>
-                    <p><strong>Preço:</strong> R$ {profile.plano?.preco || 'N/A'}</p>
+                    <p><strong>Status:</strong> {profile?.assinatura_status === 'trialing' ? 'Em período de teste' : profile?.assinatura_status === 'active' ? 'Ativo' : 'Inativo'}</p>
+                    <p><strong>Nome do Plano:</strong> {profile?.plano?.nome || 'Nenhum plano escolhido'}</p>
+                    <p><strong>Preço:</strong> R$ {profile?.plano?.preco || 'N/A'}</p>
+                    {!isSubUser && (
+                        <>
+                            <p><strong>Limite de Subusuários:</strong> {profile?.plano?.limite_subusuarios || 'N/A'}</p>
+                            <p><strong>Subusuários Atuais:</strong> {subUsers.length} / {profile?.plano?.limite_subusuarios || '0'}</p>
+                        </>
+                    )}
                     <button className={styles.button} onClick={handleOpenPortal} disabled={loadingPortal}>
                         {loadingPortal ? 'Abrindo portal...' : 'Ver Pagamentos e Recibos'}
                     </button>
                     {errorPortal && <p className={styles.error}>{errorPortal}</p>}
                 </div>
 
-                {/* Card de Informações do Perfil */}
                 <div className={styles.card}>
                     <div className={styles.cardTitle}>
                         <h3>Informações do Perfil</h3>
                         <button className={styles.button} onClick={() => openEditModal('profile')}>Editar</button>
                     </div>
-                    <p><strong>Nome:</strong> {profile.first_name}</p>
-                    <p><strong>Sobrenome:</strong> {profile.last_name}</p>
+                    <p><strong>Nome:</strong> {profile?.user.first_name}</p>
+                    <p><strong>Sobrenome:</strong> {profile?.user.last_name}</p>
+                    {isSubUser && (
+                        <p><strong>Função:</strong> {subUserData?.role}</p>
+                    )}
                 </div>
             </div>
 
-            {/* Tabela de Subusuários */}
-            {!assinaturaInativa && (
+            {!assinaturaInativa && !isSubUser && (
                 <div className={styles.subuserTableContainer}>
                     <h3>Subusuários</h3>
                     <table className={styles.subuserTable}>
@@ -201,14 +205,20 @@ export default function ProfilePage() {
                                 <tr key={user.id}>
                                     <td>{user.username}</td>
                                     <td>{user.role}</td>
-                                    <td><button className={styles.tableButton}>Remover</button></td>
+                                    <td>
+                                        <button
+                                            className={styles.tableButton}
+                                            onClick={() => handleDeleteSubUser(user.id)}
+                                        >
+                                            Remover
+                                        </button>
+                                    </td>
                                 </tr>
                             ))
                         )}
                         </tbody>
                     </table>
 
-                    {/* Formulário de Adição de Subusuário */}
                     <form onSubmit={handleAddSubUser} className={styles.subuserForm}>
                         <input
                             type="text"
@@ -226,6 +236,15 @@ export default function ProfilePage() {
                             onChange={handleSubUserChange}
                             required
                         />
+                        <select
+                            name="role"
+                            value={subUser.role}
+                            onChange={handleSubUserChange}
+                            required
+                        >
+                            <option value="secretaria">Secretaria</option>
+                            <option value="gerente">Gerente</option>
+                        </select>
                         <button className={styles.button} type="submit" disabled={loadingSubUser}>
                             {loadingSubUser ? 'Adicionando...' : 'Adicionar Subusuário'}
                         </button>
@@ -234,7 +253,6 @@ export default function ProfilePage() {
                 </div>
             )}
 
-            {/* Modal de Edição */}
             {showEditModal && (
                 <div className={styles.modal}>
                     <form onSubmit={handleSubmit} className={styles.profileForm}>
@@ -245,7 +263,7 @@ export default function ProfilePage() {
                                     type="text"
                                     name="first_name"
                                     placeholder="Nome"
-                                    value={profile.first_name}
+                                    value={profile?.user.first_name || ''}
                                     onChange={handleInputChange}
                                     required
                                 />
@@ -253,7 +271,7 @@ export default function ProfilePage() {
                                     type="text"
                                     name="last_name"
                                     placeholder="Sobrenome"
-                                    value={profile.last_name}
+                                    value={profile?.user.last_name || ''}
                                     onChange={handleInputChange}
                                 />
                                 <input

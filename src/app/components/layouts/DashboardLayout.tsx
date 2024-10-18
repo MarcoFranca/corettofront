@@ -20,6 +20,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const [planoAtivo, setPlanoAtivo] = useState<boolean>(true);
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [message, setMessage] = useState('');
+    const [isSubUser, setIsSubUser] = useState<boolean>(false);
 
     const user = useSelector((state: RootState) => state.auth?.user);
     const token = useSelector((state: RootState) => state.auth?.token);
@@ -46,16 +47,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         async function fetchProfileAndPlanStatus() {
             try {
                 const response = await api.get('/profiles/me/');
-                const imageUrl = response.data.image;
-                const planoAtivo = response.data.assinatura_status === 'active' || response.data.assinatura_status === 'trialing';
+                const { profile, subuser } = response.data;
+                const imageUrl = profile.image;
+                const planoStatus = profile.assinatura_status;
+                const isPlanoAtivo = planoStatus === 'active' || planoStatus === 'trialing';
 
                 if (imageUrl) {
                     setProfileImage(imageUrl);
                     localStorage.setItem('profileImage', imageUrl);
                 }
 
-                if (!planoAtivo) {
-                    setPlanoAtivo(false);
+                setPlanoAtivo(isPlanoAtivo);
+                setIsSubUser(!!subuser);
+
+                if (!isPlanoAtivo) {
                     setMessage('Seu plano está inativo. Por favor, escolha um plano para continuar.');
                     router.push('/dashboard/perfil/');
                 }

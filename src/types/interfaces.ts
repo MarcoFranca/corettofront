@@ -293,4 +293,7 @@ export interface Plano {
     descricao: string;
     preco: number;
     stripe_price_id: string;
+    limite_subusuarios: number; // Adicionando a propriedade
+    limite_armazenamento: number; // Adicionando a propriedade
 }
+
