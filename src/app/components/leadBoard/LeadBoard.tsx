@@ -6,27 +6,25 @@ import { createLead, fetchLeads } from '@/store/slices/leadsSlice';
 import { initializeData, handleDragEnd } from './leadBoardUtils';
 import Column from './Column';
 import styles from './LeadBoard.module.css';
-import LeadModal from "@/app/components/Modal/LeadModal";
+import LeadModal from '@/app/components/Modal/LeadModal';
 import CadastroLead from '../../../../public/assets/pages/leads/cadastroLead.svg';
-import Image from "next/image";
+import Image from 'next/image';
 
 const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
     const leadsFromStore = useAppSelector((state) => state.leads.leads);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [data, setData] = useState(() => initializeData());  // Inicia o estado com `initializeData`
+    const [data, setData] = useState(() => initializeData());
     const router = useRouter();
     const tooltipContainerRef = useRef<HTMLDivElement>(null);
     let clickTimer: NodeJS.Timeout | null = null;
 
-    // Carregar os leads apenas se ainda não estiverem carregados
     useEffect(() => {
-        if (leadsFromStore.length === 0) {  // Verifica se os leads já estão no Redux
+        if (leadsFromStore.length === 0) {
             dispatch(fetchLeads({ status: 'lead' }));
         }
     }, [dispatch, leadsFromStore.length]);
 
-    // Atualizar o estado dos dados quando os leads no store forem alterados
     useEffect(() => {
         if (leadsFromStore.length > 0) {
             const updatedData = initializeData(leadsFromStore);
@@ -70,7 +68,7 @@ const LeadBoard: React.FC = () => {
                     {(provided) => (
                         <div>
                             <div className={styles.headerBar}>
-                                <Image src={CadastroLead} alt={'Cadastro'} className={styles.button} onClick={openModal} />
+                                <Image src={CadastroLead} alt="Cadastro" className={styles.button} onClick={openModal} />
                             </div>
                             <div className={styles.board} {...provided.droppableProps} ref={provided.innerRef}>
                                 {data.columnOrder.map((columnId, index) => {
@@ -81,23 +79,15 @@ const LeadBoard: React.FC = () => {
                                     }
 
                                     return (
-                                        <>
-                                            <LeadModal
-                                                isOpen={modalIsOpen}
-                                                onRequestClose={closeModal}
-                                                onSubmit={handleLeadSubmit}
-                                            />
-
-                                            <Column
-                                                key={columnId}
-                                                column={column}
-                                                leads={data.leads}
-                                                index={index}
-                                                handleLeadClick={handleLeadClick}
-                                                handleLeadDragStart={handleLeadDragStart}
-                                                tooltipContainerRef={tooltipContainerRef}
-                                            />
-                                        </>
+                                        <Column
+                                            key={columnId}
+                                            column={column}
+                                            leads={data.leads}
+                                            index={index}
+                                            handleLeadClick={handleLeadClick}
+                                            handleLeadDragStart={handleLeadDragStart}
+                                            tooltipContainerRef={tooltipContainerRef}
+                                        />
                                     );
                                 })}
                                 {provided.placeholder}
@@ -106,6 +96,12 @@ const LeadBoard: React.FC = () => {
                     )}
                 </Droppable>
             </DragDropContext>
+
+            <LeadModal
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                onSubmit={handleLeadSubmit}
+            />
         </div>
     );
 };

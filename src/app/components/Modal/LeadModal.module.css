@@ -1,58 +1,28 @@
-.modalContent {
-    position: fixed;
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    max-width: 100%;
-}
-
-.modalOverlay {
-    background-color: rgba(0, 0, 0, 0.4);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-}
-
-.modalContent > form {
+.form {
     display: flex;
     flex-direction: column;
-    /*background-color: #020f60;*/
+    gap: 10px;
 }
 
-.modalContent > form > label {
-    margin-bottom: 1rem;
+.inputContainer {
+    display: flex;
+    flex-direction: column;
 }
 
-.modalContent > form > label > input {
+.label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.select {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 0.25rem;
-    margin-top: 0.5rem;
+    font-size: 16px;
 }
 
-.modalContent > form > button {
-    padding: 0.5rem 1rem;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    margin-top: 1rem;
+.form input,
+.form select {
+    width: 100%;
 }
-
-.modalContent > form > button:hover {
-    background-color: rgba(0, 123, 255, 0.85);
-}
-
-/* src/app/components/Modal/LeadModal.module.css */
-
-
