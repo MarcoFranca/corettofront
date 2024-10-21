@@ -3,15 +3,20 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { AppDispatch } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
 import { RootState } from '@/store';
 import { fetchProfile, fetchSubUsers, updateProfile } from '@/store/slices/profileSlice';
 import styles from './styles.module.css';
 import api from '@/app/api/axios';
+import Modal from '@/app/components/Modal/simpleModal';
+import Button from '@/app/components/global/Button';
+import Input from '@/app/components/global/Input';
 
 export default function ProfilePage() {
     const dispatch: AppDispatch = useDispatch();
+    const router = useRouter();
 
-    const { data: profile, subUserData, subUsers} = useSelector((state: RootState) => state.profile);
+    const { data: profile, subUserData, subUsers, loading, error } = useSelector((state: RootState) => state.profile);
 
     const [message, setMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
@@ -266,42 +271,40 @@ export default function ProfilePage() {
             )}
 
             {showEditModal && (
-                <div className={styles.modal}>
-                    <form onSubmit={handleSubmit} className={styles.profileForm}>
-                        <h2>Editar {currentField}</h2>
-                        {currentField === 'profile' && (
-                            <>
-                                <input
-                                    type="text"
-                                    name="first_name"
-                                    placeholder="Nome"
-                                    value={profile?.user.first_name || ''}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    name="last_name"
-                                    placeholder="Sobrenome"
-                                    value={profile?.user.last_name || ''}
-                                    onChange={handleInputChange}
-                                />
-                                <input
-                                    type="file"
-                                    name="foto"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
-                            </>
-                        )}
-                        <button className={styles.button} type="submit">
+                <Modal show={showEditModal} onClose={closeEditModal} title="Editar Perfil">
+                    <form onSubmit={handleSubmit}>
+                        <Input
+                            label="Nome"
+                            type="text"
+                            name="first_name"
+                            placeholder="Nome"
+                            value={profile?.user.first_name || ''}
+                            onChange={handleInputChange}
+                            required
+                        />
+                        <Input
+                            label="Sobrenome"
+                            type="text"
+                            name="last_name"
+                            placeholder="Sobrenome"
+                            value={profile?.user.last_name || ''}
+                            onChange={handleInputChange}
+                        />
+                        <Input
+                            label="Foto"
+                            type="file"
+                            name="foto"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                        <Button variant="primary" type="submit">
                             Salvar
-                        </button>
-                        <button className={styles.button} type="button" onClick={closeEditModal}>
+                        </Button>
+                        <Button variant="secondary" type="button" onClick={closeEditModal}>
                             Cancelar
-                        </button>
+                        </Button>
                     </form>
-                </div>
+                </Modal>
             )}
         </div>
     );
