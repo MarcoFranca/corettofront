@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import { AppDispatch } from '@/store'; // Importe a tipagem do dispatch
+import { AppDispatch } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/navigation';
 import { RootState } from '@/store';
 import { fetchProfile, fetchSubUsers, updateProfile } from '@/store/slices/profileSlice';
 import styles from './styles.module.css';
@@ -11,9 +10,8 @@ import api from '@/app/api/axios';
 
 export default function ProfilePage() {
     const dispatch: AppDispatch = useDispatch();
-    const router = useRouter();
 
-    const { data: profile, subUserData, subUsers, loading, error } = useSelector((state: RootState) => state.profile);
+    const { data: profile, subUserData, subUsers} = useSelector((state: RootState) => state.profile);
 
     const [message, setMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
@@ -39,7 +37,16 @@ export default function ProfilePage() {
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        dispatch(updateProfile({ user: { ...profile?.user, [name]: value } }));
+        if (profile) {
+            dispatch(
+                updateProfile({
+                    user: {
+                        ...profile.user,
+                        [name]: value,
+                    },
+                })
+            );
+        }
     };
 
     const handleSubUserChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -49,8 +56,13 @@ export default function ProfilePage() {
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            setProfile({ ...profile, foto: file });
+        if (file && profile) {
+            dispatch(
+                updateProfile({
+                    ...profile,
+                    foto: file,
+                })
+            );
         }
     };
 

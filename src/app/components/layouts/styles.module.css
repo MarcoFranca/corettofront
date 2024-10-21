@@ -95,7 +95,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: start;
+    align-items: flex-start;
     background-color: #ffffff;
     min-height: 100vh;
     border-radius: 1rem;

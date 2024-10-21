@@ -8,7 +8,7 @@ interface ProfileState {
             last_name: string;
             username: string;
         };
-        foto?: string; // Adicionando 'foto' aqui
+        foto?: string | File; // Ajustado para aceitar ambos os tipos.
         assinatura_status: string;
         plano?: {
             nome: string;

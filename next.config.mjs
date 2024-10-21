@@ -2,9 +2,14 @@
 const nextConfig = {
     reactStrictMode: true,
     images: {
-        domains: ['corretorlab-file.s3.amazonaws.com'], // Adicione aqui o domínio da sua imagem
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'corretorlab-file.s3.amazonaws.com',
+                pathname: '/**',
+            },
+        ],
     },
 };
-
 
 export default nextConfig;
