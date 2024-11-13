@@ -64,25 +64,27 @@ const LoginForm = () => {
         }
     };
 
-    const handleGoogleLogin = () => {
-        const redirectUri = `${process.env.NEXT_PUBLIC_API_BASE_URL}/google/callback/`;
-        const scope = [
-            'openid',
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/calendar',
-            'https://www.googleapis.com/auth/calendar.events',
-        ].join(' ');
+    const handleGoogleLogin = async () => {
+        try {
+            // Solicita ao backend o URL de autorização para o Google OAuth
+            const response = await api.get('/integrations/google/login/');
+            const { auth_url } = response.data;
 
-        window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/google/login/?scope=${scope}&redirect_uri=${redirectUri}`;
+            // Redireciona o usuário automaticamente para o URL de autorização do Google
+            window.location.href = auth_url;
+        } catch (error) {
+            console.error('Erro ao iniciar login com Google:', error);
+            setMessage('Erro ao conectar com o Google. Tente novamente mais tarde.');
+        }
     };
+
 
     const handleGoogleCallback = async () => {
         const params = new URLSearchParams(window.location.search);
         const authCode = params.get('code');
         if (authCode) {
             try {
-                const response = await api.post('/google/callback/', { code: authCode }, {
+                const response = await api.post('/integrations/google/callback/', { code: authCode }, {
                     headers: { 'Content-Type': 'application/json' }
                 });
 
