@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import api from '@/app/api/axios';
@@ -10,106 +10,53 @@ import Link from "next/link";
 import Image from "next/image";
 import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
 import GoogleImag from '../../../../../public/assets/common/GoogleIcon.svg';
-import axios from 'axios';
 
 const LoginForm = () => {
     const [username, setUsernameState] = useState('');
     const [password, setPasswordState] = useState('');
     const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false); // Estado de carregamento
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
     const dispatch = useDispatch();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setLoading(true); // Inicia o carregamento
-        setMessage(''); // Limpa mensagens anteriores
+        setLoading(true);
+        setMessage('');
 
         try {
-            const response = await api.post('/login/',{
-                    username,
-                    password
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                }
-            );
-
+            const response = await api.post('/login/', { username, password });
             const { access_token: access, refresh_token: refresh } = response.data;
-            dispatch(setToken({ access, refresh }));
 
+            dispatch(setToken({ access, refresh }));
             const userResponse = await api.get('/user_detail/', {
                 headers: { Authorization: `Bearer ${access}` },
             });
 
             dispatch(setUser(userResponse.data));
-
             localStorage.setItem('accessToken', access);
             localStorage.setItem('refreshToken', refresh);
             localStorage.setItem('user', JSON.stringify(userResponse.data));
-
             setMessage('Login bem-sucedido!');
             router.push('/dashboard/perfil');
         } catch (error) {
             setMessage('Erro ao fazer login. Verifique suas credenciais e tente novamente.');
-            if (axios.isAxiosError(error)) {
-                console.error('Erro ao fazer login:', error.response ? error.response.data : error.message);
-            } else {
-                console.error('Erro inesperado ao fazer login:', error);
-            }
         } finally {
-            setLoading(false); // Encerra o carregamento
+            setLoading(false);
         }
     };
 
     const handleGoogleLogin = async () => {
         try {
-            // Solicita ao backend o URL de autorização para o Google OAuth
             const response = await api.get('/integrations/google/login/');
-            const { auth_url } = response.data;
+            const { auth_url, state } = response.data;
 
-            // Redireciona o usuário automaticamente para o URL de autorização do Google
+            localStorage.setItem("oauth_state", state);
             window.location.href = auth_url;
         } catch (error) {
-            console.error('Erro ao iniciar login com Google:', error);
             setMessage('Erro ao conectar com o Google. Tente novamente mais tarde.');
         }
     };
-
-
-    const handleGoogleCallback = async () => {
-        const params = new URLSearchParams(window.location.search);
-        const authCode = params.get('code');
-        if (authCode) {
-            try {
-                const response = await api.post('/integrations/google/callback/', { code: authCode }, {
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                const { token, user, refresh_token } = response.data;
-
-                dispatch(setToken({ access: token, refresh: refresh_token || '' }));
-                localStorage.setItem('accessToken', token);
-                if (refresh_token) {
-                    localStorage.setItem('refreshToken', refresh_token);
-                }
-                localStorage.setItem('user', JSON.stringify(user));
-
-                router.push('/dashboard');
-            } catch (error) {
-                console.error('Erro ao fazer login com Google:', error);
-                setMessage('Erro ao fazer login com Google.');
-            }
-        }
-    };
-
-    React.useEffect(() => {
-        if (window.location.search.includes('code')) {
-            handleGoogleCallback();
-        }
-    }, []);
 
     return (
         <div className={styles.container_form}>
@@ -133,7 +80,6 @@ const LoginForm = () => {
                 />
                 <button type="submit" className={styles.button} disabled={loading}>
                     {loading ? 'Entrando...' : 'Entrar'}
-                    {loading && <div className={styles.spinner}></div>}
                 </button>
                 {message && <p className={styles.message}>{message}</p>}
                 <div className={styles.lineContainer}>

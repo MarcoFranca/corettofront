@@ -1,18 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState, User } from '@/types/interfaces';
-import api from '@/app/api/axios';
 import qs from 'qs'; // Para serializar os dados no formato correto
-
 
 const initialState: AuthState = {
     user: null,
     token: null,
 };
 
-// Adicione as credenciais do cliente aqui (você pode configurá-las em variáveis de ambiente para maior segurança)
-const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
-const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET;
-
+// Não incluímos `api` e removemos a lógica de revogação diretamente do slice
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -33,7 +28,7 @@ const authSlice = createSlice({
             state.token = action.payload
                 ? {
                     access: action.payload.access,
-                    refresh: action.payload.refresh || '', // Se refresh não for fornecido, define como string vazia
+                    refresh: action.payload.refresh || '',
                 }
                 : null;
 
@@ -50,51 +45,24 @@ const authSlice = createSlice({
             }
         },
 
-        // Função para carregar o token do LocalStorage ao iniciar
         setTokenFromLocalStorage: (state) => {
             const accessToken = localStorage.getItem('accessToken');
             const refreshToken = localStorage.getItem('refreshToken');
-
             if (accessToken) {
                 state.token = {
                     access: accessToken,
-                    refresh: refreshToken || '', // Se não houver refresh token, será uma string vazia
+                    refresh: refreshToken || '',
                 };
             }
         },
 
         logout: (state) => {
-            const accessToken = localStorage.getItem('accessToken');
-            const refreshToken = localStorage.getItem('refreshToken');
-            console.log(`accessToken:${accessToken} refreshToken:${refreshToken}`);
-
-            // Remova imediatamente os dados do localStorage e do estado
             state.user = null;
             state.token = null;
             localStorage.removeItem('user');
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('profileImage');
-
-            // Depois, faça a requisição para revogar o token
-            if (refreshToken) {
-                const requestBody = qs.stringify({
-                    token: refreshToken,
-                    token_type_hint: 'refresh_token',
-                    client_id: CLIENT_ID,
-                    client_secret: CLIENT_SECRET,
-                });
-
-                api.post('/o/revoke_token/', requestBody, {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                }).then(() => {
-                    console.log('Token revogado com sucesso');
-                }).catch((error) => {
-                    console.error('Erro ao revogar o token:', error);
-                });
-            }
         },
 
         setUserFromLocalStorage: (state) => {

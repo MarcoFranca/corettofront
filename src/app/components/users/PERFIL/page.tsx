@@ -11,6 +11,7 @@ import api from '@/app/api/axios';
 import Modal from '@/app/components/Modal/simpleModal';
 import Button from '@/app/components/global/Button';
 import Input from '@/app/components/global/Input';
+import {setToken, setUser} from "@/store/slices/authSlice";
 
 export default function ProfilePage() {
     const dispatch: AppDispatch = useDispatch();
@@ -29,6 +30,33 @@ export default function ProfilePage() {
         role: 'secretaria',
     });
     const [loadingSubUser, setLoadingSubUser] = useState(false);
+
+    // Capture tokens from URL on page load and validate with the backend
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
+
+        if (accessToken && refreshToken) {
+            dispatch(setToken({ access: accessToken, refresh: refreshToken }));
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+
+            api.get('/user_detail/', {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            }).then((response) => {
+                dispatch(setUser(response.data));
+                router.replace("/dashboard/perfil");
+            }).catch((error) => {
+                console.error("Erro ao validar token do Google:", error);
+                setMessage("Erro ao fazer login com Google.");
+            });
+        } else {
+            console.log("Tokens não encontrados no URL de redirecionamento.");
+        }
+    }, [dispatch, router]);
+
+
 
     useEffect(() => {
         dispatch(fetchProfile());
