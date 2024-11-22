@@ -25,23 +25,44 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!date) {
-            alert('A data de vencimento é obrigatória.');
+        if (!date || !startTime || !endTime) {
+            alert('Por favor, preencha todos os campos obrigatórios.');
             return;
         }
 
+        // Criação de horários no formato UTC
+        const startDateTime = new Date(`${date}T${startTime}`).toISOString();
+        const endDateTime = new Date(`${date}T${endTime}`).toISOString();
+
+        // Dados enviados para o backend
         const newMeeting: Partial<Meeting> = {
-            cliente: entityId,
-            descricao: description,
-            data_reuniao_agendada: date,
-            horario_inicio: startTime,
-            horario_fim: endTime,
+            title: 'Reunião de Planejamento',
+            cliente: entityId, // Certifique-se de que `entityId` seja passado corretamente
+            description,
+            due_date: startDateTime,
+            start_time: startDateTime,
+            end_time: endDateTime,
+            entry_type: 'meeting', // Certifique-se de que esteja correto
+            completed: false,
+            urgency: 'High',
             add_to_google_calendar: addToGoogleCalendar,
             add_to_google_meet: addToGoogleMeet,
             add_to_zoom: addToZoom,
         };
-        await dispatch(createMeeting(newMeeting));
-        onClose();
+
+        try {
+            console.log('Dados enviados pelo frontend:', newMeeting);
+            await dispatch(createMeeting(newMeeting)).unwrap();
+            onClose();
+        } catch (error: any) {
+            if (error.redirect_url) {
+                // Redireciona o usuário para a autenticação do Google
+                window.location.href = error.redirect_url;
+            } else {
+                console.error('Erro ao criar reunião:', error);
+                alert('Erro ao criar a reunião. Verifique os logs.');
+            }
+        }
     };
 
     return (

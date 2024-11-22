@@ -249,10 +249,14 @@ export interface Meeting {
     id: string;
     title: string;
     description: string;
+    due_date: string;
     start_time: string;
     end_time: string;
     cliente: string;
     is_meeting: boolean;
+    entry_type: string;
+    completed: boolean;
+    urgency: string;
     data_reuniao_agendada?: string;
     horario_inicio?: string;
     horario_fim?: string;
