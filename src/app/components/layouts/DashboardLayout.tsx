@@ -4,10 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { setUserFromLocalStorage, setTokenFromLocalStorage } from '@/store/slices/authSlice';
+import {setUserFromLocalStorage, setTokenFromLocalStorage, logout} from '@/store/slices/authSlice';
 import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
 import styles from './styles.module.css';
 import api from '@/app/api/axios';
+import {useMediaQuery} from "@/hooks/hooks";
+import MenuMobile from "@/app/components/common/Header/DashboardMobile/MenuMobile";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -21,9 +23,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [message, setMessage] = useState('');
     const [isSubUser, setIsSubUser] = useState<boolean>(false);
+    // Detecta se a tela é desktop (largura mínima de 768px)
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const user = useSelector((state: RootState) => state.auth?.user);
     const token = useSelector((state: RootState) => state.auth?.token);
+
+    const handleLogout = () => {
+        dispatch(logout());
+        router.push('/');
+    };
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -89,6 +98,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         );
     }
 
+
+
     if (!planoAtivo) {
         return (
             <main className={styles.dashboardLayout}>
@@ -112,10 +123,26 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         );
     }
 
+    if (isDesktop){
+        return (
+            <main className={styles.dashboardLayout}>
+                <div className={styles.dashboardLayoutContaint}>
+                    <DashboardSidebar profileImage={profileImage} />
+                    <div className={styles.canvaLayout}>{children}</div>
+                </div>
+            </main>
+        );
+    }
+
     return (
         <main className={styles.dashboardLayout}>
             <div className={styles.dashboardLayoutContaint}>
-                <DashboardSidebar profileImage={profileImage} />
+                <MenuMobile
+                    profileImage={profileImage}
+                    user={user}
+                    onLogout={handleLogout}
+                />
+
                 <div className={styles.canvaLayout}>{children}</div>
             </div>
         </main>
