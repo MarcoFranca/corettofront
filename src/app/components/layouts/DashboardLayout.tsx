@@ -99,31 +99,29 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     }
 
 
-
-    if (!planoAtivo) {
-        return (
-            <main className={styles.dashboardLayout}>
-                <div className={styles.notificationBar}>
-                    <div className={styles.notificationBarContent}>
-                        <h1 className={styles.notificationBarText}>{message}</h1>
-                        <button
-                            className={styles.notificationBarButton}
-                            onClick={() => router.push('/planos')}
-                            disabled={loading}
-                        >
-                            Escolher seu Plano
-                        </button>
-                    </div>
-                </div>
-                <div className={styles.dashboardLayoutContaint}>
-                    <DashboardSidebar profileImage={profileImage} />
-                    <div className={styles.canvaLayout}>{children}</div>
-                </div>
-            </main>
-        );
-    }
-
     if (isDesktop){
+        if (!planoAtivo) {
+            return (
+                <main className={styles.dashboardLayout}>
+                    <div className={styles.notificationBar}>
+                        <div className={styles.notificationBarContent}>
+                            <h1 className={styles.notificationBarText}>{message}</h1>
+                            <button
+                                className={styles.notificationBarButton}
+                                onClick={() => router.push('/planos')}
+                                disabled={loading}
+                            >
+                                Escolher seu Plano
+                            </button>
+                        </div>
+                    </div>
+                    <div className={styles.dashboardLayoutContaint}>
+                        <DashboardSidebar profileImage={profileImage} />
+                        <div className={styles.canvaLayout}>{children}</div>
+                    </div>
+                </main>
+            );
+        }
         return (
             <main className={styles.dashboardLayout}>
                 <div className={styles.dashboardLayoutContaint}>
@@ -135,15 +133,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     }
 
     return (
-        <main className={styles.dashboardLayout}>
-            <div className={styles.dashboardLayoutContaint}>
+        <main className={styles.dashboardLayoutMobile}>
+            <div className={styles.dashboardLayoutContaintMobile}>
                 <MenuMobile
                     profileImage={profileImage}
                     user={user}
                     onLogout={handleLogout}
                 />
-
-                <div className={styles.canvaLayout}>{children}</div>
+                <div className={styles.canvaLayoutMobile}>{children}</div>
             </div>
         </main>
     );

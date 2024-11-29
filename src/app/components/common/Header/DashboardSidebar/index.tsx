@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector, useMediaQuery } from "@/hooks/hooks";
 import { logout } from "@/store/slices/authSlice";
-import MenuMobile from "../DashboardMobile/MenuMobile"; // O menu mobile será um componente separado
+import MenuMobile from "../DashboardMobile/MenuMobile";
 import Image from 'next/image';
 import styles from './styles.module.css';
 

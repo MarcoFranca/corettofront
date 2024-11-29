@@ -9,6 +9,15 @@
     /*position: relative;*/
 }
 
+.container {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f5f5f5;
+    padding: 32px;
+}
+
 .leadModalContainer{
     display: flex;
     width: 100vw;
@@ -261,14 +270,6 @@
     background-color: rgba(0, 91, 181, 0.63);
 }
 
-.container {
-    display: flex;
-    box-sizing: border-box;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #f5f5f5;
-    padding: 32px;
-}
 
 .headerBar {
     box-sizing: border-box;

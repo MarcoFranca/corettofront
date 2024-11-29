@@ -6,12 +6,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { RootState } from '@/store';
 import { fetchProfile, fetchSubUsers, updateProfile } from '@/store/slices/profileSlice';
-import styles from './styles.module.css';
 import api from '@/app/api/axios';
 import Modal from '@/app/components/Modal/simpleModal';
 import Button from '@/app/components/global/Button';
 import Input from '@/app/components/global/Input';
 import {setToken, setUser} from "@/store/slices/authSlice";
+import {
+    Card,
+    CardsContainer,
+    CardTitle,
+    ProfileContainer, SubuserTable,
+    SubuserTableContainer, TableButton
+} from "./profiles.styled";
 
 export default function ProfilePage() {
     const dispatch: AppDispatch = useDispatch();
@@ -193,14 +199,14 @@ export default function ProfilePage() {
     const isSubUser = !!subUserData;
 
     return (
-        <div className={styles.profileContainer}>
-            <h2 className={styles.greeting}>Bem-vindo, {displayName}!</h2>
+        <ProfileContainer>
+            <h2>Bem-vindo, {displayName}!</h2>
 
-            <div className={styles.cardsContainer}>
-                <div className={styles.card}>
-                    <div className={styles.cardTitle}>
+            <CardsContainer>
+                <Card>
+                    <CardTitle>
                         <h3>Plano Atual</h3>
-                    </div>
+                    </CardTitle>
                     <p><strong>Status:</strong> {profile?.assinatura_status === 'trialing' ? 'Em período de teste' : profile?.assinatura_status === 'active' ? 'Ativo' : 'Inativo'}</p>
                     <p><strong>Nome do Plano:</strong> {profile?.plano?.nome || 'Nenhum plano escolhido'}</p>
                     <p><strong>Preço:</strong> R$ {profile?.plano?.preco || 'N/A'}</p>
@@ -210,29 +216,29 @@ export default function ProfilePage() {
                             <p><strong>Subusuários Atuais:</strong> {subUsers.length} / {profile?.plano?.limite_subusuarios || '0'}</p>
                         </>
                     )}
-                    <button className={styles.button} onClick={handleOpenPortal} disabled={loadingPortal}>
+                    <Button onClick={handleOpenPortal} disabled={loadingPortal}>
                         {loadingPortal ? 'Abrindo portal...' : 'Ver Pagamentos e Recibos'}
-                    </button>
-                    {errorPortal && <p className={styles.error}>{errorPortal}</p>}
-                </div>
+                    </Button>
+                    {errorPortal && <p>{errorPortal}</p>}
+                </Card>
 
-                <div className={styles.card}>
-                    <div className={styles.cardTitle}>
+                <Card>
+                    <CardTitle>
                         <h3>Informações do Perfil</h3>
-                        <button className={styles.button} onClick={() => openEditModal('profile')}>Editar</button>
-                    </div>
+                        <Button  onClick={() => openEditModal('profile')}>Editar</Button>
+                    </CardTitle>
                     <p><strong>Nome:</strong> {profile?.user.first_name}</p>
                     <p><strong>Sobrenome:</strong> {profile?.user.last_name}</p>
                     {isSubUser && (
                         <p><strong>Função:</strong> {subUserData?.role}</p>
                     )}
-                </div>
-            </div>
+                </Card>
+            </CardsContainer>
 
             {!assinaturaInativa && !isSubUser && (
-                <div className={styles.subuserTableContainer}>
+                <SubuserTableContainer>
                     <h3>Subusuários</h3>
-                    <table className={styles.subuserTable}>
+                    <SubuserTable>
                         <thead>
                         <tr>
                             <th>Nome de Usuário</th>
@@ -251,20 +257,19 @@ export default function ProfilePage() {
                                     <td>{user.username}</td>
                                     <td>{user.role}</td>
                                     <td>
-                                        <button
-                                            className={styles.tableButton}
+                                        <TableButton
                                             onClick={() => handleDeleteSubUser(user.id)}
                                         >
                                             Remover
-                                        </button>
+                                        </TableButton>
                                     </td>
                                 </tr>
                             ))
                         )}
                         </tbody>
-                    </table>
+                    </SubuserTable>
 
-                    <form onSubmit={handleAddSubUser} className={styles.subuserForm}>
+                    <SubuserTable>
                         <input
                             type="text"
                             name="username"
@@ -290,12 +295,12 @@ export default function ProfilePage() {
                             <option value="secretaria">Secretaria</option>
                             <option value="gerente">Gerente</option>
                         </select>
-                        <button className={styles.button} type="submit" disabled={loadingSubUser}>
+                        <Button type="submit" disabled={loadingSubUser}>
                             {loadingSubUser ? 'Adicionando...' : 'Adicionar Subusuário'}
-                        </button>
-                    </form>
+                        </Button>
+                    </SubuserTable>
                     {message && <p>{message}</p>}
-                </div>
+                </SubuserTableContainer>
             )}
 
             {showEditModal && (
@@ -334,6 +339,6 @@ export default function ProfilePage() {
                     </form>
                 </Modal>
             )}
-        </div>
+        </ProfileContainer>
     );
 }

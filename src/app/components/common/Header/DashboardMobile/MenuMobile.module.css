@@ -1,6 +1,24 @@
 .mobileMenu {
     position: relative;
-    top: 0;
+    display: flex;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    background: #fdfdfd;
+    z-index: 9;
+}
+
+.buttons{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.buttonsCell{
+    cursor: pointer;
+    width: 30px;
 }
 
 .hamburger {
@@ -12,7 +30,7 @@
 
 .menuContent {
     position: absolute;
-    top: 50px;
+    top: -550px;
     left: 0;
     height: 100%;
     width: 100%;
@@ -23,6 +41,10 @@
     border-radius: 8px;
 }
 
+/*.userImage{*/
+/*    max-height: 32px;*/
+/*}*/
+
 .profile {
     display: flex;
     align-items: center;
@@ -32,15 +54,16 @@
 
 .userImage {
     border-radius: 50%;
+    /*width: 32px;*/
 }
 
-.userImage nav ul {
+.menuContent nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.userImage nav li {
+.menuContent nav li {
     padding: 10px 0;
     cursor: pointer;
     font-size: 18px;
