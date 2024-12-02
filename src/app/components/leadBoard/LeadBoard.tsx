@@ -5,10 +5,13 @@ import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { createLead, fetchLeads } from '@/store/slices/leadsSlice';
 import { initializeData, handleDragEnd } from './leadBoardUtils';
 import Column from './Column';
-import styles from './LeadBoard.module.css';
 import LeadModal from '@/app/components/Modal/LeadModal';
 import CadastroLead from '../../../../public/assets/pages/leads/cadastroLead.svg';
 import Image from 'next/image';
+import { useMediaQuery } from '@/hooks/hooks'; // Para detectar mobile
+
+import styles from './LeadBoard.module.css';
+import LeadCard from "@/app/(pages)/dashboard/lead/[leadId]/LeadCard";
 
 const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -17,7 +20,7 @@ const LeadBoard: React.FC = () => {
     const [data, setData] = useState(() => initializeData());
     const router = useRouter();
     const tooltipContainerRef = useRef<HTMLDivElement>(null);
-    let clickTimer: NodeJS.Timeout | null = null;
+    const isMobile = useMediaQuery('(max-width: 768px)'); // Detecta mobile
 
     useEffect(() => {
         if (leadsFromStore.length === 0) {
@@ -49,17 +52,24 @@ const LeadBoard: React.FC = () => {
         handleDragEnd(result, data, setData, leadsFromStore, dispatch);
     };
 
-    const handleLeadClick = (leadId: string) => {
-        if (clickTimer) clearTimeout(clickTimer);
-        clickTimer = setTimeout(() => {
-            router.push(`/dashboard/cliente/${leadId}`);
-        }, 200);
-    };
+    if (isMobile) {
+        // Layout para Mobile
+        return (
+            <div className={styles.container}>
+                <div className={styles.headerBar}>
+                    <Image src={CadastroLead} alt="Cadastro" className={styles.button} onClick={openModal} />
+                </div>
+                <div className={styles.mobileBoard}>
+                    {Object.values(data.leads).map((lead) => (
+                        <LeadCard key={lead.id} lead={lead} columns={Object.values(data.columns)} />
+                    ))}
+                </div>
+                <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} onSubmit={handleLeadSubmit} />
+            </div>
+        );
+    }
 
-    const handleLeadDragStart = () => {
-        if (clickTimer) clearTimeout(clickTimer);
-    };
-
+    // Layout para Desktop
     return (
         <div className={styles.container}>
             <div ref={tooltipContainerRef} className={styles.tooltipContainer} />
@@ -84,8 +94,8 @@ const LeadBoard: React.FC = () => {
                                             column={column}
                                             leads={data.leads}
                                             index={index}
-                                            handleLeadClick={handleLeadClick}
-                                            handleLeadDragStart={handleLeadDragStart}
+                                            handleLeadClick={(leadId) => router.push(`/dashboard/cliente/${leadId}`)}
+                                            handleLeadDragStart={() => {}}
                                             tooltipContainerRef={tooltipContainerRef}
                                         />
                                     );
@@ -96,12 +106,7 @@ const LeadBoard: React.FC = () => {
                     )}
                 </Droppable>
             </DragDropContext>
-
-            <LeadModal
-                isOpen={modalIsOpen}
-                onRequestClose={closeModal}
-                onSubmit={handleLeadSubmit}
-            />
+            <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} onSubmit={handleLeadSubmit} />
         </div>
     );
 };

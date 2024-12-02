@@ -25,6 +25,11 @@ export interface Reuniao {
     local: string;
 }
 
+export interface Data {
+    leads: { [key: string]: Lead };
+    columns: { [key: string]: Column };
+    columnOrder: string[];
+}
 
 export interface Column {
     id: string;
