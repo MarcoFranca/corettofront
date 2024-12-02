@@ -83,6 +83,7 @@
   color: white;
   text-align: center;
   padding: 20px;
+  width: 100%;
   /*margin-top: 20px;*/
 }
 
@@ -98,4 +99,55 @@
 
 .footerLinks a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+
+  .main {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 2rem;
+  }
+
+  .hero {
+    height: auto;
+    max-width: 90%; /* Ocupa a largura total */
+  }
+
+  .heroContant{
+    align-items: center;
+    width: 100%;
+  }
+
+  .heroContant > h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .heroContant > p {
+    text-align: center;
+    width: 100%;
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .heroContantButton{
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .button, .buttonVendas {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    font-size: 0.7rem;
+    width: 90%; /* Largura maior para se ajustar ao espaço */
+  }
+
+  .main{
+    height: auto;
+  }
+
+
 }

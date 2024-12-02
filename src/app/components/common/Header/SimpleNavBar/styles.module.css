@@ -10,13 +10,13 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 2rem;
+    padding: 0.4rem;
     width: 100%;
     max-width: 1400px;
 }
 
 .logo {
-    height: 8rem;
+    height: 5.5rem;
     width: auto;
 }
 
@@ -61,4 +61,20 @@
 
 .user:hover {
     /* Estilos para o hover do user */
+}
+
+@media (max-width: 768px) {
+    .logo {
+        height: 5rem;
+        width: auto;
+    }
+
+    .user {
+        height: 1.4rem;
+        width: auto;
+    }
+
+    .menu > a {
+        font-size: 1rem;
+    }
 }
