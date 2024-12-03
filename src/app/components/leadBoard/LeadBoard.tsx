@@ -8,40 +8,37 @@ import Column from './Column';
 import LeadModal from '@/app/components/Modal/LeadModal';
 import CadastroLead from '../../../../public/assets/pages/leads/cadastroLead.svg';
 import Image from 'next/image';
-import { useMediaQuery } from '@/hooks/hooks'; // Para detectar mobile
-
+import { useMediaQuery } from '@/hooks/hooks';
 import styles from './LeadBoard.module.css';
 import LeadCard from "@/app/(pages)/dashboard/lead/[leadId]/LeadCard";
 
 const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
     const leadsFromStore = useAppSelector((state) => state.leads.leads);
+    const status = useAppSelector((state) => state.leads.status);
+    const [data, setData] = useState(() => initializeData([])); // Inicializa vazio
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [data, setData] = useState(() => initializeData());
     const router = useRouter();
     const tooltipContainerRef = useRef<HTMLDivElement>(null);
-    const isMobile = useMediaQuery('(max-width: 768px)'); // Detecta mobile
+    const isMobile = useMediaQuery('(max-width: 768px)');
 
+    // Dispara ação para buscar leads ao carregar o componente
     useEffect(() => {
-        if (leadsFromStore.length === 0) {
+        if (status === 'idle') {
             dispatch(fetchLeads({ status: 'lead' }));
         }
-    }, [dispatch, leadsFromStore.length]);
+    }, [dispatch, status]);
 
+    // Atualiza os dados locais quando os leads são carregados
     useEffect(() => {
-        if (leadsFromStore.length > 0) {
+        if (status === 'succeeded' && leadsFromStore.length > 0) {
             const updatedData = initializeData(leadsFromStore);
             setData(updatedData);
         }
-    }, [leadsFromStore]);
+    }, [leadsFromStore, status]);
 
-    const openModal = () => {
-        setModalIsOpen(true);
-    };
-
-    const closeModal = () => {
-        setModalIsOpen(false);
-    };
+    const openModal = () => setModalIsOpen(true);
+    const closeModal = () => setModalIsOpen(false);
 
     const handleLeadSubmit = async (leadData: any) => {
         await dispatch(createLead(leadData));
@@ -52,8 +49,20 @@ const LeadBoard: React.FC = () => {
         handleDragEnd(result, data, setData, leadsFromStore, dispatch);
     };
 
+    // Renderizações condicionais para lidar com estados de carregamento e erro
+    if (status === 'loading') {
+        return <p>Carregando leads...</p>;
+    }
+
+    if (status === 'failed') {
+        return <p>Erro ao carregar leads. Tente novamente mais tarde.</p>;
+    }
+
+    if (!leadsFromStore || leadsFromStore.length === 0) {
+        return <p>Nenhum lead disponível.</p>;
+    }
+
     if (isMobile) {
-        // Layout para Mobile
         return (
             <div className={styles.container}>
                 <div className={styles.headerBar}>
@@ -69,7 +78,6 @@ const LeadBoard: React.FC = () => {
         );
     }
 
-    // Layout para Desktop
     return (
         <div className={styles.container}>
             <div ref={tooltipContainerRef} className={styles.tooltipContainer} />

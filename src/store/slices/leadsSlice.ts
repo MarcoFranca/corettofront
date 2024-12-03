@@ -57,18 +57,23 @@ const leadsSlice = createSlice({
             })
             .addCase(fetchLeads.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.leads = action.payload;
+                state.leads = action.payload || []; // Garantir array vazio como fallback
             })
             .addCase(fetchLeads.rejected, (state, action) => {
                 state.status = 'failed';
-                state.error = action.error.message || null;
+                state.error = action.error.message || 'Erro ao buscar leads';
+                console.error('Erro ao buscar leads:', action.error.message);
             })
             .addCase(createLead.fulfilled, (state, action) => {
                 state.leads.push(action.payload);
             })
             .addCase(updateLead.fulfilled, (state, action) => {
                 const index = state.leads.findIndex(lead => lead.id === action.payload.id);
-                state.leads[index] = action.payload;
+                if (index !== -1) {
+                    state.leads[index] = action.payload;
+                } else {
+                    console.warn(`Lead ID ${action.payload.id} não encontrado para atualização.`);
+                }
             })
             .addCase(updateLeadStatus.fulfilled, (state, action) => {
                 const index = state.leads.findIndex(lead => lead.id === action.payload.id);
@@ -77,7 +82,11 @@ const leadsSlice = createSlice({
                 }
             })
             .addCase(deleteLead.fulfilled, (state, action) => {
-                state.leads = state.leads.filter(lead => lead.id !== action.payload);
+                const filteredLeads = state.leads.filter(lead => lead.id !== action.payload);
+                if (filteredLeads.length === state.leads.length) {
+                    console.warn(`Lead ID ${action.payload} não encontrado para exclusão.`);
+                }
+                state.leads = filteredLeads;
             });
     },
 });

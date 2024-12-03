@@ -13,8 +13,7 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
     };
 
     if (!leadsFromStore || leadsFromStore.length === 0) {
-        console.warn("Leads store is empty or undefined.");
-        return { leads, columns, columnOrder: Object.keys(columns) };
+        return { leads, columns, columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'] };
     }
 
     leadsFromStore.forEach((lead) => {
@@ -49,6 +48,8 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
         columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'],
     };
 };
+
+
 
 export const handleDragEnd = (
     result: DropResult,

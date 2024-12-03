@@ -1,8 +1,5 @@
 import axios from 'axios';
-import store from '@/store';
-import { logout, updateAccessToken } from '@/store/slices/authSlice';
 
-// Cria uma instância do axios com a URL base
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
 });
@@ -19,17 +16,14 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Interceptador de respostas para lidar com erros 401 e atualizar o token automaticamente
+// Interceptador de respostas para renovar tokens automaticamente
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
-
-        // Se receber 401 e ainda não tentou novamente
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             const refreshToken = localStorage.getItem('refreshToken');
-
             if (refreshToken) {
                 try {
                     const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/o/token/`, {
@@ -41,23 +35,18 @@ api.interceptors.response.use(
 
                     const newAccessToken = data.access_token;
 
-                    // Atualize o token no localStorage e Redux
+                    // Atualiza o token no localStorage
                     localStorage.setItem('accessToken', newAccessToken);
                     api.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
                     originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                    store.dispatch(updateAccessToken(newAccessToken));
-
                     return api(originalRequest);
                 } catch (err) {
-                    store.dispatch(logout());
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
                     return Promise.reject(err);
                 }
             }
-        }
-
-        if (error.response?.status === 401) {
-            store.dispatch(logout());
-            window.location.href = '/login';
         }
         return Promise.reject(error);
     }
