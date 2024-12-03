@@ -293,7 +293,7 @@
     border-radius: 4px;
     cursor: pointer;
     margin: 0 1rem;
-    max-width: 64px;
+    max-width: 50px;
     height: auto;
     z-index: 9;
 }
@@ -349,6 +349,7 @@
         flex-direction: column;
         gap: 16px;
         padding: 8px;
+        margin-top: 42px;
     }
 
     .mobileLead {
