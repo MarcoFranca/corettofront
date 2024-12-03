@@ -4,6 +4,10 @@ import { updateLeadStatus } from '@/store/slices/leadsSlice';
 import { Data, Lead } from "@/types/interfaces";
 
 export const initializeData = (leadsFromStore: any[] = []): Data => {
+    if (!leadsFromStore || leadsFromStore.length === 0) {
+        console.warn("Leads store is empty or undefined.");
+    }
+
     const leads: { [key: string]: Lead } = {};
     const columns: { [key: string]: { id: string, title: string, leadIds: string[] } } = {
         'column-1': { id: 'column-1', title: 'LEADS DE ENTRADA', leadIds: [] },
@@ -13,35 +17,42 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
     };
 
     leadsFromStore.forEach((lead) => {
-        if (lead.id) {
+        if (lead?.id) {
             leads[lead.id.toString()] = {
                 id: lead.id.toString(),
-                status: lead.status,
-                nome: lead.nome,
-                email: lead.email,
-                telefone: lead.telefone,
-                endereco: lead.endereco,
-                contato: lead.contato,
+                status: lead.status || '',
+                nome: lead.nome || '',
+                email: lead.email || '',
+                telefone: lead.telefone || '',
+                endereco: lead.endereco || '',
+                contato: lead.contato || '',
                 pipeline_stage: lead.pipeline_stage || 'entrada',
-                status_reuniao: lead.status_reuniao,
-                created_at: lead.created_at,
-                updated_at: lead.updated_at,
+                status_reuniao: lead.status_reuniao || '',
+                created_at: lead.created_at || '',
+                updated_at: lead.updated_at || '',
             };
+
             const columnKey = Object.keys(columns).find(
                 key => columns[key].title.toLowerCase() === (lead.pipeline_stage || 'entrada')
             );
-            if (columnKey) {
-                columns[columnKey].leadIds.push(lead.id.toString());
+
+            if (!columnKey) {
+                console.warn(`Column for pipeline_stage ${lead.pipeline_stage || 'entrada'} not found.`);
+                return;
             }
+
+            columns[columnKey].leadIds.push(lead.id.toString());
+
         }
     });
 
     return {
-        leads,
-        columns,
+        leads: leads || {},
+        columns: columns || {},
         columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'],
     };
 };
+
 
 export const handleDragEnd = (
     result: DropResult,
@@ -52,12 +63,24 @@ export const handleDragEnd = (
 ) => {
     const { destination, source, draggableId } = result;
 
-    if (!destination) return;
+    if (!destination) {
+        console.warn("No destination for the drag event.");
+        return;
+    }
 
     const start = data.columns[source.droppableId];
     const finish = data.columns[destination.droppableId];
 
-    if (!start || !finish) return;
+    if (!start) {
+        console.error(`Column with ID ${source.droppableId} not found.`);
+        return;
+    }
+
+    if (!finish) {
+        console.error(`Column with ID ${destination.droppableId} not found.`);
+        return;
+    }
+
 
     if (start === finish) {
         const newLeadIds = Array.from(start.leadIds);
@@ -107,9 +130,13 @@ export const handleDragEnd = (
     setData(newState);
 
     const updatedLead = leadsFromStore.find((lead) => lead.id?.toString() === draggableId);
-    if (updatedLead) {
-        const newStatus = newFinish.title.toLowerCase();
-        console.log(`Updating lead ID ${draggableId} to pipeline_stage ${newStatus}`);
-        dispatch(updateLeadStatus({ id: draggableId, status: newStatus }));
+    if (!updatedLead) {
+        console.error(`Lead with ID ${draggableId} not found in leadsFromStore.`);
+        return;
     }
+
+    const newStatus = newFinish.title.toLowerCase();
+    console.log(`Updating lead ID ${draggableId} to pipeline_stage ${newStatus}`);
+    dispatch(updateLeadStatus({ id: draggableId, status: newStatus }));
+
 };
