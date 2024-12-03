@@ -29,7 +29,7 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, columns }) => {
             </div>
             <select
                 className={styles.statusDropdown}
-                value={lead.pipeline_stage.toLowerCase()} // Atualizado para refletir o estado correto
+                value={lead.pipeline_stage?.toLowerCase() || ''} // Atualizado para refletir o estado correto
                 onChange={(e) => handleStatusChange(e.target.value)}
             >
                 {columns.map((column) => (
