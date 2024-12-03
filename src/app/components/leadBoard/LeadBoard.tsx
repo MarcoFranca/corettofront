@@ -16,18 +16,16 @@ const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
     const leadsFromStore = useAppSelector((state) => state.leads.leads);
     const status = useAppSelector((state) => state.leads.status);
-    const [data, setData] = useState(() => initializeData([])); // Inicializa vazio
+    const [data, setData] = useState(() => initializeData([]));
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const router = useRouter();
     const tooltipContainerRef = useRef<HTMLDivElement>(null);
     const isMobile = useMediaQuery('(max-width: 768px)');
 
-    // Dispara ação para buscar leads ao carregar o componente
+    // Sempre busca os leads do backend ao montar o componente
     useEffect(() => {
-        if (status === 'idle') {
-            dispatch(fetchLeads({ status: 'lead' }));
-        }
-    }, [dispatch, status]);
+        dispatch(fetchLeads({ status: 'lead' }));
+    }, [dispatch]);
 
     // Atualiza os dados locais quando os leads são carregados
     useEffect(() => {
@@ -42,6 +40,7 @@ const LeadBoard: React.FC = () => {
 
     const handleLeadSubmit = async (leadData: any) => {
         await dispatch(createLead(leadData));
+        await dispatch(fetchLeads({ status: 'lead' })); // Recarrega os leads do backend
         closeModal();
     };
 
@@ -49,7 +48,7 @@ const LeadBoard: React.FC = () => {
         handleDragEnd(result, data, setData, leadsFromStore, dispatch);
     };
 
-    // Renderizações condicionais para lidar com estados de carregamento e erro
+    // Renderizações condicionais para estados
     if (status === 'loading') {
         return <p>Carregando leads...</p>;
     }
