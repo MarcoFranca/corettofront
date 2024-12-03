@@ -4,10 +4,6 @@ import { updateLeadStatus } from '@/store/slices/leadsSlice';
 import { Data, Lead } from "@/types/interfaces";
 
 export const initializeData = (leadsFromStore: any[] = []): Data => {
-    if (!leadsFromStore || leadsFromStore.length === 0) {
-        console.warn("Leads store is empty or undefined.");
-    }
-
     const leads: { [key: string]: Lead } = {};
     const columns: { [key: string]: { id: string, title: string, leadIds: string[] } } = {
         'column-1': { id: 'column-1', title: 'LEADS DE ENTRADA', leadIds: [] },
@@ -16,8 +12,13 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
         'column-4': { id: 'column-4', title: 'POUCO INTERESSE', leadIds: [] },
     };
 
+    if (!leadsFromStore || leadsFromStore.length === 0) {
+        console.warn("Leads store is empty or undefined.");
+        return { leads, columns, columnOrder: Object.keys(columns) };
+    }
+
     leadsFromStore.forEach((lead) => {
-        if (lead?.id) {
+        if (lead.id) {
             leads[lead.id.toString()] = {
                 id: lead.id.toString(),
                 status: lead.status || '',
@@ -36,23 +37,18 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
                 key => columns[key].title.toLowerCase() === (lead.pipeline_stage || 'entrada')
             );
 
-            if (!columnKey) {
-                console.warn(`Column for pipeline_stage ${lead.pipeline_stage || 'entrada'} not found.`);
-                return;
+            if (columnKey) {
+                columns[columnKey].leadIds.push(lead.id.toString());
             }
-
-            columns[columnKey].leadIds.push(lead.id.toString());
-
         }
     });
 
     return {
-        leads: leads || {},
-        columns: columns || {},
+        leads,
+        columns,
         columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'],
     };
 };
-
 
 export const handleDragEnd = (
     result: DropResult,
