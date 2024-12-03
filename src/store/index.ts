@@ -9,7 +9,7 @@ import apoliceReducer from '@/store/slices/apoliceSlice';
 import profileReducer from '@/store/slices/profileSlice';
 import logoutMiddleware from '@/middleware/logoutMiddleware';
 import { persistStore, persistReducer } from 'redux-persist';
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage'; // Usa o localStorage
 
 // Configuração de persistência
