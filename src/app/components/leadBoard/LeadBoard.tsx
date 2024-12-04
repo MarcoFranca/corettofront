@@ -17,6 +17,7 @@ const LeadBoard: React.FC = () => {
     const leadsFromStore = useAppSelector((state) => state.leads.leads);
     const status = useAppSelector((state) => state.leads.status);
     const [data, setData] = useState(() => initializeData([]));
+    const [filter, setFilter] = useState('all'); // Filtro selecionado
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const router = useRouter();
     const tooltipContainerRef = useRef<HTMLDivElement>(null);
@@ -48,6 +49,15 @@ const LeadBoard: React.FC = () => {
         handleDragEnd(result, data, setData, leadsFromStore, dispatch);
     };
 
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilter(e.target.value.toLowerCase());
+    };
+
+    const filteredLeads = Object.values(data.leads).filter((lead) => {
+        if (filter === 'all') return true; // Mostra todos os leads
+        return lead.pipeline_stage?.toLowerCase() === filter;
+    });
+
     // Renderizações condicionais para estados
     if (status === 'loading') {
         return <p>Carregando leads...</p>;
@@ -57,18 +67,25 @@ const LeadBoard: React.FC = () => {
         return <p>Erro ao carregar leads. Tente novamente mais tarde.</p>;
     }
 
-    if (!leadsFromStore || leadsFromStore.length === 0) {
-        return <p>Nenhum lead disponível.</p>;
-    }
-
     if (isMobile) {
         return (
             <div className={styles.container}>
                 <div className={styles.headerBar}>
                     <Image src={CadastroLead} alt="Cadastro" className={styles.button} onClick={openModal} />
+                    <select
+                        className={styles.filterDropdown}
+                        value={filter}
+                        onChange={handleFilterChange}
+                    >
+                        <option value="all">Todos</option>
+                        <option value="leads de entrada">Leads de Entrada</option>
+                        <option value="negociando">Negociando</option>
+                        <option value="finalização">Finalização</option>
+                        <option value="pouco interesse">Pouco Interesse</option>
+                    </select>
                 </div>
                 <div className={styles.mobileBoard}>
-                    {Object.values(data.leads).map((lead) => (
+                    {filteredLeads.map((lead) => (
                         <LeadCard key={lead.id} lead={lead} columns={Object.values(data.columns)} />
                     ))}
                 </div>
