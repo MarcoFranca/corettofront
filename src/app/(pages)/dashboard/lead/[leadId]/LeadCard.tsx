@@ -57,6 +57,7 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, columns }) => {
             <select
                 className={styles.statusDropdown}
                 value={getCurrentColumnId()} // Alinha o `value` do `select` com o `id` da coluna atual
+                onClick={(e) => e.stopPropagation()} // Previne a propagação do clique
                 onChange={(e) => handleStatusChange(e.target.value)}
             >
                 {columns.map((column) => (
