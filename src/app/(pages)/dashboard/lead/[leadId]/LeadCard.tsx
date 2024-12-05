@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch } from '@/hooks/hooks';
-import { updateLeadStatus } from '@/store/slices/leadsSlice';
-import {Lead, Column, StatusReuniao} from '@/types/interfaces';
+import { updateLead } from '@/store/slices/leadsSlice';
+import { Lead, Column, StatusReuniao } from '@/types/interfaces';
 import styles from './LeadCard.module.css';
 
 interface LeadCardProps {
@@ -14,7 +14,7 @@ const statusColors: Record<StatusReuniao, string> = {
     'retornar': '#f1cb0e',
     'nao_tem_interesse': 'red',
     'nao_atendeu': 'orange',
-    'marcar_reuniao': 'blue'
+    'marcar_reuniao': 'blue',
 };
 
 const statusLabels: Record<StatusReuniao, string> = {
@@ -22,26 +22,33 @@ const statusLabels: Record<StatusReuniao, string> = {
     'retornar': 'Retornar',
     'nao_tem_interesse': 'Não Tem Interesse',
     'nao_atendeu': 'Não Atendeu',
-    'marcar_reuniao': 'Marcar Reunião'
+    'marcar_reuniao': 'Marcar Reunião',
+};
+
+const pipelineColors: Record<string, string> = {
+    'leads de entrada': '#2196F3',
+    'negociando': '#FFC107',
+    'finalização': '#4CAF50',
+    'pouco interesse': '#F44336',
 };
 
 const LeadCard: React.FC<LeadCardProps> = ({ lead, columns }) => {
     const dispatch = useAppDispatch();
+    const [statusReuniao, setStatusReuniao] = useState<StatusReuniao>(lead.status_reuniao);
+    const [pipelineStage, setPipelineStage] = useState<string>(lead.pipeline_stage || '');
+    const [isEditingStatus, setIsEditingStatus] = useState(false);
+    const [isEditingPipeline, setIsEditingPipeline] = useState(false);
 
-    // Função para encontrar a coluna correspondente ao estado atual do lead
-    const getCurrentColumnId = () => {
-        const currentColumn = columns.find(
-            (column) => column.title.toLowerCase() === lead.pipeline_stage?.toLowerCase()
-        );
-        return currentColumn?.id || ''; // Retorna o `id` da coluna ou uma string vazia
+    const handleStatusReuniaoChange = async (newStatus: StatusReuniao) => {
+        setStatusReuniao(newStatus);
+        await dispatch(updateLead({ id: lead.id, updatedLead: { status_reuniao: newStatus } }));
+        setIsEditingStatus(false);
     };
 
-    const handleStatusChange = (newId: string) => {
-        const selectedColumn = columns.find((column) => column.id === newId);
-        if (!selectedColumn) return;
-
-        const statusToSend = selectedColumn.title.toLowerCase(); // Converte para lowercase
-        dispatch(updateLeadStatus({ id: lead.id, status: statusToSend }));
+    const handlePipelineChange = async (newPipeline: string) => {
+        setPipelineStage(newPipeline);
+        await dispatch(updateLead({ id: lead.id, updatedLead: { pipeline_stage: newPipeline } }));
+        setIsEditingPipeline(false);
     };
 
     return (
@@ -50,22 +57,55 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, columns }) => {
                 <h3>{lead.nome}</h3>
                 <p>{lead.email}</p>
                 <p>{lead.telefone}</p>
-                <h2 style={{color: statusColors[lead.status_reuniao]}}>
-                    {statusLabels[lead.status_reuniao]}
+
+                {/* Status Reunião */}
+                <h2
+                    style={{ color: statusColors[statusReuniao], cursor: 'pointer' }}
+                    onClick={() => setIsEditingStatus(true)} // Mostra o select ao clicar
+                >
+                    {isEditingStatus ? (
+                        <select
+                            className={styles.statusReuniaoDropdown}
+                            value={statusReuniao}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => handleStatusReuniaoChange(e.target.value as StatusReuniao)}
+                            onBlur={() => setIsEditingStatus(false)} // Oculta ao perder o foco
+                        >
+                            {Object.entries(statusLabels).map(([key, label]) => (
+                                <option key={key} value={key}>
+                                    {label}
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        statusLabels[statusReuniao]
+                    )}
+                </h2>
+
+                {/* Pipeline */}
+                <h2
+                    style={{ color: pipelineColors[pipelineStage.toLowerCase()], cursor: 'pointer' }}
+                    onClick={() => setIsEditingPipeline(true)} // Mostra o select ao clicar
+                >
+                    {isEditingPipeline ? (
+                        <select
+                            className={styles.pipelineDropdown}
+                            value={pipelineStage}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => handlePipelineChange(e.target.value)}
+                            onBlur={() => setIsEditingPipeline(false)} // Oculta ao perder o foco
+                        >
+                            {Object.keys(pipelineColors).map((pipeline) => (
+                                <option key={pipeline} value={pipeline}>
+                                    {pipeline.charAt(0).toUpperCase() + pipeline.slice(1)}
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        pipelineStage.charAt(0).toUpperCase() + pipelineStage.slice(1) // Capitaliza
+                    )}
                 </h2>
             </div>
-            <select
-                className={styles.statusDropdown}
-                value={getCurrentColumnId()} // Alinha o `value` do `select` com o `id` da coluna atual
-                onClick={(e) => e.stopPropagation()} // Previne a propagação do clique
-                onChange={(e) => handleStatusChange(e.target.value)}
-            >
-                {columns.map((column) => (
-                    <option key={column.id} value={column.id}>
-                        {column.title} {/* Exibe o título correto */}
-                    </option>
-                ))}
-            </select>
         </div>
     );
 };
