@@ -96,36 +96,34 @@ const LeadBoard: React.FC = () => {
 
     return (
         <div className={styles.container}>
+            <div className={styles.headerBar}>
+                <Image src={CadastroLead} alt="Cadastro" className={styles.button} onClick={openModal} />
+            </div>
             <div ref={tooltipContainerRef} className={styles.tooltipContainer} />
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="all-columns" direction="horizontal" type="COLUMN">
                     {(provided) => (
-                        <div>
-                            <div className={styles.headerBar}>
-                                <Image src={CadastroLead} alt="Cadastro" className={styles.button} onClick={openModal} />
-                            </div>
-                            <div className={styles.board} {...provided.droppableProps} ref={provided.innerRef}>
-                                {data.columnOrder.map((columnId, index) => {
-                                    const column = data.columns[columnId];
-                                    if (!column) {
-                                        console.error('Column is undefined', columnId);
-                                        return null;
-                                    }
+                        <div className={styles.board} {...provided.droppableProps} ref={provided.innerRef}>
+                            {data.columnOrder.map((columnId, index) => {
+                                const column = data.columns[columnId];
+                                if (!column) {
+                                    console.error('Column is undefined', columnId);
+                                    return null;
+                                }
 
-                                    return (
-                                        <Column
-                                            key={columnId}
-                                            column={column}
-                                            leads={data.leads}
-                                            index={index}
-                                            handleLeadClick={(leadId) => router.push(`/dashboard/cliente/${leadId}`)}
-                                            handleLeadDragStart={() => {}}
-                                            tooltipContainerRef={tooltipContainerRef}
-                                        />
-                                    );
-                                })}
-                                {provided.placeholder}
-                            </div>
+                                return (
+                                    <Column
+                                        key={columnId}
+                                        column={column}
+                                        leads={data.leads}
+                                        index={index}
+                                        handleLeadClick={(leadId) => router.push(`/dashboard/cliente/${leadId}`)}
+                                        handleLeadDragStart={() => {}}
+                                        tooltipContainerRef={tooltipContainerRef}
+                                    />
+                                );
+                            })}
+                            {provided.placeholder}
                         </div>
                     )}
                 </Droppable>
