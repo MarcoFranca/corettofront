@@ -133,6 +133,6 @@
 
 .logo{
     min-width: 12rem;
-    width: 100%;
-    height: auto;
+    width: auto;
+    height: 100%;
 }
