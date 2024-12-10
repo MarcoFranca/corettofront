@@ -1,35 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
-import { fetchTasks, deleteTask, updateTask } from '@/store/slices/todoSlice';
-import TaskForm from './TaskForm';
-import TaskModal from '@/app/components/Modal/TaskModal';
+import { deleteAgendaItem, fetchAgendaItems, updateAgendaItem } from '@/store/slices/agendaSlice';
 import ConfirmDeleteModal from '@/app/components/Modal/ConfirmDeleteModal';
+import TaskForm from './TaskForm';
 import styles from './TaskList.module.css';
-import { Task } from "@/types/interfaces";
-import Image from "next/image";
+import { AgendaItem } from '@/types/interfaces';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import moment from 'moment-timezone';
 
 import PlusImage from '@/../public/assets/common/plus.svg';
 import SortImage from '@/../public/assets/common/sort3.svg';
-import DeleteImage from '../../../../public/assets/common/delete.svg';
-import DetailsImage from '../../../../public/assets/common/detalhes.svg';
+import DeleteImage from '@/../public/assets/common/delete.svg';
+import DetailsImage from '@/../public/assets/common/detalhes.svg';
+
+const timeZone = 'America/Sao_Paulo';
 
 const TaskList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const tasks = useSelector((state: RootState) => state.tasks.tasks);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [editableTask, setEditableTask] = useState<{ id: string; field: string } | null>(null);
+    const agendaItems = useSelector((state: RootState) => state.agenda.items);
+
+    const tasks = agendaItems.filter((item) => item.type === 'task');
+
     const [sortCriteria, setSortCriteria] = useState<'urgency' | 'due_date'>('due_date');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
     const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
-
+    const [isTaskFormOpen, setIsTaskFormOpen] = useState<boolean>(false);
 
     useEffect(() => {
-        // Buscar as tarefas após a primeira renderização
-        dispatch(fetchTasks());
+        dispatch(fetchAgendaItems());
     }, [dispatch]);
 
     const handleDelete = (id: string) => {
@@ -39,65 +40,28 @@ const TaskList: React.FC = () => {
 
     const confirmDelete = () => {
         if (taskToDelete) {
-            dispatch(deleteTask(taskToDelete));
+            dispatch(deleteAgendaItem(taskToDelete));
             setIsDeleteModalOpen(false);
         }
     };
 
-    const handleToggleComplete = (task: Task) => {
-        dispatch(updateTask({ id: task.id, updatedTask: { ...task, completed: !task.completed } }));
-    };
-
-    const handleFieldEdit = (task: Task, field: string, value: any) => {
-        dispatch(updateTask({ id: task.id, updatedTask: { [field]: value } }));
-        setEditableTask(null);
-    };
-
-    const handleFieldClick = (id: string, field: string) => {
-        setEditableTask({ id, field });
-    };
-
-    const handleBlur = (task: Task, field: string, value: any) => {
-        handleFieldEdit(task, field, value);
-    };
-
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
-
-    const goToDetails = (id: string) => {
-        router.push(`/dashboard/tarefas/${id}`);
-    };
-
-    const sortTasks = (tasks: Task[]) => {
+    const sortTasks = (tasks: AgendaItem[]) => {
         return [...tasks].sort((a, b) => {
             if (sortCriteria === 'urgency') {
                 const urgencyOrder = ['Critical', 'High', 'Medium', 'Low'];
-                if (urgencyOrder.indexOf(a.urgency) === urgencyOrder.indexOf(b.urgency)) {
-                    const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
-                    const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
-                    return dateA - dateB;
+                const urgencyA = urgencyOrder.indexOf(a.urgency || '');
+                const urgencyB = urgencyOrder.indexOf(b.urgency || '');
+                if (urgencyA === urgencyB) {
+                    return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
                 }
-                return urgencyOrder.indexOf(a.urgency) - urgencyOrder.indexOf(b.urgency);
-            } else {
-                const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
-                const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
-                return dateA - dateB;
+                return urgencyA - urgencyB;
             }
+            return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
         });
     };
 
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
-
-        // Define o fuso horário correto
-        const timeZone = 'America/Sao_Paulo';
-
-        // Converte a data para o fuso horário local e formata no estilo desejado
         return moment.tz(dateString, timeZone).format('DD/MM/YYYY');
     };
 
@@ -105,127 +69,93 @@ const TaskList: React.FC = () => {
         <div className={styles.container}>
             <div className={styles.card}>
                 <header className={styles.header}>
-                    <button className={styles.addButton} onClick={openModal}>
-                        <Image src={PlusImage} alt={'+'}/> Adicionar Tarefa
+                    <button
+                        className={styles.addButton}
+                        onClick={() => setIsTaskFormOpen(true)}
+                    >
+                        <Image src={PlusImage} alt="Adicionar" /> Adicionar Tarefa
                     </button>
-                    <TaskModal isOpen={isModalOpen} onRequestClose={closeModal}>
-                        <TaskForm />
-                    </TaskModal>
                     <ConfirmDeleteModal
                         isOpen={isDeleteModalOpen}
                         onRequestClose={() => setIsDeleteModalOpen(false)}
                         onConfirm={confirmDelete}
                     />
                 </header>
+                {isTaskFormOpen && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modalContent}>
+                            <TaskForm />
+                            <button
+                                onClick={() => setIsTaskFormOpen(false)}
+                                className={styles.cancelButton}
+                            >
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                )}
                 <table className={styles.table}>
                     <thead>
-                    <tr >
-                        <th><div className={styles.titles}>Check</div></th>
-                        <th><div className={styles.titles}>Título</div></th>
-                        <th>
-                            <div className={`${styles.titles} ${styles.titleSort}`}>
-                                <Image className={styles.sortButton} onClick={() => setSortCriteria('due_date')} src={SortImage} alt={'ordenar data'}/>
-                                <p>Data de Vencimento</p>
-                            </div>
-                        </th>
-                        <th>
-                            <div className={`${styles.titles} ${styles.titleSort}`}>
-                                <Image className={styles.sortButton} onClick={() => setSortCriteria('urgency')}
-                                       src={SortImage} alt={'ordenar urgência'}/>
-                                <p>Urgência</p>
-                            </div>
-                        </th>
-                        <th>
-                            <div className={styles.titles}>Ações</div>
-                        </th>
+                    <tr>
+                        <th>Check</th>
+                        <th>Título</th>
+                        <th>Data de Vencimento</th>
+                        <th>Urgência</th>
+                        <th>Google Calendar</th>
+                        <th>Google Meet</th>
+                        <th>Zoom</th>
+                        <th>Ações</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {sortTasks(tasks).map((task) => (
-                        <tr key={task.id}>
-                            <td>
-                                <div className={styles.titles}>
+                    {tasks.length > 0 ? (
+                        sortTasks(tasks).map((task) => (
+                            <tr key={task.id}>
+                                <td>
                                     <input
                                         type="checkbox"
                                         checked={task.completed}
-                                        onChange={() => handleToggleComplete(task)}
+                                        onChange={() =>
+                                            dispatch(
+                                                updateAgendaItem({
+                                                    id: task.id,
+                                                    updatedItem: { completed: !task.completed },
+                                                })
+                                            )
+                                        }
                                     />
-                                </div>
-                            </td>
-                            <td>
-                                <div className={`${task.completed ? styles.completed : ''} ${styles.titles}`}>
-                                    {editableTask?.id === task.id && editableTask.field === 'title' ? (
-                                        <input
-                                            type="text"
-                                            defaultValue={task.title}
-                                            onBlur={(e) => handleBlur(task, 'title', e.target.value)}
-                                            className={styles.editableInput}
-                                            autoFocus
-                                        />
-                                    ) : (
-                                        <div
-                                            className={`${task.completed ? styles.completed : ''} ${styles.editableField}`}
-                                            onClick={() => handleFieldClick(task.id, 'title')}
-                                        >
-                                            {task.title}
-                                        </div>
-                                    )}
-                                </div>
-                            </td>
-                            <td>
-                                <div className={`${task.completed ? styles.completed : ''} ${styles.titles}`}>
-                                    {editableTask?.id === task.id && editableTask.field === 'due_date' ? (
-                                        <input
-                                            type="date"
-                                            defaultValue={task.due_date}
-                                            onBlur={(e) => handleBlur(task, 'due_date', e.target.value)}
-                                            className={styles.editableInput}
-                                            autoFocus
-                                        />
-                                    ) : (
-                                        <div
-                                            className={`${task.completed ? styles.completed : ''} ${styles.editableField}`}
-                                            onClick={() => handleFieldClick(task.id, 'due_date')}
-                                        >
-                                            {task.due_date ? formatDate(task.due_date) : ''}
-                                        </div>
-                                    )}
-                                </div>
-                            </td>
-                            <td className={`${task.completed ? styles.completed : ''} ${styles[task.urgency.toLowerCase()]}`}>
-                                <div className={styles.titles}>
-                                    {editableTask?.id === task.id && editableTask.field === 'urgency' ? (
-                                        <select
-                                            defaultValue={task.urgency}
-                                            onBlur={(e) => handleBlur(task, 'urgency', e.target.value)}
-                                            className={styles.editableInput}
-                                            autoFocus
-                                        >
-                                            <option value="Low">Baixa</option>
-                                            <option value="Medium">Média</option>
-                                            <option value="High">Alta</option>
-                                            <option value="Critical">Crítica</option>
-                                        </select>
-                                    ) : (
-                                        <div
-                                            className={`${task.completed ? styles.completed : ''} ${styles.editableField}`}
-                                            onClick={() => handleFieldClick(task.id, 'urgency')}
-                                        >
-                                            {task.urgency}
-                                        </div>
-                                    )}
-                                </div>
-                            </td>
-                            <td className={styles.actions}>
-                                <button onClick={() => goToDetails(task.id)} className={styles.actionButton}>
-                                    <Image src={DetailsImage} alt="Detalhes" />
-                                </button>
-                                <button onClick={() => handleDelete(task.id)} className={styles.actionButton}>
-                                    <Image src={DeleteImage} alt="Deletar" />
-                                </button>
+                                </td>
+                                <td>{task.title}</td>
+                                <td>{task.start_time ? formatDate(task.start_time) : ''}</td>
+                                <td className={`${styles[task.urgency?.toLowerCase() || 'low']}`}>
+                                    {task.urgency || 'Não especificado'}
+                                </td>
+                                <td>{task.add_to_google_calendar ? 'Sim' : 'Não'}</td>
+                                <td>{task.add_to_google_meet ? 'Sim' : 'Não'}</td>
+                                <td>{task.add_to_zoom ? 'Sim' : 'Não'}</td>
+                                <td className={styles.actions}>
+                                    <button
+                                        className={styles.actionButton}
+                                        onClick={() => router.push(`/dashboard/tarefas/${task.id}`)}
+                                    >
+                                        <Image src={DetailsImage} alt="Detalhes" />
+                                    </button>
+                                    <button
+                                        className={styles.actionButton}
+                                        onClick={() => handleDelete(task.id)}
+                                    >
+                                        <Image src={DeleteImage} alt="Deletar" />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={8} style={{ textAlign: 'center' }}>
+                                Nenhuma tarefa encontrada.
                             </td>
                         </tr>
-                    ))}
+                    )}
                     </tbody>
                 </table>
             </div>

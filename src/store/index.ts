@@ -5,7 +5,6 @@ import { combineReducers } from '@reduxjs/toolkit';
 
 import authReducer from './slices/authSlice';
 import leadsReducer from './slices/leadsSlice';
-import todoReducer from '@/store/slices/todoSlice';
 import meetingReducer from '@/store/slices/meetingSlice';
 import agendaReducer from '@/store/slices/agendaSlice';
 import clientesReducer from '@/store/slices/clientesSlice';
@@ -26,7 +25,6 @@ const rootReducer = combineReducers({
     leads: leadsReducer,
     meetings: meetingReducer,
     agenda: agendaReducer,
-    tasks: todoReducer,
     apolices: apoliceReducer,
     profile: profileReducer,
 });

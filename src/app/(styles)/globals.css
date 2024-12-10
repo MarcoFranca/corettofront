@@ -11,3 +11,33 @@
 html{
   font-family: sans-serif;
 }
+
+/* Sobreposição do Modal */
+.customOverlay {
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo escurecido */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Conteúdo do Modal */
+.customContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1010; /* Garantindo que esteja acima do overlay */
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  outline: none; /* Remove a borda azul do modal */
+}

@@ -7,7 +7,7 @@ const TaskDetailPage = () => {
 
     return (
         <main className={styles.dashboardLayout}>
-                <TaskDetail />
+                <TaskDetail/>
         </main>
     );
 };

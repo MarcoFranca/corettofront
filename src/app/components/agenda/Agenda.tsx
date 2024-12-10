@@ -1,149 +1,186 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, momentLocalizer, Views, View, NavigateAction, SlotInfo } from 'react-big-calendar';
+import React, { useState, useEffect } from 'react';
+import { Calendar, momentLocalizer, Views, SlotInfo } from 'react-big-calendar';
 import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import './CustomCalendarStyles.css';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { fetchAgendaItems } from '@/store/slices/agendaSlice';
+import { fetchAgendaItems, createAgendaItem, deleteAgendaItem, updateAgendaItem } from '@/store/slices/agendaSlice';
 import { RootState } from '@/store';
+import api from '@/app/api/axios';
 import styles from './Agenda.module.css';
-import Modal from 'react-modal';
+import CreateEventModal from '@/app/components/Modal/agenda/CreateEventModal';
+import EventDetailsModal from '@/app/components/Modal/agenda/EventDetailsModal';
 
 moment.locale('pt-BR');
 const localizer = momentLocalizer(moment);
-
-// Defina o fuso horário que você deseja usar
 const timeZone = 'America/Sao_Paulo';
+
+interface Cliente {
+    id: string;
+    nome: string;
+}
 
 const Agenda: React.FC = () => {
     const dispatch = useAppDispatch();
     const agendaItems = useAppSelector((state: RootState) => state.agenda.items);
     const [events, setEvents] = useState<any[]>([]);
-    const [view, setView] = useState<View>(Views.MONTH);
-    const [date, setDate] = useState(new Date());
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [newEvent, setNewEvent] = useState({ title: '', description: '', start: new Date(), end: new Date(), type: 'task' });
-    const isFirstRender = useRef(true); // Ref para evitar requisições duplicadas
+    const [clientes, setClientes] = useState<Cliente[]>([]);
+    const [modalIsOpen, setModalIsOpen] = useState(false); // CreateEventModal
+    const [detailsModalIsOpen, setDetailsModalIsOpen] = useState(false); // EventDetailsModal
+    const [newEvent, setNewEvent] = useState({
+        title: '',
+        description: '',
+        startTime: '',
+        endTime: '',
+        type: 'task' as 'task' | 'meeting',
+        urgency: 'Low' as 'Low' | 'Medium' | 'High' | 'Critical',
+        clienteId: null as string | null,
+        add_to_google_calendar: false,
+        add_to_google_meet: false,
+        add_to_zoom: false,
+    });
+    const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
     useEffect(() => {
-        dispatch(fetchAgendaItems()); // Faz a requisição para buscar os itens da agenda
+        dispatch(fetchAgendaItems());
+        fetchClientes();
     }, [dispatch]);
 
-    // Função para formatar os eventos com conversão de fuso horário
-    const formatEvent = (item: any) => {
-        // Verifica se a data já está em UTC e converte para o fuso horário correto
-        const startZoned = moment.tz(item.start, timeZone).toDate();
-        const endZoned = moment.tz(item.end, timeZone).toDate();
-
-        return {
-            id: item.id,
-            title: item.title,
-            start: startZoned,
-            end: endZoned,
-            description: item.description,
-        };
-    };
-
-
-    // Atualiza os eventos quando os dados da agenda forem alterados
     useEffect(() => {
-        const formattedAgendaItems = agendaItems.map(formatEvent);
-
-        // Adicione log para verificar os eventos convertidos
-        console.log("Eventos formatados:", formattedAgendaItems);
-
-        // Remover duplicatas usando o ID único de cada evento
-        const uniqueEvents = Array.from(new Set(formattedAgendaItems.map(event => event.id)))
-            .map(id => formattedAgendaItems.find(event => event.id === id));
-
-        setEvents(uniqueEvents);
+        const formattedEvents = agendaItems.map((item: any) => ({
+            ...item,
+            start: moment.tz(item.start, timeZone).toDate(),
+            end: moment.tz(item.end, timeZone).toDate(),
+        }));
+        setEvents(formattedEvents);
     }, [agendaItems]);
 
-
-    const handleViewChange = (newView: View) => {
-        setView(newView);
-    };
-
-    const handleNavigate = (newDate: Date, newView: View, action: NavigateAction) => {
-        setDate(newDate);
-        setView(newView);
+    const fetchClientes = async () => {
+        try {
+            const response = await api.get('/clientes/');
+            setClientes(response.data);
+        } catch (error) {
+            console.error('Erro ao carregar clientes:', error);
+        }
     };
 
     const handleSelectSlot = (slotInfo: SlotInfo) => {
-        setNewEvent({ ...newEvent, start: slotInfo.start, end: slotInfo.end });
+        setNewEvent({
+            ...newEvent,
+            startTime: moment(slotInfo.start).format('HH:mm'),
+            endTime: moment(slotInfo.end).format('HH:mm'),
+        });
         setModalIsOpen(true);
     };
 
-    const handleSave = () => {
-        const event = {
-            title: newEvent.title,
-            description: newEvent.description,
-            start: newEvent.start,
-            end: newEvent.end,
-        };
+    const handleEditEvent = (event: any) => {
+        setNewEvent({
+            title: event.title,
+            description: event.description,
+            startTime: moment(event.start).format('HH:mm'),
+            endTime: moment(event.end).format('HH:mm'),
+            type: event.type,
+            urgency: event.urgency,
+            clienteId: event.cliente || null,
+            add_to_google_calendar: event.add_to_google_calendar,
+            add_to_google_meet: event.add_to_google_meet,
+            add_to_zoom: event.add_to_zoom,
+        });
+        setDetailsModalIsOpen(false); // Feche o modal de detalhes
+        setModalIsOpen(true); // Abra o modal de criação para edição
+    };
 
-        // Lógica para criar uma nova task ou reunião
-        if (newEvent.type === 'task') {
-            // Dispatch createTask
-        } else if (newEvent.type === 'meeting') {
-            // Dispatch createMeeting
+
+    const handleSelectEvent = (event: any) => {
+        setSelectedEvent(event);
+        setDetailsModalIsOpen(true);
+    };
+
+    const handleSave = async () => {
+        try {
+            const formattedStart = moment(`2023-12-10T${newEvent.startTime}`).format();
+            const formattedEnd = moment(`2023-12-10T${newEvent.endTime}`).format();
+
+            await dispatch(
+                createAgendaItem({
+                    title: newEvent.title,
+                    description: newEvent.description,
+                    start_time: formattedStart,
+                    end_time: formattedEnd,
+                    type: newEvent.type,
+                    urgency: newEvent.urgency,
+                    cliente: newEvent.clienteId,
+                })
+            );
+            setModalIsOpen(false);
+        } catch (error) {
+            console.error('Erro ao salvar o evento:', error);
         }
+    };
 
-        setModalIsOpen(false);
+    const handleUpdateEvent = async (updatedEvent: any) => {
+        try {
+            const formattedEvent = {
+                ...updatedEvent,
+                start: moment(`2023-12-10T${updatedEvent.start}`).toISOString(),
+                end: moment(`2023-12-10T${updatedEvent.end}`).toISOString(),
+            };
+
+            await dispatch(
+                updateAgendaItem({
+                    id: updatedEvent.id,
+                    updatedItem: formattedEvent,
+                })
+            );
+            setDetailsModalIsOpen(false);
+        } catch (error) {
+            console.error('Erro ao atualizar o evento:', error);
+        }
+    };
+
+
+    const handleDeleteEvent = async () => {
+        if (selectedEvent?.id) {
+            await dispatch(deleteAgendaItem(selectedEvent.id));
+            setDetailsModalIsOpen(false);
+        }
+    };
+
+    const eventStyleGetter = (event: any) => {
+        const style = {
+            backgroundColor: event.type === 'meeting' ? '#3174ad' : '#f1cb0e',
+        };
+        return { style };
     };
 
     return (
-        <div className={`${styles.container} agenda-container`}>
+        <div className={styles.container}>
             <Calendar
                 localizer={localizer}
                 events={events}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: '100%', width: '100%' }}
-                views={['month', 'week', 'day', 'agenda']}
-                view={view}
-                onView={handleViewChange}
-                date={date}
-                onNavigate={handleNavigate}
-                toolbar={true}
                 selectable
                 onSelectSlot={handleSelectSlot}
-                messages={{
-                    today: 'Hoje',
-                    previous: 'Anterior',
-                    next: 'Próximo',
-                    month: 'Mês',
-                    week: 'Semana',
-                    day: 'Dia',
-                    agenda: 'Agenda',
-                }}
+                onSelectEvent={handleSelectEvent}
+                eventPropGetter={eventStyleGetter}
             />
-            <Modal
+            <CreateEventModal
                 isOpen={modalIsOpen}
                 onRequestClose={() => setModalIsOpen(false)}
-                contentLabel="Novo Evento"
-            >
-                <h2>Novo Evento</h2>
-                <form>
-                    <label>
-                        Título:
-                        <input type="text" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} />
-                    </label>
-                    <label>
-                        Descrição:
-                        <input type="text" value={newEvent.description} onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })} />
-                    </label>
-                    <label>
-                        Tipo:
-                        <select value={newEvent.type} onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}>
-                            <option value="task">Tarefa</option>
-                            <option value="meeting">Reunião</option>
-                        </select>
-                    </label>
-                    <button type="button" onClick={handleSave}>Salvar</button>
-                    <button type="button" onClick={() => setModalIsOpen(false)}>Cancelar</button>
-                </form>
-            </Modal>
+                newEvent={newEvent}
+                setNewEvent={setNewEvent}
+                clientes={clientes}
+                handleSave={handleSave}
+            />
+            {selectedEvent && (
+                <EventDetailsModal
+                    isOpen={detailsModalIsOpen}
+                    onRequestClose={() => setDetailsModalIsOpen(false)}
+                    event={selectedEvent}
+                    onUpdate={handleUpdateEvent}
+                    onDelete={handleDeleteEvent}
+                />
+            )}
         </div>
     );
 };

@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/app/api/axios';
-import { AgendaState } from '@/types/interfaces';
-import moment from "moment-timezone";
+import { AgendaState, AgendaItem } from '@/types/interfaces';
+import moment from 'moment-timezone';
+
+const timeZone = 'America/Sao_Paulo';
 
 const initialState: AgendaState = {
     items: [],
@@ -9,28 +11,69 @@ const initialState: AgendaState = {
     error: null,
 };
 
+// Buscar itens da agenda
 export const fetchAgendaItems = createAsyncThunk('agenda/fetchAgendaItems', async () => {
     const response = await api.get('/agenda/');
-    const { reunioes, tasks } = response.data;
-
-    // Combine as reuniões e tasks
-    const formattedReunioes = reunioes.map((reuniao: any) => ({
-        id: reuniao.id,
-        title: `Reunião com ${reuniao.cliente_nome}`,
-        start: moment(`${reuniao.data_reuniao_agendada}T${reuniao.horario_inicio}`).toDate(), // Usando moment.js para converter a data corretamente
-        end: moment(`${reuniao.data_reuniao_agendada}T${reuniao.horario_fim}`).toDate(), // Usando moment.js
-        type: 'meeting',
+    return response.data.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        start: moment.tz(item.start_time, timeZone).toDate(),
+        end: moment.tz(item.end_time, timeZone).toDate(),
+        type: item.entry_type,
+        completed: item.completed,
+        urgency: item.urgency,
+        add_to_google_calendar: item.add_to_google_calendar,
+        add_to_google_meet: item.add_to_google_meet,
+        add_to_zoom: item.add_to_zoom,
+        google_meet_link: item.google_meet_link,
+        zoom_meeting_link: item.zoom_meeting_link,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
     }));
+});
 
-    const formattedTasks = tasks.map((task: any) => ({
-        id: task.id,
-        title: task.title,
-        start: moment(task.due_date).toDate(), // Convertendo a data da task usando moment.js
-        end: moment(task.due_date).toDate(),
-        type: 'task',
-    }));
+// Criar um item na agenda
+export const createAgendaItem = createAsyncThunk<AgendaItem, Partial<AgendaItem>>(
+    'agenda/createAgendaItem',
+    async (newItem) => {
+        const response = await api.post('/agenda/', {
+            title: newItem.title,
+            description: newItem.description,
+            start_time: moment(newItem.start_time).format(),
+            end_time: moment(newItem.end_time).format(),
+            entry_type: newItem.type, // Certifique-se de que o nome está correto no backend
+            urgency: newItem.urgency,
+            add_to_google_calendar: newItem.add_to_google_calendar,
+            add_to_google_meet: newItem.add_to_google_meet,
+            add_to_zoom: newItem.add_to_zoom,
+            cliente: newItem.cliente || null, // Inclui explicitamente o cliente
+        });
+        return {
+            ...response.data,
+            start: moment.tz(response.data.start_time, timeZone).toDate(),
+            end: moment.tz(response.data.end_time, timeZone).toDate(),
+        };
+    }
+);
 
-    return [...formattedReunioes, ...formattedTasks];
+// Atualizar um item da agenda
+export const updateAgendaItem = createAsyncThunk<AgendaItem, { id: string; updatedItem: Partial<AgendaItem> }>(
+    'agenda/updateAgendaItem',
+    async ({ id, updatedItem }) => {
+        const response = await api.patch(`/agenda/${id}/`, updatedItem);
+        return {
+            ...response.data,
+            start: moment.tz(response.data.start_time, timeZone).toDate(),
+            end: moment.tz(response.data.end_time, timeZone).toDate(),
+        };
+    }
+);
+
+// Deletar um item da agenda
+export const deleteAgendaItem = createAsyncThunk<string, string>('agenda/deleteAgendaItem', async (id) => {
+    await api.delete(`/agenda/${id}/`);
+    return id;
 });
 
 const agendaSlice = createSlice({
@@ -50,12 +93,23 @@ const agendaSlice = createSlice({
             })
             .addCase(fetchAgendaItems.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                // Certifique-se de que está lidando apenas com strings
                 state.items = action.payload;
             })
             .addCase(fetchAgendaItems.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message || null;
+            })
+            .addCase(createAgendaItem.fulfilled, (state, action) => {
+                state.items.push(action.payload);
+            })
+            .addCase(updateAgendaItem.fulfilled, (state, action) => {
+                const index = state.items.findIndex((item) => item.id === action.payload.id);
+                if (index !== -1) {
+                    state.items[index] = { ...state.items[index], ...action.payload };
+                }
+            })
+            .addCase(deleteAgendaItem.fulfilled, (state, action) => {
+                state.items = state.items.filter((item) => item.id !== action.payload);
             });
     },
 });

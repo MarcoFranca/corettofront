@@ -25,6 +25,26 @@ export interface Reuniao {
     local: string;
 }
 
+export interface AgendaItem {
+    id: string;
+    title: string;
+    description: string;
+    start_time: string;
+    end_time: string;
+    cliente: string | null;
+    type: 'task' | 'meeting'; // Altere de entry_type para type
+    completed: boolean;
+    urgency?: 'Low' | 'Medium' | 'High' | 'Critical';
+    add_to_google_calendar?: boolean;
+    add_to_google_meet?: boolean;
+    add_to_zoom?: boolean;
+    google_meet_link?: string;
+    zoom_meeting_link?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+
 export interface Data {
     leads: { [key: string]: Lead };
     columns: { [key: string]: Column };
@@ -233,6 +253,9 @@ export interface Task {
     created_at: string;
     updated_at: string;
     completed: boolean | undefined;
+    add_to_google_calendar?: boolean;
+    add_to_google_meet?: boolean;
+    add_to_zoom?: boolean;
 }
 
 export interface TasksState {
@@ -286,7 +309,7 @@ export interface AgendaItem {
     description: string;
     start_time: string;
     end_time: string;
-    cliente: string;
+    cliente: string | null;
     is_meeting: boolean;
 }
 

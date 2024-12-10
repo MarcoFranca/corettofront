@@ -45,8 +45,6 @@ const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => 
                             src={profileImage || DefaultUserImage}
                             alt="user"
                             className={styles.userImage}
-                            width={50}
-                            height={50}
                         />
                         <p>{user?.username ?? 'Usuário'}</p>
                     </div>
