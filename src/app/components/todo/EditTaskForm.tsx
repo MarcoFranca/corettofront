@@ -1,8 +1,6 @@
-// EditTaskForm.tsx
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
-import { updateTask } from '@/store/slices/todoSlice';
 import { Task, Urgency } from "@/types/interfaces";
 import styles from './EditTaskForm.module.css';
 
@@ -17,10 +15,24 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ task, onClose }) => {
     const [description, setDescription] = useState(task.description || '');
     const [dueDate, setDueDate] = useState(task.due_date || '');
     const [urgency, setUrgency] = useState<Urgency>(task.urgency);
+    const [addToGoogleCalendar, setAddToGoogleCalendar] = useState(task.add_to_google_calendar || false);
+    const [addToGoogleMeet, setAddToGoogleMeet] = useState(task.add_to_google_meet || false);
+    const [addToZoom, setAddToZoom] = useState(task.add_to_zoom || false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(updateTask({ id: task.id, updatedTask: { title, description, due_date: dueDate, urgency } }));
+        dispatch(updateTask({
+            id: task.id,
+            updatedTask: {
+                title,
+                description,
+                due_date: dueDate,
+                urgency,
+                add_to_google_calendar: addToGoogleCalendar,
+                add_to_google_meet: addToGoogleMeet,
+                add_to_zoom: addToZoom,
+            },
+        }));
         onClose();
     };
 
@@ -34,12 +46,11 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ task, onClose }) => {
                 className={styles.input}
                 required
             />
-            <input
-                type="text"
+            <textarea
                 name="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className={styles.input}
+                className={styles.textarea}
             />
             <input
                 type="date"
@@ -56,12 +67,36 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ task, onClose }) => {
                 className={styles.select}
                 required
             >
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-                <option value="Critical">Critical</option>
+                <option value="Low">Baixa</option>
+                <option value="Medium">Média</option>
+                <option value="High">Alta</option>
+                <option value="Critical">Crítica</option>
             </select>
-            <button type="submit" className={styles.button}>Save</button>
+            <label>
+                <input
+                    type="checkbox"
+                    checked={addToGoogleCalendar}
+                    onChange={(e) => setAddToGoogleCalendar(e.target.checked)}
+                />
+                Adicionar ao Google Calendar
+            </label>
+            <label>
+                <input
+                    type="checkbox"
+                    checked={addToGoogleMeet}
+                    onChange={(e) => setAddToGoogleMeet(e.target.checked)}
+                />
+                Adicionar ao Google Meet
+            </label>
+            <label>
+                <input
+                    type="checkbox"
+                    checked={addToZoom}
+                    onChange={(e) => setAddToZoom(e.target.checked)}
+                />
+                Adicionar ao Zoom
+            </label>
+            <button type="submit" className={styles.button}>Salvar</button>
         </form>
     );
 };

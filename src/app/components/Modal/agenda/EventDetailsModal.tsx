@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { ModalContent, Title, Label, ButtonGroup } from './EventDetailsModal.styles';
-import moment from "moment";
+import { ModalContent, Title, Label, ButtonGroup, CheckboxGroup } from './EventDetailsModal.styles';
+import moment from 'moment';
 
 interface EventDetailsModalProps {
     isOpen: boolean;
@@ -24,7 +24,7 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
         setEditableEvent(event); // Atualiza o estado local quando o evento muda
     }, [event]);
 
-    const handleFieldChange = (field: string, value: string) => {
+    const handleFieldChange = (field: string, value: any) => {
         setEditableEvent({ ...editableEvent, [field]: value });
     };
 
@@ -43,14 +43,14 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                     Título:
                     <input
                         type="text"
-                        value={editableEvent.title}
+                        value={editableEvent.title || ''}
                         onChange={(e) => handleFieldChange('title', e.target.value)}
                     />
                 </Label>
                 <Label>
                     Descrição:
                     <textarea
-                        value={editableEvent.description}
+                        value={editableEvent.description || ''}
                         onChange={(e) => handleFieldChange('description', e.target.value)}
                     />
                 </Label>
@@ -78,7 +78,32 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                         onChange={(e) => handleFieldChange('end', e.target.value)}
                     />
                 </Label>
-
+                <CheckboxGroup>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={!!editableEvent.add_to_google_calendar}
+                            onChange={(e) => handleFieldChange('add_to_google_calendar', e.target.checked)}
+                        />
+                        Adicionar ao Google Agenda
+                    </label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={!!editableEvent.add_to_google_meet}
+                            onChange={(e) => handleFieldChange('add_to_google_meet', e.target.checked)}
+                        />
+                        Adicionar ao Google Meet
+                    </label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={!!editableEvent.add_to_zoom}
+                            onChange={(e) => handleFieldChange('add_to_zoom', e.target.checked)}
+                        />
+                        Adicionar ao Zoom
+                    </label>
+                </CheckboxGroup>
                 <ButtonGroup>
                     <button
                         className="save"

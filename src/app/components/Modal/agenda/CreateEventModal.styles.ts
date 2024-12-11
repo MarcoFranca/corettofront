@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-// Wrapper principal do formulário
+// Wrapper principal do formulário do modal
 export const ModalContent = styled.div`
     padding: 20px;
     background: #fff;
@@ -15,9 +15,21 @@ export const Title = styled.h2`
     font-size: 24px;
     color: #333;
     margin-bottom: 20px;
+    text-align: center;
 `;
 
-// Estilo dos labels
+// Parágrafo para exibir informações
+export const Paragraph = styled.p`
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+
+    strong {
+        color: #333;
+    }
+`;
+
+// Label para campos editáveis
 export const Label = styled.label`
     display: flex;
     flex-direction: column;
@@ -42,6 +54,27 @@ export const Label = styled.label`
     textarea {
         resize: vertical;
         min-height: 80px;
+    }
+`;
+
+// Grupo de checkboxes
+export const CheckboxGroup = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+
+    label {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        color: #555;
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+            accent-color: #3174ad; /* Cor personalizada para checkboxes */
+            cursor: pointer;
+        }
     }
 `;
 
@@ -74,7 +107,16 @@ export const ButtonGroup = styled.div`
         }
     }
 
-    .cancel {
+    .delete {
+        background-color: #ff4d4f;
+        color: #fff;
+
+        &:hover {
+            background-color: #d9363e;
+        }
+    }
+
+    .close, .cancel {
         background-color: #f5f5f5;
         color: #555;
 

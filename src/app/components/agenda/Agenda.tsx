@@ -31,6 +31,7 @@ const Agenda: React.FC = () => {
         description: '',
         startTime: '',
         endTime: '',
+        date: '', // Incluído para resolver o problema
         type: 'task' as 'task' | 'meeting',
         urgency: 'Low' as 'Low' | 'Medium' | 'High' | 'Critical',
         clienteId: null as string | null,
@@ -38,6 +39,7 @@ const Agenda: React.FC = () => {
         add_to_google_meet: false,
         add_to_zoom: false,
     });
+
     const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
     useEffect(() => {
@@ -64,13 +66,17 @@ const Agenda: React.FC = () => {
     };
 
     const handleSelectSlot = (slotInfo: SlotInfo) => {
+        const date = moment(slotInfo.start).format('YYYY-MM-DD'); // Obtenha a data no formato correto
         setNewEvent({
             ...newEvent,
+            date: date, // Defina a data
             startTime: moment(slotInfo.start).format('HH:mm'),
             endTime: moment(slotInfo.end).format('HH:mm'),
         });
         setModalIsOpen(true);
     };
+
+
 
     const handleEditEvent = (event: any) => {
         setNewEvent({
@@ -78,6 +84,7 @@ const Agenda: React.FC = () => {
             description: event.description,
             startTime: moment(event.start).format('HH:mm'),
             endTime: moment(event.end).format('HH:mm'),
+            date: moment(event.start).format('YYYY-MM-DD'), // Inclua a data
             type: event.type,
             urgency: event.urgency,
             clienteId: event.cliente || null,
@@ -85,9 +92,10 @@ const Agenda: React.FC = () => {
             add_to_google_meet: event.add_to_google_meet,
             add_to_zoom: event.add_to_zoom,
         });
-        setDetailsModalIsOpen(false); // Feche o modal de detalhes
-        setModalIsOpen(true); // Abra o modal de criação para edição
+        setDetailsModalIsOpen(false);
+        setModalIsOpen(true);
     };
+
 
 
     const handleSelectEvent = (event: any) => {
@@ -97,8 +105,9 @@ const Agenda: React.FC = () => {
 
     const handleSave = async () => {
         try {
-            const formattedStart = moment(`2023-12-10T${newEvent.startTime}`).format();
-            const formattedEnd = moment(`2023-12-10T${newEvent.endTime}`).format();
+            // Combina a data selecionada com o horário de início e término
+            const formattedStart = moment(`${newEvent.date}T${newEvent.startTime}`).format();
+            const formattedEnd = moment(`${newEvent.date}T${newEvent.endTime}`).format();
 
             await dispatch(
                 createAgendaItem({
@@ -109,6 +118,9 @@ const Agenda: React.FC = () => {
                     type: newEvent.type,
                     urgency: newEvent.urgency,
                     cliente: newEvent.clienteId,
+                    add_to_google_calendar: newEvent.add_to_google_calendar,
+                    add_to_google_meet: newEvent.add_to_google_meet,
+                    add_to_zoom: newEvent.add_to_zoom,
                 })
             );
             setModalIsOpen(false);
@@ -121,16 +133,23 @@ const Agenda: React.FC = () => {
         try {
             const formattedEvent = {
                 ...updatedEvent,
-                start: moment(`2023-12-10T${updatedEvent.start}`).toISOString(),
-                end: moment(`2023-12-10T${updatedEvent.end}`).toISOString(),
+                start_time: moment(`${updatedEvent.date}T${updatedEvent.start}`).toISOString(),
+                end_time: moment(`${updatedEvent.date}T${updatedEvent.end}`).toISOString(),
             };
 
+            // Envie o evento atualizado para o backend
             await dispatch(
                 updateAgendaItem({
                     id: updatedEvent.id,
-                    updatedItem: formattedEvent,
+                    updatedItem: {
+                        ...formattedEvent,
+                        add_to_google_calendar: updatedEvent.add_to_google_calendar,
+                        add_to_google_meet: updatedEvent.add_to_google_meet,
+                        add_to_zoom: updatedEvent.add_to_zoom,
+                    },
                 })
             );
+
             setDetailsModalIsOpen(false);
         } catch (error) {
             console.error('Erro ao atualizar o evento:', error);

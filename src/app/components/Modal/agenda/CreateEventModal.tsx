@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { ModalContent, Title, Label, ButtonGroup } from './CreateEventModal.styles';
+import { ModalContent, Title, Label, ButtonGroup, CheckboxGroup } from './CreateEventModal.styles';
 
 interface Cliente {
     id: string;
@@ -12,6 +12,7 @@ interface CreateEvent {
     description: string;
     startTime: string;
     endTime: string;
+    date: string; // Inclua a propriedade date
     type: 'task' | 'meeting';
     urgency: 'Low' | 'Medium' | 'High' | 'Critical';
     clienteId: string | null;
@@ -19,6 +20,7 @@ interface CreateEvent {
     add_to_google_meet: boolean;
     add_to_zoom: boolean;
 }
+
 
 interface CreateEventModalProps {
     isOpen: boolean;
@@ -154,6 +156,47 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                             ))}
                         </select>
                     </Label>
+                    <CheckboxGroup>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={newEvent.add_to_google_calendar}
+                                onChange={(e) =>
+                                    setNewEvent({
+                                        ...newEvent,
+                                        add_to_google_calendar: e.target.checked, // Valor booleano
+                                    })
+                                }
+                            />
+                            Adicionar ao Google Agenda
+                        </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={newEvent.add_to_google_meet}
+                                onChange={(e) =>
+                                    setNewEvent({
+                                        ...newEvent,
+                                        add_to_google_meet: e.target.checked, // Valor booleano
+                                    })
+                                }
+                            />
+                            Adicionar ao Google Meet
+                        </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={newEvent.add_to_zoom}
+                                onChange={(e) =>
+                                    setNewEvent({
+                                        ...newEvent,
+                                        add_to_zoom: e.target.checked, // Valor booleano
+                                    })
+                                }
+                            />
+                            Adicionar ao Zoom
+                        </label>
+                    </CheckboxGroup>
                     <ButtonGroup>
                         <button
                             type="button"

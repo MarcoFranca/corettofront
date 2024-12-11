@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-// Wrapper principal do formulário do modal
+// Wrapper principal do formulário
 export const ModalContent = styled.div`
     padding: 20px;
     background: #fff;
@@ -18,18 +18,7 @@ export const Title = styled.h2`
     text-align: center;
 `;
 
-// Parágrafo para exibir informações
-export const Paragraph = styled.p`
-    font-size: 16px;
-    color: #555;
-    margin: 10px 0;
-
-    strong {
-        color: #333;
-    }
-`;
-
-// Label para campos editáveis
+// Estilo dos labels
 export const Label = styled.label`
     display: flex;
     flex-direction: column;
@@ -54,6 +43,25 @@ export const Label = styled.label`
     textarea {
         resize: vertical;
         min-height: 80px;
+    }
+`;
+
+// Grupo de checkboxes
+export const CheckboxGroup = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+
+    label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #555;
+
+        input {
+            margin-right: 10px;
+        }
     }
 `;
 

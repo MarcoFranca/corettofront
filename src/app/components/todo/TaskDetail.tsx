@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
-import { fetchTasks } from '@/store/slices/todoSlice';
 import { useParams, useRouter } from 'next/navigation';
 import styles from './TaskDetail.module.css';
 
@@ -39,6 +38,9 @@ const TaskDetail: React.FC = () => {
                 <p><strong>Data de Vencimento:</strong> {task.due_date}</p>
                 <p><strong>Urgência:</strong> {task.urgency}</p>
                 <p><strong>Completado:</strong> {task.completed ? 'Sim' : 'Não'}</p>
+                <p><strong>Adicionar ao Google Calendar:</strong> {task.add_to_google_calendar ? 'Sim' : 'Não'}</p>
+                <p><strong>Adicionar ao Google Meet:</strong> {task.add_to_google_meet ? 'Sim' : 'Não'}</p>
+                <p><strong>Adicionar ao Zoom:</strong> {task.add_to_zoom ? 'Sim' : 'Não'}</p>
             </div>
             <button onClick={() => router.back()} className={styles.button}>Voltar</button>
         </div>
