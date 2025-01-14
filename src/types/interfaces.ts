@@ -59,6 +59,7 @@ export interface AgendaItem {
     due_date?: string;
     cliente?: string | null;
     urgency?: "Low" | "Medium" | "High" | "Critical";
+    type: 'task' | 'meeting'; // Adicione essa propriedade
     add_to_google_calendar?: boolean;
     add_to_google_meet?: boolean;
     add_to_zoom?: boolean;
