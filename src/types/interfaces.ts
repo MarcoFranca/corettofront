@@ -286,3 +286,12 @@ export interface Plano {
     limite_subusuarios: number;
     limite_armazenamento: number;
 }
+
+export interface ColumnProps {
+    column: Column; // Use o tipo 'Column' já definido
+    leads: { [key: string]: Lead }; // Mapeia os IDs de lead para os objetos Lead
+    index: number; // Índice da coluna
+    handleLeadClick: (leadId: string) => void; // Função de clique
+    handleLeadDragStart: () => void; // Função de início de arraste
+    tooltipContainerRef: React.RefObject<HTMLDivElement>; // Referência ao container do tooltip
+}
