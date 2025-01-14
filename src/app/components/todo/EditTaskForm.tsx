@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
-import { Task, Urgency } from "@/types/interfaces";
+import { AgendaItem, Urgency } from '@/types/interfaces';
+import { updateAgendaItem } from '@/store/slices/agendaSlice';
 import styles from './EditTaskForm.module.css';
 
 interface EditTaskFormProps {
-    task: Task;
+    task: AgendaItem;
     onClose: () => void;
 }
 
@@ -14,16 +15,16 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ task, onClose }) => {
     const [title, setTitle] = useState(task.title);
     const [description, setDescription] = useState(task.description || '');
     const [dueDate, setDueDate] = useState(task.due_date || '');
-    const [urgency, setUrgency] = useState<Urgency>(task.urgency);
+    const [urgency, setUrgency] = useState<Urgency>(task.urgency || 'Medium');
     const [addToGoogleCalendar, setAddToGoogleCalendar] = useState(task.add_to_google_calendar || false);
     const [addToGoogleMeet, setAddToGoogleMeet] = useState(task.add_to_google_meet || false);
     const [addToZoom, setAddToZoom] = useState(task.add_to_zoom || false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(updateTask({
+        dispatch(updateAgendaItem({
             id: task.id,
-            updatedTask: {
+            updatedItem: {
                 title,
                 description,
                 due_date: dueDate,
