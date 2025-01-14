@@ -1,12 +1,10 @@
-// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./(styles)/globals.css";
 import ReduxProvider from './ReduxProvider';
 import React from "react";
-// _app.tsx ou layout.tsx (se usando App Router)
 import '../styles/antd-styles.css';
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +16,12 @@ export const metadata: Metadata = {
     },
 };
 
+// Certifique-se de que o clientId existe
+const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+if (!googleClientId) {
+    throw new Error("NEXT_PUBLIC_GOOGLE_CLIENT_ID não está definido no arquivo .env.local.");
+}
+
 export default function RootLayout({
                                        children,
                                    }: {
@@ -27,7 +31,9 @@ export default function RootLayout({
         <html lang="en">
         <body id={'__next'} className={inter.className}>
         <ReduxProvider>
-            {children}
+            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+                {children}
+            </GoogleOAuthProvider>
         </ReduxProvider>
         </body>
         </html>
