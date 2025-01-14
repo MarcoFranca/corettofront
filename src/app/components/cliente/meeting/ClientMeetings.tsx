@@ -2,48 +2,49 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { fetchClientMeetings, createMeeting, updateMeeting, deleteMeeting } from '@/store/slices/meetingSlice';
+import { fetchAgendaItems, createAgendaItem, updateAgendaItem, deleteAgendaItem } from '@/store/slices/agendaSlice';
 import { RootState } from '@/store';
 import MeetingModal from '@/app/components/Modal/meeting/MeetingModal';
 import styles from './ClientMeetings.module.css';
-import { Meeting } from "@/types/interfaces";
-import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
+import { AgendaItem } from '@/types/interfaces';
+import ScheduleMeetingForm from '@/app/components/Modal/meeting/ScheduleMeetingForm';
+import moment from 'moment';
 
-const ClientMeetings: React.FC<{ clientId: string, clientName: string }> = ({ clientId, clientName }) => {
+const ClientMeetings: React.FC<{ clientId: string; clientName: string }> = ({ clientId, clientName }) => {
     const dispatch = useAppDispatch();
-    const meetings = useAppSelector((state: RootState) => state.meetings?.meetings || []);
-    const status = useAppSelector((state: RootState) => state.meetings?.status || 'idle');
-    const error = useAppSelector((state: RootState) => state.meetings?.error || null);
+    const agendaItems = useAppSelector((state: RootState) => state.agenda?.items || []);
+    const status = useAppSelector((state: RootState) => state.agenda?.status || 'idle');
+    const error = useAppSelector((state: RootState) => state.agenda?.error || null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [currentMeeting, setCurrentMeeting] = useState<Partial<Meeting> | null>(null);
+    const [currentAgendaItem, setCurrentAgendaItem] = useState<Partial<AgendaItem> | null>(null);
 
     useEffect(() => {
-        dispatch(fetchClientMeetings(clientId));
+        dispatch(fetchAgendaItems());
     }, [dispatch, clientId]);
 
-    const handleOpenModal = (meeting: Partial<Meeting> | null = null) => {
-        setCurrentMeeting(meeting);
+    const handleOpenModal = (agendaItem: Partial<AgendaItem> | null = null) => {
+        setCurrentAgendaItem(agendaItem);
         setModalIsOpen(true);
     };
 
     const handleCloseModal = () => {
         setModalIsOpen(false);
-        setCurrentMeeting(null);
+        setCurrentAgendaItem(null);
     };
 
-    const handleSaveMeeting = async (meeting: Partial<Meeting>) => {
-        if (meeting.id) {
-            await dispatch(updateMeeting({ id: meeting.id, updatedMeeting: meeting }));
+    const handleSaveMeeting = async (agendaItem: Partial<AgendaItem>) => {
+        if (agendaItem.id) {
+            await dispatch(updateAgendaItem({ id: agendaItem.id, updatedItem: agendaItem }));
         } else {
-            await dispatch(createMeeting({ ...meeting, cliente: clientId }));
+            await dispatch(createAgendaItem({ ...agendaItem, cliente: clientId, type: 'meeting' }));
         }
-        dispatch(fetchClientMeetings(clientId)); // Atualiza a lista após criar ou editar
+        dispatch(fetchAgendaItems()); // Atualiza a lista após criar ou editar
         setModalIsOpen(false);
     };
 
     const handleDeleteMeeting = async (id: string) => {
-        await dispatch(deleteMeeting(id));
-        dispatch(fetchClientMeetings(clientId)); // Atualiza a lista após deletar
+        await dispatch(deleteAgendaItem(id));
+        dispatch(fetchAgendaItems()); // Atualiza a lista após deletar
     };
 
     return (
@@ -69,24 +70,26 @@ const ClientMeetings: React.FC<{ clientId: string, clientName: string }> = ({ cl
                 </tr>
                 </thead>
                 <tbody>
-                {meetings.map(meeting => (
-                    <tr key={meeting.id}>
-                        <td>{meeting.data_reuniao_agendada}</td>
-                        <td>{`${meeting.horario_inicio} - ${meeting.horario_fim}`}</td>
-                        <td>{meeting.descricao}</td>
-                        <td>
-                            <button onClick={() => handleOpenModal(meeting)}>Editar</button>
-                            <button onClick={() => handleDeleteMeeting(meeting.id)}>Deletar</button>
-                        </td>
-                    </tr>
-                ))}
+                {agendaItems
+                    .filter((item) => item.cliente === clientId && item.type === 'meeting')
+                    .map((item) => (
+                        <tr key={item.id}>
+                            <td>{moment(item.start_time).format('DD/MM/YYYY')}</td>
+                            <td>{`${moment(item.start_time).format('HH:mm')} - ${moment(item.end_time).format('HH:mm')}`}</td>
+                            <td>{item.description}</td>
+                            <td>
+                                <button onClick={() => handleOpenModal(item)}>Editar</button>
+                                <button onClick={() => handleDeleteMeeting(item.id)}>Deletar</button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
             <MeetingModal
                 isOpen={modalIsOpen}
                 onRequestClose={handleCloseModal}
                 onSubmit={handleSaveMeeting}
-                initialData={currentMeeting}
+                initialData={currentAgendaItem}
             />
         </div>
     );
