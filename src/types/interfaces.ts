@@ -60,6 +60,7 @@ export interface AgendaItem {
     cliente?: string | null;
     urgency?: 'Low' | 'Medium' | 'High' | 'Critical';
     type: 'task' | 'meeting';
+    completed?: boolean; // Propriedade opcional adicionada
     add_to_google_calendar?: boolean;
     add_to_google_meet?: boolean;
     add_to_zoom?: boolean;

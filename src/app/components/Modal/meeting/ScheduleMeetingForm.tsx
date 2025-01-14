@@ -1,8 +1,10 @@
+'use client';
+
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
-import { createMeeting } from '@/store/slices/meetingSlice';
-import { Meeting } from '@/types/interfaces';
+import { createAgendaItem } from '@/store/slices/agendaSlice'; // Atualizado para usar agendaSlice
+import { AgendaItem } from '@/types/interfaces';
 import styles from './ScheduleMeetingForm.module.css';
 
 interface ScheduleMeetingFormProps {
@@ -35,14 +37,14 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
         const endDateTime = new Date(`${date}T${endTime}`).toISOString();
 
         // Dados enviados para o backend
-        const newMeeting: Partial<Meeting> = {
+        const newAgendaItem: Partial<AgendaItem> = {
             title: 'Reunião de Planejamento',
             cliente: entityId, // Certifique-se de que `entityId` seja passado corretamente
             description,
             due_date: startDateTime,
             start_time: startDateTime,
             end_time: endDateTime,
-            entry_type: 'meeting', // Certifique-se de que esteja correto
+            type: 'meeting', // Correção: agora é `type`
             completed: false,
             urgency: 'High',
             add_to_google_calendar: addToGoogleCalendar,
@@ -51,16 +53,16 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
         };
 
         try {
-            console.log('Dados enviados pelo frontend:', newMeeting);
-            await dispatch(createMeeting(newMeeting)).unwrap();
+            console.log('Dados enviados pelo frontend:', newAgendaItem);
+            await dispatch(createAgendaItem(newAgendaItem)).unwrap();
             onClose();
         } catch (error: any) {
             if (error.redirect_url) {
                 // Redireciona o usuário para a autenticação do Google
                 window.location.href = error.redirect_url;
             } else {
-                console.error('Erro ao criar reunião:', error);
-                alert('Erro ao criar a reunião. Verifique os logs.');
+                console.error('Erro ao criar item na agenda:', error);
+                alert('Erro ao criar o item. Verifique os logs.');
             }
         }
     };
