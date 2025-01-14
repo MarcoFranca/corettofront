@@ -1,9 +1,9 @@
-'use client'
+'use client';
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/app/api/axios";
 import { useDispatch } from 'react-redux';
-import { setUser, setToken } from '@/store/slices/authSlice';  // Importa as ações do Redux
+import { setUser, setToken } from '@/store/slices/authSlice';
 import styles from './styles.module.css';
 import LogoImag from "../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg";
 import Image from "next/image";
@@ -14,15 +14,15 @@ export default function RegisterForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [loading, setLoading] = useState(false); // Estado de carregamento
+    const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const dispatch = useDispatch();
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Inicia o carregamento
-        setMessage(''); // Limpa mensagens anteriores
+        setLoading(true);
+        setMessage('');
 
         if (password !== confirmPassword) {
             setMessage('As senhas não coincidem.');
@@ -32,13 +32,9 @@ export default function RegisterForm() {
 
         try {
             // Criação do usuário
-            await api.post('/create_user/', {
-                username,
-                email,
-                password
-            });
+            await api.post('/create_user/', { username, email, password });
 
-            // Configuração dos dados para a requisição de token
+            // Obter token de autenticação
             const tokenData = new URLSearchParams();
             tokenData.append('grant_type', 'password');
             tokenData.append('username', username);
@@ -46,57 +42,64 @@ export default function RegisterForm() {
             tokenData.append('client_id', process.env.NEXT_PUBLIC_CLIENT_ID || '');
             tokenData.append('client_secret', process.env.NEXT_PUBLIC_CLIENT_SECRET || '');
 
-            // Autenticar o novo usuário após o registro
             const { data } = await api.post('/o/token/', tokenData, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             });
 
-            // Armazenar os tokens no Redux
+            // Salve os tokens no Redux
             dispatch(setToken({ access: data.access_token, refresh: data.refresh_token }));
 
             // Buscar os detalhes do usuário autenticado
-            const userDetails = await api.get('/user_detail/');
+            const userDetails = await api.get('/user_detail/', {
+                headers: { Authorization: `Bearer ${data.access_token}` },
+            });
 
-            // Armazenar os detalhes do usuário no Redux
             dispatch(setUser({
                 id: userDetails.data.id,
                 username,
                 email,
-                profileImage: userDetails.data.profileImage || '' // Adiciona profileImage ou valor padrão
+                profileImage: userDetails.data.profileImage || '',
             }));
 
             setMessage('Usuário cadastrado e autenticado com sucesso!');
 
-            // Após a autenticação, iniciar o processo de checkout para o plano escolhido
-            const price_id = process.env.NEXT_PUBLIC_PRICE_ID ;  // Aqui você pode ajustar conforme o preço do plano selecionado
-            const plano_id = process.env.NEXT_PUBLIC_PLANO_ID ;  // Ajuste para o ID do plano desejado
+            // Redirecionar para o checkout com o plano padrão
+            const price_id = process.env.NEXT_PUBLIC_PRICE_ID || ''; // Plano padrão
+            const plano_id = process.env.NEXT_PUBLIC_PLANO_ID || ''; // ID do plano padrão
+            await handleCheckout(price_id, plano_id);
+        } catch (error: any) {
+            console.error('Erro ao cadastrar ou autenticar usuário:', error);
 
-            // Iniciar sessão de checkout com a API de pagamentos
+            if (error.response && error.response.data) {
+                setMessage(Object.values(error.response.data).join(' '));
+            } else {
+                setMessage('Erro ao cadastrar ou autenticar usuário. Verifique os dados e tente novamente.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCheckout = async (price_id: string, plano_id: string) => {
+        console.log('price_id:', price_id, 'plano_id:', plano_id); // Verifique os valores
+        try {
             const response = await api.post('/pagamentos/create-checkout-session/', {
                 price_id,
                 plano_id,
             });
 
             if (response.data && response.data.checkout_url) {
-                // Redirecionar o usuário para a página de checkout
                 router.push(response.data.checkout_url);
             } else {
                 setMessage('Erro ao redirecionar para o pagamento. Tente novamente mais tarde.');
             }
-
-        } catch (error: any) {
-            if (error.response && error.response.data) {
-                // Exibe a mensagem de erro específica vinda do backend
-                setMessage(Object.values(error.response.data).join(' '));
-            } else {
-                setMessage('Erro ao cadastrar ou autenticar usuário. Verifique os dados e tente novamente.');
-            }
-        } finally {
-            setLoading(false); // Encerra o carregamento
+        } catch (error) {
+            console.error('Erro ao iniciar o checkout:', error);
+            setMessage('Erro ao redirecionar para o pagamento.');
         }
     };
+
+
 
     return (
         <div className={styles.container_form}>
