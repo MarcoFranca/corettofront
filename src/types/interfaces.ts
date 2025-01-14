@@ -58,8 +58,8 @@ export interface AgendaItem {
     end_time: string;
     due_date?: string;
     cliente?: string | null;
-    urgency?: "Low" | "Medium" | "High" | "Critical";
-    type: 'task' | 'meeting'; // Adicione essa propriedade
+    urgency?: 'Low' | 'Medium' | 'High' | 'Critical';
+    type: 'task' | 'meeting';
     add_to_google_calendar?: boolean;
     add_to_google_meet?: boolean;
     add_to_zoom?: boolean;
@@ -68,6 +68,7 @@ export interface AgendaItem {
     created_at?: string;
     updated_at?: string;
 }
+
 
 export interface AgendaState {
     items: AgendaItem[];

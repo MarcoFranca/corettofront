@@ -2,24 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { Meeting } from '@/types/interfaces';
+import { AgendaItem } from '@/types/interfaces'; // Use o modelo unificado
 import styles from './MeetingModal.module.css';
 
 interface MeetingModalProps {
     isOpen: boolean;
     onRequestClose: () => void;
-    onSubmit: (data: Partial<Meeting>) => void;
-    initialData?: Partial<Meeting> | null;
+    onSubmit: (data: Partial<AgendaItem>) => void; // Use AgendaItem
+    initialData?: Partial<AgendaItem> | null; // Use AgendaItem
 }
 
 const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onRequestClose, onSubmit, initialData }) => {
-    const [data, setData] = useState<Partial<Meeting>>(initialData || {});
+    const [data, setData] = useState<Partial<AgendaItem>>(initialData || { type: 'meeting' }); // Define `type` como padrão
 
     useEffect(() => {
-        setData(initialData || {});
+        setData(initialData || { type: 'meeting' }); // Define o tipo padrão como `meeting`
     }, [initialData]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setData({ ...data, [e.target.name]: e.target.value });
     };
 
@@ -32,55 +32,90 @@ const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onRequestClose, onS
         <Modal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            contentLabel="Marcar Reunião"
+            contentLabel="Gerenciar Evento"
             className={styles.modal}
             overlayClassName={styles.overlay}
         >
-            <h2>Marcar Reunião</h2>
+            <h2>{data.type === 'meeting' ? 'Marcar Reunião' : 'Criar Tarefa'}</h2>
             <form onSubmit={handleSubmit}>
                 <div className={styles.formGroup}>
-                    <label>Data da Reunião</label>
+                    <label>Título</label>
                     <input
-                        type="date"
-                        name="data_reuniao_agendada"
-                        value={data.data_reuniao_agendada || ''}
+                        type="text"
+                        name="title"
+                        value={data.title || ''}
                         onChange={handleChange}
                         className={styles.input}
+                        required
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label>Horário de Início</label>
-                    <input
-                        type="time"
-                        name="horario_inicio"
-                        value={data.horario_inicio || ''}
+                    <label>Tipo</label>
+                    <select
+                        name="type"
+                        value={data.type || 'meeting'}
                         onChange={handleChange}
                         className={styles.input}
-                    />
+                    >
+                        <option value="meeting">Reunião</option>
+                        <option value="task">Tarefa</option>
+                    </select>
                 </div>
-                <div className={styles.formGroup}>
-                    <label>Horário de Fim</label>
-                    <input
-                        type="time"
-                        name="horario_fim"
-                        value={data.horario_fim || ''}
-                        onChange={handleChange}
-                        className={styles.input}
-                    />
-                </div>
+                {data.type === 'meeting' && (
+                    <>
+                        <div className={styles.formGroup}>
+                            <label>Data</label>
+                            <input
+                                type="date"
+                                name="due_date"
+                                value={data.due_date || ''}
+                                onChange={handleChange}
+                                className={styles.input}
+                            />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label>Horário de Início</label>
+                            <input
+                                type="time"
+                                name="start_time"
+                                value={data.start_time || ''}
+                                onChange={handleChange}
+                                className={styles.input}
+                            />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label>Horário de Fim</label>
+                            <input
+                                type="time"
+                                name="end_time"
+                                value={data.end_time || ''}
+                                onChange={handleChange}
+                                className={styles.input}
+                            />
+                        </div>
+                    </>
+                )}
                 <div className={styles.formGroup}>
                     <label>Descrição</label>
                     <input
                         type="text"
-                        name="descricao"
-                        value={data.descricao || ''}
+                        name="description"
+                        value={data.description || ''}
                         onChange={handleChange}
                         className={styles.input}
                     />
                 </div>
                 <div className={styles.buttons}>
-                    <button type="submit" className={styles.submitButton}>Salvar</button>
-                    <button type="button" onClick={onRequestClose} className={styles.cancelButton}>Cancelar</button>
+                    <button type="submit" className={styles.submitButton}>
+                        Salvar
+                    </button>
+                    <button
+                        type="button"
+                        onClick={onRequestClose}
+                        className={styles.cancelButton}
+                    >
+                        Cancelar
+                    </button>
                 </div>
             </form>
         </Modal>

@@ -44,7 +44,7 @@ const GoogleAccountSettings: React.FC = () => {
     const handleUnlinkGoogleAccount = async () => {
         try {
             const response = await api.post('/google/unlink-google-account/');
-            alert(response.data.success || 'Conta Google desvinculada com sucesso!');
+            alert(response.data.success || '🎉 Conta Google desvinculada com sucesso!');
             setLinkedAccount(null); // Remove as informações da conta vinculada
         } catch (error) {
             console.error('Erro ao desvincular conta Google:', error);
@@ -71,7 +71,7 @@ const GoogleAccountSettings: React.FC = () => {
                 </>
             ) : (
                 <>
-                    <p>Nenhuma conta vinculada.</p>
+                    <p>🔗 Nenhuma conta vinculada.</p>
                     <button className={styles.googleButton} onClick={() => loginWithGoogle()}>
                         {linkedAccount ? 'Alterar Conta Google' : 'Vincular Conta Google'}
                     </button>
