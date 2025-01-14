@@ -1,25 +1,29 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { useParams, useRouter } from 'next/navigation';
+import { fetchAgendaItems } from '@/store/slices/agendaSlice';
+import { RootState } from '@/store';
 import styles from './TaskDetail.module.css';
 
 const TaskDetail: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useAppDispatch();
     const router = useRouter();
     const { tarefasId } = useParams();
-    const tasks = useSelector((state: RootState) => state.tasks.tasks);
+    const agendaItems = useAppSelector((state: RootState) => state.agenda.items);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (tasks.length === 0) {
-            dispatch(fetchTasks()).then(() => setLoading(false));
+        if (agendaItems.length === 0) {
+            dispatch(fetchAgendaItems()).then(() => setLoading(false));
         } else {
             setLoading(false);
         }
-    }, [dispatch, tasks.length]);
+    }, [dispatch, agendaItems.length]);
 
-    const task = tasks.find((task) => task.id === tarefasId);
+    // Filtra o item da agenda pelo ID e garante que seja do tipo 'task'
+    const task = agendaItems.find((item) => item.id === tarefasId && item.type === 'task');
 
     if (loading) {
         return <div>Carregando...</div>;
