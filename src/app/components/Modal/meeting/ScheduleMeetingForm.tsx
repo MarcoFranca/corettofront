@@ -32,19 +32,16 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
             return;
         }
 
-        // Criação de horários no formato UTC
         const startDateTime = new Date(`${date}T${startTime}`).toISOString();
         const endDateTime = new Date(`${date}T${endTime}`).toISOString();
 
-        // Dados enviados para o backend
         const newAgendaItem: Partial<AgendaItem> = {
             title: 'Reunião de Planejamento',
-            cliente: entityId, // Certifique-se de que `entityId` seja passado corretamente
+            cliente: entityId,
             description,
-            due_date: startDateTime,
             start_time: startDateTime,
             end_time: endDateTime,
-            type: 'meeting', // Correção: agora é `type`
+            type: 'meeting',
             completed: false,
             urgency: 'High',
             add_to_google_calendar: addToGoogleCalendar,
@@ -58,7 +55,7 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
             onClose();
         } catch (error: any) {
             if (error.redirect_url) {
-                // Redireciona o usuário para a autenticação do Google
+                // Redireciona para a URL de autorização
                 window.location.href = error.redirect_url;
             } else {
                 console.error('Erro ao criar item na agenda:', error);
@@ -66,6 +63,9 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
             }
         }
     };
+
+
+
 
     return (
         <div className={styles.modal}>
