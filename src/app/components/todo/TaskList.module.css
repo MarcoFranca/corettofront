@@ -89,8 +89,11 @@
 
 .completed {
     text-decoration: line-through;
-    color: #999;
+    color: #bbb; /* Tom mais claro */
+    font-style: italic;
+    background-color: #f5f5f5; /* Fundo diferenciado */
 }
+
 
 .actions {
     display: flex;
@@ -152,7 +155,7 @@
 
 /* Modal Styles */
 .modalOverlay {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.75); /* Fundo escuro semi-transparente */
     position: fixed;
     top: 0;
     left: 0;
@@ -161,21 +164,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: 1000; /* Garante que o modal fique acima de outros elementos */
 }
 
 .modalContent {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    height: 90%;
-    max-height: 300px;
-    max-width: 350px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    max-width: 450px; /* Limita a largura máxima do modal */
+    width: 90%; /* Para ajustar em telas menores */
+    max-height: 90vh; /* Limita a altura máxima do modal */
+    overflow-y: auto; /* Permite rolar caso o conteúdo exceda a altura */
+    position: relative; /* Necessário para alinhar os botões */
     text-align: center;
 }
 
@@ -251,4 +252,44 @@
     align-items: center;
     justify-content: center;
     width: 100%;
+}
+
+.sortIcon {
+    margin-left: 8px;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.sortIcon:hover {
+    transform: scale(1.2);
+}
+
+th.active {
+    background-color: #e8f4fd; /* Exemplo de cor de destaque */
+    font-weight: bold;
+}
+
+.filterIcons {
+    display: flex;
+    gap: 10px;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.filterIcon {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.filterIcon:hover {
+    transform: scale(1.2);
+    opacity: 0.8;
+}
+
+.filterIcon.active {
+    border: 2px solid #020f60; /* Indicar o filtro ativo */
+    border-radius: 50%;
+    padding: 4px;
 }

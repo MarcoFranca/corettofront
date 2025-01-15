@@ -35,8 +35,11 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
         const startDateTime = new Date(`${date}T${startTime}`).toISOString();
         const endDateTime = new Date(`${date}T${endTime}`).toISOString();
 
+        const dynamicTitle = `Reunião com ${entityName}`;
+
+
         const newAgendaItem: Partial<AgendaItem> = {
-            title: 'Reunião de Planejamento',
+            title: dynamicTitle,
             cliente: entityId,
             description,
             start_time: startDateTime,
@@ -55,7 +58,7 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
             onClose();
         } catch (error: any) {
             if (error.redirect_url) {
-                // Redireciona para a URL de autorização
+                alert('É necessário reautorizar a sincronização com o Google. Você será redirecionado.');
                 window.location.href = error.redirect_url;
             } else {
                 console.error('Erro ao criar item na agenda:', error);

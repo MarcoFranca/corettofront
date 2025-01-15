@@ -1,38 +1,106 @@
+
+/* Formulario */
 .form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    gap: 4px;
+    margin-bottom: 12px;
 }
 
+/* Campo de entrada */
 .input, .textarea, .select {
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 6px;
     font-size: 16px;
-    width: 100%;
+    width: calc(100% - 24px); /* Garante que o tamanho não ultrapasse o modal */
+    margin: 10px auto;
+    box-sizing: border-box;
+    cursor: pointer;
 }
 
+/* Campo de texto */
 .textarea {
-    resize: vertical;
-    min-height: 100px;
+    resize: vertical; /* Permite redimensionar */
+    min-height: 80px;
 }
 
+/* Checkbox */
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Labels */
+.label {
+    text-align: left;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+/* Botão Principal */
 .button {
-    padding: 10px 20px;
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 20px;
+    margin-top: 20px;
     background: #007bff;
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
     transition: background 0.3s ease;
 }
 
 .button:hover {
     background: #0056b3;
+}
+
+/* Botão de Fechar */
+.cancelButton {
+    width: 100%;
+    padding: 12px 20px;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+}
+
+.cancelButton:hover {
+    background: #c82333;
+}
+
+/* Mensagens de Erro */
+.error {
+    color: #dc3545;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Responsividade */
+@media screen and (max-width: 768px) {
+    .modalContent {
+        max-width: 90%; /* Preenche a maior parte da largura disponível */
+        padding: 20px; /* Ajusta o espaçamento para telas menores */
+    }
+
+    .input, .textarea, .select {
+        font-size: 14px; /* Reduz o tamanho do texto para dispositivos menores */
+    }
+
+    .button, .cancelButton {
+        font-size: 14px;
+        padding: 10px;
+    }
 }

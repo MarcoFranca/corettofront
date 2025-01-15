@@ -1,25 +1,5 @@
 /* components/modal/TaskModal.module.css */
-.modalOverlay {
-    background: rgba(0, 0, 0, 0.75);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
 
-.modalContent {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
 .closeModalButton {
     display: block;

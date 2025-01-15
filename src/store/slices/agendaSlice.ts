@@ -18,8 +18,12 @@ export const fetchAgendaItems = createAsyncThunk('agenda/fetchAgendaItems', asyn
         id: item.id,
         title: item.title,
         description: item.description,
-        start: moment.tz(item.start_time, timeZone).toDate(),
-        end: moment.tz(item.end_time, timeZone).toDate(),
+        start_time: item.start_time
+            ? moment.tz(item.start_time, timeZone).toISOString()
+            : null,
+        end_time: item.end_time
+            ? moment.tz(item.end_time, timeZone).toISOString()
+            : null,
         type: item.entry_type,
         completed: item.completed,
         urgency: item.urgency,
@@ -31,31 +35,37 @@ export const fetchAgendaItems = createAsyncThunk('agenda/fetchAgendaItems', asyn
         created_at: item.created_at,
         updated_at: item.updated_at,
     }));
+
 });
 
-// Criar um item na agenda
+// Criar um item na agenda e atualizar a lista
 export const createAgendaItem = createAsyncThunk<AgendaItem, Partial<AgendaItem>>(
     'agenda/createAgendaItem',
-    async (newItem) => {
+    async (newItem, { dispatch }) => {
         const response = await api.post('/agenda/', {
             title: newItem.title,
             description: newItem.description,
             start_time: moment(newItem.start_time).format(),
             end_time: moment(newItem.end_time).format(),
-            entry_type: newItem.type, // Certifique-se de que o nome está correto no backend
+            entry_type: newItem.type,
             urgency: newItem.urgency,
             add_to_google_calendar: newItem.add_to_google_calendar,
             add_to_google_meet: newItem.add_to_google_meet,
             add_to_zoom: newItem.add_to_zoom,
-            cliente: newItem.cliente || null, // Inclui explicitamente o cliente
+            cliente: newItem.cliente || null,
         });
+
+        // Dispara a ação para recarregar os itens após criar
+        dispatch(fetchAgendaItems());
+
         return {
             ...response.data,
-            start: moment.tz(response.data.start_time, timeZone).toDate(),
-            end: moment.tz(response.data.end_time, timeZone).toDate(),
+            start_time: moment.tz(response.data.start_time, timeZone).toDate(),
+            end_time: moment.tz(response.data.end_time, timeZone).toDate(),
         };
     }
 );
+
 
 // Atualizar um item da agenda
 export const updateAgendaItem = createAsyncThunk<AgendaItem, { id: string; updatedItem: Partial<AgendaItem> }>(

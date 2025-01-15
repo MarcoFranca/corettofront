@@ -90,6 +90,8 @@ const TaskForm: React.FC = () => {
         <form onSubmit={handleSubmit} className={styles.form}>
             <h3>Criar Nova Tarefa</h3>
             {error && <p className={styles.error}>{error}</p>}
+
+            <label className={styles.label}>Título:</label>
             <input
                 type="text"
                 placeholder="Título"
@@ -98,12 +100,16 @@ const TaskForm: React.FC = () => {
                 required
                 className={styles.input}
             />
+
+            <label className={styles.label}>Descrição:</label>
             <textarea
                 placeholder="Descrição"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className={styles.textarea}
             ></textarea>
+
+            <label className={styles.label}>Data de Vencimento:</label>
             <input
                 type="date"
                 value={dueDate}
@@ -111,6 +117,8 @@ const TaskForm: React.FC = () => {
                 required
                 className={styles.input}
             />
+
+            <label className={styles.label}>Hora de Início:</label>
             <input
                 type="time"
                 value={startTime}
@@ -118,6 +126,8 @@ const TaskForm: React.FC = () => {
                 required
                 className={styles.input}
             />
+
+            <label className={styles.label}>Hora de Término:</label>
             <input
                 type="time"
                 value={endTime}
@@ -125,6 +135,8 @@ const TaskForm: React.FC = () => {
                 required
                 className={styles.input}
             />
+
+            <label className={styles.label}>Urgência:</label>
             <select
                 value={urgency}
                 onChange={(e) => setUrgency(e.target.value as 'Low' | 'Medium' | 'High' | 'Critical')}
@@ -136,7 +148,8 @@ const TaskForm: React.FC = () => {
                 <option value="High">Alta</option>
                 <option value="Critical">Crítica</option>
             </select>
-            <label>
+
+            <label className={styles.checkboxLabel}>
                 <input
                     type="checkbox"
                     checked={addToGoogleCalendar}
@@ -144,7 +157,8 @@ const TaskForm: React.FC = () => {
                 />
                 Adicionar ao Google Calendar
             </label>
-            <label>
+
+            <label className={styles.checkboxLabel}>
                 <input
                     type="checkbox"
                     checked={addToGoogleMeet}
@@ -152,7 +166,8 @@ const TaskForm: React.FC = () => {
                 />
                 Adicionar ao Google Meet
             </label>
-            <label>
+
+            <label className={styles.checkboxLabel}>
                 <input
                     type="checkbox"
                     checked={addToZoom}
@@ -160,19 +175,23 @@ const TaskForm: React.FC = () => {
                 />
                 Adicionar ao Zoom
             </label>
+
+            <label className={styles.label}>Selecionar Cliente (Opcional):</label>
             <select
                 value={clienteId || ''}
                 onChange={(e) => setClienteId(e.target.value || null)}
                 className={styles.select}
             >
-                <option value="">Selecionar Cliente (Opcional)</option>
+                <option value="">Selecionar Cliente</option>
                 {clientes.map((cliente) => (
                     <option key={cliente.id} value={cliente.id}>
                         {cliente.nome}
                     </option>
                 ))}
             </select>
+
             <button type="submit" className={styles.button}>Adicionar Tarefa</button>
+
         </form>
     );
 };
