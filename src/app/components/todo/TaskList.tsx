@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation';
 import moment from 'moment-timezone';
 
 import PlusImage from '@/../public/assets/common/plus.svg';
-import SortImage from '@/../public/assets/common/sort3.svg';
 import DeleteImage from '@/../public/assets/common/delete.svg';
 import DetailsImage from '@/../public/assets/common/detalhes.svg';
 import {AgendaItem} from "@/types/interfaces";
