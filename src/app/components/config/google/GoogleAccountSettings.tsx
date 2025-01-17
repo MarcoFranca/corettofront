@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import api from "@/app/api/axios";
 import styles from './GoogleAccountSettings.module.css';
+import Image from "next/image";
+
+import GoogleImag from '../../../../../public/assets/common/GoogleIcon.svg';
 
 const GoogleAccountSettings: React.FC = () => {
     const [linkedAccount, setLinkedAccount] = useState<{ email: string; created_at: string; expiry:string } | null>(null);
@@ -80,7 +83,10 @@ const GoogleAccountSettings: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h2>Configurações de Conta Google</h2>
+            <div className={styles.headerCard}>
+                <Image src={GoogleImag} alt={'Logo Google'} className={styles.logoGoogle}></Image>
+                <h2 className={styles.title}>Configurações de Conta Google</h2>
+            </div>
 
             {linkedAccount ? (
                 <>
@@ -103,7 +109,7 @@ const GoogleAccountSettings: React.FC = () => {
                     <p>Nenhuma conta vinculada.</p>
                     <p>Clique abaixo para vincular 👇</p>
                     <button className={styles.googleButton} onClick={() => loginWithGoogle()}>
-                       🔗 Vincular Conta Google
+                        🔗 Vincular Conta Google
                     </button>
                 </>
             )}
