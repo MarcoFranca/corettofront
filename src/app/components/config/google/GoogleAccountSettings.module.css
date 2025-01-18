@@ -1,5 +1,5 @@
 .container {
-    /*padding: 20px;*/
+
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -13,23 +13,25 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    padding: 8px 16px;
     margin: 0;
     width: 100%;
     min-height: 60px;
     border-bottom: 1px solid #ddd;
+    background-color: #f9f9f9;
 }
 
 .accountInfo {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     padding: 25px;
     height: 50%;
 }
 
 .buttons{
     display: flex;
-    padding: 0 25px;
     gap: 8px;
 }
 
@@ -43,13 +45,25 @@
 }
 
 .googleButton {
-    background-color: #4285F4;
+    background-color: #0c2859;
     color: #fff;
 }
 
+.googleButton:hover {
+    background-color: #004494;
+    transform: scale(1.05);
+    transition: 500ms;
+}
+
 .unlinkButton {
-    background-color: red;
+    background-color: #e65729;
     color: white;
+}
+
+.unlinkButton:hover {
+    background-color: rgba(230, 87, 41, 0.94);
+    transform: scale(1.05);
+    transition: 500ms;
 }
 
 .error {
@@ -71,4 +85,9 @@
 .logoGoogle{
     width: 25px;
     height: auto;
+}
+
+.cardContant{
+    display: flex;
+    flex-direction: column;
 }

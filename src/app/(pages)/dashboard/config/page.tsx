@@ -10,7 +10,7 @@ const UserSettings: React.FC = () => {
         <main className={styles.dashboardLayout}>
             <DashboardLayout>
                 <div className={styles.container}>
-                    <h1>Configurações do Usuário</h1>
+                    <h1>⚙️ Configurações do Usuário</h1>
                     <GoogleAccountSettings />
                     {/* Adicione outros componentes de configuração aqui */}
                 </div>
