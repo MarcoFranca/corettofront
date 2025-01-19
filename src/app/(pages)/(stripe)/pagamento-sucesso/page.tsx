@@ -49,7 +49,7 @@ export default function PagamentoSucesso({ searchParams }: PagamentoSucessoProps
                 <p className={styles.infoText}>Você pode gerenciar sua assinatura ou explorar mais serviços clicando abaixo.</p>
                 <div className={styles.buttonContainer}>
                     <button className={styles.manageButton} onClick={() => router.push('/minha-assinatura')}>Gerenciar Assinatura</button>
-                    <button className={styles.exploreButton} onClick={() => router.push('/dashboard/perfil')}>Explorar Mais</button>
+                    <button className={styles.exploreButton} onClick={() => router.push('/dashboard/config')}>Ir Para o Programa</button>
                 </div>
             </div>
         </div>
