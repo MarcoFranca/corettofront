@@ -18,11 +18,23 @@ export default function PagamentoSucesso({ searchParams }: PagamentoSucessoProps
 
     useEffect(() => {
         if (session_id) {
-            // Chamar a API para validar ou mostrar dados do pagamento (opcional)
+            console.log('Session ID recebido:', session_id); // Adicione um log
+            try {
+                // Simule validação com API ou apenas atualize o estado
+                setLoading(false);
+                setMessage('Pagamento concluído com sucesso! Obrigado.');
+            } catch (error) {
+                console.error('Erro ao processar o pagamento:', error);
+                setMessage('Ocorreu um erro ao processar seu pagamento.');
+                setLoading(false);
+            }
+        } else {
+            console.error('Session ID não recebido.');
+            setMessage('Ocorreu um erro: ID de sessão ausente.');
             setLoading(false);
-            setMessage('Pagamento concluído com sucesso! Obrigado.');
         }
     }, [session_id]);
+
 
     if (loading) {
         return <div className={styles.loading}>Carregando...</div>;
