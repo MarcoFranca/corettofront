@@ -45,18 +45,18 @@ const GoogleAccountSettings: React.FC = () => {
                         <div className={styles.accountInfo}>
                             <p><strong>🔗 Conta Vinculada:</strong> {linkedAccount.email}</p>
                             <p><strong>📅 Vinculada em:</strong> {new Date(linkedAccount.created_at).toLocaleString()}</p>
-                            <p>
-                                ⏳<strong> Expira em:</strong>{' '}
-                                {linkedAccount.expiry
-                                    ? new Date(linkedAccount.expiry).toLocaleString()
-                                    : 'Data de expiração não disponível'}
-                            </p>
+                            {/*<p>*/}
+                            {/*    ⏳<strong> Expira em:</strong>{' '}*/}
+                            {/*    {linkedAccount.expiry*/}
+                            {/*        ? new Date(linkedAccount.expiry).toLocaleString()*/}
+                            {/*        : 'Data de expiração não disponível'}*/}
+                            {/*</p>*/}
                             <div className={styles.buttons}>
                                 <button className={styles.googleButton} onClick={() => loginWithGoogle()}>
-                                    🔄️ Alterar Conta Google
+                                    🔄️ Alterar Conta
                                 </button>
                                 <button className={styles.unlinkButton} onClick={() => dispatch(unlinkGoogleAccount())}>
-                                    ⛓️‍💥 Desvincular Conta Google
+                                    ⛓️‍💥 Desvincular Conta
                                 </button>
                             </div>
                         </div>
@@ -69,7 +69,7 @@ const GoogleAccountSettings: React.FC = () => {
                         <p>🔗 Nenhuma conta vinculada.</p>
                         <p>Clique abaixo para vincular 👇</p>
                         <button onClick={() => loginWithGoogle()} className={styles.googleButton}>
-                            🔗 Vincular Conta Google
+                            🔗 Vincular Conta
                         </button>
                     {error && <p className={styles.error}>{error}</p>}
                     {message && <p className={styles.success}>{message}</p>}

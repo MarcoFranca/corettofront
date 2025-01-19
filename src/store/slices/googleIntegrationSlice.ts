@@ -59,7 +59,7 @@ export const unlinkGoogleAccount = createAsyncThunk(
         try {
             const response = await api.post('/google/unlink-google-account/');
             dispatch(fetchLinkedGoogleAccount());
-            return response.data.success || '⛓️ Conta Google desvinculada com sucesso!';
+            return ' ⛓️ Conta Google desvinculada com sucesso! 🎉';
         } catch (error) {
             return rejectWithValue('⚠️ Erro ao desvincular conta Google.');
         }

@@ -69,11 +69,13 @@
 .error {
     text-align: center;
     color: #c82333;
+    max-width: 80%;
 }
 
 .success {
     text-align: center;
     color: #218838;
+    max-width: 80%;
 }
 
 .title{
