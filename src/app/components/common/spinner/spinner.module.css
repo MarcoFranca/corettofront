@@ -1,0 +1,56 @@
+/* spinner.module.css */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Garante que o spinner fique centralizado na tela */
+    animation: fadeIn 0.5s forwards; /* Suaviza o aparecimento */
+    gap: 16px;
+}
+
+.spinner {
+    border: 8px solid rgba(0, 0, 0, 0.1); /* Fundo do spinner */
+    border-top: 8px solid transparent; /* Torna o topo transparente */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite, colorChange 4s linear infinite;
+    background: conic-gradient(
+            from 0deg,
+            #ff7f50,
+            #ff6347,
+            #ffd700,
+            #32cd32,
+            #1e90ff,
+            #4b0082,
+            #ff7f50
+    ); /* Gradiente cíclico */
+    mask: radial-gradient(circle, transparent 65%, black 65%); /* Faz o gradiente aparecer só na borda */
+    -webkit-mask: radial-gradient(circle, transparent 63%, black 63%);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingText {
+    font-size: 18px;
+    font-weight: 500;
+    color: #3498db;
+    animation: fade 2s infinite;
+}
+
+@keyframes fade {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}

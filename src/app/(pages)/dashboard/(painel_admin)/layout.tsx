@@ -1,10 +1,12 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
 import React from "react";
+import DashboardLayout from "@/app/components/layouts/DashboardLayout";
+import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
 
 
 export const metadata: Metadata = {
-  title: 'Coretor Lab - Leads',
+  title: 'CorretorLab-Dashboard',
   description: "CRM inteligente feito para corretores",
 };
 
@@ -14,9 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-      <>
+      <DashboardLayout SidebarComponent={DashboardSidebar}>
         {children}
-      </>
+      </DashboardLayout>
   );
 }
 

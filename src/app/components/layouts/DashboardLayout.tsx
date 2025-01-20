@@ -4,18 +4,19 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import {setUserFromLocalStorage, setTokenFromLocalStorage, logout} from '@/store/slices/authSlice';
-import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
+import { setUserFromLocalStorage, setTokenFromLocalStorage, logout } from '@/store/slices/authSlice';
 import styles from './styles.module.css';
 import api from '@/app/api/axios';
-import {useMediaQuery} from "@/hooks/hooks";
-import MenuMobile from "@/app/components/common/Header/DashboardMobile/MenuMobile";
+import { useMediaQuery } from '@/hooks/hooks';
+import MenuMobile from '@/app/components/common/Header/DashboardMobile/MenuMobile';
+import Spinner from '@/app/components/common/spinner/sppiner';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
+    SidebarComponent: React.FC<any>; // Componente de sidebar dinâmico
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, SidebarComponent }) => {
     const dispatch = useDispatch();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
@@ -23,7 +24,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [message, setMessage] = useState('');
     const [isSubUser, setIsSubUser] = useState<boolean>(false);
-    // Detecta se a tela é desktop (largura mínima de 768px)
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const user = useSelector((state: RootState) => state.auth?.user);
@@ -90,16 +90,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         }
     }, [user, token, loading, router]);
 
-    if (loading) {
+    if (loading || !user || !token?.access) {
         return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner}></div>
-            </div>
+            <main className={styles.dashboardLayout}>
+                <Spinner text="Carregando interface do dashboard..." />
+            </main>
         );
     }
 
-
-    if (isDesktop){
+    if (isDesktop) {
         if (!planoAtivo) {
             return (
                 <main className={styles.dashboardLayout}>
@@ -116,7 +115,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                         </div>
                     </div>
                     <div className={styles.dashboardLayoutContaint}>
-                        <DashboardSidebar profileImage={profileImage} />
+                        <SidebarComponent profileImage={profileImage} />
                         <div className={styles.canvaLayout}>{children}</div>
                     </div>
                 </main>
@@ -125,7 +124,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         return (
             <main className={styles.dashboardLayout}>
                 <div className={styles.dashboardLayoutContaint}>
-                    <DashboardSidebar profileImage={profileImage} />
+                    <SidebarComponent profileImage={profileImage} />
                     <div className={styles.canvaLayout}>{children}</div>
                 </div>
             </main>

@@ -4,97 +4,148 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { setUserFromLocalStorage } from '@/store/slices/authSlice';
-import DashboardSidebar from "@/app/components/common/Header/ClientDashboard";
+import { setUserFromLocalStorage, setTokenFromLocalStorage, logout } from '@/store/slices/authSlice';
 import styles from './styles.module.css';
-import api from "@/app/api/axios";
+import api from '@/app/api/axios';
+import { useMediaQuery } from '@/hooks/hooks';
+import MenuMobile from '@/app/components/common/Header/DashboardMobile/MenuMobile';
+import Spinner from '@/app/components/common/spinner/sppiner';
+import DashboardSidebar from '@/app/components/common/Header/DashboardSidebar';
+import ClientDashboardSidebar from '@/app/components/common/Header/ClientDashboard';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
-    clientId: string;
+    clientId?: string; // `clientId` é opcional
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clientId }) => {
     const dispatch = useDispatch();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
-    const user = useSelector((state: RootState) => state.auth.user);
-    const token = useSelector((state: RootState) => state.auth.token);
-    const [profile, setProfile] = useState<{
-        first_name: string;
-        last_name: string;
-        foto: string | File;
-        assinatura_status: string;
-        plano?: {
-            nome: string;
-            descricao: string;
-            preco: string;
-        } | null; // Adicionando o plano ao estado
-    }>({
-        first_name: '',
-        last_name: '',
-        foto: '',
-        assinatura_status: 'pendente',
-        plano: null,
-    });
+    const [planoAtivo, setPlanoAtivo] = useState<boolean>(true);
+    const [profileImage, setProfileImage] = useState<string | null>(null);
+    const [message, setMessage] = useState('');
+    const isDesktop = useMediaQuery('(min-width: 768px)');
 
-    const assinaturaStatus = () => {
-        return profile.assinatura_status !== 'active';
+    const user = useSelector((state: RootState) => state.auth?.user);
+    const token = useSelector((state: RootState) => state.auth?.token);
+
+    const SidebarComponent = clientId ? ClientDashboardSidebar : DashboardSidebar;
+
+    const handleLogout = () => {
+        dispatch(logout());
+        router.push('/');
     };
 
     useEffect(() => {
-        dispatch(setUserFromLocalStorage());
-        setLoading(false);
-    }, [dispatch]);
+        if (typeof window !== "undefined") {
+            const accessToken = localStorage.getItem('accessToken');
+            const storedProfileImage = localStorage.getItem('profileImage');
 
-    useEffect(() => {
-        if (loading) return; // Aguarda a finalização do carregamento
-        if (!user || !token?.access) {
-            router.push('/');
-        }
-    }, [user, token, router]);
+            if (accessToken) {
+                dispatch(setUserFromLocalStorage());
+                dispatch(setTokenFromLocalStorage());
+            } else {
+                router.push('/');
+            }
 
-    useEffect(() => {
-        async function fetchProfile() {
-            try {
-                const response = await api.get('/profiles/me/');
-                setProfile({
-                    ...response.data,
-                    first_name: response.data.user.first_name,
-                    last_name: response.data.user.last_name,
-                    isAccountActive: response.data.user.is_active,
-                    plano: response.data.plano, // Definindo o plano
-                });
-            } catch (error) {
-                console.error('Erro ao carregar perfil:', error);
+            if (storedProfileImage) {
+                setProfileImage(storedProfileImage);
             }
         }
-        fetchProfile();
-    }, []);
+    }, [dispatch, router]);
 
-    if (loading) {
-        return <div>Carregando...</div>; // Ou qualquer indicador de carregamento
+    useEffect(() => {
+        async function fetchProfileAndPlanStatus() {
+            try {
+                const response = await api.get('/profiles/me/');
+                const { profile } = response.data;
+                const imageUrl = profile.image;
+                const planoStatus = profile.assinatura_status;
+                const isPlanoAtivo = planoStatus === 'active' || planoStatus === 'trialing';
+
+                if (imageUrl) {
+                    setProfileImage(imageUrl);
+                    localStorage.setItem('profileImage', imageUrl);
+                }
+
+                setPlanoAtivo(isPlanoAtivo);
+
+                if (!isPlanoAtivo) {
+                    setMessage('Seu plano está inativo. Por favor, escolha um plano para continuar.');
+                    router.push('/dashboard/perfil/');
+                }
+
+                setLoading(false);
+            } catch (error) {
+                console.error('Erro ao carregar o perfil ou status do plano:', error);
+                setLoading(false);
+            }
+        }
+
+        fetchProfileAndPlanStatus();
+    }, [router]);
+
+    useEffect(() => {
+        if (!loading && (!user || !token?.access)) {
+            router.push('/');
+        }
+    }, [user, token, loading, router]);
+
+    if (loading || !user || !token?.access) {
+        return (
+            <main className={styles.dashboardLayout}>
+                <Spinner text="Carregando interface do dashboard..." />
+            </main>
+        );
+    }
+
+    if (isDesktop) {
+        if (!planoAtivo) {
+            return (
+                <main className={styles.dashboardLayout}>
+                    <div className={styles.notificationBar}>
+                        <div className={styles.notificationBarContent}>
+                            <h1 className={styles.notificationBarText}>{message}</h1>
+                            <button
+                                className={styles.notificationBarButton}
+                                onClick={() => router.push('/planos')}
+                                disabled={loading}
+                            >
+                                Escolher seu Plano
+                            </button>
+                        </div>
+                    </div>
+                    <div className={styles.dashboardLayoutContaint}>
+                        <SidebarComponent profileImage={profileImage} clientId={clientId} />
+                        <div className={styles.canvaLayout}>{children}</div>
+                    </div>
+                </main>
+            );
+        }
+
+        return (
+            <main className={styles.dashboardLayout}>
+                <div className={styles.dashboardLayoutContaint}>
+                    <SidebarComponent profileImage={profileImage} clientId={clientId} />
+                    <div className={styles.canvaLayout}>{children}</div>
+                </div>
+            </main>
+        );
     }
 
     return (
-        <main className={styles.dashboardLayout}>
-            {/*Tarja de Status da Conta*/}
-            {assinaturaStatus() && (
-                <div className={styles.notificationBar}>
-                    <div className={styles.notificationBarContent}>
-                        <p className={styles.notificationBarText}>Sua conta está inativa.</p>
-                        <button className={styles.notificationBarButton} onClick={() => router.push('/planos')}>Escolher
-                            seu Plano
-                        </button>
-                    </div>
-                </div>
-            )}
-            <div className={styles.dashboardLayoutContaint}>
-                <DashboardSidebar clientId={clientId}/>
-                <div className={styles.canvaLayout}>{children}</div>
+        <main className={styles.dashboardLayoutMobile}>
+            <div className={styles.dashboardLayoutContaintMobile}>
+                <MenuMobile
+                    profileImage={profileImage}
+                    user={user}
+                    onLogout={handleLogout}
+                />
+                <div className={styles.canvaLayoutMobile}>{children}</div>
             </div>
         </main>
-);
+    );
 };
 
 export default DashboardLayout;

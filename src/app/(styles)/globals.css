@@ -8,6 +8,10 @@
   list-style: none
 }
 
+p{
+margin: 0;
+}
+
 html{
   font-family: sans-serif;
 }
@@ -41,3 +45,5 @@ html{
   width: 100%;
   outline: none; /* Remove a borda azul do modal */
 }
+
+

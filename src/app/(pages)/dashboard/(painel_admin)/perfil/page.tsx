@@ -7,9 +7,7 @@ const PerfilPage = () => {
 
     return (
         <>
-            <DashboardLayout>
                 <ProfilePage/>
-            </DashboardLayout>
         </>
     );
 };

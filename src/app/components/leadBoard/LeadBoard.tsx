@@ -10,7 +10,7 @@ import CadastroLead from '../../../../public/assets/pages/leads/cadastroLead.svg
 import Image from 'next/image';
 import { useMediaQuery } from '@/hooks/hooks';
 import styles from './LeadBoard.module.css';
-import LeadCard from "@/app/(pages)/dashboard/lead/[leadId]/LeadCard";
+import Spinner from "@/app/components/common/spinner/sppiner";
 
 const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -60,11 +60,21 @@ const LeadBoard: React.FC = () => {
 
     // Renderizações condicionais para estados
     if (status === 'loading') {
-        return <p>Carregando leads...</p>;
+        return (<Spinner text={'Carregando leads...'}/>)
     }
 
     if (status === 'failed') {
-        return <p>Erro ao carregar leads. Tente novamente mais tarde.</p>;
+        return (
+            <div className={styles.containerStatus}>
+                <div className={styles.alertText}>
+                    <p>⚠️ Erro ao carregar leads.</p>
+                    <p>Tente novamente mais tarde.🥺</p>
+                </div>
+                <button className={styles.buttonError} onClick={ ()=> router.push(`/dashboard/perfil/`)}>
+                    Ir para o Dashboard
+                </button>
+            </div>
+        )
     }
 
     if (isMobile) {
@@ -83,11 +93,6 @@ const LeadBoard: React.FC = () => {
                         <option value="finalização">Finalização</option>
                         <option value="pouco interesse">Pouco Interesse</option>
                     </select>
-                </div>
-                <div className={styles.mobileBoard}>
-                    {filteredLeads.map((lead) => (
-                        <LeadCard key={lead.id} lead={lead} columns={Object.values(data.columns)} />
-                    ))}
                 </div>
                 <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} onSubmit={handleLeadSubmit} />
             </div>

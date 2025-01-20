@@ -8,11 +8,7 @@ import Agenda from "@/app/components/agenda/Agenda";
 const AgendaPage = () => {
 
     return (
-        <main className={styles.dashboardLayout}>
-            <DashboardLayout>
                 <Agenda />
-            </DashboardLayout>
-        </main>
     );
 };
 
