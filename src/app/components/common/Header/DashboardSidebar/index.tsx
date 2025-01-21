@@ -17,6 +17,7 @@ import CarteiraImage from '../../../../../../public/assets/asideButtons/carteira
 import TodoImage from '../../../../../../public/assets/asideButtons/todo.svg';
 import ConfigImage from '../../../../../../public/assets/asideButtons/engrenagem.svg';
 import AgendaImage from '../../../../../../public/assets/asideButtons/agenda2.svg';
+import Logout from '../../../../../../public/assets/login/logout_branco.svg';
 import Cell from "@/app/components/common/Header/DashboardSidebar/cell";
 
 const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => {
@@ -45,13 +46,26 @@ const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => 
                             src={profileImage || DefaultUserImage}
                             alt="user"
                             className={styles.userImage}
+                            layout="intrinsic"
+                            width={60}
+                            height={60}
                         />
                         <p>{user?.username ?? 'Usuário'}</p>
+                        <button onClick={handleLogout} className={styles.logoutButton}>
+                            <Image
+                                src={Logout}
+                                alt={'logout'}
+                                className={styles.iconImage}
+                            />
+                            <p>Logout</p>
+                        </button>
                     </div>
+
                 </div>
                 <nav>
                     <ul>
-                        <Cell url='/dashboard/perfil' image={DashboardImage} alt="Dashboard" text={'DASHBOARD'} campo={'dashboard'} />
+                        <Cell url='/dashboard/perfil' image={DashboardImage} alt="Dashboard" text={'DASHBOARD'}
+                              campo={'dashboard'}/>
                         <Cell url='/dashboard/lead' image={DolarImage} alt="Lead" campo={'leads'} text={'LEADS'} />
                         <Cell url='/dashboard/carteira' image={CarteiraImage} alt="Carteira" campo={'carteira'} text={'CARTEIRA'} />
                         <Cell url='/dashboard/tarefas' image={TodoImage} alt="Tarefas" campo={'tarefas'} text={'TAREFAS'} />
@@ -59,9 +73,6 @@ const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => 
                         <Cell url='/dashboard/config' image={ConfigImage} alt="Engrenagem" campo={'config'} text={'CONFIGURAÇÃO'} />
                     </ul>
                 </nav>
-                <button onClick={handleLogout} className={styles.logoutButton}>
-                    Logout
-                </button>
             </aside>
         );
     }

@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import ClienteDashboardLayout from "@/app/components/layouts/ClienteDashboardLayout";
 import { fetchApolices, deleteApolice } from '@/store/slices/apoliceSlice';
 import { fetchClienteDetalhe } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
@@ -89,7 +88,7 @@ const ApolicePage: React.FC = () => {
     };
 
     return (
-        <ClienteDashboardLayout clientId={clientId}>
+        <>
             <div className={styles.container}>
             <h1>Apólices</h1>
             <div className={styles.filterContainer}>
@@ -173,7 +172,7 @@ const ApolicePage: React.FC = () => {
                 title="Confirmar Exclusão"
                 message="Tem certeza de que deseja excluir esta apólice? Esta ação é permanente."
             />
-        </ClienteDashboardLayout>
+        </>
     );
 };
 

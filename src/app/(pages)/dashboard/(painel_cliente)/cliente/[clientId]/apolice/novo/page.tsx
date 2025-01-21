@@ -6,7 +6,6 @@ import { createApolice, fetchApolices } from '@/store/slices/apoliceSlice'; // I
 import { RootState } from '@/store';
 import { useState, useEffect } from 'react';
 import { fetchClienteDetalhe, updateClienteToActive } from '@/store/slices/clientesSlice';
-import ClienteDashboardLayout from "@/app/components/layouts/ClienteDashboardLayout";
 import EditClientModal from '@/app/components/Modal/profile/EditClientModal'; // Importando o modal
 import { Cliente } from '@/types/interfaces'; // Certifique-se de importar o tipo Cliente
 
@@ -85,7 +84,7 @@ const NovaApolicePage = () => {
     };
 
     return (
-        <ClienteDashboardLayout clientId={clientId}>
+        <>
             {clienteDetalhe && !isModalOpen ? (
                 <ApoliceForm
                     onSubmit={handleSubmit}
@@ -104,7 +103,7 @@ const NovaApolicePage = () => {
                 title="Preencha os dados obrigatórios para cadastrar a apólice"
                 requiredFields={['email', 'cpf', 'data_nascimento', 'sexo', 'profissao']}
             />
-        </ClienteDashboardLayout>
+        </>
     );
 };
 

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchApoliceDetalhe, deleteApolice, getApoliceDetalhe, getApolicesStatus, getApolicesError } from '@/store/slices/apoliceSlice';
-import ClienteDashboardLayout from "@/app/components/layouts/ClienteDashboardLayout";
 import {
     FichaContainer,
     GridContainer,
@@ -63,7 +62,7 @@ const ApoliceDetalhes = () => {
     }
 
     return (
-        <ClienteDashboardLayout clientId={clientId}>
+        <>
             <FichaContainer>
                 <FichaHeader>
                     <h1>Detalhes da Apólice</h1>
@@ -128,7 +127,7 @@ const ApoliceDetalhes = () => {
                     <p>Não foi possível carregar os detalhes da apólice.</p>
                 )}
             </FichaContainer>
-        </ClienteDashboardLayout>
+        </>
     );
 };
 

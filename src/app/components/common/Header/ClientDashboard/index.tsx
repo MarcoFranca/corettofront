@@ -41,7 +41,7 @@ const ClientDashboard = ({ clientId }: { clientId: string }) => {
     return (
         <aside className={styles.sidebar}>
             <div className={styles.profile}>
-                <Image src={LogoImage} alt={'logo'} className={styles.logo} priority />
+                <Image src={LogoImage} alt={'logo'} className={styles.logo} height={50} width={50} priority />
             </div>
             <div className={styles.headerBar}>
                 <div className={styles.userMenu}>

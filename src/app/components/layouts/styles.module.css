@@ -5,12 +5,12 @@
     height: 100vh;
     width: 100vw;
     overflow: hidden;
+    /*background-color: rgb(5, 26, 53);*/
 }
 
 .dashboardLayoutContaint{
     box-sizing: border-box;
-    margin-top: -17px;
-    border-radius: 20px 20px 0 0;
+    border-radius: 16px 16px 0 0;
     display: flex;
     overflow: hidden;
 }
@@ -35,7 +35,7 @@
     align-items: center;
     justify-content: center;
     padding: 10px 20px 27px 20px;
-    /*margin-bottom: -15px;*/
+    margin-bottom: -17px;
     background: linear-gradient(90deg, #2196F3 4%, rgb(8, 33, 68) 30%, #000000 90%, #E91E63 100%); /* Aumentando a proporção do preto */
     color: white;
     font-family: 'Arial', sans-serif;

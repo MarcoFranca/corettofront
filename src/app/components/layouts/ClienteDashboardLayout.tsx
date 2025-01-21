@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation'; // Adicione o usePathname
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { setUserFromLocalStorage, setTokenFromLocalStorage, logout } from '@/store/slices/authSlice';
@@ -15,22 +15,24 @@ import ClientDashboardSidebar from '@/app/components/common/Header/ClientDashboa
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
-    clientId?: string; // `clientId` é opcional
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clientId }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const dispatch = useDispatch();
     const router = useRouter();
+    const pathname = usePathname(); // Obtemos a URL atual
     const [loading, setLoading] = useState(true);
     const [planoAtivo, setPlanoAtivo] = useState<boolean>(true);
-    const [profileImage, setProfileImage] = useState<string | null>(null);
+    const [profileImage, setProfileImage] = useState<string>('');
     const [message, setMessage] = useState('');
     const isDesktop = useMediaQuery('(min-width: 768px)');
 
     const user = useSelector((state: RootState) => state.auth?.user);
     const token = useSelector((state: RootState) => state.auth?.token);
 
-    const SidebarComponent = clientId ? ClientDashboardSidebar : DashboardSidebar;
+    // Lógica para decidir qual sidebar exibir
+    const isClientPage = pathname?.startsWith('/dashboard/cliente/');
+    const SidebarComponent = isClientPage ? ClientDashboardSidebar : DashboardSidebar;
 
     const handleLogout = () => {
         dispatch(logout());
@@ -38,7 +40,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clientId })
     };
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
+        if (typeof window !== 'undefined') {
             const accessToken = localStorage.getItem('accessToken');
             const storedProfileImage = localStorage.getItem('profileImage');
 
@@ -100,6 +102,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clientId })
         );
     }
 
+    const renderSidebar = () => (
+        <SidebarComponent
+            profileImage={profileImage}
+            clientId={isClientPage ? pathname?.split('/').pop() || '' : ''} // Garante uma string válida
+        />
+    );
+
     if (isDesktop) {
         if (!planoAtivo) {
             return (
@@ -117,7 +126,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clientId })
                         </div>
                     </div>
                     <div className={styles.dashboardLayoutContaint}>
-                        <SidebarComponent profileImage={profileImage} clientId={clientId} />
+                        {renderSidebar()}
                         <div className={styles.canvaLayout}>{children}</div>
                     </div>
                 </main>
@@ -127,7 +136,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clientId })
         return (
             <main className={styles.dashboardLayout}>
                 <div className={styles.dashboardLayoutContaint}>
-                    <SidebarComponent profileImage={profileImage} clientId={clientId} />
+                    {renderSidebar()}
                     <div className={styles.canvaLayout}>{children}</div>
                 </div>
             </main>

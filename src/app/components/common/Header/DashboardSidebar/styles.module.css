@@ -21,11 +21,23 @@
     margin-bottom: 2rem;
 }
 
+.headerBar {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
 .userMenu{
     display: flex;
     flex-direction: column;
     padding: 1.5rem 0;
     align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: auto;
+    gap: 16px;
+    color: white;
 }
 
 .userMenuAcecces{
@@ -39,9 +51,6 @@
 }
 
 .userImage {
-    height: 68px;
-    width: auto;
-    margin-right: 1rem;
     border-radius: 50%;
 }
 
@@ -120,12 +129,6 @@
     cursor: pointer;
 }
 
-.iconImage {
-    height: 1.9rem;
-    width: auto;
-    margin-right: 1rem;
-}
-
 .arrowImage{
     height: 1rem;
     width: auto;
@@ -136,4 +139,46 @@
     min-width: 12rem;
     width: auto;
     height: 100%;
+}
+
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg); }
+    50% { transform: rotate(8deg); }
+    75% { transform: rotate(-3deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.logoutButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0.5rem 0.5rem;
+    border-radius: 15px;
+    border: none;
+    color: #ffffff;
+    margin-top: -20px;
+    background-color: transparent;
+}
+
+.logoutButton:hover .iconImage {
+    animation: shake 0.5s ease-in-out;
+
+}
+
+.logoutButton:hover p{
+    transform: scale(1.1);
+    transition: 0.4s;
+}
+
+.iconImage {
+    height: 1.9rem;
+    width: auto;
+    margin-right: 1rem;
+}
+
+
+.logoutButton > p {
+    margin: 0;
 }
