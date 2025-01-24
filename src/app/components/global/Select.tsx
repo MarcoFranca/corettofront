@@ -15,7 +15,7 @@ const Select: React.FC<SelectProps> = ({ label, options, required, ...props }) =
                 {required && <span className={styles.required}>*</span>}
             </label>
             <select className={styles.select} {...props}>
-                <option value="">Selecione</option>
+                <option value="">{props.title}</option>
                 {options.map((option) => (
                     <option key={option.value} value={option.value}>
                         {option.label}

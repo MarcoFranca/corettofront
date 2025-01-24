@@ -5,6 +5,8 @@ import ReduxProvider from './ReduxProvider';
 import React from "react";
 import '../styles/antd-styles.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +35,17 @@ export default function RootLayout({
         <ReduxProvider>
             <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
                 {children}
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                />
             </GoogleOAuthProvider>
         </ReduxProvider>
         </body>
