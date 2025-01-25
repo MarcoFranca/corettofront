@@ -17,7 +17,7 @@ const Modal: React.FC<ModalProps> = ({ show, onClose, children, title }) => {
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
                     {title && <h2 className={styles.modalTitle}>{title}</h2>}
-                    <Button variant="secondary" onClick={onClose}>
+                    <Button variant="danger" onClick={onClose}>
                         &times;
                     </Button>
                 </div>

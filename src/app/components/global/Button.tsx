@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Button.module.css';
+import { StyledButton } from './Button.styles';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode;
@@ -8,9 +8,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', ...props }) => {
     return (
-        <button className={`${styles.button} ${styles[variant]}`} {...props}>
+        <StyledButton variant={variant} {...props}>
             {children}
-        </button>
+        </StyledButton>
     );
 };
 

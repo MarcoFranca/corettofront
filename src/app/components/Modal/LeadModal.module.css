@@ -9,6 +9,15 @@
     flex-direction: column;
 }
 
+.nameContainer {
+    display: flex;
+    gap: 16px; /* Espaçamento entre os campos */
+}
+
+.nameContainer > * {
+    flex: 1; /* Faz os campos ocuparem o mesmo espaço */
+}
+
 .label {
     margin-bottom: 5px;
     font-weight: bold;
@@ -22,7 +31,74 @@
     font-size: 16px;
 }
 
+
 .form input,
 .form select {
     width: 100%;
+}
+
+.error {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}
+
+.errorSelect {
+    border: 2px solid red !important;
+    background-color: #ffe6e6 !important;
+    border-radius: 5px;
+}
+
+.custom-select__control {
+    border-color: #e0e0e0;
+}
+
+.custom-select__control--is-focused {
+    border-color: #007bff;
+}
+
+.errorMessage {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 5px;
+}
+
+
+.profissaoWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espaçamento entre os elementos */
+}
+
+.cadastrarProfissao {
+    display: flex;
+    align-items: center; /* Alinha o texto com o ícone */
+    justify-content: center;
+    gap: 4px; /* Espaçamento entre o texto e o ícone */
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.875rem; /* Deixe o botão mais discreto */
+    padding: 0;
+    margin: 8px 0; /* Espaçamento para separá-lo visualmente */
+}
+
+.cadastrarProfissao:hover {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.errorMessage {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 4px;
+}
+
+
+.searchInput {
+    margin-bottom: 8px; /* Espaçamento abaixo do campo de busca */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }

@@ -19,10 +19,13 @@ export const fetchLeads = createAsyncThunk<Lead[], { status?: string }>(
 );
 
 
-export const createLead = createAsyncThunk<Lead, Lead>('leads/createLead', async (novoLead) => {
-    const response = await api.post('/clientes/', novoLead);
-    return response.data;
-});
+export const createLead = createAsyncThunk<Lead, Partial<Lead>>(
+    'leads/createLead',
+    async (novoLead) => {
+        const response = await api.post('/clientes/', novoLead);
+        return response.data;
+    }
+);
 
 export const updateLead = createAsyncThunk<Lead, { id: string; updatedLead: Partial<Lead> }>('leads/updateLead', async ({ id, updatedLead }) => {
     const response = await api.patch(`/clientes/${id}/`, updatedLead);

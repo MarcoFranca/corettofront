@@ -1,31 +1,35 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
+.selectWrapper {
+    margin-bottom: 16px;
+    position: relative;
 }
 
 .label {
-    margin-bottom: 5px;
-    font-weight: normal; /* Deixa o label com peso normal */
-    color: #333; /* Cor neutra para o label */
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
 .required {
     color: red;
     margin-left: 4px;
-    font-size: 12px;
 }
 
 .select {
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
     width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     font-size: 16px;
-    outline: none;
-    transition: border-color 0.3s ease;
+    background-color: white;
 }
 
-.select:focus {
-    border-color: #007bff; /* Cor ao focar no campo */
+.select.error {
+    border-color: red;
+    background-color: #ffe6e6;
+}
+
+.errorMessage {
+    color: red;
+    font-size: 14px;
+    margin-top: 4px;
 }

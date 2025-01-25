@@ -11,16 +11,27 @@ export type StatusReuniao =
 export interface Lead {
     id: string;
     nome: string;
+    sobre_nome?: string; // Adiciona o campo opcional para sobrenome
     contato?: string;
     telefone: string;
     email: string;
     endereco?: string;
     status: string;
     status_reuniao: StatusReuniao;
+    genero?: "M" | "F";
+    profissao_id?: string | null; // Adicione esta linha
     pipeline_stage?: string;
     created_at: string;
     updated_at: string;
 }
+
+export interface Profissao {
+    id: string;
+    nome: string;
+    descricao?: string;
+    categoria_pai?: string | null;
+}
+
 
 export interface Column {
     id: string;

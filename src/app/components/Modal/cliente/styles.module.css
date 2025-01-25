@@ -1,0 +1,9 @@
+.customSelectSpacing {
+    margin: 8px 0; /* Espaçamento de 8px vertical */
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
