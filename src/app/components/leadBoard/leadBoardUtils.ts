@@ -22,6 +22,7 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
                 id: lead.id.toString(),
                 status: lead.status || '',
                 nome: lead.nome || '',
+                sobre_nome: lead.sobre_nome || '',
                 email: lead.email || '',
                 telefone: lead.telefone || '',
                 endereco: lead.endereco || '',

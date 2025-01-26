@@ -95,6 +95,7 @@ const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ onSucce
                 placeholder="Selecione uma categoria pai (opcional)"
                 isClearable
                 isSearchable
+                className={styles.customSelectSpacing}
             />
             <Button variant="primary" type="submit">
                 Cadastrar

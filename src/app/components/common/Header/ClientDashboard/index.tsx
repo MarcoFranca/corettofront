@@ -56,7 +56,6 @@ const ClientDashboard = ({ clientId }: { clientId: string }) => {
             <LeadModal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
-                onSubmit={handleLeadSubmit}
             />
             <nav>
                 <ul>

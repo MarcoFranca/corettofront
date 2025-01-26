@@ -94,7 +94,7 @@ const LeadBoard: React.FC = () => {
                         <option value="pouco interesse">Pouco Interesse</option>
                     </select>
                 </div>
-                <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} onSubmit={handleLeadSubmit} />
+                <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} />
             </div>
         );
     }
@@ -133,7 +133,7 @@ const LeadBoard: React.FC = () => {
                     )}
                 </Droppable>
             </DragDropContext>
-            <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} onSubmit={handleLeadSubmit} />
+            <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} />
         </div>
     );
 };

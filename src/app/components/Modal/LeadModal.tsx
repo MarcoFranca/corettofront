@@ -101,7 +101,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             genero,
             telefone: formattedTelefone,
             email,
-            profissao_id: subcategoria?.value || profissaoPrincipal?.value || null,
+            profissao_id: subcategoria?.value || profissaoPrincipal?.value || undefined,
         };
 
         try {
@@ -231,15 +231,17 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                     onClose={() => setProfissaoModalOpen(false)}
                     title="Cadastrar Nova Profissão"
                 >
-                    <CadastrarProfissaoForm
-                        onSuccess={(novaProfissao: Profissao) => {
-                            setProfissoesPrincipais((prev) => [
-                                ...prev,
-                                { value: novaProfissao.id, label: novaProfissao.nome },
-                            ]);
-                            setProfissaoModalOpen(false);
-                        }}
-                    />
+                    <div className={styles.form}>
+                        <CadastrarProfissaoForm
+                            onSuccess={(novaProfissao: Profissao) => {
+                                setProfissoesPrincipais((prev) => [
+                                    ...prev,
+                                    {value: novaProfissao.id, label: novaProfissao.nome},
+                                ]);
+                                setProfissaoModalOpen(false);
+                            }}
+                        />
+                    </div>
                 </Modal>
             )}
         </Modal>
