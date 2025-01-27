@@ -48,15 +48,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const [clientesDisponiveis, setClientesDisponiveis] = useState<ProfissaoOption[]>([]);
     const [parceirosDisponiveis, setParceirosDisponiveis] = useState<ProfissaoOption[]>([]);
     const [indicadoPorId, setIndicadoPorId] = useState<string | null>(null);
-    const [produtoInteresse, setProdutoInteresse] = useState<string | null>(null);
     const [produtosDisponiveis, setProdutosDisponiveis] = useState<{ value: string; label: string }[]>([]);
-    const [prioridade, setPrioridade] = useState<{ value: 'alta' | 'media' | 'baixa'; label: string }>({
-        value: 'media',
-        label: 'Média',
-    });
-
-    const [descricaoOportunidade, setDescricaoOportunidade] = useState('');
-    const [observacoesOportunidade, setObservacoesOportunidade] = useState('');
     const [oportunidades, setOportunidades] = useState<any[]>([]);
     const [produtoSelecionado, setProdutoSelecionado] = useState<ProdutoOption[]>([]);
 
@@ -86,24 +78,34 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     };
 
     const handleAddOportunidade = () => {
-        if (!produtoInteresse || !descricaoOportunidade) {
-            toast.error('⚠️ Preencha todos os campos obrigatórios de oportunidade.');
+        if (produtoSelecionado.length === 0) {
+            toast.error('⚠️ Selecione pelo menos um produto para adicionar.');
             return;
         }
 
-        const novaOportunidade = {
-            produto_interesse: produtoInteresse,
-            prioridade,
-            descricao: descricaoOportunidade,
-            observacoes: observacoesOportunidade,
-        };
+        const novasOportunidades = produtoSelecionado.map((produto) => ({
+            produto_interesse: produto.label, // Nome do produto
+            prioridade: 'media', // Prioridade padrão
+            descricao: 'Foco inicial', // Descrição padrão
+        }));
 
-        setOportunidades((prev) => [...prev, novaOportunidade]);
-        setProdutoInteresse(null);
-        setPrioridade({ value: 'media', label: 'Média' }); // Corrige para o formato esperado
-        setDescricaoOportunidade('');
-        setObservacoesOportunidade('');
+        const oportunidadesFiltradas = novasOportunidades.filter(
+            (novaOportunidade) =>
+                !oportunidades.some(
+                    (oportunidade) =>
+                        oportunidade.produto_interesse === novaOportunidade.produto_interesse
+                )
+        );
+
+        if (oportunidadesFiltradas.length === 0) {
+            toast.warning('Todos os produtos selecionados já foram adicionados.');
+            return;
+        }
+
+        setOportunidades((prev) => [...prev, ...oportunidadesFiltradas]);
+        setProdutoSelecionado([]); // Reseta a seleção
     };
+
 
     const fetchClientes = async () => {
         try {
@@ -182,6 +184,13 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
 
         const formattedTelefone = telefone.replace(/\D/g, '');
 
+        // Remover duplicatas no frontend
+        const oportunidadesUnicas = Array.from(
+            new Set(oportunidades.map((o) => o.produto_interesse))
+        ).map((produto_interesse) =>
+            oportunidades.find((o) => o.produto_interesse === produto_interesse)
+        );
+
         const leadData: Partial<Lead> = {
             nome,
             sobre_nome: sobrenome || undefined,
@@ -191,7 +200,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             profissao_id: subcategoria?.value || profissaoPrincipal?.value || undefined,
             ...(indicadoPorTipo === 'cliente' && { indicado_por_cliente_id: indicadoPorId }),
             ...(indicadoPorTipo === 'parceiro' && { indicado_por_parceiro_id: indicadoPorId }),
-            oportunidades,
+            oportunidades: oportunidadesUnicas,
         };
 
         try {
@@ -208,6 +217,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             }
         }
     };
+
 
     const resetForm = () => {
         setNome('');
@@ -394,42 +404,25 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                             />
 
                         </div>
-                    </fieldset>
-                        <div className={styles.opportunityButtonContainer}>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    if (produtoSelecionado.length === 0) {
-                                        toast.error('Selecione pelo menos um produto antes de adicionar.');
-                                        return;
-                                    }
-                                    handleAddOportunidade(); // Função para processar a adição
-                                }}
-                                className={styles.addOpportunityButton}
-                            >
-                                <AiOutlinePlus style={{marginRight: '5px'}}/>
-                                Adicionar Oportunidade
-                            </button>
-                        </div>
-                    <div className={styles.opportunityList}>
                         {oportunidades.map((oportunidade, index) => (
                             <div key={index} className={styles.opportunityItem}>
                                 <p>
-                                    <strong>Produto:</strong> {oportunidade.produto_interesse.label}
+                                    <strong>Produto:</strong> {oportunidade.produto_interesse}
                                 </p>
-                                <p>
-                                    <strong>Prioridade:</strong> {oportunidade.prioridade}
-                                </p>
-                                <p>
-                                    <strong>Descrição:</strong> {oportunidade.descricao}
-                                </p>
-                                {oportunidade.observacoes && (
-                                    <p>
-                                        <strong>Observações:</strong> {oportunidade.observacoes}
-                                    </p>
-                                )}
                             </div>
                         ))}
+                    </fieldset>
+                    <div className={styles.opportunityButtonContainer}>
+                        <button
+                            type="button"
+                            onClick={handleAddOportunidade}
+                            className={styles.addOpportunityButton}
+                        >
+                            <AiOutlinePlus style={{marginRight: '5px' }} />
+                            Adicionar Oportunidade
+                        </button>
+                    </div>
+                    <div className={styles.opportunityList}>
                     </div>
                 </div>
                 <Button variant="primary" type="submit">

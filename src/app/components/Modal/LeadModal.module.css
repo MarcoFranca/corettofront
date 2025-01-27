@@ -131,9 +131,8 @@
 
 .opportunityItem {
     background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    padding: 12px;
-    border-radius: 8px;
+    border-bottom: 1px solid #3b76b0;
+    font-size: 12px;
     margin-bottom: 8px;
 }
 /*fim*/
