@@ -4,6 +4,139 @@
     gap: 10px;
 }
 
+/*indicações*/
+.indicacaoSection {
+    margin-bottom: 16px;
+}
+
+.indicacaoFieldset {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.indicacaoLegend {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0 8px;
+    color: #333;
+}
+
+.radioGroup {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.radioOption {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+}
+
+.selectWrapper {
+    margin-top: 8px;
+}
+
+.errorSelect {
+    border-color: red !important;
+    background-color: #ffe6e6 !important;
+}
+
+.errorMessage {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 4px;
+}
+
+/*fim*/
+
+/*oportunidades*/
+.fieldset {
+    margin-bottom: 16px;
+    border: 1px solid #e0e0e0;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.legend {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.opportunitySection {
+    margin-bottom: 20px;
+}
+
+.opportunityFieldset {
+    border: 1px solid #ddd;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.opportunityLegend {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.opportunityGrid {
+    display: flex;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.selectOpportunity {
+    width: 100%;
+}
+
+.contatoContainer{
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.contatoContainer > * {
+    flex: 1;
+}
+
+.inputOpportunity {
+    width: 100%;
+}
+
+.opportunityButtonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: right;
+}
+
+.addOpportunityButton{
+    background-color: transparent;
+    border: none;
+    text-decoration: underline;
+    color: #0d6efd;
+    margin: 16px 0;
+
+}
+
+.opportunityList {
+    margin-top: 16px;
+}
+
+.opportunityItem {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+/*fim*/
 .inputContainer {
     display: flex;
     flex-direction: column;

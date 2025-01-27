@@ -8,10 +8,18 @@ export type StatusReuniao =
     | "nao_atendeu"
     | "marcar_reuniao";
 
+export interface Oportunidade {
+    produto_interesse: string; // ID do produto de interesse
+    prioridade: 'alta' | 'media' | 'baixa';
+    descricao: string;
+    observacoes?: string; // Campo opcional
+}
+
 export interface Lead {
     id: string;
     nome: string;
     sobre_nome?: string; // Adiciona o campo opcional para sobrenome
+    oportunidades?: Oportunidade[]; // Adicione a propriedade aqui
     contato?: string;
     telefone: string;
     email: string;

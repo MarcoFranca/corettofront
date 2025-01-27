@@ -12,7 +12,7 @@ import styles from './LeadModal.module.css';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { AppDispatch } from '@/store';
 import { Lead } from '@/types/interfaces';
-import CadastrarProfissaoForm from "@/app/components/Modal/cliente/CadastrarProfissaoForm";
+import CadastrarProfissaoForm from '@/app/components/Modal/cliente/CadastrarProfissaoForm';
 import { Profissao } from '@/types/interfaces';
 
 interface LeadModalProps {
@@ -21,6 +21,11 @@ interface LeadModalProps {
 }
 
 interface ProfissaoOption {
+    value: string;
+    label: string;
+}
+
+interface ProdutoOption {
     value: string;
     label: string;
 }
@@ -39,12 +44,94 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const [subcategorias, setSubcategorias] = useState<ProfissaoOption[]>([]);
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
     const [isProfissaoModalOpen, setProfissaoModalOpen] = useState(false);
+    const [indicadoPorTipo, setIndicadoPorTipo] = useState<'cliente' | 'parceiro' | ''>('');
+    const [clientesDisponiveis, setClientesDisponiveis] = useState<ProfissaoOption[]>([]);
+    const [parceirosDisponiveis, setParceirosDisponiveis] = useState<ProfissaoOption[]>([]);
+    const [indicadoPorId, setIndicadoPorId] = useState<string | null>(null);
+    const [produtoInteresse, setProdutoInteresse] = useState<string | null>(null);
+    const [produtosDisponiveis, setProdutosDisponiveis] = useState<{ value: string; label: string }[]>([]);
+    const [prioridade, setPrioridade] = useState<{ value: 'alta' | 'media' | 'baixa'; label: string }>({
+        value: 'media',
+        label: 'Média',
+    });
+
+    const [descricaoOportunidade, setDescricaoOportunidade] = useState('');
+    const [observacoesOportunidade, setObservacoesOportunidade] = useState('');
+    const [oportunidades, setOportunidades] = useState<any[]>([]);
+    const [produtoSelecionado, setProdutoSelecionado] = useState<ProdutoOption[]>([]);
+
 
     useEffect(() => {
         if (isOpen) {
             fetchProfissoes();
+            fetchClientes();
+            fetchParceiros();
+            fetchProdutosDisponiveis();
+
         }
     }, [isOpen]);
+
+    const fetchProdutosDisponiveis = async () => {
+        try {
+            const response = await api.get('/produtos-oportunidades/');
+            setProdutosDisponiveis(
+                response.data.map((produto: any) => ({
+                    value: produto.id,
+                    label: produto.nome,
+                }))
+            );
+        } catch (error) {
+            toast.error('😔 Erro ao carregar produtos de oportunidades.');
+        }
+    };
+
+    const handleAddOportunidade = () => {
+        if (!produtoInteresse || !descricaoOportunidade) {
+            toast.error('⚠️ Preencha todos os campos obrigatórios de oportunidade.');
+            return;
+        }
+
+        const novaOportunidade = {
+            produto_interesse: produtoInteresse,
+            prioridade,
+            descricao: descricaoOportunidade,
+            observacoes: observacoesOportunidade,
+        };
+
+        setOportunidades((prev) => [...prev, novaOportunidade]);
+        setProdutoInteresse(null);
+        setPrioridade({ value: 'media', label: 'Média' }); // Corrige para o formato esperado
+        setDescricaoOportunidade('');
+        setObservacoesOportunidade('');
+    };
+
+    const fetchClientes = async () => {
+        try {
+            const response = await api.get('/clientes/');
+            setClientesDisponiveis(
+                response.data.map((cliente: any) => ({
+                    value: cliente.id,
+                    label: `${cliente.nome} ${cliente.sobre_nome || ''}`,
+                }))
+            );
+        } catch (error) {
+            toast.error('😔 Erro ao carregar clientes.');
+        }
+    };
+
+    const fetchParceiros = async () => {
+        try {
+            const response = await api.get('/parceiros/');
+            setParceirosDisponiveis(
+                response.data.map((parceiro: any) => ({
+                    value: parceiro.id,
+                    label: parceiro.nome,
+                }))
+            );
+        } catch (error) {
+            toast.error('😔 Erro ao carregar parceiros.');
+        }
+    };
 
     const fetchProfissoes = async () => {
         try {
@@ -102,6 +189,9 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             telefone: formattedTelefone,
             email,
             profissao_id: subcategoria?.value || profissaoPrincipal?.value || undefined,
+            ...(indicadoPorTipo === 'cliente' && { indicado_por_cliente_id: indicadoPorId }),
+            ...(indicadoPorTipo === 'parceiro' && { indicado_por_parceiro_id: indicadoPorId }),
+            oportunidades,
         };
 
         try {
@@ -127,13 +217,77 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
         setEmail('');
         setProfissaoPrincipal(null);
         setSubcategoria(null);
+        setIndicadoPorTipo('');
+        setIndicadoPorId(null);
         setFieldErrors({});
     };
 
     return (
         <Modal show={isOpen} onClose={onRequestClose} title="Cadastrar Lead">
             <form onSubmit={handleSubmit} className={styles.form}>
+                {/*indicações*/}
+                <div className={styles.indicacaoSection}>
+                    <fieldset className={styles.indicacaoFieldset}>
+                        <legend className={styles.indicacaoLegend}>Indicação</legend>
+                        <div className={styles.radioGroup}>
+                            <label className={styles.radioOption}>
+                                <input
+                                    type="radio"
+                                    name="indicacao"
+                                    value="cliente"
+                                    checked={indicadoPorTipo === 'cliente'}
+                                    onChange={() => {
+                                        setIndicadoPorTipo('cliente');
+                                        fetchClientes();
+                                    }}
+                                />
+                                Cliente
+                            </label>
+                            <label className={styles.radioOption}>
+                                <input
+                                    type="radio"
+                                    name="indicacao"
+                                    value="parceiro"
+                                    checked={indicadoPorTipo === 'parceiro'}
+                                    onChange={() => {
+                                        setIndicadoPorTipo('parceiro');
+                                        fetchParceiros();
+                                    }}
+                                />
+                                Parceiro
+                            </label>
+                        </div>
+                        <div className={styles.selectWrapper}>
+                            {indicadoPorTipo === 'cliente' && (
+                                <Select
+                                    options={clientesDisponiveis}
+                                    value={clientesDisponiveis.find((cliente) => cliente.value === indicadoPorId) || null}
+                                    onChange={(option) => setIndicadoPorId(option?.value || null)}
+                                    placeholder="Selecione um cliente..."
+                                    className={fieldErrors.indicado_por_cliente_id ? styles.errorSelect : ''}
+                                />
+                            )}
+                            {indicadoPorTipo === 'parceiro' && (
+                                <Select
+                                    options={parceirosDisponiveis}
+                                    value={parceirosDisponiveis.find((parceiro) => parceiro.value === indicadoPorId) || null}
+                                    onChange={(option) => setIndicadoPorId(option?.value || null)}
+                                    placeholder="Selecione um parceiro..."
+                                    className={fieldErrors.indicado_por_parceiro_id ? styles.errorSelect : ''}
+                                />
+                            )}
+                        </div>
+                    </fieldset>
+                    {(fieldErrors.indicado_por_cliente_id || fieldErrors.indicado_por_parceiro_id) && (
+                        <div className={styles.errorMessage}>
+                            {fieldErrors.indicado_por_cliente_id || fieldErrors.indicado_por_parceiro_id}
+                        </div>
+                    )}
+                </div>
+                {/*indicações*/}
+
                 <div className={styles.nameContainer}>
+
                     <Input
                         label="Nome"
                         type="text"
@@ -153,14 +307,42 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                         required={false}
                     />
                 </div>
+                <div className={styles.contatoContainer}>
+
+                    <InputMask
+                        mask="(99) 99999-9999"
+                        value={telefone}
+                        maskChar={null}
+                        onChange={(e) => setTelefone(e.target.value)}
+                    >
+                        {(inputProps: any) => (
+                            <Input
+                                {...inputProps}
+                                label="Telefone"
+                                type="text"
+                                className={fieldErrors.telefone ? styles.error : ''}
+                                errorMessage={fieldErrors.telefone}
+                                required
+                            />
+                        )}
+                    </InputMask>
+                    <Input
+                        label="Email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className={fieldErrors.email ? styles.error : ''}
+                        errorMessage={fieldErrors.email}
+                    />
+                </div>
                 <Select
                     options={[
-                        { value: 'M', label: 'Masculino' },
-                        { value: 'F', label: 'Feminino' },
+                        {value: 'M', label: 'Masculino'},
+                        {value: 'F', label: 'Feminino'},
                     ]}
                     value={
                         genero
-                            ? { value: genero, label: genero === 'M' ? 'Masculino' : 'Feminino' }
+                            ? {value: genero, label: genero === 'M' ? 'Masculino' : 'Feminino'}
                             : null
                     }
                     onChange={(selectedOption) =>
@@ -193,34 +375,63 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                     onClick={() => setProfissaoModalOpen(true)}
                     className={styles.cadastrarProfissao}
                 >
-                    <AiOutlinePlus style={{ marginRight: '5px' }} />
+                    <AiOutlinePlus style={{marginRight: '5px'}}/>
                     Cadastrar Nova Profissão
                 </button>
-                <InputMask
-                    mask="(99) 99999-9999"
-                    value={telefone}
-                    maskChar={null}
-                    onChange={(e) => setTelefone(e.target.value)}
-                >
-                    {(inputProps: any) => (
-                        <Input
-                            {...inputProps}
-                            label="Telefone"
-                            type="text"
-                            className={fieldErrors.telefone ? styles.error : ''}
-                            errorMessage={fieldErrors.telefone}
-                            required
-                        />
-                    )}
-                </InputMask>
-                <Input
-                    label="Email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={fieldErrors.email ? styles.error : ''}
-                    errorMessage={fieldErrors.email}
-                />
+                {/*oportunidades*/}
+                <div className={styles.opportunitySection}>
+                    <fieldset className={styles.indicacaoFieldset}>
+                        <legend className={styles.indicacaoLegend}>Oportunidades</legend>
+                        <div className={styles.opportunityGrid}>
+                            <Select
+                                options={produtosDisponiveis}
+                                isMulti
+                                value={produtoSelecionado}
+                                onChange={(option) => setProdutoSelecionado(option as ProdutoOption[])}
+                                placeholder="Selecione um produto..."
+                                classNamePrefix="custom-select"
+                                className={styles.selectOpportunity}
+                            />
+
+                        </div>
+                    </fieldset>
+                        <div className={styles.opportunityButtonContainer}>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (produtoSelecionado.length === 0) {
+                                        toast.error('Selecione pelo menos um produto antes de adicionar.');
+                                        return;
+                                    }
+                                    handleAddOportunidade(); // Função para processar a adição
+                                }}
+                                className={styles.addOpportunityButton}
+                            >
+                                <AiOutlinePlus style={{marginRight: '5px'}}/>
+                                Adicionar Oportunidade
+                            </button>
+                        </div>
+                    <div className={styles.opportunityList}>
+                        {oportunidades.map((oportunidade, index) => (
+                            <div key={index} className={styles.opportunityItem}>
+                                <p>
+                                    <strong>Produto:</strong> {oportunidade.produto_interesse.label}
+                                </p>
+                                <p>
+                                    <strong>Prioridade:</strong> {oportunidade.prioridade}
+                                </p>
+                                <p>
+                                    <strong>Descrição:</strong> {oportunidade.descricao}
+                                </p>
+                                {oportunidade.observacoes && (
+                                    <p>
+                                        <strong>Observações:</strong> {oportunidade.observacoes}
+                                    </p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
                 <Button variant="primary" type="submit">
                     Cadastrar Lead
                 </Button>
