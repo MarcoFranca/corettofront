@@ -9,6 +9,7 @@ const initialState: AgendaState = {
     items: [],
     status: 'idle',
     error: null,
+    googleAuthRedirectUrl: null, // Novo estado para redirecionamento
 };
 
 // Buscar itens da agenda
@@ -35,10 +36,9 @@ export const fetchAgendaItems = createAsyncThunk('agenda/fetchAgendaItems', asyn
         created_at: item.created_at,
         updated_at: item.updated_at,
     }));
-
 });
 
-// Criar um item na agenda e tratar redirecionamentos do Google
+// Criar um item na agenda
 export const createAgendaItem = createAsyncThunk<AgendaItem, Partial<AgendaItem>>(
     'agenda/createAgendaItem',
     async (newItem, { dispatch, rejectWithValue }) => {
@@ -56,7 +56,6 @@ export const createAgendaItem = createAsyncThunk<AgendaItem, Partial<AgendaItem>
                 cliente: newItem.cliente || null,
             });
 
-            // Atualiza os itens da agenda
             dispatch(fetchAgendaItems());
 
             return {
@@ -65,18 +64,20 @@ export const createAgendaItem = createAsyncThunk<AgendaItem, Partial<AgendaItem>
                 end_time: moment.tz(response.data.end_time, timeZone).toDate(),
             };
         } catch (error: any) {
-            if (error.response?.data?.redirect_url) {
-                // Redireciona para a URL de autorização do Google
-                window.location.href = error.response.data.redirect_url;
-            } else {
-                console.error('Erro ao criar item na agenda:', error);
-                return rejectWithValue(error.response?.data || 'Erro desconhecido');
+            console.log(error.response.data)
+            console.log(error.response.data.code)
+            if (error.response?.data?.code === 'google_auth_required') {
+                dispatch(agendaSlice.actions.setGoogleAuthRedirect(error.response.data.redirect_url));
+                return rejectWithValue({
+                    message: 'Redirecionado para reautorização do Google.',
+                    code: error.response.data.code,
+                });
             }
+            console.error('Erro ao criar item na agenda:', error);
+            return rejectWithValue(error.response?.data || 'Erro desconhecido');
         }
     }
 );
-
-
 
 // Atualizar um item da agenda
 export const updateAgendaItem = createAsyncThunk<AgendaItem, { id: string; updatedItem: Partial<AgendaItem> }>(
@@ -105,6 +106,10 @@ const agendaSlice = createSlice({
             state.items = [];
             state.status = 'idle';
             state.error = null;
+            state.googleAuthRedirectUrl = null; // Resetar URL de redirecionamento
+        },
+        setGoogleAuthRedirect: (state, action) => {
+            state.googleAuthRedirectUrl = action.payload; // Define a URL de redirecionamento
         },
     },
     extraReducers: (builder) => {
@@ -120,20 +125,22 @@ const agendaSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.error.message || null;
             })
+            .addCase(createAgendaItem.pending, (state) => {
+                state.status = 'loading';
+            })
             .addCase(createAgendaItem.fulfilled, (state, action) => {
+                state.status = 'succeeded';
                 state.items.push(action.payload);
             })
-            .addCase(updateAgendaItem.fulfilled, (state, action) => {
-                const index = state.items.findIndex((item) => item.id === action.payload.id);
-                if (index !== -1) {
-                    state.items[index] = { ...state.items[index], ...action.payload };
-                }
-            })
-            .addCase(deleteAgendaItem.fulfilled, (state, action) => {
-                state.items = state.items.filter((item) => item.id !== action.payload);
+            .addCase(createAgendaItem.rejected, (state, action) => {
+                const payload = action.payload as { message?: string; redirectUrl?: string };
+                state.status = 'failed';
+                state.error = payload?.message || 'Erro desconhecido';
+                state.googleAuthRedirectUrl = payload?.redirectUrl || null; // Atualiza o redirecionamento
             });
     },
 });
 
-export const { resetAgenda } = agendaSlice.actions;
+
+export const { resetAgenda, setGoogleAuthRedirect } = agendaSlice.actions;
 export default agendaSlice.reducer;

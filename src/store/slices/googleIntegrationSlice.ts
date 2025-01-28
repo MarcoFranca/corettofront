@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/app/api/axios';
+import {useGoogleLogin} from "@react-oauth/google";
+import {toast} from "react-toastify";
 
 // Estado inicial
 interface GoogleIntegrationState {
@@ -40,15 +42,38 @@ export const linkGoogleAccount = createAsyncThunk(
         try {
             await api.post('/google/link-google-account/', { authorizationCode });
             dispatch(fetchLinkedGoogleAccount()); // Atualiza a conta vinculada
+            toast.success('🔗 Conta Google vinculada com sucesso! 🎉');
             return '🔗 Conta Google vinculada com sucesso! 🎉';
         } catch (error: any) {
             if (error.response?.data?.error === 'Conta já vinculada.') {
+                toast.warning('⚠️ Essa conta do Google já está vinculada a outro usuário. ' +
+                    'Desvincule-a ou escolha outra conta.');
                 return rejectWithValue(
                     '⚠️ Essa conta do Google já está vinculada a outro usuário. Desvincule-a ou escolha outra conta.'
                 );
             }
-            return rejectWithValue('⚠️ Erro ao vincular conta Google. Tente novamente.');
+            toast.error('🚨 Erro ao vincular conta Google. Tente novamente.');
+            return rejectWithValue('🚨 Erro ao vincular conta Google. Tente novamente.');
         }
+    }
+);
+
+//Reautoriza a conta
+export const reauthorizeGoogleAccount = createAsyncThunk(
+    'googleIntegration/reauthorizeGoogleAccount',
+    async (_, { dispatch }) => {
+        const loginWithGoogle = useGoogleLogin({
+            flow: 'auth-code',
+            onSuccess: (codeResponse) => {
+                dispatch(linkGoogleAccount(codeResponse.code)); // Reautorização bem-sucedida
+                toast.success('🔗 Conta Google vinculada com sucesso! 🎉');
+            },
+            onError: () => {
+                toast.error('⚠️ Erro ao tentar reautorizar sua conta Google.');
+            },
+        });
+
+        loginWithGoogle();
     }
 );
 
@@ -57,7 +82,7 @@ export const unlinkGoogleAccount = createAsyncThunk(
     'googleIntegration/unlinkGoogleAccount',
     async (_, { dispatch, rejectWithValue }) => {
         try {
-            const response = await api.post('/google/unlink-google-account/');
+            await api.post('/google/unlink-google-account/');
             dispatch(fetchLinkedGoogleAccount());
             return ' ⛓️ Conta Google desvinculada com sucesso! 🎉';
         } catch (error) {

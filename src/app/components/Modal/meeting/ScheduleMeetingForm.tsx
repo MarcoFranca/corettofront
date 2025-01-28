@@ -1,21 +1,17 @@
-'use client';
-
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store';
-import { createAgendaItem } from '@/store/slices/agendaSlice'; // Atualizado para usar agendaSlice
-import { AgendaItem } from '@/types/interfaces';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
+import { createAgendaItem } from '@/store/slices/agendaSlice';
+import {AgendaItem, ScheduleMeetingFormProps} from '@/types/interfaces';
+import { toast } from 'react-toastify';
 import styles from './ScheduleMeetingForm.module.css';
+import {clearMessages, linkGoogleAccount} from "@/store/slices/googleIntegrationSlice";
+import {useGoogleLogin} from "@react-oauth/google";
 
-interface ScheduleMeetingFormProps {
-    entityId: string;
-    entityName: string;
-    entityType: 'lead' | 'cliente';
-    onClose: () => void;
-}
-
-const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, entityName, entityType, onClose }) => {
+const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, entityName, onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
+    const googleAuthRedirectUrl = useSelector((state: RootState) => state.agenda.googleAuthRedirectUrl);
+
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [startTime, setStartTime] = useState('');
@@ -24,11 +20,30 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
     const [addToGoogleMeet, setAddToGoogleMeet] = useState(false);
     const [addToZoom, setAddToZoom] = useState(false);
 
+    useEffect(() => {
+        if (googleAuthRedirectUrl) {
+            toast.warning('Sua sincronização com o Google foi revogada ou expirou. Você será redirecionado para reautorizar.');
+            window.location.href = googleAuthRedirectUrl;
+        }
+    }, [googleAuthRedirectUrl]);
+
+    const loginWithGoogle = useGoogleLogin({
+        flow: 'auth-code',
+        onSuccess: (codeResponse) => {
+            dispatch(linkGoogleAccount(codeResponse.code)); // Vincula novamente a conta Google
+            toast.success('Conta Google reautorizada com sucesso!');
+        },
+        onError: () => {
+            dispatch(clearMessages());
+            toast.error('Erro ao tentar reautorizar sua conta Google.');
+        },
+    });
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!date || !startTime || !endTime) {
-            alert('Por favor, preencha todos os campos obrigatórios.');
+            toast.warning('Por favor, preencha todos os campos obrigatórios.');
             return;
         }
 
@@ -36,7 +51,6 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
         const endDateTime = new Date(`${date}T${endTime}`).toISOString();
 
         const dynamicTitle = `Reunião com ${entityName}`;
-
 
         const newAgendaItem: Partial<AgendaItem> = {
             title: dynamicTitle,
@@ -53,21 +67,20 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
         };
 
         try {
-            console.log('Dados enviados pelo frontend:', newAgendaItem);
             await dispatch(createAgendaItem(newAgendaItem)).unwrap();
+            toast.success('Reunião criada com sucesso! 🎉');
             onClose();
         } catch (error: any) {
-            if (error.redirect_url) {
-                alert('É necessário reautorizar a sincronização com o Google. Você será redirecionado.');
-                window.location.href = error.redirect_url;
+            console.log('Erro ao criar item na agenda:', error);
+
+            if (error.code === 'google_auth_required') {
+                toast.warning('⚠️ Sua sincronização com o Google expirou. Reautorizando...');
+                loginWithGoogle();
             } else {
-                console.error('Erro ao criar item na agenda:', error);
-                alert('Erro ao criar o item. Verifique os logs.');
+                toast.error(error.message || '🚨 Erro ao criar a reunião.');
             }
         }
     };
-
-
 
 
     return (

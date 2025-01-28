@@ -89,11 +89,19 @@ export interface AgendaItem {
     updated_at?: string;
 }
 
+export interface ScheduleMeetingFormProps {
+    entityId: string;
+    entityName: string;
+    entityType: 'lead' | 'cliente';
+    onClose: () => void;
+}
+
 
 export interface AgendaState {
     items: AgendaItem[];
     status: "idle" | "loading" | "succeeded" | "failed";
     error: string | null;
+    googleAuthRedirectUrl: string | null; // Adicione esta propriedade
 }
 
 // ** Meeting Interfaces **
