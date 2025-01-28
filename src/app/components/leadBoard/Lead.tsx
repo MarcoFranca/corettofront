@@ -1,4 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
+'use client'
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Draggable } from '@hello-pangea/dnd';
 import { AppDispatch } from '@/store';
@@ -12,7 +13,11 @@ import EditImage from '../../../../public/assets/common/edit.svg';
 import { LeadProps, Lead, StatusReuniao } from "@/types/interfaces";
 import ScheduleMeetingForm from '@/app/components/Modal/meeting/ScheduleMeetingForm';
 import EditLeadForm from '@/app/components/leads/EditLeadForm';
-import ReactDOM from 'react-dom';
+import Tippy from '@tippyjs/react';
+import InputMask from 'react-input-mask';
+import 'tippy.js/dist/tippy.css';
+import '@/app/(styles)/globals.css';
+import {FaWhatsapp} from "react-icons/fa";
 
 const statusColors: Record<StatusReuniao, string> = {
     'reuniao_marcada': 'green',
@@ -30,37 +35,16 @@ const statusLabels: Record<StatusReuniao, string> = {
     'marcar_reuniao': 'Marcar Reunião'
 };
 
-const LeadComponent: React.FC<LeadProps> = ({ lead, index, handleLeadClick, handleLeadDragStart, isLastColumn, tooltipContainerRef }) => {
+const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const [showTooltip, setShowTooltip] = useState(false);
-    const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
     const [currentLead, setCurrentLead] = useState(lead);
 
-    const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
     useEffect(() => {
         setCurrentLead(lead);
     }, [lead]);
-
-    const handleMouseEnter = (e: React.MouseEvent) => {
-        const { top, left, height } = e.currentTarget.getBoundingClientRect();
-        tooltipTimeoutRef.current = setTimeout(() => {
-            const tooltipTop = top + height / 2 + window.scrollY;
-            const tooltipLeft = isLastColumn ? left - 260 : left + 380;
-            setTooltipPosition({ top: tooltipTop, left: tooltipLeft });
-            setShowTooltip(true);
-        }, 1000);
-    };
-
-    const handleMouseLeave = () => {
-        if (tooltipTimeoutRef.current) {
-            clearTimeout(tooltipTimeoutRef.current);
-        }
-        setShowTooltip(false);
-    };
 
     const handleDeleteConfirm = () => {
         setShowConfirmModal(false);
@@ -70,10 +54,6 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index, handleLeadClick, hand
     const handleDeleteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         setShowConfirmModal(true);
-    };
-
-    const handleDeleteCancel = () => {
-        setShowConfirmModal(false);
     };
 
     const handleScheduleClick = (e: React.MouseEvent) => {
@@ -98,74 +78,138 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index, handleLeadClick, hand
         setCurrentLead(updatedLead);
     };
 
-    const renderTooltip = () => {
-        return (
-            <div
-                className={isLastColumn ? styles.tooltipLeft : styles.tooltip}
-                key={currentLead.id}
-                style={{ top: `${tooltipPosition.top}px`, left: `${tooltipPosition.left}px` }}
-            >
-                <p><strong>Nome:</strong> {currentLead.nome}</p>
-                <p><strong>Email:</strong> {currentLead.email}</p>
-                <p><strong>Telefone:</strong> {currentLead.telefone}</p>
-                <p><strong>Status:</strong> {currentLead.pipeline_stage}</p>
-                <p><strong>Status Reunião:</strong> {statusLabels[currentLead.status_reuniao]}</p>
-                <p><strong>Data de Criação:</strong> {new Date(currentLead.created_at).toLocaleString()}</p>
-                <p><strong>Última Atualização:</strong> {new Date(currentLead.updated_at).toLocaleString()}</p>
-            </div>
-        );
+    const formatPhoneNumber = (phone: string): string => {
+        let formattedPhone = phone.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+        // Adicionar o código do país '55' se não estiver presente
+        if (!formattedPhone.startsWith('55')) {
+            formattedPhone = `55${formattedPhone}`;
+        }
+
+        return formattedPhone;
     };
+
+
+    const getWhatsAppLink = (phone: string): string => {
+        const formattedPhone = formatPhoneNumber(phone);
+        return `https://wa.me/${formattedPhone}`;
+    };
+
 
     return (
         <>
             <Draggable draggableId={currentLead.id} index={index}>
                 {(provided) => (
-                    <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={styles.lead}
-                        onClick={() => handleLeadClick(currentLead.id)}
-                        onDragStart={handleLeadDragStart}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
+                    <Tippy
+                        content={
+                            <div>
+                                <p><strong>Nome:</strong> {currentLead.nome}</p>
+                                <p><strong>Status:</strong> {statusLabels[currentLead.status_reuniao]}</p>
+                                <p><strong>E-mail:</strong> {currentLead.email || 'Não informado'}</p>
+                                <p>
+                                        {currentLead.telefone ? (
+                                            <a
+                                                href={getWhatsAppLink(currentLead.telefone)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ color: '#25d366', textDecoration: 'none', justifyContent:'center',
+                                                    alignItems: 'center', display: 'flex', flexDirection: 'row', gap: '8px' }}
+                                            >
+                                                <strong>Telefone:</strong>{' '}
+                                                <FaWhatsapp size={16} /> {/* Ícone do WhatsApp */}
+                                                <InputMask
+                                                    mask="(99) 99999-9999"
+                                                    value={currentLead.telefone}
+                                                    readOnly
+                                                    className={styles.phoneInput} // Adicione uma classe personalizada
+                                                />
+                                            </a>
+                                        ) : (
+                                            'Não informado'
+                                        )}
+                                </p>
+                            </div>
+                        }
+                        theme="custom"
+                        animation="scale"
+                        arrow={true}
+                        maxWidth={500}
+                        placement="top"
+                        delay={[300, 200]} // Atraso para exibir e esconder [show, hide]
+                        interactive={true} // Permite interações no conteúdo do tooltip
+                        appendTo={document.body} // Resolve o problema de corte
                     >
-                        <div className={styles.leadCell}>
-                            <div className={styles.leadCard}>
-                                <div className={styles.leadContent}>
-                                    <Image className={styles.userImage} src={UserImage} alt={'user'} priority />
-                                    <div className={styles.leadContentText}>
-                                        <p>{currentLead.nome}</p>
-                                        <h2 style={{ color: statusColors[currentLead.status_reuniao] }}>
-                                            {statusLabels[currentLead.status_reuniao]}
-                                        </h2>
+                        <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={styles.lead}
+                        >
+                            <div className={styles.leadCell}>
+                                <div className={styles.leadCard}>
+                                    <div className={styles.leadContent}>
+                                        <Image className={styles.userImage} src={UserImage} alt="user" priority />
+                                        <div className={styles.leadContentText}>
+                                            <p>{currentLead.nome}</p>
+                                            <h2 style={{ color: statusColors[currentLead.status_reuniao] }}>
+                                                {statusLabels[currentLead.status_reuniao]}
+                                            </h2>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className={styles.actions}>
-                                    <Image src={AgendaImage} alt={'Schedule'} className={styles.actionIcon} onClick={handleScheduleClick} priority />
-                                    <Image src={EditImage} alt={'Edit'} className={styles.actionIcon} onClick={handleEditClick} priority />
-                                    <Image src={DeleteImage} alt={'Delete'} className={styles.actionIcon} onClick={handleDeleteClick} priority />
+                                    <div className={styles.actions}>
+                                        <Image
+                                            src={AgendaImage}
+                                            alt="Schedule"
+                                            className={styles.actionIcon}
+                                            onClick={handleScheduleClick}
+                                            priority
+                                        />
+                                        <Image
+                                            src={EditImage}
+                                            alt="Edit"
+                                            className={styles.actionIcon}
+                                            onClick={handleEditClick}
+                                            priority
+                                        />
+                                        <Image
+                                            src={DeleteImage}
+                                            alt="Delete"
+                                            className={styles.actionIcon}
+                                            onClick={handleDeleteClick}
+                                            priority
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        {showTooltip && tooltipContainerRef.current && ReactDOM.createPortal(renderTooltip(), tooltipContainerRef.current)}
-                    </div>
+                    </Tippy>
                 )}
             </Draggable>
+            <div>
+            </div>
             {showConfirmModal && (
                 <div className={styles.confirmModal}>
                     <div className={styles.confirmModalContent}>
                         <p>Tem certeza que deseja deletar este lead?</p>
                         <button onClick={handleDeleteConfirm}>Sim</button>
-                        <button onClick={handleDeleteCancel}>Não</button>
+                        <button onClick={() => setShowConfirmModal(false)}>Não</button>
                     </div>
                 </div>
             )}
             {showScheduleForm && (
-                <ScheduleMeetingForm entityId={currentLead.id} entityName={currentLead.nome} entityType="lead" onClose={handleScheduleFormClose} />
+                <ScheduleMeetingForm
+                    entityId={currentLead.id}
+                    entityName={currentLead.nome}
+                    entityType="lead"
+                    onClose={handleScheduleFormClose}
+                />
             )}
             {showEditForm && (
-                <EditLeadForm lead={currentLead} onClose={handleEditFormClose} onUpdate={handleUpdateLead} />
+                <EditLeadForm
+                    lead={currentLead}
+                    onClose={handleEditFormClose}
+                    onUpdate={handleUpdateLead}
+                />
             )}
         </>
     );

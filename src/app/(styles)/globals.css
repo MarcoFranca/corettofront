@@ -46,4 +46,33 @@ html{
   outline: none; /* Remove a borda azul do modal */
 }
 
+/*Tippy*/
 
+.tippy-box[data-theme~='custom'] {
+  position: relative;
+  background-color: rgba(11, 19, 70, 0.91);
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 15px rgba(11, 19, 70, 0.3);
+  padding: 10px;
+  font-size: 14px;
+}
+
+.tippy-box[data-theme~='custom'] .tippy-arrow {
+  color: rgba(11, 19, 70, 0.91); /* Azul */
+}
+
+@keyframes scale-up {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.tippy-box[data-theme~='custom'][data-state='visible'] {
+  animation: scale-up 0.3s ease-out forwards;
+}
