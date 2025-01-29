@@ -79,20 +79,21 @@ const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({ cliente }) => {
                 <div className={styles.profileCellRow}>
                     <div className={styles.nascimentoCell}>
                         <Image src={GeneroImage} alt="Gênero" className={styles.StaticIcon} priority />
-                        <p>{cliente.sexo === 'M' ? 'Masculino' : 'Feminino'}</p>
+                        <p>{cliente.genero === 'M' ? 'Masculino' : 'Feminino'}</p>
                     </div>
                     <div className={styles.nascimentoCell}>
                         <Image src={JobImage} alt="Profissão" className={styles.StaticIcon} priority />
-                        <p>{cliente.profissao || 'Não informada'}</p>
+                        <p><strong>Profissão:</strong> {cliente.profissao?.nome || "Não especificada"}</p>
                     </div>
                 </div>
             </div>
+
             <EditClientModal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 initialData={{
                     data_nascimento: cliente.data_nascimento,
-                    sexo: cliente.sexo,
+                    sexo: cliente.genero,
                     profissao: cliente.profissao,
                 }}
                 onSave={handleSave}

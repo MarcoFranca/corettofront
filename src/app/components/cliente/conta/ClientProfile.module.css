@@ -4,14 +4,40 @@
     justify-content: space-between;
     background-color: #fff;
     padding: 20px;
+    gap: 20px;
+    overflow: auto;
 }
 
 .leftCard, .rightCard {
     flex: 1;
-    margin: 10px;
-    min-width: 48%; /* Ensure both cards take up around 50% of the width */
-    max-height: 95vh; /* Set a maximum height for the cards */
-    overflow-y: auto; /* Add vertical scroll when content overflows */
+    min-width: 48%; /* Para desktops */
+    max-height: 95vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Melhorando a visualização */
+    background-color: #fff;
+    border-radius: 8px;
+
+}
+
+.rightCard {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0); /* Melhorando a visualização */
+}
+
+@media (max-width: 1024px) {
+    .leftCard, .rightCard {
+        min-width: 100%; /* Cartões ocupam toda a largura */
+    }
+}
+
+@media (max-width: 768px) {
+    .profileContainer {
+        flex-direction: column; /* Colocar os cartões um abaixo do outro */
+    }
+
+    .leftCard, .rightCard {
+        min-width: 100%;
+        margin: 0 0 20px 0; /* Adicionar espaçamento entre os cartões */
+    }
 }
 
 .profileCellInfo{
@@ -36,6 +62,7 @@
 .StaticIcon{
     height: 32px;
     width: auto;
+    color: #020f60;
 }
 
 .profileHeader {
@@ -47,8 +74,11 @@
 }
 
 .profileImage {
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    margin-right: 20px;
+    object-fit: cover; /* Adapta imagens de perfil carregadas */
+    margin-bottom: 16px;
 }
 
 .headerText {
@@ -59,7 +89,12 @@
 
 .status {
     font-weight: bold;
-    color: green;
+    color: #fff;
+    background-color: green; /* Indicador básico de status */
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
 }
 
 .creationDate {
@@ -97,12 +132,11 @@
 .cardContainer{
     height: 100%;
     background: white;
-    margin-top: -10px;
+    margin-top: -22px;
     padding: 20px;
-    border-radius: 0 0 10px 10px;
-    border-bottom: 1px solid #b9b9b9;
-    border-left: 1px solid #b9b9b9;
-    border-right: 1px solid #b9b9b9;
+    border-radius: 0 10px 10px 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Adiciona sombra para destacar */
+    border: 1px solid #ddd;
     z-index: 9999;
 }
 
@@ -112,7 +146,6 @@
     align-items: center;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
-    margin-bottom: 10px;
 }
 
 .sectionTitle {
@@ -123,7 +156,7 @@
 
 .titleContainer{
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
 }
 
@@ -271,7 +304,6 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     resize: none;
-    margin-bottom: 10px;
     max-height: 150px; /* Maximum height for textarea */
     overflow-y: auto; /* Scroll when content overflows */
 }
@@ -291,6 +323,9 @@
 }
 
 .addObservationButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #17a2b8;
     color: white;
     border: none;
@@ -320,6 +355,62 @@
     font-weight: bold;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+/* Melhorias no layout das abas */
+.tabList {
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 1px solid #ddd;
+    width: 90%;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px 8px 0 0;
+    margin-left: -5px;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    position: relative;
+    /*z-index: 1; !* Coloca a aba sobre as outras *!*/
+    outline: none; /* Remove o foco padrão */
+}
+
+.tab:first-child {
+    margin-left: 0; /* Remove a sobreposição para a primeira aba */
+}
+
+.tab:hover {
+    background-color: #eaeaea;
+    color: #007bff;
+}
+
+.tabSelected {
+    background-color: #fff;
+    color: #0056b3;
+    border: 1px solid #ddd;
+    margin-left: -5px;
+    border-bottom: 1px solid #fff; /* Remove a borda inferior para continuidade */
+    margin-bottom: -2px;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -4px 5px rgba(0, 0, 0, 0.1); /* Adiciona sombra para destacar */
+    z-index: 2; /* Eleva a aba selecionada à frente */
+    transition: margin-bottom 0.3s ease;
+}
+
+/* Ajustar o conteúdo das abas para parecer "atrás" da aba ativa */
+.tabPanel {
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+    margin-top: -1px; /* Conecta o conteúdo com a aba ativa */
+    background-color: #fff;
+    border-top: none; /* Remove a borda superior do conteúdo */
 }
 
 /* EditClientModal.module.css */

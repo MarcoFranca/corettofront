@@ -4,7 +4,6 @@ import { Cliente } from '@/types/interfaces';
 import styles from './ClientProfile.module.css';
 import Image from "next/image";
 import EditImage from "../../../../../public/assets/common/edit.svg";
-import SaudeImage from "../../../../../public/assets/common/Saude.svg";
 import CopyIcon from "../../../../../public/assets/common/copy.svg"; // Supondo que você tenha um ícone de copiar
 import AbPesoImage from "../../../../../public/assets/imc/magro.svg";
 import NormalPesoImage from "../../../../../public/assets/imc/no peso.svg";
@@ -13,6 +12,7 @@ import Ob1PesoImage from "../../../../../public/assets/imc/Obesidade grau 1.svg"
 import Ob2PesoImage from "../../../../../public/assets/imc/Obesidade grau 2.svg";
 import AlturaImage from "../../../../../public/assets/imc/altura.svg";
 import BalancaImage from "../../../../../public/assets/imc/balanca.svg";
+import {FaHeartbeat} from "react-icons/fa";
 
 interface HealthInfoCardProps {
     cliente: Cliente;
@@ -29,7 +29,7 @@ const HealthInfoCard: React.FC<HealthInfoCardProps> = ({ cliente }) => {
         setModalIsOpen(false);
     };
 
-    const handleSave = (data: any) => {
+    const handleSave = () => {
         closeModal();
     };
 
@@ -80,7 +80,7 @@ const HealthInfoCard: React.FC<HealthInfoCardProps> = ({ cliente }) => {
         <div className={styles.cardContainer}>
             <div className={styles.cardHeader}>
                 <div className={styles.titleContainer}>
-                    <Image src={SaudeImage} alt="Saúde" className={styles.StaticIcon}/>
+                    <FaHeartbeat className={styles.StaticIcon} />
                     <h3 className={styles.sectionTitle}>Detalhes de Saúde</h3>
                 </div>
                 <Image src={EditImage} alt={"Editar"} className={styles.editIcon} onClick={openModal} priority />

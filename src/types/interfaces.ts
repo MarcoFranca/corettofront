@@ -182,9 +182,53 @@ export interface TasksState {
 }
 
 // ** Cliente Interfaces **
-export interface Filho {
+export interface Profissao {
+    id: string;
     nome: string;
-    dataNascimento: string;
+    categoria_pai?: string | null;
+    descricao?: string;
+    subcategorias?: Profissao[];
+}
+
+export interface Filho {
+    id: string;
+    nome: string;
+    data_nascimento?: string;
+    idade?: number;
+}
+
+export interface Conjuge {
+    id: string;
+    nome: string;
+    data_nascimento?: string;
+    profissao?: string;
+}
+
+export interface Endereco {
+    logradouro?: string;
+    numero?: string;
+    complemento?: string;
+    bairro?: string;
+    cidade?: string;
+    uf?: string;
+    cep?: string;
+}
+
+export interface Saude {
+    peso?: number;
+    altura?: number;
+    imc?: number;
+    imc_grau?: string;
+    tem_doenca_preexistente?: boolean;
+    tem_historico_familiar_doencas?: boolean;
+    doenca_preexistente?: string;
+    historico_familiar_doencas?: string;
+}
+
+export interface VidaFinanceira {
+    renda_mensal?: number;
+    despesas_totais?: number;
+    patrimonio?: number;
 }
 
 export interface Cliente {
@@ -197,8 +241,8 @@ export interface Cliente {
     cpf?: string;
     identidade?: string;
     data_nascimento?: string;
-    sexo?: string;
-    profissao?: string;
+    genero?: string;
+    profissao?: Profissao;
     observacoes?: string;
     status_reuniao?: string;
     status?: string;
@@ -207,31 +251,14 @@ export interface Cliente {
     apolices: Apolices;
     apolices_detalhes?: ApolicesDetalhes;
     reunioes?: Reuniao[];
-    vida_financeira?: any;
+    vida_financeira?: VidaFinanceira;
     filhos: Filho[];
-    conjuge?: any;
+    conjuge?: Conjuge;
     estado_civil?: string;
     created_at?: string;
     updated_at?: string;
-    endereco?: {
-        logradouro?: string;
-        numero?: string;
-        complemento?: string;
-        bairro?: string;
-        cidade?: string;
-        uf?: string;
-        cep?: string;
-    };
-    saude?: {
-        peso?: number;
-        altura?: number;
-        imc?: number;
-        imc_grau?: string;
-        tem_doenca_preexistente?: boolean;
-        tem_historico_familiar_doencas?: boolean;
-        doenca_preexistente?: string;
-        historico_familiar_doencas?: string;
-    };
+    endereco?: Endereco;
+    saude?: Saude;
 }
 
 export interface ClientesState {
@@ -242,6 +269,7 @@ export interface ClientesState {
     error: string | null;
     errorDetalhe: string | null;
 }
+
 
 // ** Apólice Interfaces **
 export interface Apolice {

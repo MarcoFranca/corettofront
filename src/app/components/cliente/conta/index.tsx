@@ -14,7 +14,9 @@ import ProfileImageWoman from '@/../public/assets/common/PerfilMulher.svg';
 import Image from "next/image";
 import Card from '../../common/Card';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+import { FaHeartbeat, FaBox, FaChartLine } from "react-icons/fa";
+
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -26,6 +28,7 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import ApolicesTable from "@/app/components/cliente/apoliceClient/ApolicesTable";
+import Spinner from "@/app/components/common/spinner/sppiner";
 
 ChartJS.register(
     CategoryScale,
@@ -88,7 +91,7 @@ const ClientProfile: React.FC = () => {
     };
 
     if (status === 'loading') {
-        return <p>Carregando...</p>;
+        return <Spinner text={'Carregando...'}/>;
     }
 
     if (error) {
@@ -117,7 +120,7 @@ const ClientProfile: React.FC = () => {
                     <div className={styles.leftCard}>
                         <Card title="">
                             <div className={styles.profileHeader}>
-                                {cliente.sexo === 'M' ? (
+                                {cliente.genero === 'M' ? (
                                     <Image src={ProfileImageMan} alt="Foto do Cliente" className={styles.profileImage} priority />
                                 ) : (
                                     <Image src={ProfileImageWoman} alt="Foto do Cliente" className={styles.profileImage} priority />
@@ -160,10 +163,16 @@ const ClientProfile: React.FC = () => {
                     </div>
                     <div className={styles.rightCard}>
                         <Tabs>
-                            <TabList>
-                                <Tab>Saúde</Tab>
-                                <Tab>Produtos</Tab>
-                                <Tab>Informações Financeiras</Tab>
+                            <TabList className={styles.tabList}>
+                                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
+                                    <FaHeartbeat /> Saúde
+                                </Tab>
+                                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
+                                    <FaBox /> Produtos
+                                </Tab>
+                                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
+                                    <FaChartLine /> Informações Financeiras
+                                </Tab>
                             </TabList>
 
                             <TabPanel>
@@ -172,7 +181,6 @@ const ClientProfile: React.FC = () => {
                             <TabPanel>
                                 <ApolicesTable />
                             </TabPanel>
-
                             <TabPanel>
                                 <Card title="Informações Financeiras">
                                     <Bar data={financeData} />
@@ -180,6 +188,7 @@ const ClientProfile: React.FC = () => {
                             </TabPanel>
                         </Tabs>
                     </div>
+
                 </>
             )}
         </div>

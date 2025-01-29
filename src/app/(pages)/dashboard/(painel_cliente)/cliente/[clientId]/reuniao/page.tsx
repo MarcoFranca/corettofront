@@ -1,7 +1,6 @@
 'use client';
 
 import ClientMeetings from '@/app/components/cliente/meeting/ClientMeetings';
-import ClienteDashboardLayout from "@/app/components/layouts/ClienteDashboardLayout";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -24,9 +23,7 @@ const ClientReuniaoPage = ({ params }: { params: { clientId: string } }) => {
     }, [clientId]);
 
     return (
-        <ClienteDashboardLayout clientId={clientId}>
             <ClientMeetings clientId={clientId} clientName={clientName} />
-        </ClienteDashboardLayout>
     );
 };
 
