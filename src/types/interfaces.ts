@@ -15,19 +15,39 @@ export interface Oportunidade {
     observacoes?: string; // Campo opcional
 }
 
+export interface IndicadoPorDetalhes {
+    tipo: 'cliente' | 'parceiro';
+    id: string;
+    nome: string;
+    email: string;
+}
+
+export interface Relacionamentos {
+    contatos_adicionais?: any[];
+    parceiros?: any[];
+    reunioes?: any[];
+    oportunidades?: Oportunidade[];
+    saude?: any;
+    endereco?: any;
+}
+
 export interface Lead {
     id: string;
     nome: string;
-    sobre_nome?: string; // Adiciona o campo opcional para sobrenome
-    oportunidades?: Oportunidade[]; // Adicione a propriedade aqui
+    sobre_nome?: string;
+    oportunidades?: Oportunidade[];
     contato?: string;
     telefone: string;
+    indicacao?:string;
+    indicado_por_detalhes?: IndicadoPorDetalhes;
     email: string;
     endereco?: string;
     status: string;
+    relacionamentos?: Relacionamentos; // Adicionar relacionamentos aqui
     status_reuniao: StatusReuniao;
     genero?: "M" | "F";
-    profissao_id?: string | null; // Adicione esta linha
+    profissao_id?: string | null;
+    parceiros?:string;
     pipeline_stage?: string;
     created_at: string;
     updated_at: string;

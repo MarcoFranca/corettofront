@@ -75,14 +75,41 @@
     /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);*/
 }
 
+.phoneContent{
+    display: flex;
+    gap: 8px;
+}
+
 .phoneInput {
     background: transparent;
     border: none;
-    color: #25d366;
     font-size: 14px;
     pointer-events: none;
     outline: none;
 }
+
+.phoneAnchor{
+    textDecoration: none;
+    display: flex;
+    color: #25d366;
+    alignItems: center;
+    margin-left: 4px;
+    gap: 4px;
+    transition: 1s ease;
+}
+
+.phoneAnchor:hover{
+    cursor: pointer;
+    color: rgba(140, 133, 236);
+}
+
+.contatoContainer{
+    border-bottom: 1px solid #edeff3;
+    /*border-top: 1px solid #edeff3;*/
+    margin: 8px 0;
+    padding: 8px;
+}
+
 
 
 .fadeTop, .fadeBottom {

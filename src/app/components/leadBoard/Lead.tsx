@@ -44,6 +44,8 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
 
     useEffect(() => {
         setCurrentLead(lead);
+        console.log("Oportunidades no lead atual:", currentLead.oportunidades);
+
     }, [lead]);
 
     const handleDeleteConfirm = () => {
@@ -100,33 +102,57 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
         <>
             <Draggable draggableId={currentLead.id} index={index}>
                 {(provided) => (
+
                     <Tippy
                         content={
                             <div>
-                                <p><strong>Nome:</strong> {currentLead.nome}</p>
-                                <p><strong>Status:</strong> {statusLabels[currentLead.status_reuniao]}</p>
-                                <p><strong>E-mail:</strong> {currentLead.email || 'Não informado'}</p>
+                                <h2>Informações importantes</h2>
+
                                 <p>
-                                        {currentLead.telefone ? (
-                                            <a
-                                                href={getWhatsAppLink(currentLead.telefone)}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                style={{ color: '#25d366', textDecoration: 'none', justifyContent:'center',
-                                                    alignItems: 'center', display: 'flex', flexDirection: 'row', gap: '8px' }}
-                                            >
-                                                <strong>Telefone:</strong>{' '}
-                                                <FaWhatsapp size={16} /> {/* Ícone do WhatsApp */}
-                                                <InputMask
-                                                    mask="(99) 99999-9999"
-                                                    value={currentLead.telefone}
-                                                    readOnly
-                                                    className={styles.phoneInput} // Adicione uma classe personalizada
-                                                />
-                                            </a>
-                                        ) : (
-                                            'Não informado'
-                                        )}
+                                    <strong>Indicação:</strong>{' '}
+                                    {
+                                        currentLead.indicado_por_detalhes
+                                            ? `${currentLead.indicado_por_detalhes.nome} (${currentLead.indicado_por_detalhes.tipo})`
+                                            : 'Nenhuma indicação registrada'
+                                    }
+                                </p>
+
+                                <p>
+                                    <strong>Oportunidades:</strong>{' '}
+                                    {currentLead.oportunidades && currentLead.oportunidades.length > 0 ? (
+                                        <ul style={{
+                                            margin: '0',
+                                            padding: '0',
+                                            listStyleType: 'disc',
+                                            marginLeft: '20px'
+                                        }}>
+                                            {currentLead.oportunidades.map((oportunidade, index) => (
+                                                <li key={index}>
+                                                    <strong>{oportunidade.produto_interesse}</strong>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        'Nenhuma oportunidade registrada'
+                                    )}
+                                </p>
+                                <p><strong>E-mail:</strong> {currentLead.email || 'Não informado'}</p>
+                                <p className={styles.phoneContent}>
+                                    <strong>Telefone:</strong>{' '}
+                                    <a
+                                        href={getWhatsAppLink(currentLead.telefone)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.phoneAnchor}
+                                    >
+                                        <FaWhatsapp size={16}/>
+                                        <InputMask
+                                            mask="(99) 99999-9999"
+                                            value={currentLead.telefone}
+                                            readOnly
+                                            className={styles.phoneInput} // Estilo personalizado
+                                        />
+                                    </a>
                                 </p>
                             </div>
                         }
@@ -148,10 +174,10 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
                             <div className={styles.leadCell}>
                                 <div className={styles.leadCard}>
                                     <div className={styles.leadContent}>
-                                        <Image className={styles.userImage} src={UserImage} alt="user" priority />
+                                        <Image className={styles.userImage} src={UserImage} alt="user" priority/>
                                         <div className={styles.leadContentText}>
                                             <p>{currentLead.nome}</p>
-                                            <h2 style={{ color: statusColors[currentLead.status_reuniao] }}>
+                                            <h2 style={{color: statusColors[currentLead.status_reuniao]}}>
                                                 {statusLabels[currentLead.status_reuniao]}
                                             </h2>
                                         </div>
@@ -183,6 +209,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
                             </div>
                         </div>
                     </Tippy>
+
                 )}
             </Draggable>
             <div>

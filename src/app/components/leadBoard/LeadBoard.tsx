@@ -25,7 +25,7 @@ const LeadBoard: React.FC = () => {
 
     // Sempre busca os leads do backend ao montar o componente
     useEffect(() => {
-        dispatch(fetchLeads({ status: 'lead' }));
+        const data = dispatch(fetchLeads({ status: 'lead' }));
     }, [dispatch]);
 
     // Atualiza os dados locais quando os leads são carregados
@@ -33,6 +33,8 @@ const LeadBoard: React.FC = () => {
         if (status === 'succeeded' && leadsFromStore.length > 0) {
             const updatedData = initializeData(leadsFromStore);
             setData(updatedData);
+            console.log('Leads carregados do Redux:', leadsFromStore);
+
         }
     }, [leadsFromStore, status]);
 

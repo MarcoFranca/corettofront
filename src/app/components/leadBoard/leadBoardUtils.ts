@@ -31,6 +31,9 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
                 status_reuniao: lead.status_reuniao || '',
                 created_at: lead.created_at || '',
                 updated_at: lead.updated_at || '',
+                indicado_por_detalhes: lead.indicado_por_detalhes || null,
+                oportunidades: lead.relacionamentos?.oportunidades || [],
+                parceiros: lead.relacionamentos?.parceiros || [],
             };
 
             const columnKey = Object.keys(columns).find(
