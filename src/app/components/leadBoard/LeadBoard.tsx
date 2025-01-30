@@ -25,8 +25,9 @@ const LeadBoard: React.FC = () => {
 
     // Sempre busca os leads do backend ao montar o componente
     useEffect(() => {
-        dispatch(fetchLeads({ status: 'lead' }));
+        dispatch(fetchLeads({ status: ['lead', 'negociacao', 'nova_negociacao'] }));
     }, [dispatch]);
+
 
     // Atualiza os dados locais quando os leads são carregados
     useEffect(() => {

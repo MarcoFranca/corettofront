@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 import { setUser, setToken } from '@/store/slices/authSlice';
 import api from '@/app/api/axios';
 import styles from './styles.module.css';
-import DashboardLayout from "@/app/components/layouts/DashboardLayout";
 
 const DashboardPage = () => {
     const router = useRouter();
@@ -54,9 +53,7 @@ const DashboardPage = () => {
 
     return (
         <main className={styles.dashboardLayout}>
-            <DashboardLayout>
                 <div>Conteúdo do Dashboard</div>
-            </DashboardLayout>
         </main>
     );
 };

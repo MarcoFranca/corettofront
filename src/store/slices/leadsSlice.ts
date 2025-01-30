@@ -8,15 +8,25 @@ const initialState: LeadsState = {
     error: null,
 };
 
-export const fetchLeads = createAsyncThunk<Lead[], { status?: string }>(
+export const fetchLeads = createAsyncThunk<Lead[], { status?: string[] }>(
     'leads/fetchLeads',
     async ({ status }) => {
-        console.log('Fetching leads with status:', status);
-        const response = await api.get(`/clientes/?status=${status || ''}`);
+        console.log('Fetching leads with statuses:', status);
+
+        let statusQuery = '';
+
+        // Verifica se `status` é um array e gera a query correta
+        if (Array.isArray(status) && status.length > 0) {
+            statusQuery = `status__in=${status.map(encodeURIComponent).join(',')}`;
+        }
+
+        const response = await api.get(`/clientes/?${statusQuery}`);
         console.log('Response from fetchLeads:', response.data);
         return response.data;
     }
 );
+
+
 
 
 export const createLead = createAsyncThunk<Lead, Partial<Lead>>(
