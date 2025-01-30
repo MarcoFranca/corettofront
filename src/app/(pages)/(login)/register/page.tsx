@@ -7,7 +7,6 @@ export default function RegisterPage () {
 
     return (
             <div className={styles.container}>
-                {/*<SimpleNavBar/>*/}
                 <RegisterForm />
             </div>
     );

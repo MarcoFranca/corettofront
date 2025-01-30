@@ -21,6 +21,21 @@
     margin-bottom: 12px;
 }
 
+.passwordWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.eyeIcon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #555;
+}
+
+
 .social_image{
     width: 20px;
     height: auto;

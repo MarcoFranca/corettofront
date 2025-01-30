@@ -11,12 +11,15 @@ import Image from "next/image";
 import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
 import GoogleImag from '../../../../../public/assets/common/GoogleIcon.svg';
 import { useGoogleLogin } from '@react-oauth/google';
+    import {toast} from "react-toastify";
+    import {FaEye, FaEyeSlash} from "react-icons/fa";
 
 const LoginForm = () => {
     const [username, setUsernameState] = useState('');
     const [password, setPasswordState] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
     const dispatch = useDispatch();
 
@@ -38,15 +41,34 @@ const LoginForm = () => {
             localStorage.setItem('accessToken', access);
             localStorage.setItem('refreshToken', refresh);
             localStorage.setItem('user', JSON.stringify(userResponse.data));
-            setMessage('Login bem-sucedido!');
+            toast.success('🎉 Login realizado com sucesso! Redirecionando...');
             router.push('/dashboard/perfil');
         } catch (error) {
-            setMessage('Erro ao fazer login. Verifique suas credenciais e tente novamente.');
+            console.error('Erro ao fazer login:', error);
+            if (error instanceof Error) {
+                toast.error(`🚨 ${error.message}`);
+            } else if (typeof error === "object" && error !== null && "response" in error) {
+                const axiosError = error as any; // 👈 Type assertion
+                if (axiosError.response && axiosError.response.data) {
+                    toast.error(`🚨 ${Object.values(axiosError.response.data).join(' ')}`);
+                } else {
+                    toast.error('Erro ao fazer login. Verifique suas credenciais.');
+                }
+            } else {
+                toast.error('Erro inesperado ao fazer login.');
+            }
         } finally {
             setLoading(false);
         }
     };
 
+    const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUsernameState(e.target.value.replace(/\s/g, ''));
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const handleGoogleLogin = useGoogleLogin({
         flow: 'auth-code',
@@ -78,8 +100,6 @@ const LoginForm = () => {
         },
     });
 
-
-
     return (
         <div className={styles.container_form}>
             <form onSubmit={handleSubmit} className={styles.form}>
@@ -91,17 +111,30 @@ const LoginForm = () => {
                     onChange={(e) => setUsernameState(e.target.value)}
                     className={styles.input}
                     required
+                    autoComplete="off"
                 />
-                <input
-                    type="password"
-                    placeholder="Senha"
-                    value={password}
-                    onChange={(e) => setPasswordState(e.target.value)}
-                    className={styles.input}
-                    required
-                />
+                {username.includes(" ") && (
+                    toast.error('❌ Não use espaços no nome de usuário.')
+                )}
+                {/* Campo Senha + Ícone de Exibição */}
+                <div className={styles.passwordWrapper}>
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Senha"
+                        value={password}
+                        onChange={(e) => setPasswordState(e.target.value)}
+                        className={styles.input}
+                        required
+                        autoComplete="current-password"
+                    />
+                    <span className={styles.eyeIcon} onClick={togglePasswordVisibility}>
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                </div>
+
                 <button type="submit" className={styles.button} disabled={loading}>
-                    {loading ? 'Entrando...' : 'Entrar'}
+                    {loading ? 'Processando...' : 'Entrar'}
+                    {loading && <div className={styles.spinner}></div>}
                 </button>
                 {message && <p className={styles.message}>{message}</p>}
                 <div className={styles.lineContainer}>
@@ -109,12 +142,12 @@ const LoginForm = () => {
                     <p>ou</p>
                     <div className={styles.line} />
                 </div>
-                <div className={styles.social_login}>
-                    <button onClick={() => handleGoogleLogin()} className={styles.googleButton}>
-                        <Image src={GoogleImag} alt={'google Icon'} className={styles.social_image}/>
-                        Entrar com Google
-                    </button>
-                </div>
+                {/*<div className={styles.social_login}>*/}
+                {/*    <button onClick={() => handleGoogleLogin()} className={styles.googleButton}>*/}
+                {/*        <Image src={GoogleImag} alt={'google Icon'} className={styles.social_image}/>*/}
+                {/*        Entrar com Google*/}
+                {/*    </button>*/}
+                {/*</div>*/}
                 <Link href={'/reset-password'} className={styles.sword}>Esqueceu a senha?</Link>
             </form>
             <div className={styles.cadastre}>
