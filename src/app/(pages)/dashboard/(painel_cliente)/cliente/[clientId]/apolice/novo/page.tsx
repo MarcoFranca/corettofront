@@ -32,7 +32,7 @@ const NovaApolicePage = () => {
     useEffect(() => {
         // Verifica os campos obrigatórios quando o cliente é carregado
         if (clienteDetalhe?.status === 'lead') {
-            const camposObrigatorios: (keyof Cliente)[] = ['email', 'cpf', 'data_nascimento', 'sexo', 'profissao'];
+            const camposObrigatorios: (keyof Cliente)[] = ['email', 'cpf', 'data_nascimento', 'genero', 'profissao'];
             const camposFaltantes = camposObrigatorios.filter(campo => !clienteDetalhe[campo]);
 
             if (camposFaltantes.length > 0) {
@@ -47,7 +47,7 @@ const NovaApolicePage = () => {
             nome: clienteDetalhe?.nome,
             telefone: clienteDetalhe?.telefone,
             email: clienteDetalhe?.email,
-            sexo: clienteDetalhe?.sexo,
+            sexo: clienteDetalhe?.genero,
             ...updatedData
         };
 
