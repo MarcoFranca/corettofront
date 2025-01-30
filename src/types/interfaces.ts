@@ -249,7 +249,7 @@ export interface Cliente {
     email: string;
     cpf?: string;
     identidade?: string;
-    dataNascimento?: string;
+    data_nascimento?: string;
     genero?: string;
     profissao?: Profissao;
     oportunidades?: Oportunidade[];
