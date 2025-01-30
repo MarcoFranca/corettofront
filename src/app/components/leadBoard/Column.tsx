@@ -4,7 +4,7 @@ import Lead from './Lead';
 import styles from './LeadBoard.module.css';
 import { ColumnProps } from "@/types/interfaces";
 
-const Column: React.FC<ColumnProps> = ({ column, leads, index, handleLeadClick, handleLeadDragStart, tooltipContainerRef }) => {
+const Column: React.FC<ColumnProps> = ({ column, leads, handleLeadClick, handleLeadDragStart, tooltipContainerRef }) => {
     const isLastColumn = column.id === 'column-4';
 
     if (!column || !column.id) {

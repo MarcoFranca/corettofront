@@ -37,6 +37,19 @@ export const updateClienteToActive = createAsyncThunk<Cliente, { id: string; upd
     }
 );
 
+export const updateClienteStatus = createAsyncThunk<
+    Cliente,
+    { id: string; status: string }
+>(
+    'clientes/updateClienteStatus',
+    async ({ id, status }, { dispatch }) => {
+        const response = await api.patch(`/clientes/${id}/`, { status });
+        dispatch(fetchClienteDetalhe(id)); // Atualiza os detalhes do cliente após a alteração
+        return response.data;
+    }
+);
+
+
 export const createCliente = createAsyncThunk<Cliente, Cliente>('clientes/createCliente', async (novoCliente, { dispatch }) => {
     const response = await api.post('/clientes/', novoCliente);
     dispatch(fetchClientes());

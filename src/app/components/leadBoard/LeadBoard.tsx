@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { createLead, fetchLeads } from '@/store/slices/leadsSlice';
+import { fetchLeads } from '@/store/slices/leadsSlice';
 import { initializeData, handleDragEnd } from './leadBoardUtils';
 import Column from './Column';
 import LeadModal from '@/app/components/Modal/LeadModal';
@@ -25,7 +25,7 @@ const LeadBoard: React.FC = () => {
 
     // Sempre busca os leads do backend ao montar o componente
     useEffect(() => {
-        const data = dispatch(fetchLeads({ status: 'lead' }));
+        dispatch(fetchLeads({ status: 'lead' }));
     }, [dispatch]);
 
     // Atualiza os dados locais quando os leads são carregados
@@ -41,12 +41,6 @@ const LeadBoard: React.FC = () => {
     const openModal = () => setModalIsOpen(true);
     const closeModal = () => setModalIsOpen(false);
 
-    const handleLeadSubmit = async (leadData: any) => {
-        await dispatch(createLead(leadData));
-        await dispatch(fetchLeads({ status: 'lead' })); // Recarrega os leads do backend
-        closeModal();
-    };
-
     const onDragEnd = (result: DropResult) => {
         handleDragEnd(result, data, setData, leadsFromStore, dispatch);
     };
@@ -54,11 +48,6 @@ const LeadBoard: React.FC = () => {
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilter(e.target.value.toLowerCase());
     };
-
-    const filteredLeads = Object.values(data.leads).filter((lead) => {
-        if (filter === 'all') return true; // Mostra todos os leads
-        return lead.pipeline_stage?.toLowerCase() === filter;
-    });
 
     // Renderizações condicionais para estados
     if (status === 'loading') {

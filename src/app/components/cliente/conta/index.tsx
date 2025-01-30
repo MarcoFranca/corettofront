@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { fetchClienteDetalhe, updateClienteObservacao } from '@/store/slices/clientesSlice';
+import { fetchClienteDetalhe, updateClienteObservacao, updateClienteStatus } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import styles from './ClientProfile.module.css';
 import ContactInfoCard from '@/app/components/cliente/conta/ContactInfoCard';
@@ -13,9 +13,11 @@ import ProfileImageMan from '@/../public/assets/common/user.svg';
 import ProfileImageWoman from '@/../public/assets/common/PerfilMulher.svg';
 import Image from "next/image";
 import Card from '../../common/Card';
+import Modal from 'react-modal';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css'; // Importa o CSS padrão do Tippy.js
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { FaHeartbeat, FaBox, FaChartLine } from "react-icons/fa";
-
+import { FaHeartbeat, FaBox, FaChartLine, FaLightbulb } from "react-icons/fa";
 
 import {
     Chart as ChartJS,
@@ -29,6 +31,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import ApolicesTable from "@/app/components/cliente/apoliceClient/ApolicesTable";
 import Spinner from "@/app/components/common/spinner/sppiner";
+import OpportunitiesTable from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/reuniao/OpportunitiesTable";
 
 ChartJS.register(
     CategoryScale,
@@ -44,10 +47,28 @@ const ClientProfile: React.FC = () => {
     const [clientId, setClientId] = useState<string | null>(null);
     const [showObservation, setShowObservation] = useState<boolean>(false);
     const [observation, setObservation] = useState<string>('');
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
     const dispatch = useAppDispatch();
     const cliente = useAppSelector((state: RootState) => state.clientes.clienteDetalhe);
     const status = useAppSelector((state: RootState) => state.clientes.statusDetalhe);
     const error = useAppSelector((state: RootState) => state.clientes.errorDetalhe);
+    const [selectedStatus, setSelectedStatus] = useState<string>(''); // Inicialize com string vazia
+
+
+    const statusOptions = [
+        { value: "lead", label: "Lead", color: "#FFA500", description: "Cliente potencial que ainda não fechou negócio." },
+        { value: "negociacao", label: "Em Negociação", color: "#1E90FF", description: "Cliente em contato e negociação ativa." },
+        { value: "ativo", label: "Cliente Ativo", color: "#32CD32", description: "Cliente que possui um serviço ativo." },
+        { value: "nova_negociacao", label: "Nova Negociação", color: "#4682B4", description: "Cliente ativo, mas negociando novos produtos." },
+        { value: "inativo", label: "Cliente Inativo", color: "#FF4500", description: "Cliente que já teve um serviço, mas não está mais ativo." },
+        { value: "recusado", label: "Recusado", color: "#A52A2A", description: "Cliente recusou a oferta após a negociação." },
+        { value: "reativacao_pendente", label: "Reativação Pendente", color: "#FFD700", description: "Cliente inativo com possibilidade de retorno." },
+        { value: "cancelado", label: "Cancelado", color: "#8B0000", description: "Cliente que cancelou os serviços recentemente." },
+    ];
+
+
+    const openStatusModal = () => setIsStatusModalOpen(true);
+
 
     useEffect(() => {
         const pathSegments = pathname.split('/');
@@ -59,14 +80,13 @@ const ClientProfile: React.FC = () => {
 
     useEffect(() => {
         if (clientId && (!cliente || cliente.id !== clientId)) {
-            // Só faz a requisição se o cliente ainda não estiver carregado no estado ou se o ID for diferente
             dispatch(fetchClienteDetalhe(clientId));
         }
     }, [clientId, cliente, dispatch]);
 
     useEffect(() => {
-        if (cliente) {
-            setObservation(cliente.observacoes || '');
+        if (cliente?.status) {
+            setSelectedStatus(cliente.status); // Atualize o selectedStatus ao carregar cliente
         }
     }, [cliente]);
 
@@ -91,7 +111,7 @@ const ClientProfile: React.FC = () => {
     };
 
     if (status === 'loading') {
-        return <Spinner text={'Carregando...'}/>;
+        return <Spinner text={'Carregando...'} />;
     }
 
     if (error) {
@@ -121,23 +141,78 @@ const ClientProfile: React.FC = () => {
                         <Card title="">
                             <div className={styles.profileHeader}>
                                 {cliente.genero === 'M' ? (
-                                    <Image src={ProfileImageMan} alt="Foto do Cliente" className={styles.profileImage} priority />
+                                    <Image src={ProfileImageMan} alt="Foto do Cliente" className={styles.profileImage}
+                                           priority/>
                                 ) : (
-                                    <Image src={ProfileImageWoman} alt="Foto do Cliente" className={styles.profileImage} priority />
+                                    <Image src={ProfileImageWoman} alt="Foto do Cliente" className={styles.profileImage}
+                                           priority/>
                                 )}
                                 <div className={styles.headerText}>
                                     <h2>{cliente.nome}</h2>
-                                    <p className={styles.status}>{cliente.status}</p>
+                                    {/*<p className={styles.status}>{cliente.status}</p>*/}
+                                    <Tippy
+                                        content={statusOptions.find(s =>
+                                            s.value === cliente.status)?.description}
+                                        placement="top"
+                                        theme="light"
+                                        animation="shift-away"
+                                    >
+                                        <p
+                                            className={styles.statusBadge}
+                                            style={{ backgroundColor: statusOptions.find(s => s.value === cliente.status)?.color }}
+                                            onClick={openStatusModal}
+                                        >
+                                            {statusOptions.find(s => s.value === cliente.status)?.label}
+                                        </p>
+                                    </Tippy>
                                 </div>
                             </div>
+
+                            <Modal isOpen={isStatusModalOpen} onRequestClose={() => setIsStatusModalOpen(false)} className={styles.statusModal}>
+                                <h2 className={styles.modalTitle}>Alterar Status</h2>
+                                <select
+                                    value={selectedStatus}
+                                    onChange={(e) => setSelectedStatus(e.target.value)}
+                                    className={styles.dropdown}
+                                >
+                                    {statusOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className={styles.modalActions}>
+                                    <button
+                                        onClick={() => {
+                                            if (clientId && selectedStatus) {
+                                                // Garantimos que clientId e selectedStatus não são nulos
+                                                dispatch(updateClienteStatus({id: clientId, status: selectedStatus}));
+                                                setIsStatusModalOpen(false);
+                                            } else {
+                                                console.error('clientId ou selectedStatus não está definido');
+                                            }
+                                        }}
+                                        className={styles.confirmButton}
+                                    >
+                                        Confirmar
+                                    </button>
+
+                                    <button onClick={() => setIsStatusModalOpen(false)} className={styles.cancelButton}>
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </Modal>
+
+
                             <p className={styles.creationDate}>
-                                Criado em: {cliente.created_at ? new Date(cliente.created_at).toLocaleDateString() : 'Data não disponível'}
+                                Criado
+                                em: {cliente.created_at ? new Date(cliente.created_at).toLocaleDateString() : 'Data não disponível'}
                             </p>
                             <div className={styles.profileSectionContainer}>
-                                <ContactInfoCard cliente={cliente} />
-                                <PersonalInfoCard cliente={cliente} />
-                                <DocumentInfoCard cliente={cliente} />
-                                <AddressCard cliente={cliente} />
+                                <ContactInfoCard cliente={cliente}/>
+                                <PersonalInfoCard cliente={cliente}/>
+                                <DocumentInfoCard cliente={cliente}/>
+                                <AddressCard cliente={cliente}/>
                             </div>
                             {showObservation ? (
                                 <div className={styles.observationSection}>
@@ -163,23 +238,41 @@ const ClientProfile: React.FC = () => {
                     </div>
                     <div className={styles.rightCard}>
                         <Tabs>
+
                             <TabList className={styles.tabList}>
                                 <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
-                                    <FaHeartbeat /> Saúde
+                                    <FaHeartbeat/> Saúde
                                 </Tab>
                                 <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
-                                    <FaBox /> Produtos
+                                    <FaBox/> Produtos
                                 </Tab>
                                 <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
-                                    <FaChartLine /> Informações Financeiras
+                                    <FaChartLine/> Informações Financeiras
+                                </Tab>
+                                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
+                                    <FaLightbulb/> Oportunidades
                                 </Tab>
                             </TabList>
 
                             <TabPanel>
-                                <HealthInfoCard cliente={cliente} />
+                                <HealthInfoCard cliente={cliente}/>
                             </TabPanel>
                             <TabPanel>
-                                <ApolicesTable />
+                                <ApolicesTable/>
+                            </TabPanel>
+                            <TabPanel>
+                                <Card title="Informações Financeiras">
+                                    <Bar data={financeData}/>
+                                </Card>
+                            </TabPanel>
+                            <TabPanel>
+                                <OpportunitiesTable cliente={cliente}/>
+                            </TabPanel>
+                            <TabPanel>
+                                <HealthInfoCard cliente={cliente}/>
+                            </TabPanel>
+                            <TabPanel>
+                                <ApolicesTable/>
                             </TabPanel>
                             <TabPanel>
                                 <Card title="Informações Financeiras">

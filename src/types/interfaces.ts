@@ -77,7 +77,7 @@ export interface LeadProps {
     lead: Lead;
     index: number;
     handleLeadClick: (leadId: string) => void;
-    handleLeadDragStart: () => void;
+    handleLeadDragStart: (leadId: string) => void;  // Deve aceitar um argumento
     isLastColumn?: boolean;
     tooltipContainerRef: RefObject<HTMLDivElement>;
 }
@@ -243,6 +243,7 @@ export interface Cliente {
     data_nascimento?: string;
     genero?: string;
     profissao?: Profissao;
+    oportunidades?: Oportunidade[];
     observacoes?: string;
     status_reuniao?: string;
     status?: string;

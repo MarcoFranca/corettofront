@@ -13,14 +13,13 @@
     min-width: 48%; /* Para desktops */
     max-height: 95vh;
     overflow-y: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Melhorando a visualização */
+    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); !* Melhorando a visualização *!*/
     background-color: #fff;
     border-radius: 8px;
-
 }
 
 .rightCard {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0); /* Melhorando a visualização */
+    box-shadow: none; /* Melhorando a visualização */
 }
 
 @media (max-width: 1024px) {
@@ -123,6 +122,31 @@
     background-color: #fff;
 }
 
+.statusContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.statusSelect {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.statusSelect:hover {
+    border-color: #007bff;
+}
+
+.statusIcon {
+    color: green;
+    font-size: 1.2rem;
+}
+
+
 .personalSectionContainer {
     display: flex;
     flex-direction: column;
@@ -132,7 +156,6 @@
 .cardContainer{
     height: 100%;
     background: white;
-    margin-top: -22px;
     padding: 20px;
     border-radius: 0 10px 10px 10px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Adiciona sombra para destacar */
@@ -361,9 +384,8 @@
 .tabList {
     display: flex;
     align-items: flex-end;
-    border-bottom: 1px solid #ddd;
     width: 90%;
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .tab {
@@ -392,6 +414,7 @@
 
 .tabSelected {
     background-color: #fff;
+    position: relative;
     color: #0056b3;
     border: 1px solid #ddd;
     margin-left: -5px;
@@ -399,7 +422,7 @@
     margin-bottom: -2px;
     border-radius: 8px 8px 0 0;
     box-shadow: 0 -4px 5px rgba(0, 0, 0, 0.1); /* Adiciona sombra para destacar */
-    z-index: 2; /* Eleva a aba selecionada à frente */
+    z-index: 1; /* Eleva a aba selecionada à frente */
     transition: margin-bottom 0.3s ease;
 }
 
@@ -438,6 +461,29 @@
     color: #005bb5;
     font-weight: bold;
     margin: 16px 0;
+}
+
+.statusGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+}
+
+.statusCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.statusCard:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .overlay label {
@@ -545,3 +591,173 @@
     /*margin-top: 5px;*/
     font-size: 14px;
 }
+
+.statusModal {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.statusOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.statusButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.statusButton:hover {
+    opacity: 0.8;
+}
+
+.closeButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.closeButton:hover {
+    background-color: #5a6268;
+}
+
+/*daqui para frente*/
+
+.statusContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.statusBadge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.statusIcon {
+    font-size: 1.2rem;
+    color: green;
+    cursor: pointer;
+}
+
+/* Modal */
+
+.statusModal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    margin: auto;
+    text-align: center;
+    position: absolute;
+    height: fit-content;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+
+.modalTitle {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.dropdown {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.confirmButton {
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.confirmButton:hover {
+    background: #45a049;
+}
+
+.cancelButton {
+    background: #f44336;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.cancelButton:hover {
+    background: #e53935;
+}
+
+.tippy-box {
+    background-color: #333 !important;
+    color: white;
+    font-size: 14px;
+    padding: 8px;
+    border-radius: 6px;
+}
+
