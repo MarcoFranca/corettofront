@@ -75,8 +75,8 @@ export const createApolice = createAsyncThunk<Apolice, { formData: FormData; end
                 telefone: clienteDetalhe.telefone,
                 email: clienteDetalhe.email,
                 cpf: clienteDetalhe.cpf,
-                data_nascimento: clienteDetalhe.dataNascimento,
-                sexo: clienteDetalhe.genero,
+                data_nascimento: clienteDetalhe.data_nascimento,
+                genero: clienteDetalhe.genero,
                 profissao: clienteDetalhe.profissao,
             };
 
