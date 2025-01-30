@@ -4,12 +4,14 @@ import styles from './Input.module.css';
 interface InputProps {
     label: string;
     type: string;
-    value: string;
+    name?: string;
+    value?: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     required?: boolean;
     className?: string; // Adicionar classes extras
     errorMessage?: string; // Mensagem de erro
     placeholder?: string;
+    accept?: string; // 🔥 Adicionando 'accept' para inputs de arquivo
 }
 
 const Input: React.FC<InputProps> = ({
