@@ -16,7 +16,7 @@ interface Step1Props {
         sobreNome: string;
         telefone: string;
         email: string;
-        dataNascimento: string;
+        dataNascimento?: string;
         profissao: string;
         estadoCivil: string;
         nomeConjuge?: string;

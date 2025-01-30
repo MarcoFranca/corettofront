@@ -75,8 +75,8 @@ export const createApolice = createAsyncThunk<Apolice, { formData: FormData; end
                 telefone: clienteDetalhe.telefone,
                 email: clienteDetalhe.email,
                 cpf: clienteDetalhe.cpf,
-                data_nascimento: clienteDetalhe.data_nascimento,
-                sexo: clienteDetalhe.sexo,
+                data_nascimento: clienteDetalhe.dataNascimento,
+                sexo: clienteDetalhe.genero,
                 profissao: clienteDetalhe.profissao,
             };
 
@@ -106,7 +106,7 @@ export const deleteApolice = createAsyncThunk<
     'apolices/deleteApolice',
     async ({ clientId, apoliceId, produto }, { rejectWithValue }) => {
         try {
-            const response = await api.delete(`/apolices/${produto}/${apoliceId}/`);
+            await api.delete(`/apolices/${produto}/${apoliceId}/`);
             return { apoliceId, produto };
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao deletar apólice.');

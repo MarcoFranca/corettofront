@@ -27,7 +27,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
         telefone: '',
         email: '',
         cpf:'',
-        sexo:'',
+        genero:'',
         dataNascimento: '',
         profissao: '',
         estadoCivil: '',
@@ -71,19 +71,27 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                 sobreNome: clienteDetalhe.sobre_nome || '',
                 telefone: clienteDetalhe.telefone || '',
                 email: clienteDetalhe.email || '',
-                cpf: clienteDetalhe.cpf || '',  // Inclua o CPF se necessário
-                dataNascimento: clienteDetalhe.data_nascimento || '',
-                sexo: clienteDetalhe.sexo || '',  // Inclua o sexo se necessário
-                profissao: clienteDetalhe.profissao || '',
+                cpf: clienteDetalhe.cpf || '',
+                dataNascimento: clienteDetalhe.dataNascimento || '',
+                genero: clienteDetalhe.genero || '',
                 estadoCivil: clienteDetalhe.estado_civil || '',
+                profissao: typeof clienteDetalhe.profissao === "object"
+                    ? clienteDetalhe.profissao.nome
+                    : clienteDetalhe.profissao || '',
                 nomeConjuge: clienteDetalhe.conjuge?.nome || '',
-                dataNascimentoConjuge: clienteDetalhe.conjuge?.data_nascimento || '',
+                dataNascimentoConjuge: clienteDetalhe.conjuge?.dataNascimento || '',
                 profissaoConjuge: clienteDetalhe.conjuge?.profissao || '',
-                filhos: clienteDetalhe.filhos || [],
+
+                filhos: clienteDetalhe.filhos?.map((filho) => ({
+                    id: filho.id,
+                    nome: filho.nome,
+                    dataNascimento: filho.dataNascimento || '', // Conversão correta
+                })) ?? [],
+
                 custoMensal: clienteDetalhe.vida_financeira?.custo_mensal?.toString() || '',
                 rendaMensal: clienteDetalhe.vida_financeira?.renda_mensal?.toString() || '',
                 trabalho: clienteDetalhe.vida_financeira?.trabalho || '',
-                nivelConcurso: clienteDetalhe.vida_financeira?.nivel_concurso || '',  // Ajuste conforme a lógica de preenchimento
+                nivelConcurso: clienteDetalhe.vida_financeira?.nivel_concurso || '',
                 localTrabalho: clienteDetalhe.vida_financeira?.local_trabalho || '',
                 moradia: clienteDetalhe.vida_financeira?.moradia || '',
                 valorMoradia: clienteDetalhe.vida_financeira?.valor_moradia?.toString() || '',
@@ -97,10 +105,12 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                 doencaPreexistente: clienteDetalhe.saude?.doenca_preexistente || '',
                 temHistoricoFamiliarDoencas: clienteDetalhe.saude?.tem_historico_familiar_doencas || false,
                 historicoFamiliarDoencas: clienteDetalhe.saude?.historico_familiar_doencas || '',
-                reunioes: clienteDetalhe.reunioes || [],  // Inclua a propriedade `reunioes`, mesmo que seja um array vazio
+                reunioes: clienteDetalhe.reunioes || [],
             });
         }
     }, [clienteDetalhe]);
+
+
 
     const handleChange = (input: string) => (e: string | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         let value: string | boolean;
@@ -129,67 +139,74 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
 
     const handleSubmit = async () => {
         try {
-            if (clientId) {
-                let clienteData: Partial<Cliente> = {
-                    nome: formData.nome,
-                    sobre_nome: formData.sobreNome,
-                    telefone: formData.telefone,
-                    email: formData.email,
-                    cpf: formData.cpf || undefined,
-                    data_nascimento: formData.dataNascimento || undefined,
-                    sexo: formData.sexo || undefined,
-                    profissao: formData.profissao || undefined,
-                    status: "ativo",
-
-                    vida_financeira: {
-                        custo_mensal: formData.custoMensal ? parseFloat(formData.custoMensal) : undefined,
-                        renda_mensal: formData.rendaMensal ? parseFloat(formData.rendaMensal) : undefined,
-                        trabalho: formData.trabalho || undefined,
-                        nivel_concurso: formData.trabalho === 'concursado' ? formData.nivelConcurso : undefined,
-                        local_trabalho: formData.localTrabalho || undefined,
-                        moradia: formData.moradia || undefined,
-                        valor_moradia: formData.moradia !== 'nao_tem' && formData.valorMoradia ? parseFloat(formData.valorMoradia) : undefined,
-                        custo_filhos: formData.custoFilhos ? parseFloat(formData.custoFilhos) : undefined,
-                        patrimonio: formData.patrimonio ? parseFloat(formData.patrimonio) : undefined,
-                        dividas: formData.dividas ? parseFloat(formData.dividas) : undefined,
-                        projetos_futuros: formData.projetosFuturos || undefined,
-                    },
-
-                    saude: {
-                        peso: formData.peso ? parseFloat(formData.peso) : undefined,
-                        altura: formData.altura ? parseFloat(formData.altura) : undefined,
-                        tem_doenca_preexistente: formData.temDoencaPreexistente,
-                        doenca_preexistente: formData.doencaPreexistente || undefined,
-                        tem_historico_familiar_doencas: formData.temHistoricoFamiliarDoencas,
-                        historico_familiar_doencas: formData.historicoFamiliarDoencas || undefined,
-                    },
-
-                    filhos: formData.filhos.map(filho => ({
-                        nome: filho.nome,
-                        dataNascimento: filho.dataNascimento,
-                    })),
-
-                    reunioes: formData.reunioes.map(reuniao => ({
-                        dataReuniaoAgendada: reuniao.dataReuniaoAgendada,
-                        horarioInicio: reuniao.horarioInicio,
-                        horarioFim: reuniao.horarioFim,
-                        assunto: reuniao.assunto,
-                        local: reuniao.local,
-                    })),
-                };
-
-                clienteData = removeEmptyFields(clienteData);
-
-                // Atualizando cliente existente
-                await dispatch(updateCliente({
-                    id: clientId,
-                    updatedCliente: clienteData,
-                }));
-
-                console.log('Dados atualizados:', formData);
-            } else {
+            if (!clientId) {
                 console.error('Cliente ID não encontrado. Não é possível atualizar.');
+                return;
             }
+
+            let clienteData: Partial<Cliente> = {
+                nome: formData.nome,
+                sobre_nome: formData.sobreNome,
+                telefone: formData.telefone,
+                email: formData.email,
+                cpf: formData.cpf || undefined,
+                dataNascimento: formData.dataNascimento || undefined,
+                genero: formData.genero || undefined,
+                profissao: clienteDetalhe?.profissao
+                    ? { id: clienteDetalhe.profissao.id, nome: clienteDetalhe.profissao.nome }
+                    : undefined,
+                status: "ativo",
+
+                vida_financeira: {
+                    custo_mensal: formData.custoMensal ? parseFloat(formData.custoMensal) : undefined,
+                    renda_mensal: formData.rendaMensal ? parseFloat(formData.rendaMensal) : undefined,
+                    trabalho: formData.trabalho || undefined,
+                    nivel_concurso: formData.trabalho === 'concursado' ? formData.nivelConcurso : undefined,
+                    local_trabalho: formData.localTrabalho || undefined,
+                    moradia: formData.moradia || undefined,
+                    valor_moradia: formData.moradia !== 'nao_tem' && formData.valorMoradia
+                        ? parseFloat(formData.valorMoradia)
+                        : undefined,
+                    custo_filhos: formData.custoFilhos ? parseFloat(formData.custoFilhos) : undefined,
+                    patrimonio: formData.patrimonio ? parseFloat(formData.patrimonio) : undefined,
+                    dividas: formData.dividas ? parseFloat(formData.dividas) : undefined,
+                    projetos_futuros: formData.projetosFuturos || undefined,
+                },
+
+                saude: {
+                    peso: formData.peso ? parseFloat(formData.peso) : undefined,
+                    altura: formData.altura ? parseFloat(formData.altura) : undefined,
+                    tem_doenca_preexistente: formData.temDoencaPreexistente,
+                    doenca_preexistente: formData.doencaPreexistente || undefined,
+                    tem_historico_familiar_doencas: formData.temHistoricoFamiliarDoencas,
+                    historico_familiar_doencas: formData.historicoFamiliarDoencas || undefined,
+                },
+
+                // 🔥 **Correção no envio de filhos**
+                filhos: formData.filhos?.map((filho) => ({
+                    id: filho.id,
+                    nome: filho.nome,
+                    dataNascimento: filho.dataNascimento || '', // 🔥 Convertendo para `data_nascimento`
+                })) ?? [],
+
+                reunioes: formData.reunioes.map(reuniao => ({
+                    dataReuniaoAgendada: reuniao.dataReuniaoAgendada,
+                    horarioInicio: reuniao.horarioInicio,
+                    horarioFim: reuniao.horarioFim,
+                    assunto: reuniao.assunto,
+                    local: reuniao.local,
+                })),
+            };
+
+            clienteData = removeEmptyFields(clienteData);
+
+            // Atualizando cliente existente
+            await dispatch(updateCliente({
+                id: clientId,
+                updatedCliente: clienteData,
+            }));
+
+            console.log('Dados atualizados:', formData);
         } catch (error: any) {
             if (error.response) {
                 console.error('Erro na resposta da API:', error.response.data);
@@ -200,6 +217,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
             }
         }
     };
+
 
     const next = () => {
         setCurrent(current + 1);

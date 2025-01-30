@@ -193,14 +193,14 @@ export interface Profissao {
 export interface Filho {
     id: string;
     nome: string;
-    data_nascimento?: string;
+    dataNascimento: string;
     idade?: number;
 }
 
 export interface Conjuge {
     id: string;
     nome: string;
-    data_nascimento?: string;
+    dataNascimento?: string;
     profissao?: string;
 }
 
@@ -228,7 +228,16 @@ export interface Saude {
 export interface VidaFinanceira {
     renda_mensal?: number;
     despesas_totais?: number;
+    custo_mensal?:number;
     patrimonio?: number;
+    nivel_concurso?:string;
+    trabalho?:string;
+    local_trabalho?:string;
+    moradia?:string
+    valor_moradia?:number;
+    custo_filhos?:number;
+    dividas?:number;
+    projetos_futuros?:string;
 }
 
 export interface Cliente {
@@ -240,7 +249,7 @@ export interface Cliente {
     email: string;
     cpf?: string;
     identidade?: string;
-    data_nascimento?: string;
+    dataNascimento?: string;
     genero?: string;
     profissao?: Profissao;
     oportunidades?: Oportunidade[];
