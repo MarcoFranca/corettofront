@@ -5,7 +5,7 @@ import styles from './Step1.module.css'; // Usando o mesmo CSS
 
 interface Filho {
     nome: string;
-    dataNascimento: string;
+    data_nascimento?: string;
 }
 
 interface Step1Props {
@@ -16,7 +16,7 @@ interface Step1Props {
         sobreNome: string;
         telefone: string;
         email: string;
-        dataNascimento?: string;
+        data_nascimento?: string;
         profissao: string;
         estadoCivil: string;
         nomeConjuge?: string;
@@ -38,7 +38,7 @@ const Step1: React.FC<Step1Props> = ({ nextStep, handleChange, formData, setForm
 
     // Função para adicionar um novo filho
     const adicionarFilho = () => {
-        setFilhos([...filhos, { nome: '', dataNascimento: '' }]);
+        setFilhos([...filhos, { nome: '', data_nascimento: '' }]);
     };
 
     // Função para remover um filho
@@ -111,7 +111,7 @@ const Step1: React.FC<Step1Props> = ({ nextStep, handleChange, formData, setForm
                     id="dataNascimento"
                     type="date"
                     placeholder="Data de Nascimento"
-                    value={formData.dataNascimento}
+                    value={formData.data_nascimento}
                     onChange={handleChange('dataNascimento')}
                     required
                 />
@@ -180,7 +180,7 @@ const Step1: React.FC<Step1Props> = ({ nextStep, handleChange, formData, setForm
                                 id={`filho_dataNascimento_${index}`}
                                 type="date"
                                 placeholder="Data de Nascimento do Filho"
-                                value={filho.dataNascimento}
+                                value={filho.data_nascimento}
                                 onChange={(e) => handleFilhoChange(index, 'dataNascimento', e.target.value)}
                             />
                             <button className={styles.submitButton} type="button" onClick={() => removerFilho(index)}>Remover Filho</button>

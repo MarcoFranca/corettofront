@@ -28,7 +28,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
         email: '',
         cpf:'',
         genero:'',
-        dataNascimento: '',
+        data_nascimento: '',
         profissao: '',
         estadoCivil: '',
         nomeConjuge: '',
@@ -72,20 +72,20 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                 telefone: clienteDetalhe.telefone || '',
                 email: clienteDetalhe.email || '',
                 cpf: clienteDetalhe.cpf || '',
-                dataNascimento: clienteDetalhe.dataNascimento || '',
+                data_nascimento: clienteDetalhe.data_nascimento || '',
                 genero: clienteDetalhe.genero || '',
                 estadoCivil: clienteDetalhe.estado_civil || '',
                 profissao: typeof clienteDetalhe.profissao === "object"
                     ? clienteDetalhe.profissao.nome
                     : clienteDetalhe.profissao || '',
                 nomeConjuge: clienteDetalhe.conjuge?.nome || '',
-                dataNascimentoConjuge: clienteDetalhe.conjuge?.dataNascimento || '',
+                dataNascimentoConjuge: clienteDetalhe.conjuge?.data_nascimento || '',
                 profissaoConjuge: clienteDetalhe.conjuge?.profissao || '',
 
                 filhos: clienteDetalhe.filhos?.map((filho) => ({
                     id: filho.id,
                     nome: filho.nome,
-                    dataNascimento: filho.dataNascimento || '', // Conversão correta
+                    data_nascimento: filho.data_nascimento || '', // Conversão correta
                 })) ?? [],
 
                 custoMensal: clienteDetalhe.vida_financeira?.custo_mensal?.toString() || '',
@@ -150,7 +150,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                 telefone: formData.telefone,
                 email: formData.email,
                 cpf: formData.cpf || undefined,
-                dataNascimento: formData.dataNascimento || undefined,
+                data_nascimento: formData.data_nascimento || undefined,
                 genero: formData.genero || undefined,
                 profissao: clienteDetalhe?.profissao
                     ? { id: clienteDetalhe.profissao.id, nome: clienteDetalhe.profissao.nome }
@@ -186,7 +186,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                 filhos: formData.filhos?.map((filho) => ({
                     id: filho.id,
                     nome: filho.nome,
-                    dataNascimento: filho.dataNascimento || '', // 🔥 Convertendo para `data_nascimento`
+                    data_nascimento: filho.data_nascimento || '', // 🔥 Convertendo para `data_nascimento`
                 })) ?? [],
 
                 reunioes: formData.reunioes.map(reuniao => ({

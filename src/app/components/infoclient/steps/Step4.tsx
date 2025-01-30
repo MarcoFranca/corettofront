@@ -9,13 +9,13 @@ interface Step4Props {
         sobreNome: string;
         telefone: string;
         email: string;
-        dataNascimento: string;
+        data_nascimento: string;
         profissao: string;
         estadoCivil: string;
         nomeConjuge?: string;
         dataNascimentoConjuge?: string;
         profissaoConjuge?: string;
-        filhos: { nome: string; dataNascimento: string }[];
+        filhos: { nome: string; data_nascimento: string }[];
         custoMensal: string;
         rendaMensal: string;
         trabalho: string;
@@ -39,7 +39,7 @@ const Step4: React.FC<Step4Props> = ({ prevStep, handleSubmit, formData }) => {
     const renderFilhos = () => {
         return formData.filhos.map((filho, index) => (
             <div key={index} className={styles.dataItem}>
-                <strong>Filho {index + 1}:</strong> {filho.nome}, {filho.dataNascimento}
+                <strong>Filho {index + 1}:</strong> {filho.nome}, {filho.data_nascimento}
             </div>
         ));
     };
@@ -54,7 +54,7 @@ const Step4: React.FC<Step4Props> = ({ prevStep, handleSubmit, formData }) => {
                 <div className={styles.dataItem}><strong>Nome:</strong> {formData.nome} {formData.sobreNome}</div>
                 <div className={styles.dataItem}><strong>Telefone:</strong> {formData.telefone}</div>
                 <div className={styles.dataItem}><strong>Email:</strong> {formData.email}</div>
-                <div className={styles.dataItem}><strong>Data de Nascimento:</strong> {formData.dataNascimento}</div>
+                <div className={styles.dataItem}><strong>Data de Nascimento:</strong> {formData.data_nascimento}</div>
                 <div className={styles.dataItem}><strong>Profissão:</strong> {formData.profissao}</div>
                 <div className={styles.dataItem}><strong>Estado Civil:</strong> {formData.estadoCivil}</div>
                 {formData.estadoCivil === 'casado' && (

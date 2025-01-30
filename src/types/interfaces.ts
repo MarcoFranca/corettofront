@@ -193,14 +193,14 @@ export interface Profissao {
 export interface Filho {
     id: string;
     nome: string;
-    dataNascimento: string;
+    data_nascimento: string; // 🔥 Agora sempre será string
     idade?: number;
 }
 
 export interface Conjuge {
     id: string;
     nome: string;
-    dataNascimento?: string;
+    data_nascimento?: string;
     profissao?: string;
 }
 
