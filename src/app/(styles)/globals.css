@@ -16,7 +16,19 @@ h3 {
   margin: 0;
 }
 
+a {
+  color: inherit; /* Herdar a cor do texto */
+  text-decoration: none; /* Remover sublinhado */
+  transition: color 0.3s ease-in-out;
+}
 
+a:hover {
+  color: #007bff; /* Azul para hover */
+}
+
+a:visited {
+  color: inherit; /* Não altera a cor ao clicar */
+}
 
 html{
   font-family: sans-serif;

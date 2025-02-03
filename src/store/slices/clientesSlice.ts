@@ -11,13 +11,17 @@ const initialState: ClientesState = {
     errorDetalhe: null, // Adicione errorDetalhe ao estado inicial
 };
 
-export const fetchClientes = createAsyncThunk<Cliente[], { status?: string, search?: string } | undefined>(
+export const fetchClientes = createAsyncThunk<
+    Cliente[],
+    { status?: string; search?: string; page?: number; limit?: number } | undefined
+>(
     'clientes/fetchClientes',
     async (params) => {
         const response = await api.get('/clientes/', { params });
         return response.data;
     }
 );
+
 
 export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
     'clientes/fetchClienteDetalhe',

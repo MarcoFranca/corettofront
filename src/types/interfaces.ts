@@ -255,7 +255,7 @@ export interface Cliente {
     oportunidades?: Oportunidade[];
     observacoes?: string;
     status_reuniao?: string;
-    status?: string;
+    status:  "lead" | "ativo" | "negociacao" | "nova_negociacao" | "inativo" | "recusado" | "reativacao_pendente" | "cancelado";
     pipeline_stage?: string;
     idade?: string;
     apolices: Apolices;
