@@ -18,26 +18,17 @@ const Pagination: React.FC<PaginationProps> = ({
                                                }) => {
     return (
         <div className={styles.pagination}>
-            <button
-                onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
-                disabled={currentPage === 1}
-            >
+            <button onClick={() => onPageChange(Math.max(currentPage - 1, 1))} disabled={currentPage === 1}>
                 Anterior
             </button>
 
-            <span>Página {currentPage} de {totalPages}</span>
+            <span>Página {currentPage} de {Math.max(totalPages, 1)}</span>
 
-            <button
-                onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
-                disabled={currentPage === totalPages}
-            >
+            <button onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))} disabled={currentPage === totalPages}>
                 Próximo
             </button>
 
-            <select
-                value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-            >
+            <select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
                 <option value={10}>10</option>
                 <option value={20}>20</option>
                 <option value={50}>50</option>

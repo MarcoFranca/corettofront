@@ -4,23 +4,39 @@ import { Cliente, ClientesState } from '@/types/interfaces';
 
 const initialState: ClientesState = {
     clientes: [],
-    clienteDetalhe: null, // Inicialize clienteDetalhe como null
+    clienteDetalhe: null,
+    totalClientes: 0, // Novo estado para armazenar a quantidade total de clientes
     status: 'idle',
-    statusDetalhe: 'idle', // Adicione statusDetalhe ao estado inicial
+    statusDetalhe: 'idle',
     error: null,
-    errorDetalhe: null, // Adicione errorDetalhe ao estado inicial
+    errorDetalhe: null,
 };
 
+
 export const fetchClientes = createAsyncThunk<
-    Cliente[],
+    { results: Cliente[]; count: number },
     { status?: string; search?: string; page?: number; limit?: number } | undefined
->(
-    'clientes/fetchClientes',
-    async (params) => {
-        const response = await api.get('/clientes/', { params });
-        return response.data;
-    }
-);
+>("clientes/fetchClientes", async (params) => {
+    const response = await api.get("/clientes/", { params });
+    console.log('clientes da pagina', response.data.results)
+    return {
+        results: response.data.results, // ✅ Apenas os clientes da página atual
+        count: response.data.count, // ✅ Total de clientes
+    };
+});
+
+export const fetchClientesSearch = createAsyncThunk<
+    { results: Cliente[]; count: number },
+    { search: string }
+>("clientes/fetchClientesSearch", async ({ search }) => {
+    const response = await api.get("/clientes/", { params: { search } });
+    console.log("📢 Buscando clientes por nome:", search);
+    console.log("📢 Resposta da API:", response.data);
+    return {
+        results: response.data.results,
+        count: response.data.count,
+    };
+});
 
 
 export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
@@ -47,9 +63,23 @@ export const updateClienteStatus = createAsyncThunk<
 >(
     'clientes/updateClienteStatus',
     async ({ id, status }, { dispatch }) => {
-        const response = await api.patch(`/clientes/${id}/`, { status });
-        dispatch(fetchClienteDetalhe(id)); // Atualiza os detalhes do cliente após a alteração
-        return response.data;
+        try {
+            const response = await api.patch(
+                `/clientes/${id}/`,
+                { status },  // Certifique-se de que está enviando um objeto JSON válido
+                {
+                    headers: {
+                        'Content-Type': 'application/json', // Garante que estamos enviando JSON
+                    },
+                }
+            );
+
+            dispatch(fetchClienteDetalhe(id)); // Atualiza os detalhes do cliente após a alteração
+            return response.data;
+        } catch (error) {
+            console.error("Erro ao atualizar status:", error);
+            throw error;
+        }
     }
 );
 
@@ -99,14 +129,14 @@ const clientesSlice = createSlice({
     reducers: {
         resetClientes: (state) => {
             state.clientes = [];
+            state.totalClientes = 0;
             state.clienteDetalhe = null;
-            state.status = 'idle';
-            state.statusDetalhe = 'idle';
+            state.status = "idle";
+            state.statusDetalhe = "idle";
             state.error = null;
             state.errorDetalhe = null;
         },
     },
-
 
     extraReducers: (builder) => {
         builder
@@ -114,11 +144,26 @@ const clientesSlice = createSlice({
                 state.status = 'loading';
             })
             .addCase(fetchClientes.fulfilled, (state, action) => {
+                console.log("📢 Atualizando Redux com clientes da página:", action.payload.results);
                 state.status = 'succeeded';
-                state.clientes = action.payload;
+                state.clientes = action.payload.results; // Usa 'results' da resposta paginada
+                state.totalClientes = action.payload.count; // Guarda o número total de clientes
             })
             .addCase(fetchClientes.rejected, (state, action) => {
                 state.status = 'failed';
+                state.error = action.error.message || null;
+            })
+            .addCase(fetchClientesSearch.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(fetchClientesSearch.fulfilled, (state, action) => {
+                console.log("🔍 Resultados da busca:", action.payload.results);
+                state.status = "succeeded";
+                state.clientes = action.payload.results; // 🔥 Sempre substitui clientes com a busca
+                state.totalClientes = action.payload.count;
+            })
+            .addCase(fetchClientesSearch.rejected, (state, action) => {
+                state.status = "failed";
                 state.error = action.error.message || null;
             })
             .addCase(fetchClienteDetalhe.pending, (state) => {

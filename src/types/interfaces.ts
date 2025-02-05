@@ -274,6 +274,7 @@ export interface Cliente {
 export interface ClientesState {
     clientes: Cliente[];
     clienteDetalhe: Cliente | null;
+    totalClientes: number;
     status: "idle" | "loading" | "succeeded" | "failed";
     statusDetalhe: "idle" | "loading" | "succeeded" | "failed";
     error: string | null;
@@ -343,6 +344,8 @@ export interface ApolicesDetalhes {
     investimento: ApoliceDetalhesSegmento;
     seguro_profissional: ApoliceDetalhesSegmento;
     seguro_residencial: ApoliceDetalhesSegmento;
+    planos_saude_apolices?: any[];  // 🛠 Adicionando os novos relacionamentos
+    seguros_vida_apolices?: any[];
 }
 
 // ** Auth Interfaces **

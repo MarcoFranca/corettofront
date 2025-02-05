@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { fetchClientes, deleteCliente } from '@/store/slices/clientesSlice';
+import {fetchClientes, deleteCliente, fetchClientesSearch} from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import { MdOutlineDelete, MdPersonOutline, MdMailOutline } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -32,30 +32,39 @@ const STATUS_CHOICES = {
 const ClientesTable: React.FC = () => {
     const dispatch = useAppDispatch();
     const clientes = useAppSelector((state: RootState) => state.clientes.clientes);
+    const totalClientes = useAppSelector((state: RootState) => state.clientes.totalClientes);
     const status = useAppSelector((state: RootState) => state.clientes.status);
     const error = useAppSelector((state: RootState) => state.clientes.error);
 
     const [filter, setFilter] = useState<string | undefined>();
     const [search, setSearch] = useState<string>('');
-    const [debouncedSearch, setDebouncedSearch] = useState<string>(''); // Valor com debounce
+    const [debouncedSearch, setDebouncedSearch] = useState<string>('');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+    const [itemsPerPage, setItemsPerPage] = useState<number>(10); // ✅ Agora podemos mudar
+    const [isSearching, setIsSearching] = useState(false); // 🔹 Novo estado para controle
 
-
-    // Debounce para busca
     useEffect(() => {
         const handler = setTimeout(() => {
-            setDebouncedSearch(search); // Atualiza o valor debounced após 300ms
+            setDebouncedSearch(search);
         }, 600);
 
-        return () => {
-            clearTimeout(handler); // Limpa o timeout caso o usuário continue digitando
-        };
+        return () => clearTimeout(handler);
     }, [search]);
 
     useEffect(() => {
-        dispatch(fetchClientes({ search: debouncedSearch, status: filter, page: currentPage }));
-    }, [dispatch, debouncedSearch, filter, currentPage]); // Incluímos `filter` para garantir que a API seja chamada ao mudar
+        console.log(`📢 Buscando clientes na página ${currentPage} com limite ${itemsPerPage}`);
+
+        if (debouncedSearch) {
+            console.log("🔍 Modo de busca ativado...");
+            setIsSearching(true); // ✅ Ativa modo de busca
+            dispatch(fetchClientesSearch({ search: debouncedSearch }));
+        } else {
+            console.log("📄 Voltando para listagem normal...");
+            setIsSearching(false); // ✅ Sai do modo de busca
+            dispatch(fetchClientes({ status: filter, page: currentPage, limit: itemsPerPage }));
+        }
+    }, [dispatch, debouncedSearch, filter, currentPage, itemsPerPage]);
+
 
     const handleDelete = (id: string) => {
         dispatch(deleteCliente(id));
@@ -104,13 +113,15 @@ const ClientesTable: React.FC = () => {
     };
 
 
-    const handleImport = async (event) => {
-        const file = event.target.files[0];
+    const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files; // Verifica se há arquivos
 
-        if (!file) {
+        if (!files || files.length === 0) {
             toast.warn("Por favor, selecione um arquivo para importar.");
             return;
         }
+
+        const file = files[0]; // Pega o primeiro arquivo
 
         const formData = new FormData();
         formData.append('file', file);
@@ -133,7 +144,6 @@ const ClientesTable: React.FC = () => {
             toast.error("Erro ao importar clientes. Verifique se o arquivo está correto.");
         }
     };
-
 
 
     return (
@@ -171,24 +181,29 @@ const ClientesTable: React.FC = () => {
                 <thead>
                 <tr>
                     <th>Nome</th>
+                    <th>Sobre Nome</th>
                     <th>Email</th>
                     <th>Telefone</th>
                     <th>Status</th>
-                    <th>Ações</th>
+                    <th>Apolices</th>
+                    <th>actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                {clientes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((cliente) => (
+                {clientes.length > 0 ? (
+                    clientes.map((cliente) => (
                     <tr key={cliente.id}>
                         <td>{cliente.nome}</td>
+                        <td>{cliente.sobre_nome}</td>
                         <td>
                             <Linked href={`mailto:${cliente.email}`} passHref>
-                                <MdMailOutline /> {cliente.email}
+                                <MdMailOutline/> {cliente.email}
                             </Linked>
                         </td>
                         <td>
-                            <Linked href={`https://wa.me/+55${cliente.telefone}?text=${cliente.nome}`} passHref target={'_blank'}>
-                                <FaWhatsapp /> {formatPhoneNumber(cliente.telefone)}
+                            <Linked href={`https://wa.me/+55${cliente.telefone}?text=${cliente.nome}`} passHref
+                                    target={'_blank'}>
+                                <FaWhatsapp/> {formatPhoneNumber(cliente.telefone)}
                             </Linked>
                         </td>
                         <td>
@@ -200,9 +215,17 @@ const ClientesTable: React.FC = () => {
                             </Badge>
                         </td>
                         <td>
+                            {cliente.apolices.planos_saude_apolices?.length > 0 && (
+                                <span>📜 {cliente.apolices.planos_saude_apolices.length} Planos de Saúde</span>
+                            )}
+                            {cliente.apolices.seguros_vida_apolices?.length > 0 && (
+                                <span>🛡 {cliente.apolices.seguros_vida_apolices.length} Seguros de Vida</span>
+                            )}
+                        </td>
+                        <td>
                             <Actions>
                                 <Link href={`/dashboard/cliente/${cliente.id}`} passHref>
-                                    <MdPersonOutline size={20} />
+                                    <MdPersonOutline size={20}/>
                                 </Link>
                                 <MdOutlineDelete
                                     size={20}
@@ -212,12 +235,17 @@ const ClientesTable: React.FC = () => {
                             </Actions>
                         </td>
                     </tr>
-                ))}
+                ))
+                ) : (
+                    <tr>
+                        <td colSpan={4}>Nenhum cliente encontrado.</td>
+                    </tr>
+                )}
                 </tbody>
             </Table>
             <Pagination
                 currentPage={currentPage}
-                totalPages={Math.ceil(clientes.length / itemsPerPage)}
+                totalPages={Math.ceil(totalClientes / itemsPerPage)}
                 onPageChange={setCurrentPage}
                 itemsPerPage={itemsPerPage}
                 setItemsPerPage={setItemsPerPage}
