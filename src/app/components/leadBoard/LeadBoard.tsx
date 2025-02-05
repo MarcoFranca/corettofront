@@ -32,12 +32,14 @@ const LeadBoard: React.FC = () => {
     // Atualiza os dados locais quando os leads são carregados
     useEffect(() => {
         if (status === 'succeeded' && leadsFromStore.length > 0) {
-            const updatedData = initializeData(leadsFromStore);
-            setData(updatedData);
             console.log('Leads carregados do Redux:', leadsFromStore);
 
+            const updatedData = initializeData(leadsFromStore);
+            console.log('Dados atualizados para o Board:', updatedData); // 🛠 Debug para ver os dados transformados
+            setData(updatedData);
         }
     }, [leadsFromStore, status]);
+
 
     const openModal = () => setModalIsOpen(true);
     const closeModal = () => setModalIsOpen(false);

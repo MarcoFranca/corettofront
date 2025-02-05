@@ -116,6 +116,26 @@ export interface ScheduleMeetingFormProps {
     onClose: () => void;
 }
 
+export interface LeadModalProps {
+    isOpen: boolean;
+    onRequestClose: () => void;
+}
+
+export interface ProfissaoOption {
+    value: string;
+    label: string;
+}
+
+export interface ProdutoOption {
+    value: string;
+    label: string;
+}
+
+export interface OptionType {
+    value: string;
+    label: string;
+}
+
 
 export interface AgendaState {
     items: AgendaItem[];

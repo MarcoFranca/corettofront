@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import { useDispatch } from 'react-redux';
 import { createLead } from '@/store/slices/leadsSlice';
 import Modal from '@/app/components/Modal/simpleModal';
@@ -11,69 +11,112 @@ import api from '@/app/api/axios';
 import styles from './LeadModal.module.css';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { AppDispatch } from '@/store';
-import { Lead } from '@/types/interfaces';
+import {Lead, LeadModalProps, OptionType, ProdutoOption, ProfissaoOption} from '@/types/interfaces';
 import CadastrarProfissaoForm from '@/app/components/Modal/cliente/CadastrarProfissaoForm';
 import { Profissao } from '@/types/interfaces';
-
-interface LeadModalProps {
-    isOpen: boolean;
-    onRequestClose: () => void;
-}
-
-interface ProfissaoOption {
-    value: string;
-    label: string;
-}
-
-interface ProdutoOption {
-    value: string;
-    label: string;
-}
+import {AsyncPaginate, LoadOptions} from 'react-select-async-paginate';
+import {fetchClientes} from "@/store/slices/clientesSlice";
 
 const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const dispatch: AppDispatch = useDispatch();
 
+    // 📌 Estados do Formulário
     const [nome, setNome] = useState('');
     const [sobrenome, setSobrenome] = useState('');
     const [genero, setGenero] = useState<'M' | 'F' | ''>('');
     const [telefone, setTelefone] = useState('');
     const [email, setEmail] = useState('');
+
+    // 📌 Estados de Profissões
     const [profissaoPrincipal, setProfissaoPrincipal] = useState<ProfissaoOption | null>(null);
     const [subcategoria, setSubcategoria] = useState<ProfissaoOption | null>(null);
     const [profissoesPrincipais, setProfissoesPrincipais] = useState<ProfissaoOption[]>([]);
     const [subcategorias, setSubcategorias] = useState<ProfissaoOption[]>([]);
-    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
-    const [isProfissaoModalOpen, setProfissaoModalOpen] = useState(false);
+
+    // 📌 Estados de Indicação
     const [indicadoPorTipo, setIndicadoPorTipo] = useState<'cliente' | 'parceiro' | ''>('');
-    const [clientesDisponiveis, setClientesDisponiveis] = useState<ProfissaoOption[]>([]);
-    const [parceirosDisponiveis, setParceirosDisponiveis] = useState<ProfissaoOption[]>([]);
     const [indicadoPorId, setIndicadoPorId] = useState<string | null>(null);
+    const [parceirosDisponiveis, setParceirosDisponiveis] = useState<ProfissaoOption[]>([]);
+    const [cliente, setCliente] = useState<OptionType | null>(null);
+
+    // 📌 Estados de Oportunidades
     const [produtosDisponiveis, setProdutosDisponiveis] = useState<{ value: string; label: string }[]>([]);
     const [oportunidades, setOportunidades] = useState<any[]>([]);
     const [produtoSelecionado, setProdutoSelecionado] = useState<ProdutoOption[]>([]);
 
+    // 📌 Estados para Modais e Erros
+    const [isProfissaoModalOpen, setProfissaoModalOpen] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
+
+    // 📌 Carregar Dados no Modal
     useEffect(() => {
         if (isOpen) {
             fetchProfissoes();
-            fetchClientes();
             fetchParceiros();
             fetchProdutosDisponiveis();
-
         }
     }, [isOpen]);
 
+    // 📌 Funções de Carregamento de Dados
     const fetchProdutosDisponiveis = async () => {
         try {
             const response = await api.get('/produtos-oportunidades/');
-            setProdutosDisponiveis(
-                response.data.map((produto: any) => ({
-                    value: produto.id,
-                    label: produto.nome,
-                }))
-            );
+            setProdutosDisponiveis(response.data.map((produto: any) => ({
+                value: produto.id,
+                label: produto.nome,
+            })));
         } catch (error) {
             toast.error('😔 Erro ao carregar produtos de oportunidades.');
+        }
+    };
+
+    const fetchParceiros = async () => {
+        try {
+            const response = await api.get('/parceiros/');
+            setParceirosDisponiveis(response.data.map((parceiro: any) => ({
+                value: parceiro.id,
+                label: parceiro.nome,
+            })));
+        } catch (error) {
+            toast.error('😔 Erro ao carregar parceiros.');
+        }
+    };
+
+    const fetchProfissoes = async () => {
+        try {
+            const response = await api.get('/profissoes/');
+            setProfissoesPrincipais(response.data.map((profissao: any) => ({
+                value: profissao.id,
+                label: profissao.nome,
+            })));
+        } catch (error) {
+            toast.error('😔 Erro ao carregar profissões.');
+        }
+    };
+
+    // 📌 Função para Carregar Clientes com Paginação
+    const loadClienteOptions: LoadOptions<OptionType, any, { page: number }> = async (
+        searchQuery,
+        loadedOptions,
+        additional
+    ) => {
+        const { page = 1 } = additional || {}; // 🔥 Garante que `page` nunca seja undefined
+        try {
+            const response = await api.get(`/clientes/?search=${searchQuery || ''}&page=${page}&limit=100`);
+            return {
+                options: response.data.results.map((cliente: any) => ({
+                    value: cliente.id,
+                    label: `${cliente.nome} ${cliente.sobre_nome || ''}`,
+                })),
+                hasMore: !!response.data.next,
+                additional: {
+                    page: page + 1,
+                },
+            };
+        } catch (error) {
+            toast.error('😔 Erro ao carregar clientes.');
+            return { options: [], hasMore: false };
         }
     };
 
@@ -104,49 +147,6 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
 
         setOportunidades((prev) => [...prev, ...oportunidadesFiltradas]);
         setProdutoSelecionado([]); // Reseta a seleção
-    };
-
-
-    const fetchClientes = async () => {
-        try {
-            const response = await api.get('/clientes/');
-            setClientesDisponiveis(
-                response.data.map((cliente: any) => ({
-                    value: cliente.id,
-                    label: `${cliente.nome} ${cliente.sobre_nome || ''}`,
-                }))
-            );
-        } catch (error) {
-            toast.error('😔 Erro ao carregar clientes.');
-        }
-    };
-
-    const fetchParceiros = async () => {
-        try {
-            const response = await api.get('/parceiros/');
-            setParceirosDisponiveis(
-                response.data.map((parceiro: any) => ({
-                    value: parceiro.id,
-                    label: parceiro.nome,
-                }))
-            );
-        } catch (error) {
-            toast.error('😔 Erro ao carregar parceiros.');
-        }
-    };
-
-    const fetchProfissoes = async () => {
-        try {
-            const response = await api.get('/profissoes/');
-            setProfissoesPrincipais(
-                response.data.map((profissao: any) => ({
-                    value: profissao.id,
-                    label: profissao.nome,
-                }))
-            );
-        } catch (error) {
-            toast.error('😔 Erro ao carregar profissões.');
-        }
     };
 
     const handleProfissaoPrincipalChange = (selectedOption: ProfissaoOption | null) => {
@@ -182,15 +182,15 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             return;
         }
 
-        const formattedTelefone = telefone.replace(/\D/g, '');
+        const formattedTelefone = telefone.replace(/\D/g, ''); // Remove caracteres não numéricos
 
-        // Remover duplicatas no frontend
         const oportunidadesUnicas = Array.from(
             new Set(oportunidades.map((o) => o.produto_interesse))
         ).map((produto_interesse) =>
             oportunidades.find((o) => o.produto_interesse === produto_interesse)
         );
 
+        // 📌 Certificar que `indicado_por_cliente_id` ou `indicado_por_parceiro_id` são enviados corretamente
         const leadData: Partial<Lead> = {
             nome,
             sobre_nome: sobrenome || undefined,
@@ -198,10 +198,12 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             telefone: formattedTelefone,
             email,
             profissao_id: subcategoria?.value || profissaoPrincipal?.value || undefined,
-            ...(indicadoPorTipo === 'cliente' && { indicado_por_cliente_id: indicadoPorId }),
-            ...(indicadoPorTipo === 'parceiro' && { indicado_por_parceiro_id: indicadoPorId }),
+            ...(indicadoPorTipo === 'cliente' && cliente ? { indicado_por_cliente_id: cliente.value } : {}),
+            ...(indicadoPorTipo === 'parceiro' && indicadoPorId ? { indicado_por_parceiro_id: indicadoPorId } : {}),
             oportunidades: oportunidadesUnicas,
         };
+
+        console.log("📌 Enviando dados do lead para API:", leadData); // Debug
 
         try {
             await dispatch(createLead(leadData)).unwrap();
@@ -209,15 +211,14 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             onRequestClose();
             resetForm();
         } catch (error: any) {
+            console.error("⚠️ Erro ao cadastrar lead:", error);
             if (error.response?.data) {
                 setFieldErrors(error.response.data);
             } else {
                 toast.error('⚠️ Erro ao cadastrar lead.');
-                console.error('⚠️ Erro desconhecido:', error);
             }
         }
     };
-
 
     const resetForm = () => {
         setNome('');
@@ -269,14 +270,19 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                         </div>
                         <div className={styles.selectWrapper}>
                             {indicadoPorTipo === 'cliente' && (
-                                <Select
-                                    options={clientesDisponiveis}
-                                    value={clientesDisponiveis.find((cliente) => cliente.value === indicadoPorId) || null}
-                                    onChange={(option) => setIndicadoPorId(option?.value || null)}
+                                <AsyncPaginate
+                                    value={cliente}
+                                    loadOptions={loadClienteOptions}
+                                    onChange={setCliente}
+                                    additional={{ page: 1 }}
                                     placeholder="Selecione um cliente..."
-                                    className={fieldErrors.indicado_por_cliente_id ? styles.errorSelect : ''}
+                                    isSearchable
+                                    debounceTimeout={300}
                                 />
-                            )}
+
+
+                            )
+                            }
                             {indicadoPorTipo === 'parceiro' && (
                                 <Select
                                     options={parceirosDisponiveis}

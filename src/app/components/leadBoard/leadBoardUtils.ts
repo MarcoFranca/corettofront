@@ -4,6 +4,8 @@ import { updateLeadStatus } from '@/store/slices/leadsSlice';
 import { Data, Lead } from "@/types/interfaces";
 
 export const initializeData = (leadsFromStore: any[] = []): Data => {
+    console.log("🚀 Leads recebidos para processamento:", leadsFromStore);
+
     const leads: { [key: string]: Lead } = {};
     const columns: { [key: string]: { id: string, title: string, leadIds: string[] } } = {
         'column-1': { id: 'column-1', title: 'LEADS DE ENTRADA', leadIds: [] },
@@ -13,38 +15,51 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
     };
 
     if (!leadsFromStore || leadsFromStore.length === 0) {
+        console.warn("⚠️ Nenhum lead disponível para processamento.");
         return { leads, columns, columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'] };
     }
 
     leadsFromStore.forEach((lead) => {
-        if (lead.id) {
-            leads[lead.id.toString()] = {
-                id: lead.id.toString(),
-                status: lead.status || '',
-                nome: lead.nome || '',
-                sobre_nome: lead.sobre_nome || '',
-                email: lead.email || '',
-                telefone: lead.telefone || '',
-                endereco: lead.endereco || '',
-                contato: lead.contato || '',
-                pipeline_stage: lead.pipeline_stage || 'entrada',
-                status_reuniao: lead.status_reuniao || '',
-                created_at: lead.created_at || '',
-                updated_at: lead.updated_at || '',
-                indicado_por_detalhes: lead.indicado_por_detalhes || null,
-                oportunidades: lead.relacionamentos?.oportunidades || [],
-                parceiros: lead.relacionamentos?.parceiros || [],
-            };
+        if (!lead.id) {
+            console.error("⚠️ Lead sem ID encontrado:", lead);
+            return;
+        }
 
-            const columnKey = Object.keys(columns).find(
-                key => columns[key].title.toLowerCase() === (lead.pipeline_stage || 'entrada')
-            );
+        leads[lead.id.toString()] = {
+            id: lead.id.toString(),
+            status: lead.status || '',
+            nome: lead.nome || '',
+            sobre_nome: lead.sobre_nome || '',
+            email: lead.email || '',
+            telefone: lead.telefone || '',
+            endereco: lead.endereco || '',
+            contato: lead.contato || '',
+            pipeline_stage: lead.pipeline_stage || 'LEADS DE ENTRADA', // 🚀 Fallback para pipeline_stage
+            status_reuniao: lead.status_reuniao || '',
+            created_at: lead.created_at || '',
+            updated_at: lead.updated_at || '',
+            indicado_por_detalhes: lead.indicado_por_detalhes || null,
+            oportunidades: lead.relacionamentos?.oportunidades || [],
+            parceiros: lead.relacionamentos?.parceiros || [],
+        };
 
-            if (columnKey) {
-                columns[columnKey].leadIds.push(lead.id.toString());
-            }
+        // 🚀 Verifica o `pipeline_stage` e categoriza corretamente
+        const pipelineStage = (lead.pipeline_stage || '').toLowerCase().trim();
+
+        if (pipelineStage.includes('entrada')) {
+            columns['column-1'].leadIds.push(lead.id.toString());
+        } else if (pipelineStage.includes('negociacao') || pipelineStage.includes('negociando')) {
+            columns['column-2'].leadIds.push(lead.id.toString());
+        } else if (pipelineStage.includes('finaliza')) {
+            columns['column-3'].leadIds.push(lead.id.toString());
+        } else if (pipelineStage.includes('pouco interesse')) {
+            columns['column-4'].leadIds.push(lead.id.toString());
+        } else {
+            console.warn(`⚠️ Lead ID ${lead.id} sem pipeline_stage categorizado corretamente:`, lead.pipeline_stage);
         }
     });
+
+    console.log("✅ Dados finais para o Kanban:", { leads, columns });
 
     return {
         leads,
@@ -52,8 +67,6 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
         columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'],
     };
 };
-
-
 
 export const handleDragEnd = (
     result: DropResult,
