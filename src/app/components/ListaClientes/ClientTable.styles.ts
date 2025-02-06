@@ -14,6 +14,7 @@ export const Linked = styled(Link)`
     gap: 8px;
     align-items: center;
     color: #0c2859;
+    margin-bottom: 8px;
 `
 
 export const Filters = styled.div`

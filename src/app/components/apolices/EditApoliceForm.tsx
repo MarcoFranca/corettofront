@@ -6,10 +6,9 @@ import DadosFinanceiros from './DadosFinanceiros';
 import CamposEspecificos from './CamposEspecificos';
 import { useRouter } from 'next/navigation';
 import { FaArrowLeft, FaDownload, FaTrash } from 'react-icons/fa';
-import EditClientModal from '@/app/components/Modal/profile/EditClientModal';
+import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchApoliceDetalhe } from '@/store/slices/apoliceSlice';
-import { Apolice } from '@/types/interfaces';
 import { RootState } from '@/store';
 
 interface ApoliceFormProps {
@@ -19,7 +18,7 @@ interface ApoliceFormProps {
     clientId: string;
 }
 
-const ApoliceForm: React.FC<ApoliceFormProps> = ({ apoliceId, produto, onSubmit, clientId }) => {
+const ApoliceForm: React.FC<ApoliceFormProps> = ({ apoliceId, produto, onSubmit }) => {
     const { register, handleSubmit, setValue, watch } = useForm();
     const [file, setFile] = useState<File | null>(null);
     const [isFileDeleted, setIsFileDeleted] = useState(false);

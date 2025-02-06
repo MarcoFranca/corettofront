@@ -6,7 +6,7 @@ import DadosFinanceiros from './DadosFinanceiros';
 import CamposEspecificos from './CamposEspecificos';
 import { useRouter } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
-import EditClientModal from '@/app/components/Modal/profile/EditClientModal'; // Assumindo que você tem esse modal implementado
+import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal'; // Assumindo que você tem esse modal implementado
 
 interface ApoliceFormProps {
     onSubmit: (data: any, endpoint: string) => void;

@@ -22,10 +22,9 @@ const Input: React.FC<InputProps> = ({
                                          required = false,
                                          className = '',
                                          errorMessage = '',
-                                         placeholder ,
                                      }) => {
     return (
-        <div className={`${styles.inputWrapper} ${className}`}>
+        <div className={`${styles.inputContainer} ${className}`}>
             <label className={styles.label}>
                 {label}
                 {required && <span className={styles.required}>*</span>}

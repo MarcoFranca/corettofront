@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchClienteDetalhe, updateClienteObservacao, updateClienteStatus } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import styles from './ClientProfile.module.css';
-import ContactInfoCard from '@/app/components/cliente/conta/ContactInfoCard';
+import ContactInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/ContactInfoCard';
 import PersonalInfoCard from '@/app/components/cliente/conta/PersonalInfoCard';
 import DocumentInfoCard from '@/app/components/cliente/conta/DocumentInfoCard';
 import HealthInfoCard from '@/app/components/cliente/conta/HealthInfoCard';

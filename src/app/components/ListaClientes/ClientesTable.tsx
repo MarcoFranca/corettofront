@@ -6,7 +6,6 @@ import { MdOutlineDelete, MdPersonOutline, MdMailOutline } from 'react-icons/md'
 import { FaWhatsapp } from 'react-icons/fa';
 
 import Link from 'next/link';
-import { formatPhoneNumber } from '@/utils/utils';
 import Pagination from '@/app/components/Pagination';
 import Badge from '@/app/components/ui/Badge';
 import {
@@ -17,6 +16,8 @@ import {
 } from './ClientTable.styles';
 import api from "@/app/api/axios";
 import {toast} from "react-toastify";
+import InputMask from "react-input-mask";
+import styles from "@/app/components/leadBoard/LeadBoard.module.css";
 
 const STATUS_CHOICES = {
     lead: { label: 'Lead', color: 'blue' },
@@ -203,8 +204,30 @@ const ClientesTable: React.FC = () => {
                         <td>
                             <Linked href={`https://wa.me/+55${cliente.telefone}?text=${cliente.nome}`} passHref
                                     target={'_blank'}>
-                                <FaWhatsapp/> {formatPhoneNumber(cliente.telefone)}
+                                <FaWhatsapp/> <InputMask
+                                mask="(99) 99999-9999"
+                                value={cliente.telefone}
+                                readOnly
+                                className={styles.phoneInput} // Estilo personalizado
+                            />
                             </Linked>
+                            {/* 🔹 Verifica se há contatos adicionais antes de mapear */}
+                            {cliente.relacionamentos?.contatos_adicionais?.length ? (
+                                cliente.relacionamentos.contatos_adicionais.map((contato, index) => (
+                                    <Linked key={index} href={`https://wa.me/+55${contato.valor}?text=${cliente.nome}`} passHref target={'_blank'}>
+                                        <FaWhatsapp />
+                                        <InputMask
+                                            mask="(99) 99999-9999"
+                                            value={contato.valor}
+                                            readOnly
+                                            className={styles.phoneInput} // Estilo personalizado
+                                        />
+                                    </Linked>
+                                ))
+                            ) : (
+                                <p></p> // 🔹 Mensagem caso não haja contatos
+                            )}
+
                         </td>
                         <td>
                             <Badge

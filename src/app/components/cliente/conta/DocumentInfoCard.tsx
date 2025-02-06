@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import EditClientModal from '@/app/components/Modal/profile/EditClientModal';
+import React, { useState } from 'react';
+import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal';
 import { Cliente } from '@/types/interfaces';
 import styles from './ClientProfile.module.css';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';

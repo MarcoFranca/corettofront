@@ -23,7 +23,7 @@ export interface IndicadoPorDetalhes {
 }
 
 export interface Relacionamentos {
-    contatos_adicionais?: any[];
+    contatos_adicionais?: ContatoAdicional[];
     parceiros?: any[];
     reunioes?: any[];
     oportunidades?: Oportunidade[];
@@ -202,6 +202,12 @@ export interface TasksState {
 }
 
 // ** Cliente Interfaces **
+export interface ContatoAdicional {
+    id: string;  // O ID pode ser opcional ao cadastrar um novo contato
+    tipo: string; // Tipo do contato (ex: "Telefone Secundário", "E-mail Alternativo", etc.)
+    valor: string; // O número de telefone ou e-mail adicional
+}
+
 export interface Profissao {
     id: string;
     nome: string;
@@ -275,7 +281,7 @@ export interface Cliente {
     oportunidades?: Oportunidade[];
     observacoes?: string;
     status_reuniao?: string;
-    status:  "lead" | "ativo" | "negociacao" | "nova_negociacao" | "inativo" | "recusado" | "reativacao_pendente" | "cancelado";
+    status: "lead" | "ativo" | "negociacao" | "nova_negociacao" | "inativo" | "recusado" | "reativacao_pendente" | "cancelado";
     pipeline_stage?: string;
     idade?: string;
     apolices: Apolices;
@@ -289,7 +295,9 @@ export interface Cliente {
     updated_at?: string;
     endereco?: Endereco;
     saude?: Saude;
+    relacionamentos?: Relacionamentos; // ✅ Garantindo o tipo correto
 }
+
 
 export interface ClientesState {
     clientes: Cliente[];
@@ -299,6 +307,17 @@ export interface ClientesState {
     statusDetalhe: "idle" | "loading" | "succeeded" | "failed";
     error: string | null;
     errorDetalhe: string | null;
+}
+
+export interface EditClientModalProps {
+    isOpen: boolean;
+    onRequestClose: () => void;
+    initialData: {
+        email: string;
+        telefone: string;
+        contatos_adicionais: ContatoAdicional[];
+    };
+    onSave: (data: any) => void;
 }
 
 

@@ -6,7 +6,7 @@ import { createApolice, fetchApolices } from '@/store/slices/apoliceSlice'; // I
 import { RootState } from '@/store';
 import { useState, useEffect } from 'react';
 import { fetchClienteDetalhe, updateClienteToActive } from '@/store/slices/clientesSlice';
-import EditClientModal from '@/app/components/Modal/profile/EditClientModal'; // Importando o modal
+import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal'; // Importando o modal
 import { Cliente } from '@/types/interfaces'; // Certifique-se de importar o tipo Cliente
 
 const NovaApolicePage = () => {
