@@ -1,6 +1,8 @@
 'use client';
 
-import ClientProfile from '@/app/components/cliente/conta';
+
+import ClientProfile
+    from "./(CustomerComponents)/ClientProfile";
 
 const ClientPage = () => {
 

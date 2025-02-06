@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal';
 import { Cliente } from '@/types/interfaces';
-import styles from './ClientProfile.module.css';
+import styles from '../(CustomerComponents)/ClientProfile.module.css';
 import { useAppDispatch } from '@/hooks/hooks';
 import { updateCliente } from '@/store/slices/clientesSlice';
 import Image from "next/image";
-import AddressImage from "../../../../../public/assets/pages/profile/Endereco.svg";
-import EditImage from "../../../../../public/assets/common/edit.svg";
+import AddressImage from "../../../../../../../../public/assets/pages/profile/Endereco.svg";
+import EditImage from "../../../../../../../../public/assets/common/edit.svg";
 
 interface AddressCardProps {
     cliente: Cliente;

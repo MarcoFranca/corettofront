@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal';
 import { Cliente } from '@/types/interfaces';
-import styles from '@/app/components/cliente/conta/ClientProfile.module.css';
+import styles from '../(CustomerComponents)/ClientProfile.module.css';
 import { useAppDispatch } from '@/hooks/hooks';
 import { updateCliente } from '@/store/slices/clientesSlice';
 import moment from 'moment';
 import 'moment/locale/pt-br'; // Importa o locale pt-BR
-import NascimentoImage from '@/../public/assets/common/Aniversario.svg';
-import GeneroImage from '@/../public/assets/common/gender.svg';
-import JobImage from '@/../public/assets/pages/profile/job.svg';
+import NascimentoImage from '../../../../../../../../public/assets/common/Aniversario.svg';
+import GeneroImage from '../../../../../../../../public/assets/common/gender.svg';
+import JobImage from '../../../../../../../../public/assets/pages/profile/job.svg';
 // idade
-import BebeImage from '@/../public/assets/pages/profile/bebe.svg';
-import CriancaImage from '@/../public/assets/pages/profile/crianca.svg';
-import AdultoImage from '@/../public/assets/pages/profile/adulto.svg';
-import IdosoImage from '@/../public/assets/pages/profile/Idoso.svg';
-import PersonalImage from '@/../public/assets/pages/profile/personalInfo.svg';
-import EditImage from '@/../public/assets/common/edit.svg';
+import BebeImage from '../../../../../../../../public/assets/pages/profile/bebe.svg';
+import CriancaImage from '../../../../../../../../public/assets/pages/profile/crianca.svg';
+import AdultoImage from '../../../../../../../../public/assets/pages/profile/adulto.svg';
+import IdosoImage from '../../../../../../../../public/assets/pages/profile/Idoso.svg';
+import PersonalImage from '../../../../../../../../public/assets/pages/profile/personalInfo.svg';
+import EditImage from '../../../../../../../../public/assets/common/edit.svg';
 import Image from "next/image";
 
 interface PersonalInfoCardProps {

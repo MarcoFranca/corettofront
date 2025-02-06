@@ -1,11 +1,12 @@
 // src/app/components/Modal/profile/EditClientModal.styles.ts
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import InputMask from "react-input-mask"; // Máscara
 
 // 🔹 Estilização do Container do Modal
 export const ModalContainer = styled.div`
-    background-color: white;
-    max-width: 100%;
-    z-index: 1000;
+    //display: flex;
+    //flex-direction: column;
+    //gap: 16px;
 `;
 
 // 🔹 Estilização do Formulário
@@ -25,38 +26,77 @@ export const InputGroup = styled.div`
 
 // 🔹 Estilização da Área de Contatos Adicionais
 export const AdditionalContacts = styled.div`
-    margin-top: 20px;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 `;
 
 export const ContactRow = styled.div`
     display: flex;
-    align-items: center;
-    justify-content: space-between;
     width: 100%;
-    gap: 10px;
-    margin-top: 8px;
-    //background-color: #0c2859;
+`;
+
+export const ContactSelect = styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    height: 33px;
+    gap: 8px;
+    
+    select {
+        flex: 1;
+        height: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        margin: 0;
+        cursor: pointer;        
+    }
+
+    input {
+        flex: 1;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+`
+// 🔥 Animação de "tremer" ao clicar
+const shakeAnimation = keyframes`
+    0% { transform: translateX(0); }
+    15% { transform: translateX(-5px); }
+    30% { transform: translateX(5px); }
+    45% { transform: translateX(-5px); }
+    60% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
 `;
 
 export const RemoveButton = styled.button`
     background-color: transparent;
+    color: #f44336;
     border: none;
-    color: red;
-    font-size: 1.2rem;
     cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+
     &:hover {
-        transform: scale(1.1);
-        transition: transform 0.3s ease-in-out;
+        transform: scale(1.3) rotate(-10deg); /* 🔄 Aumenta e gira um pouco */
+        color: #d32f2f;
+    }
+
+    &:active {
+        animation: ${shakeAnimation} 0.3s ease-in-out; /* 🎭 Tremer ao clicar */
     }
 `;
 
 export const AddButton = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
+    padding: 10px 16px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
     font-size: 14px;
@@ -73,3 +113,10 @@ export const EmptyMessage = styled.p`
     margin-top: 10px;
 `;
 
+export const PhoneInput = styled(InputMask)`
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+`;

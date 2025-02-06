@@ -5,14 +5,14 @@ import { fetchClienteDetalhe, updateClienteObservacao, updateClienteStatus } fro
 import { RootState } from '@/store';
 import styles from './ClientProfile.module.css';
 import ContactInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/ContactInfoCard';
-import PersonalInfoCard from '@/app/components/cliente/conta/PersonalInfoCard';
-import DocumentInfoCard from '@/app/components/cliente/conta/DocumentInfoCard';
-import HealthInfoCard from '@/app/components/cliente/conta/HealthInfoCard';
-import AddressCard from '@/app/components/cliente/conta/AddressCard';
-import ProfileImageMan from '@/../public/assets/common/user.svg';
-import ProfileImageWoman from '@/../public/assets/common/PerfilMulher.svg';
+import PersonalInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/PersonalInfoCard';
+import DocumentInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/DocumentInfoCard';
+import HealthInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/HealthInfoCard';
+import AddressCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/AddressCard';
+import ProfileImageMan from '../../../../../../../../public/assets/common/user.svg';
+import ProfileImageWoman from '../../../../../../../../public/assets/common/PerfilMulher.svg';
 import Image from "next/image";
-import Card from '../../common/Card';
+import Card from '@/app/components/common/Card';
 import Modal from 'react-modal';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Importa o CSS padrão do Tippy.js
