@@ -58,6 +58,7 @@ export interface Profissao {
     nome: string;
     descricao?: string;
     categoria_pai?: string | null;
+    categoria_pai_nome?: string | null;
 }
 
 
@@ -319,6 +320,22 @@ export interface EditClientModalProps {
     };
     onSave: (data: any) => void;
 }
+
+export interface EditPersonalInfoModalProps {
+    isOpen: boolean;
+    onRequestClose: () => void;
+    initialData: {
+        data_nascimento?: string;
+        genero?: string;
+        profissao?: Profissao;
+    };
+    onSave: (data: any) => void;
+}
+
+export const genderOptions = [
+    { value: 'M', label: 'Masculino' },
+    { value: 'F', label: 'Feminino' },
+];
 
 
 // ** Apólice Interfaces **

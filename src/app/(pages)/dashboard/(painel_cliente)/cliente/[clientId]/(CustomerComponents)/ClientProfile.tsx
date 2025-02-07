@@ -5,7 +5,7 @@ import { fetchClienteDetalhe, updateClienteObservacao, updateClienteStatus } fro
 import { RootState } from '@/store';
 import styles from './ClientProfile.module.css';
 import ContactInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/ContactInfoCard';
-import PersonalInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/PersonalInfoCard';
+import PersonalInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(personalInfo)/PersonalInfoCard';
 import DocumentInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/DocumentInfoCard';
 import HealthInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/HealthInfoCard';
 import AddressCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/AddressCard';
