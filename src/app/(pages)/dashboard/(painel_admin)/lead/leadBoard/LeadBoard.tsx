@@ -6,7 +6,7 @@ import { fetchLeads } from '@/store/slices/leadsSlice';
 import { initializeData, handleDragEnd } from './leadBoardUtils';
 import Column from './Column';
 import LeadModal from '@/app/components/Modal/LeadModal';
-import CadastroLead from '../../../../public/assets/pages/leads/cadastroLead.svg';
+import CadastroLead from '../../../../../../../public/assets/pages/leads/cadastroLead.svg';
 import Image from 'next/image';
 import { useMediaQuery } from '@/hooks/hooks';
 import styles from './LeadBoard.module.css';

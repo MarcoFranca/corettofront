@@ -17,7 +17,8 @@ import {
 import api from "@/app/api/axios";
 import {toast} from "react-toastify";
 import InputMask from "react-input-mask";
-import styles from "@/app/components/leadBoard/LeadBoard.module.css";
+import styles from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard.module.css";
+import {getPhoneMask} from "@/utils/phoneUtils";
 
 const STATUS_CHOICES = {
     lead: { label: 'Lead', color: 'blue' },
@@ -205,7 +206,7 @@ const ClientesTable: React.FC = () => {
                             <Linked href={`https://wa.me/+55${cliente.telefone}?text=${cliente.nome}`} passHref
                                     target={'_blank'}>
                                 <FaWhatsapp/> <InputMask
-                                mask="(99) 99999-9999"
+                                mask={getPhoneMask(cliente.telefone)}
                                 value={cliente.telefone}
                                 readOnly
                                 className={styles.phoneInput} // Estilo personalizado
@@ -217,7 +218,7 @@ const ClientesTable: React.FC = () => {
                                     <Linked key={index} href={`https://wa.me/+55${contato.valor}?text=${cliente.nome}`} passHref target={'_blank'}>
                                         <FaWhatsapp />
                                         <InputMask
-                                            mask="(99) 99999-9999"
+                                            mask={getPhoneMask(contato.valor)}
                                             value={contato.valor}
                                             readOnly
                                             className={styles.phoneInput} // Estilo personalizado

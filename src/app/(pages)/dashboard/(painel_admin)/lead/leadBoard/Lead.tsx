@@ -6,10 +6,10 @@ import { AppDispatch } from '@/store';
 import { deleteLead } from '@/store/slices/leadsSlice';
 import styles from './LeadBoard.module.css';
 import Image from 'next/image';
-import UserImage from '../../../../public/assets/common/user.png';
-import DeleteImage from '../../../../public/assets/common/delete.svg';
-import AgendaImage from '../../../../public/assets/pages/agenda/agenda.svg';
-import EditImage from '../../../../public/assets/common/edit.svg';
+import UserImage from '../../../../../../../public/assets/common/user.png';
+import DeleteImage from '../../../../../../../public/assets/common/delete.svg';
+import AgendaImage from '../../../../../../../public/assets/pages/agenda/agenda.svg';
+import EditImage from '../../../../../../../public/assets/common/edit.svg';
 import { LeadProps, Lead, StatusReuniao } from "@/types/interfaces";
 import ScheduleMeetingForm from '@/app/components/Modal/meeting/ScheduleMeetingForm';
 import EditLeadForm from '@/app/components/leads/EditLeadForm';
@@ -18,6 +18,7 @@ import InputMask from 'react-input-mask';
 import 'tippy.js/dist/tippy.css';
 import '@/app/(styles)/globals.css';
 import {FaWhatsapp} from "react-icons/fa";
+import {getPhoneMask} from "@/utils/phoneUtils";
 
 const statusColors: Record<StatusReuniao, string> = {
     'reuniao_marcada': 'green',
@@ -147,7 +148,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
                                     >
                                         <FaWhatsapp size={16}/>
                                         <InputMask
-                                            mask="(99) 99999-9999"
+                                            mask={getPhoneMask(currentLead.telefone)}
                                             value={currentLead.telefone}
                                             readOnly
                                             className={styles.phoneInput} // Estilo personalizado

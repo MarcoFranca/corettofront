@@ -1,5 +1,5 @@
 'use client';
-import LeadBoard from "@/app/components/leadBoard/LeadBoard";
+import LeadBoard from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard";
 
 
 const LeadPage = () => {

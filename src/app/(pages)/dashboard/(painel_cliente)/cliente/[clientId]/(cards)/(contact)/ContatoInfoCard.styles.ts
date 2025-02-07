@@ -30,6 +30,25 @@ export const ContactTitle = styled.div`
     gap: 8px;
 `;
 
+export const TippyContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    p{
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        color: #f0ad4e;
+
+    }
+`
+export const TippyText = styled.div`
+    display: flex;
+    gap: 8px;
+    color: #4caf50;
+    
+`
+
 export const ContactIcon = styled.img`
     height: 24px;
     width: auto;

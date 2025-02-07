@@ -18,6 +18,7 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Importa o CSS padrão do Tippy.js
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { FaHeartbeat, FaBox, FaChartLine, FaLightbulb } from "react-icons/fa";
+import { MdTouchApp } from "react-icons/md";
 
 import {
     Chart as ChartJS,
@@ -148,13 +149,23 @@ const ClientProfile: React.FC = () => {
                                            priority/>
                                 )}
                                 <div className={styles.headerText}>
-                                    <h2>{cliente.nome}</h2>
-                                    {/*<p className={styles.status}>{cliente.status}</p>*/}
+                                    <h2>{`${cliente.nome} ${cliente.sobre_nome}`}</h2>
                                     <Tippy
-                                        content={statusOptions.find(s =>
-                                            s.value === cliente.status)?.description}
-                                        placement="top"
-                                        theme="light"
+                                        content={
+                                            <div className={styles.tipyContante}>
+                                                <div className={styles.tippyClick}>
+                                                    <MdTouchApp size={18}/>
+                                                    <p>Clique para alterar o Status</p>
+                                                </div>
+                                                <h3>
+                                                {statusOptions.find(s =>
+                                                    s.value === cliente.status)?.description}
+
+                                                </h3>
+                                            </div>
+                                        }
+                                        placement="bottom"
+                                        theme="custom"
                                         animation="shift-away"
                                     >
                                         <p
@@ -163,6 +174,7 @@ const ClientProfile: React.FC = () => {
                                             onClick={openStatusModal}
                                         >
                                             {statusOptions.find(s => s.value === cliente.status)?.label}
+                                            <MdTouchApp size={16}/>
                                         </p>
                                     </Tippy>
                                 </div>

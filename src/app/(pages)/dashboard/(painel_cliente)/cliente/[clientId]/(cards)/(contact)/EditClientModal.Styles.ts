@@ -62,11 +62,10 @@ export const ContactSelect = styled.div`
 // 🔥 Animação de "tremer" ao clicar
 const shakeAnimation = keyframes`
     0% { transform: translateX(0); }
-    15% { transform: translateX(-5px); }
-    30% { transform: translateX(5px); }
-    45% { transform: translateX(-5px); }
-    60% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
     100% { transform: translateX(0); }
 `;
 

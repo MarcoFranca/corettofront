@@ -4,7 +4,7 @@ import Modal from '@/app/components/Modal/simpleModal';
 import Input from '@/app/components/global/Input';
 import Button from '@/app/components/global/Button';
 import { toast } from 'react-toastify';
-import {FaPlus, FaTrash} from "react-icons/fa"; // Ícones
+import {FaPlus, FaTrash} from "react-icons/fa";
 import { ContatoAdicional, EditClientModalProps } from "@/types/interfaces";
 import { removeMask } from "@/utils/phoneUtils";
 import {

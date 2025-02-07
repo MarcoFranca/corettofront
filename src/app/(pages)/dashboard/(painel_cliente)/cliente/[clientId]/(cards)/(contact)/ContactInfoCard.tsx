@@ -15,7 +15,7 @@ import {
     ContactRow,
     EmptyMessage,
     AdditionalContactsWrapper,
-    ContactLabel, ContactContain
+    ContactLabel, ContactContain, TippyContainer, TippyText
 } from "./ContatoInfoCard.styles";
 
 // Importando imagens
@@ -23,8 +23,14 @@ import EmailImage from "../../../../../../../../../public/assets/common/mail.svg
 import TellImage from "../../../../../../../../../public/assets/common/whats.svg";
 import ContatoImage from "../../../../../../../../../public/assets/pages/profile/Contato.svg";
 import EditImage from "../../../../../../../../../public/assets/common/edit.svg";
-import styles from "@/app/components/leadBoard/LeadBoard.module.css";
+import styles from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard.module.css";
 import InputMask from "react-input-mask";
+import {getPhoneMask} from "@/utils/phoneUtils";
+import Tippy from "@tippyjs/react";
+import {
+    FaEdit,
+    FaPlusCircle
+} from "react-icons/fa";
 
 interface ContactInfoCardProps {
     cliente: Cliente;
@@ -55,7 +61,30 @@ const ContactInfoCard: React.FC<ContactInfoCardProps> = ({ cliente }) => {
                     <Image src={ContatoImage} alt={"Contato"} width={24} height={24} />
                     <h3>Contato</h3>
                 </ContactTitle>
-                <ContactIcon src={EditImage.src} alt="Editar" onClick={openModal} />
+                <Tippy
+                    content={
+                        <TippyContainer>
+                            <TippyText>
+                                <FaEdit size={18} color={'white'}/>
+                                <h3>Editar Contato</h3>
+                            </TippyText>
+                            <p>ou</p>
+                            <TippyText>
+                                <FaPlusCircle size={18} color={'white'}/>
+                                <h3>Acrescentar contato adicional</h3>
+                            </TippyText>
+                        </TippyContainer>
+                    }
+                    placement="top"
+                    theme="custom"
+                    animation="shift-away"
+                    arrow={true}
+                    maxWidth={500}
+                    delay={[1500,0]} // Atraso para exibir e esconder [show, hide]
+                    appendTo={document.body} // Resolve o problema de corte
+                >
+                    <ContactIcon src={EditImage.src} alt="Editar" onClick={openModal} />
+                </Tippy>
             </ContactHeader>
 
             <ContactContain>
@@ -73,7 +102,7 @@ const ContactInfoCard: React.FC<ContactInfoCardProps> = ({ cliente }) => {
                     <ContactRow>
                         <Image src={TellImage} alt="WhatsApp" width={28} height={28} />
                         <p>{cliente.telefone ? <InputMask
-                            mask="(99) 99999-9999"
+                            mask={getPhoneMask(cliente.telefone)}
                             value={cliente.telefone}
                             readOnly
                             className={styles.phoneInput} // Estilo personalizado
@@ -92,7 +121,7 @@ const ContactInfoCard: React.FC<ContactInfoCardProps> = ({ cliente }) => {
                                     <ContactRow>
                                         <Image src={TellImage} alt="WhatsApp" width={28} height={28} />
                                         <p>{cliente.telefone ? <InputMask
-                                            mask="(99) 99999-9999"
+                                            mask={getPhoneMask(contato.valor)}
                                             value={contato.valor}
                                             readOnly
                                             className={styles.phoneInput} // Estilo personalizado
