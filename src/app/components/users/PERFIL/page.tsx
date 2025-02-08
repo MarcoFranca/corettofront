@@ -8,8 +8,8 @@ import { RootState } from '@/store';
 import { fetchProfile, fetchSubUsers, updateProfile } from '@/store/slices/profileSlice';
 import api from '@/app/api/axios';
 import Modal from '@/app/components/Modal/simpleModal';
-import Button from '@/app/components/global/Button';
-import Input from '@/app/components/global/Input';
+import Index from '@/app/components/ui/Button';
+import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
 import {setToken, setUser} from "@/store/slices/authSlice";
 import {
     Card,
@@ -23,7 +23,7 @@ export default function ProfilePage() {
     const dispatch: AppDispatch = useDispatch();
     const router = useRouter();
 
-    const { data: profile, subUserData, subUsers, loading, error } = useSelector((state: RootState) => state.profile);
+    const { data: profile, subUserData, subUsers } = useSelector((state: RootState) => state.profile);
 
     const [message, setMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
@@ -142,7 +142,7 @@ export default function ProfilePage() {
         }
 
         try {
-            const response = await api.post('/subusuarios/', subUser);
+            await api.post('/subusuarios/', subUser);
             setMessage('Subusuário adicionado com sucesso!');
             dispatch(fetchSubUsers());
             setSubUser({ username: '', password: '', role: 'secretaria' });
@@ -216,16 +216,16 @@ export default function ProfilePage() {
                             <p><strong>Subusuários Atuais:</strong> {subUsers.length} / {profile?.plano?.limite_subusuarios || '0'}</p>
                         </>
                     )}
-                    <Button onClick={handleOpenPortal} disabled={loadingPortal}>
+                    <Index onClick={handleOpenPortal} disabled={loadingPortal}>
                         {loadingPortal ? 'Abrindo portal...' : 'Ver Pagamentos e Recibos'}
-                    </Button>
+                    </Index>
                     {errorPortal && <p>{errorPortal}</p>}
                 </Card>
 
                 <Card>
                     <CardTitle>
                         <h3>Informações do Perfil</h3>
-                        <Button  onClick={() => openEditModal('profile')}>Editar</Button>
+                        <Index onClick={() => openEditModal('profile')}>Editar</Index>
                     </CardTitle>
                     <p><strong>Nome:</strong> {profile?.user.first_name}</p>
                     <p><strong>Sobrenome:</strong> {profile?.user.last_name}</p>
@@ -295,9 +295,9 @@ export default function ProfilePage() {
                             <option value="secretaria">Secretaria</option>
                             <option value="gerente">Gerente</option>
                         </select>
-                        <Button type="submit" disabled={loadingSubUser}>
+                        <Index type="submit" disabled={loadingSubUser}>
                             {loadingSubUser ? 'Adicionando...' : 'Adicionar Subusuário'}
-                        </Button>
+                        </Index>
                     </SubuserTable>
                     {message && <p>{message}</p>}
                 </SubuserTableContainer>
@@ -305,40 +305,50 @@ export default function ProfilePage() {
 
             {showEditModal && (
                 <Modal show={showEditModal} onClose={closeEditModal} title="Editar Perfil">
+
                     <form onSubmit={handleSubmit}>
-                        <Input
+                        {/* 🔹 Nome */}
+                        <FloatingMaskedInput
                             label="Nome"
                             type="text"
                             name="first_name"
-                            placeholder="Nome"
+                            placeholder="Digite seu nome"
                             value={profile?.user.first_name || ''}
                             onChange={handleInputChange}
                             required
+                            floatLabel={true} // 🔥 Agora permite ativar/desativar o float
                         />
-                        <Input
+
+                        {/* 🔹 Sobrenome */}
+                        <FloatingMaskedInput
                             label="Sobrenome"
                             type="text"
                             name="last_name"
-                            placeholder="Sobrenome"
+                            placeholder="Digite seu sobrenome"
                             value={profile?.user.last_name || ''}
                             onChange={handleInputChange}
+                            floatLabel={true}
                         />
-                        <Input
-                            label="Foto"
+
+                        {/* 🔹 Foto (Arquivo) - NÃO usa FloatingMaskedInput */}
+                        <label htmlFor="foto">Foto</label>
+                        <input
                             type="file"
                             name="foto"
                             accept="image/*"
                             onChange={handleFileChange}
                         />
-                        <Button variant="primary" type="submit">
+
+                        <Index variant="primary" type="submit">
                             Salvar
-                        </Button>
-                        <Button variant="secondary" type="button" onClick={closeEditModal}>
+                        </Index>
+                        <Index variant="secondary" type="button" onClick={closeEditModal}>
                             Cancelar
-                        </Button>
+                        </Index>
                     </form>
                 </Modal>
             )}
+
         </ProfileContainer>
     );
 }

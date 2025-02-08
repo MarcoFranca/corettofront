@@ -18,7 +18,7 @@ import InputMask from 'react-input-mask';
 import 'tippy.js/dist/tippy.css';
 import '@/app/(styles)/globals.css';
 import {FaWhatsapp} from "react-icons/fa";
-import {getPhoneMask} from "@/utils/phoneUtils";
+import {getPhoneMask} from "@/utils/maskUtils";
 
 const statusColors: Record<StatusReuniao, string> = {
     'reuniao_marcada': 'green',

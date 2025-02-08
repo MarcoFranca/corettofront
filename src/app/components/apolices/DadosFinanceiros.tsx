@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import CustomDropdown from '@/app/components/common/DropDown/CustomDropdown';
-import FloatingLabelInput from '@/app/components/common/input/FloatingLabelInput';
+import FloatingLabelInput from '@/app/components/ui/input/FloatingLabelInput';
 import styles from './ApoliceForm.module.css';
 import { PERIODICIDADES, FORMAS_PAGAMENTO } from '@/utils/selects';
 
@@ -12,7 +12,7 @@ interface DadosFinanceirosProps {
     initialValues: { premio_pago: string; periodicidade_pagamento: string; forma_pagamento: string }; // Adicionando initialValues
 }
 
-const DadosFinanceiros: React.FC<DadosFinanceirosProps> = ({ register, handleDropdownSelect, setValue, watch, initialValues }) => {
+const DadosFinanceiros: React.FC<DadosFinanceirosProps> = ({ register, handleDropdownSelect, setValue, initialValues }) => {
 
     useEffect(() => {
         if (initialValues?.periodicidade_pagamento) {

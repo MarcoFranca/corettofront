@@ -9,18 +9,20 @@ export const Container = styled.div`
     min-height: 100%;
     overflow: auto;
 `;
+
 export const Linked = styled(Link)`
     display: flex;
     gap: 8px;
     align-items: center;
     color: #0c2859;
     margin-bottom: 8px;
-`
+`;
 
 export const Filters = styled.div`
     display: flex;
     gap: 16px;
     margin-bottom: 20px;
+    align-items: center;
 
     select {
         padding: 8px 12px;
@@ -50,6 +52,44 @@ export const Filters = styled.div`
     }
 `;
 
+export const ButtonContain = styled.div`
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    p{
+        margin: 0;
+    }
+
+`
+
+/** 🔹 Novo Estilo para Upload de Arquivo **/
+export const FileInput = styled.label`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    user-select: none;
+
+    svg {
+        font-size: 1.2rem;
+    }
+
+    &:hover {
+        background-color: #0056b3;
+        transform: scale(1.02);
+    }
+
+    input {
+        display: none;
+    }
+`;
 
 export const Table = styled.table`
     width: 100%;

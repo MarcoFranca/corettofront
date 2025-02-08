@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Modal from '@/app/components/Modal/simpleModal';
-import Input from '@/app/components/global/Input';
-import Button from '@/app/components/global/Button';
+import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
+import Index from '@/app/components/ui/Button';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import api from '@/app/api/axios';
@@ -69,7 +69,13 @@ const EditPersonalInfoModal: React.FC<EditPersonalInfoModalProps> = ({ isOpen, o
             <ModalContainer onSubmit={handleSubmit}>
                 <FormGroup>
                     <label>Data de Nascimento</label>
-                    <Input type="date" value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)} required />
+                    <FloatingMaskedInput
+                        type="date"
+                        label={'nascimento'}
+                        name={''}
+                        value={dataNascimento}
+                        onChange={(e) => setDataNascimento(e.target.value)}
+                        required />
                 </FormGroup>
 
                 <FormGroup>
@@ -97,7 +103,7 @@ const EditPersonalInfoModal: React.FC<EditPersonalInfoModalProps> = ({ isOpen, o
                     </SelectWrapper>
                 </FormGroup>
 
-                <Button variant="primary" type="submit">Salvar</Button>
+                <Index variant="primary" type="submit">Salvar</Index>
             </ModalContainer>
         </Modal>
     );

@@ -1,6 +1,6 @@
 import React from 'react';
 import CustomDropdown from '@/app/components/common/DropDown/CustomDropdown';
-import FloatingLabelInput from '@/app/components/common/input/FloatingLabelInput';
+import FloatingLabelInput from '@/app/components/ui/input/FloatingLabelInput';
 import styles from './ApoliceForm.module.css';
 import {
     PRODUTO_ESCOLHIDO,

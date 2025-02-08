@@ -2,10 +2,10 @@
 
 /**
  * Remove todos os caracteres que não sejam números.
+ * Pode ser usado para CPF, RG, telefone ou qualquer campo numérico.
  * @param value - O valor que precisa ser "limpo".
  * @returns Apenas os números da string.
  */
-
 export const removeMask = (value: string): string => {
     return value?.replace(/\D/g, ""); // Remove tudo que não for número
 };
@@ -21,3 +21,20 @@ export const getPhoneMask = (telefone: string): string => {
     return rawValue?.length <= 10 ? "(99) 9999-9999" : "(99) 99999-9999";
 };
 
+/**
+ * Retorna a máscara apropriada para o CPF.
+ * @param cpf - Número do CPF sem máscara.
+ * @returns A máscara correta para o CPF.
+ */
+export const getCpfMask = (cpf: string): string => {
+    return "999.999.999-99";
+};
+
+/**
+ * Retorna a máscara apropriada para a Identidade (RG).
+ * @param identidade - Número da identidade sem máscara.
+ * @returns A máscara correta para a Identidade.
+ */
+export const getIdentityMask = (identidade: string): string => {
+    return "99.999.999-*";
+};

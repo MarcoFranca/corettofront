@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Input from '@/app/components/global/Input';
-import Button from '@/app/components/global/Button';
+import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
+import Index from '@/app/components/ui/Button';
 import Select from 'react-select'; // Usando react-select
 import api from '@/app/api/axios';
 import { toast } from 'react-toastify';
@@ -62,14 +62,16 @@ const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ onSucce
 
     return (
         <form onSubmit={handleSubmit} className={styles.form}>
-            <Input
+            <FloatingMaskedInput
+                name={'profissao'}
                 label="Nome da Profissão"
                 type="text"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 required
             />
-            <Input
+            <FloatingMaskedInput
+                name={'descricaoProfissao'}
                 label="Descrição"
                 type="text"
                 value={descricao}
@@ -97,9 +99,9 @@ const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ onSucce
                 isSearchable
                 className={styles.customSelectSpacing}
             />
-            <Button variant="primary" type="submit">
+            <Index variant="primary" type="submit">
                 Cadastrar
-            </Button>
+            </Index>
         </form>
     );
 };

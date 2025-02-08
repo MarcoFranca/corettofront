@@ -1,12 +1,12 @@
-// src/app/components/Modal/profile/EditClientModal.tsx
 import React, { useState } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import Modal from '@/app/components/Modal/simpleModal';
-import Input from '@/app/components/global/Input';
-import Button from '@/app/components/global/Button';
+import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
+import Index from '@/app/components/ui/Button';
 import { toast } from 'react-toastify';
-import {FaPlus, FaTrash} from "react-icons/fa";
+import { FaPlus, FaTrash } from "react-icons/fa";
 import { ContatoAdicional, EditClientModalProps } from "@/types/interfaces";
-import { removeMask } from "@/utils/phoneUtils";
+import { removeMask } from "@/utils/maskUtils";
 import {
     ModalContainer,
     Form,
@@ -16,9 +16,11 @@ import {
     RemoveButton,
     EmptyMessage, ContactSelect, PhoneInput,
 } from './EditClientModal.Styles';
-import {IoSyncOutline} from "react-icons/io5";
+import { IoSyncOutline } from "react-icons/io5";
 
 const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClose, initialData, onSave }) => {
+    const methods = useForm(); // ✅ Inicializa React Hook Form
+
     const [email, setEmail] = useState(initialData.email);
     const [telefone, setTelefone] = useState(initialData.telefone);
     const [contatosAdicionais, setContatosAdicionais] = useState<ContatoAdicional[]>(
@@ -30,19 +32,8 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
     };
 
     const handleRemoveContato = (index: number) => {
-        const button = document.querySelector(`#remove-btn-${index}`); // Corrigindo a referência do botão
-
-        if (button) {
-            button.classList.add("shake"); // 🔥 Adiciona a classe para animar
-
-            setTimeout(() => {
-                setContatosAdicionais(contatosAdicionais.filter((_, i) => i !== index));
-            }, 350); // ⏳ Aguarda a animação antes de remover
-        } else {
-            // setContatosAdicionais(contatosAdicionais.filter((_, i) => i !== index));
-        }
+        setContatosAdicionais(contatosAdicionais.filter((_, i) => i !== index));
     };
-
 
     const handleContatoChange = (index: number, valor: string) => {
         const cleanedValue = valor.replace(/\D/g, ""); // Remove tudo que não for número
@@ -77,70 +68,80 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
 
     return (
         <Modal show={isOpen} onClose={onRequestClose} title="Editar Contato">
-            <ModalContainer>
-                <Form onSubmit={handleSubmit}>
-                    <InputGroup>
-                        <Input type="email" value={email} label={'E-mail'} onChange={(e) => setEmail(e.target.value)} required />
-                    </InputGroup>
+            <FormProvider {...methods}> {/* ✅ ENVOLVE O FORM COM O FORM PROVIDER */}
+                <ModalContainer>
+                    <Form onSubmit={handleSubmit}>
+                        <InputGroup>
+                            <FloatingMaskedInput
+                                type="email"
+                                name="email"
+                                value={email}
+                                label="E-mail"
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                floatLabel={true} // 🔥 Ativa o Floating Label
+                            />
+                        </InputGroup>
 
-                    <InputGroup>
-                        <Input
-                            type="text"
-                            label={"Telefone"}
-                            value={telefone}
-                            onChange={(e) => setTelefone(removeMask(e.target.value))}
-                            mask="(99) 99999-9999"
-                            maskPlaceholder={null}
-                            required
-                        />
-                    </InputGroup>
+                        <InputGroup>
+                            <FloatingMaskedInput
+                                type="text"
+                                name="telefone"
+                                label="Telefone"
+                                value={telefone}
+                                onChange={(e) => setTelefone(removeMask(e.target.value))}
+                                mask="(99) 99999-9999"
+                                maskPlaceholder={null} // ✅ Corrigido para aceitar `null`
+                                required
+                                floatLabel={true}
+                            />
+                        </InputGroup>
 
-                    {/* Contatos Adicionais */}
-                    <AdditionalContacts>
-                        <h4>Contatos Adicionais</h4>
-                        {contatosAdicionais.length > 0 ? (
-                            contatosAdicionais.map((contato, index) => (
-                                <ContactRow key={index}>
-                                    <ContactSelect>
-                                        <select
-                                            value={contato.tipo}
-                                            onChange={(e) => handleTipoChange(index, e.target.value)}
-                                        >
-                                            <option value="celular">Celular</option>
-                                            <option value="residencial">Residencial</option>
-                                            <option value="comercial">Comercial</option>
-                                            <option value="outro">Outro</option>
-                                        </select>
-                                        <PhoneInput
-                                            mask={contato.tipo != "residencial" ? "(99) 99999-9999" : "(99) 9999-9999"}
-                                            // Máscara dinâmica
-                                            value={contato.valor}
-                                            onChange={(e) => handleContatoChange(index, e.target.value)}
-                                            required
-                                        />
-                                        <RemoveButton
-                                            id={`remove-btn-${index}`} // 🔥 Adiciona um ID único para cada botão
-                                            type="button"
-                                            onClick={() => handleRemoveContato(index)}
-                                        >
-                                            <FaTrash size={16} />
-                                        </RemoveButton>
-                                    </ContactSelect>
-                                </ContactRow>
-                            ))
-                        ) : (
-                            <EmptyMessage>Nenhum contato adicional cadastrado.</EmptyMessage>
-                        )}
-                        <Button type="button" variant={"warning"} icon={<FaPlus />} iconPosition="left" onClick={handleAddContato}>
-                            Adicionar Contato
-                        </Button>
-                    </AdditionalContacts>
+                        {/* Contatos Adicionais */}
+                        <AdditionalContacts>
+                            <h4>Contatos Adicionais</h4>
+                            {contatosAdicionais.length > 0 ? (
+                                contatosAdicionais.map((contato, index) => (
+                                    <ContactRow key={index}>
+                                        <ContactSelect>
+                                            <select
+                                                value={contato.tipo}
+                                                onChange={(e) => handleTipoChange(index, e.target.value)}
+                                            >
+                                                <option value="celular">Celular</option>
+                                                <option value="residencial">Residencial</option>
+                                                <option value="comercial">Comercial</option>
+                                                <option value="outro">Outro</option>
+                                            </select>
+                                            <PhoneInput
+                                                mask={contato.tipo !== "residencial" ? "(99) 99999-9999" : "(99) 9999-9999"}
+                                                value={contato.valor}
+                                                onChange={(e) => handleContatoChange(index, e.target.value)}
+                                                required
+                                            />
+                                            <RemoveButton
+                                                type="button"
+                                                onClick={() => handleRemoveContato(index)}
+                                            >
+                                                <FaTrash size={16}/>
+                                            </RemoveButton>
+                                        </ContactSelect>
+                                    </ContactRow>
+                                ))
+                            ) : (
+                                <EmptyMessage>Nenhum contato adicional cadastrado.</EmptyMessage>
+                            )}
+                            <Index type="button" variant="warning" icon={<FaPlus />} iconPosition="left" onClick={handleAddContato}>
+                                Adicionar Contato
+                            </Index>
+                        </AdditionalContacts>
 
-                    <Button variant="primary" type="submit" icon={<IoSyncOutline /> } iconPosition={"left"}>
-                        Atualizar
-                    </Button>
-                </Form>
-            </ModalContainer>
+                        <Index variant="primary" type="submit" icon={<IoSyncOutline />} iconPosition="left">
+                            Atualizar
+                        </Index>
+                    </Form>
+                </ModalContainer>
+            </FormProvider>
         </Modal>
     );
 };

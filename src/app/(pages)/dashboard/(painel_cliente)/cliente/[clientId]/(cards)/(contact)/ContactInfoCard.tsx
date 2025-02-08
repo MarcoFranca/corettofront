@@ -25,7 +25,7 @@ import ContatoImage from "../../../../../../../../../public/assets/pages/profile
 import EditImage from "../../../../../../../../../public/assets/common/edit.svg";
 import styles from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard.module.css";
 import InputMask from "react-input-mask";
-import {getPhoneMask} from "@/utils/phoneUtils";
+import {getPhoneMask} from "@/utils/maskUtils";
 import Tippy from "@tippyjs/react";
 import {
     FaEdit,

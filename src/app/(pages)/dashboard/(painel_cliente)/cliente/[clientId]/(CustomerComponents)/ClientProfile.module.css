@@ -145,7 +145,7 @@
 }
 
 .profileSection {
-    flex: 1;
+    flex: 2;
     min-width: calc(50% - 10px); /* Ensure cards take up around 50% of the container width */
     margin-bottom: 20px;
     padding: 15px;

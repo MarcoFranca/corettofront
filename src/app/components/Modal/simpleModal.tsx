@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import Button from '../global/Button';
+import Index from '../ui/Button';
 import styles from './simpleModal.module.css';
 
 interface ModalProps {
@@ -17,9 +17,9 @@ const Modal: React.FC<ModalProps> = ({ show, onClose, children, title }) => {
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
                     {title && <h2 className={styles.modalTitle}>{title}</h2>}
-                    <Button variant="danger" onClick={onClose}>
+                    <Index variant="danger" onClick={onClose}>
                         &times;
-                    </Button>
+                    </Index>
                 </div>
                 <div className={styles.modalBody}>{children}</div>
             </div>

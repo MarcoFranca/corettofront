@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FloatingLabelInput from '@/app/components/common/input/FloatingLabelInput';
+import FloatingLabelInput from '@/app/components/ui/input/FloatingLabelInput';
 import styles from './Step3Form.module.css';
 
 interface Step3Props {

@@ -2,8 +2,8 @@ import React, {useState, useEffect} from 'react';
 import { useDispatch } from 'react-redux';
 import { createLead } from '@/store/slices/leadsSlice';
 import Modal from '@/app/components/Modal/simpleModal';
-import Input from '@/app/components/global/Input';
-import Button from '@/app/components/global/Button';
+import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
+import Button from '@/app/components/ui/Button';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import InputMask from 'react-input-mask';
@@ -304,7 +304,8 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
 
                 <div className={styles.nameContainer}>
 
-                    <Input
+                    <FloatingMaskedInput
+                        name={'PrimeiroNome'}
                         label="Nome"
                         type="text"
                         value={nome}
@@ -313,7 +314,8 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                         className={fieldErrors.nome ? styles.error : ''}
                         errorMessage={fieldErrors.nome}
                     />
-                    <Input
+                    <FloatingMaskedInput
+                        name={'SobreNome'}
                         label="Sobrenome"
                         type="text"
                         value={sobrenome}
@@ -332,7 +334,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                         onChange={(e) => setTelefone(e.target.value)}
                     >
                         {(inputProps: any) => (
-                            <Input
+                            <FloatingMaskedInput
                                 {...inputProps}
                                 label="Telefone"
                                 type="text"
@@ -342,7 +344,8 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                             />
                         )}
                     </InputMask>
-                    <Input
+                    <FloatingMaskedInput
+                        name={'email'}
                         label="Email"
                         type="email"
                         value={email}

@@ -6,9 +6,8 @@ import { RootState } from '@/store';
 import styles from './ClientProfile.module.css';
 import ContactInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/ContactInfoCard';
 import PersonalInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(personalInfo)/PersonalInfoCard';
-import DocumentInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/DocumentInfoCard';
-import HealthInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/HealthInfoCard';
-import AddressCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/AddressCard';
+import DocumentInfoCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(documents)/DocumentInfoCard';
+import AddressCard from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(adress)/AddressCard';
 import ProfileImageMan from '../../../../../../../../public/assets/common/user.svg';
 import ProfileImageWoman from '../../../../../../../../public/assets/common/PerfilMulher.svg';
 import Image from "next/image";
@@ -16,8 +15,6 @@ import Card from '@/app/components/common/Card';
 import Modal from 'react-modal';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Importa o CSS padrão do Tippy.js
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { FaHeartbeat, FaBox, FaChartLine, FaLightbulb } from "react-icons/fa";
 import { MdTouchApp } from "react-icons/md";
 
 import {
@@ -29,10 +26,9 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import ApolicesTable from "@/app/components/cliente/apoliceClient/ApolicesTable";
 import Spinner from "@/app/components/common/spinner/sppiner";
-import OpportunitiesTable from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/reuniao/OpportunitiesTable";
+import { StatusType , STATUS_DETAILS } from '@/app/components/ui/Badge';
+import ClientTabs from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/ClientTabs";
 
 ChartJS.register(
     CategoryScale,
@@ -54,19 +50,6 @@ const ClientProfile: React.FC = () => {
     const status = useAppSelector((state: RootState) => state.clientes.statusDetalhe);
     const error = useAppSelector((state: RootState) => state.clientes.errorDetalhe);
     const [selectedStatus, setSelectedStatus] = useState<string>(''); // Inicialize com string vazia
-
-
-    const statusOptions = [
-        { value: "lead", label: "Lead", color: "#FFA500", description: "Cliente potencial que ainda não fechou negócio." },
-        { value: "negociacao", label: "Em Negociação", color: "#1E90FF", description: "Cliente em contato e negociação ativa." },
-        { value: "ativo", label: "Cliente Ativo", color: "#32CD32", description: "Cliente que possui um serviço ativo." },
-        { value: "nova_negociacao", label: "Nova Negociação", color: "#4682B4", description: "Cliente ativo, mas negociando novos produtos." },
-        { value: "inativo", label: "Cliente Inativo", color: "#FF4500", description: "Cliente que já teve um serviço, mas não está mais ativo." },
-        { value: "recusado", label: "Recusado", color: "#A52A2A", description: "Cliente recusou a oferta após a negociação." },
-        { value: "reativacao_pendente", label: "Reativação Pendente", color: "#FFD700", description: "Cliente inativo com possibilidade de retorno." },
-        { value: "cancelado", label: "Cancelado", color: "#8B0000", description: "Cliente que cancelou os serviços recentemente." },
-    ];
-
 
     const openStatusModal = () => setIsStatusModalOpen(true);
 
@@ -158,9 +141,7 @@ const ClientProfile: React.FC = () => {
                                                     <p>Clique para alterar o Status</p>
                                                 </div>
                                                 <h3>
-                                                {statusOptions.find(s =>
-                                                    s.value === cliente.status)?.description}
-
+                                                    {STATUS_DETAILS[cliente.status]?.description}
                                                 </h3>
                                             </div>
                                         }
@@ -170,25 +151,26 @@ const ClientProfile: React.FC = () => {
                                     >
                                         <p
                                             className={styles.statusBadge}
-                                            style={{ backgroundColor: statusOptions.find(s => s.value === cliente.status)?.color }}
+                                            style={{ backgroundColor: STATUS_DETAILS[cliente.status]?.color}}
                                             onClick={openStatusModal}
                                         >
-                                            {statusOptions.find(s => s.value === cliente.status)?.label}
+                                            {STATUS_DETAILS[cliente.status]?.label || cliente.status}
                                             <MdTouchApp size={16}/>
                                         </p>
                                     </Tippy>
                                 </div>
                             </div>
 
-                            <Modal isOpen={isStatusModalOpen} onRequestClose={() => setIsStatusModalOpen(false)} className={styles.statusModal}>
+                            <Modal isOpen={isStatusModalOpen} onRequestClose={() => setIsStatusModalOpen(false)}
+                                   className={styles.statusModal}>
                                 <h2 className={styles.modalTitle}>Alterar Status</h2>
                                 <select
                                     value={selectedStatus}
-                                    onChange={(e) => setSelectedStatus(e.target.value)}
+                                    onChange={(e) => setSelectedStatus(e.target.value as StatusType)} // ✅ Corrige tipagem
                                     className={styles.dropdown}
                                 >
-                                    {statusOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
+                                    {Object.entries(STATUS_DETAILS).map(([value, option]) => (
+                                        <option key={value} value={value}>
                                             {option.label}
                                         </option>
                                     ))}
@@ -248,51 +230,7 @@ const ClientProfile: React.FC = () => {
                             )}
                         </Card>
                     </div>
-                    <div className={styles.rightCard}>
-                        <Tabs>
-
-                            <TabList className={styles.tabList}>
-                                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
-                                    <FaHeartbeat/> Saúde
-                                </Tab>
-                                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
-                                    <FaBox/> Produtos
-                                </Tab>
-                                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
-                                    <FaChartLine/> Informações Financeiras
-                                </Tab>
-                                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
-                                    <FaLightbulb/> Oportunidades
-                                </Tab>
-                            </TabList>
-
-                            <TabPanel>
-                                <HealthInfoCard cliente={cliente}/>
-                            </TabPanel>
-                            <TabPanel>
-                                <ApolicesTable/>
-                            </TabPanel>
-                            <TabPanel>
-                                <Card title="Informações Financeiras">
-                                    <Bar data={financeData}/>
-                                </Card>
-                            </TabPanel>
-                            <TabPanel>
-                                <OpportunitiesTable cliente={cliente}/>
-                            </TabPanel>
-                            <TabPanel>
-                                <HealthInfoCard cliente={cliente}/>
-                            </TabPanel>
-                            <TabPanel>
-                                <ApolicesTable/>
-                            </TabPanel>
-                            <TabPanel>
-                                <Card title="Informações Financeiras">
-                                    <Bar data={financeData} />
-                                </Card>
-                            </TabPanel>
-                        </Tabs>
-                    </div>
+                    <ClientTabs cliente={cliente} financeData={financeData}/>
 
                 </>
             )}
