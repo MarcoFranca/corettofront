@@ -75,6 +75,20 @@ export const StyledButton = styled.button<StyledButtonProps>`
         background-color: #e0a800;
       }
     `}
+
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 `;
 
 export const ButtonContent = styled.div<{ iconPosition: 'left' | 'right' }>`
@@ -95,3 +109,12 @@ export const IconWrapper = styled.span`
   align-items: center;
   font-size: 1.2rem; /* Ajuste o tamanho do ícone */
 `;
+
+export const IsLoadingText = styled.div`
+display: flex;
+    align-items: center;
+    gap: 12px;
+    p{
+        margin: 0;
+    }
+`

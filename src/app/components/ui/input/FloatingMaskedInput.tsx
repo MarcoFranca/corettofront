@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import InputMask from "react-input-mask";
-import { InputContainer, Label, Input, Required, FloatingLabelWrapper } from "./FloatingMaskedInput.styles";
+import { InputContainer, Label, Input, Required, FloatingLabelWrapper, StaticLabelWrapper } from "./FloatingMaskedInput.styles";
+import {UseFormSetValue} from "react-hook-form";
 
 interface FloatingMaskedInputProps {
     label: string;
@@ -12,68 +13,115 @@ interface FloatingMaskedInputProps {
     required?: boolean;
     defaultValue?: string;
     className?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;
+    floatLabel?: boolean;
+    errorMessage?: string;
+    control: any; // ✅ Agora `control` é obrigatório
+    setValue: UseFormSetValue<any>; // ✅ Agora aceita qualquer campo
+    register?: any; // ✅ Adicionamos suporte para `register`
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> = ({
                                                                      label,
                                                                      name,
                                                                      type = "text",
-                                                                     value = "", // ✅ Garante que `value` sempre tenha um valor padrão
+                                                                     value = "",
                                                                      mask,
                                                                      maskPlaceholder,
                                                                      required = false,
                                                                      onChange,
                                                                      className = "",
-                                                                     placeholder = "", // ✅ Se houver placeholder, o rótulo flutuante não é necessário
+                                                                     placeholder = "",
+                                                                     floatLabel = true,
+                                                                     control,
+                                                                     errorMessage = "",
+                                                                     setValue,
+                                                                     register, // ✅ Adicionado suporte ao `register`
                                                                  }) => {
-    const [isFocused, setIsFocused] = useState(false);
+    const inputProps = register
+        ? register(name, {
+            required: { value: true, message: "Campo obrigatório" },
+        })
+        : {};
+console.log(name)
 
-    const handleFocus = () => setIsFocused(true);
-    const handleBlur = () => setIsFocused(false);
 
-    // 🔥 Define se o rótulo deve flutuar com base no foco ou no valor preenchido
-    const shouldFloatLabel = !placeholder && (isFocused || value.length > 0);
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(name, e.target.value, { shouldValidate: true }); // ✅ Agora `setValue` sempre será chamado corretamente
+        if (onChange) onChange(e);
+    };
 
     return (
         <InputContainer className={className}>
-            <FloatingLabelWrapper>
-                {mask ? (
-                    <InputMask
-                        mask={mask}
-                        value={value}
-                        onChange={onChange}
-                        maskPlaceholder={maskPlaceholder}
-                        onFocus={handleFocus} // ✅ Agora passa o `onFocus` diretamente
-                        onBlur={handleBlur}   // ✅ Agora passa o `onBlur` diretamente
-                    >
-                        {(inputProps) => (
-                            <Input
-                                {...inputProps}
-                                id={name}
-                                type={type}
-                                required={required}
-                                placeholder=" "
-                            />
-                        )}
-                    </InputMask>
-                ) : (
-                    <Input
-                        id={name}
-                        type={type}
-                        value={value}
-                        onChange={onChange}
-                        required={required}
-                        placeholder=" "
-                        onFocus={handleFocus}
-                        onBlur={handleBlur}
-                    />
-                )}
-                <Label htmlFor={name} className={shouldFloatLabel ? "float" : ""}>
-                    {label} {required && <Required>*</Required>}
-                </Label>
-            </FloatingLabelWrapper>
+            {floatLabel ? (
+                <FloatingLabelWrapper>
+                    {mask ? (
+                        <InputMask
+                            mask={mask}
+                            maskPlaceholder={maskPlaceholder}
+                            {...register(name, { required })}
+                        >
+                            {(inputProps) => (
+                                <Input
+                                    {...inputProps}
+                                    id={name}
+                                    type={type}
+                                    required={required}
+                                    placeholder=" " // 🔥 Mantemos espaço para ativar o float label
+                                />
+                            )}
+                        </InputMask>
+                    ) : (
+                        <Input
+                            {...inputProps}
+                            id={name}
+                            type={type}
+                            required={required}
+                            placeholder={placeholder || ""}
+                            onChange={handleChange} // 🔥 Garante que `react-hook-form` detecta a mudança
+                        />
+                    )}
+                    <Label htmlFor={name} className="float">
+                        {label} {required && <Required>*</Required>}
+                    </Label>
+                </FloatingLabelWrapper>
+            ) : (
+                <StaticLabelWrapper> {/* 🔥 Agora o label fica fixo acima do input */}
+                    <Label htmlFor={name} className="static-label">
+                        {label} {required && <Required>*</Required>}
+                    </Label>
+                    {mask ? (
+                        <InputMask
+                            mask={mask}
+                            maskPlaceholder={maskPlaceholder}
+                            {...register(name, { required })}
+                        >
+                            {(inputProps) => (
+                                <Input
+                                    {...inputProps}
+                                    id={name}
+                                    type={type}
+                                    required={required}
+                                    placeholder={placeholder || ""} // 🔥 Agora o placeholder funciona corretamente
+                                />
+                            )}
+                        </InputMask>
+                    ) : (
+                        <Input
+                            {...inputProps}
+                            id={name}
+                            type={type}
+                            required={required}
+                            placeholder={placeholder || ""} // 🔥 Agora o placeholder funciona corretamente
+                        />
+                    )}
+                </StaticLabelWrapper>
+            )}
+
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
         </InputContainer>
     );
 };
