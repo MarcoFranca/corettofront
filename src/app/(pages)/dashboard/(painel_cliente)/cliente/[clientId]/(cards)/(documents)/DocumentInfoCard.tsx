@@ -54,6 +54,7 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ cliente }) => {
                 <DetailsContainer>
                     <p>📋 <strong>CPF:</strong> {cliente.cpf ? (
                         <InputMask
+
                             mask={getCpfMask(cliente.cpf)}
                             value={cliente.cpf}
                             readOnly

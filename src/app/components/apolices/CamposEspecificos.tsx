@@ -1,6 +1,6 @@
 import React from 'react';
 import CustomDropdown from '@/app/components/common/DropDown/CustomDropdown';
-import FloatingLabelInput from '@/app/components/ui/input/FloatingLabelInput'; // Certifique-se de ajustar o caminho
+import FloatingLabelInput from '@/app/components/ui/input/DELETAR APOS APOLICES/FloatingLabelInput'; // Certifique-se de ajustar o caminho
 import styles from './ApoliceForm.module.css';
 import {
     TRIBUTACAO_ESCOLHIDA,

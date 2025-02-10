@@ -24,7 +24,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClos
         defaultValues: initialData || {}, // ✅ Agora aceita qualquer campo dinamicamente
     });
 
-    const { handleSubmit, register, setValue, reset, control, formState: { isValid, isSubmitting } } = methods;
+    const { handleSubmit, register, setValue, watch, reset, control, formState: { isValid, isSubmitting } } = methods;
 
 
     // ✅ Resetando os valores quando `initialData` mudar

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import FloatingLabelInput from '@/app/components/ui/input/FloatingLabelInput';
+import FloatingLabelInput from '@/app/components/ui/input/DELETAR APOS APOLICES/FloatingLabelInput';
 import CustomDropdown from '@/app/components/common/DropDown/CustomDropdown';
 import styles from './Step1.module.css'; // Usando o mesmo CSS
 

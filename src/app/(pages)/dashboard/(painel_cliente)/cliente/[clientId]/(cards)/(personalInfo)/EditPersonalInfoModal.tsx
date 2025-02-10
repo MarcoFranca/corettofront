@@ -1,47 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import Modal from '@/app/components/Modal/simpleModal';
-import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
-import Index from '@/app/components/ui/Button';
-import { toast } from 'react-toastify';
-import Select from 'react-select';
-import api from '@/app/api/axios';
-import { EditPersonalInfoModalProps, genderOptions, Profissao } from '@/types/interfaces';
-import { ModalContainer, FormGroup, SelectWrapper } from './EditPersonalInfoModal.styles';
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import StandardModal from "@/app/components/Modal/StandardModal";
+import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
+import SelectCustom from "@/app/components/ui/select/SelectCustom";
+import SelectProfissao from "@/app/components/ui/select/SelectProfissao/SelectProfissao";
+import { toast } from "react-toastify";
+import api from "@/app/api/axios";
+import { EditPersonalInfoModalProps, genderOptions, Profissao } from "@/types/interfaces";
+import { ModalContainer, FormGroup } from "./EditPersonalInfoModal.styles";
+import {AiOutlineSave} from "react-icons/ai";
+
+/**
+ * Formata a data para o formato esperado pelo input (`yyyy-MM-dd`).
+ */
+const formatDateToInput = (date: string): string => {
+    if (!date) return "";
+    const [year, month, day] = date.split("-");
+    return `${year}-${month}-${day}`;
+};
 
 const EditPersonalInfoModal: React.FC<EditPersonalInfoModalProps> = ({ isOpen, onRequestClose, initialData, onSave }) => {
-    const [dataNascimento, setDataNascimento] = useState(initialData.data_nascimento || '');
-    const [genero, setGenero] = useState(
-        initialData.genero ? { value: initialData.genero, label: initialData.genero === 'M' ? 'Masculino' : 'Feminino' } : null
-    );
+    const methods = useForm({
+        defaultValues: {
+            data_nascimento: "",
+            genero: "",
+            profissao_id: "",
+        },
+    });
 
+    const { control, register ,  handleSubmit, setValue, reset } = methods;
     const [profissoes, setProfissoes] = useState<{ label: string; options: { value: string; label: string }[] }[]>([]);
-    const [profissao, setProfissao] = useState<{ value: string; label: string } | null>(
-        initialData.profissao ? { value: initialData.profissao.id, label: initialData.profissao.nome } : null
-    );
 
-    // ✅ Carregar profissões e subcategorias ao abrir o modal
+    // Preenche os valores iniciais do formulário quando o modal é aberto
+    useEffect(() => {
+        if (isOpen && initialData) {
+            reset({
+                data_nascimento: initialData.data_nascimento
+                    ? formatDateToInput(initialData.data_nascimento)
+                    : "",
+                genero: initialData.genero || "",
+                profissao_id: initialData.profissao?.id || "",
+            });
+        }
+    }, [isOpen, initialData, reset]);
+
+    // Carrega as profissões ao abrir o modal
     useEffect(() => {
         const fetchProfissoes = async () => {
             try {
-                const response = await api.get('/profissoes/');
+                const response = await api.get("/profissoes/");
                 const dadosProfissoes = response.data;
 
-                // Organiza profissões e subcategorias para exibição em grupos no Select
                 const organizadas = dadosProfissoes.map((profissao: Profissao) => ({
-                    label: profissao.nome, // Categoria principal
+                    label: profissao.nome,
                     options: [
-                        { value: profissao.id, label: `🔹 ${profissao.nome}` }, // Principal
+                        { value: profissao.id, label: `🔹 ${profissao.nome}` },
                         ...(profissao.subcategorias ?? []).map((sub: Profissao) => ({
                             value: sub.id,
-                            label: `↳ ${sub.nome}`, // Indica subnível
-                        }))
+                            label: `↳ ${sub.nome}`,
+                        })),
                     ],
                 }));
 
                 setProfissoes(organizadas);
             } catch (error) {
-                toast.error('Erro ao carregar profissões.');
-                console.error('Erro ao buscar profissões:', error);
+                toast.error("Erro ao carregar profissões.");
+                console.error("Erro ao buscar profissões:", error);
             }
         };
 
@@ -50,62 +74,69 @@ const EditPersonalInfoModal: React.FC<EditPersonalInfoModalProps> = ({ isOpen, o
         }
     }, [isOpen]);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!dataNascimento || !genero || !profissao) {
-            toast.error('⚠️ Preencha todos os campos obrigatórios.');
+    const onSubmit = (data: any) => {
+        if (!data.data_nascimento || !data.genero || !data.profissao_id) {
+            toast.error("⚠️ Preencha todos os campos obrigatórios.");
             return;
         }
 
         onSave({
-            data_nascimento: dataNascimento,
-            genero: genero.value,
-            profissao_id: profissao.value, // 🔥 Agora passamos apenas o ID
+            data_nascimento: data.data_nascimento,
+            genero: data.genero,
+            profissao_id: data.profissao_id,
         });
+
+        onRequestClose();
     };
 
     return (
-        <Modal show={isOpen} onClose={onRequestClose} title="Editar Dados Pessoais">
-            <ModalContainer onSubmit={handleSubmit}>
+        <StandardModal
+            isOpen={isOpen}
+            onRequestClose={onRequestClose}
+            title="Editar Dados Pessoais"
+            onSubmit={methods.handleSubmit(onSubmit)}
+            buttonIcon={
+                    <AiOutlineSave/>
+            }
+            methods={methods}
+        >
+            <ModalContainer>
                 <FormGroup>
-                    <label>Data de Nascimento</label>
                     <FloatingMaskedInput
+                        register={register}
+                        setValue={setValue}
+                        control={control}
+                        name="data_nascimento"
+                        label="Data de Nascimento"
                         type="date"
-                        label={'nascimento'}
-                        name={''}
-                        value={dataNascimento}
-                        onChange={(e) => setDataNascimento(e.target.value)}
-                        required />
+                        value={initialData.data_nascimento} // Adicione isso para garantir que o valor inicial seja passado
+                        required
+                    />
                 </FormGroup>
 
                 <FormGroup>
-                    <label>Gênero</label>
-                    <SelectWrapper>
-                        <Select
-                            options={genderOptions}
-                            value={genero}
-                            onChange={(option) => setGenero(option)}
-                            placeholder="Selecione o gênero"
-                        />
-                    </SelectWrapper>
+                    <SelectCustom
+                        name="genero"
+                        control={control}
+                        label="Gênero"
+                        showLabel={false}
+                        placeholder="Selecione um gênero"
+                        options={genderOptions}
+                        required
+                    />
                 </FormGroup>
 
                 <FormGroup>
-                    <label>Profissão</label>
-                    <SelectWrapper>
-                        <Select
-                            options={profissoes}
-                            value={profissao}
-                            onChange={(option) => setProfissao(option)}
-                            placeholder="Selecione a profissão"
-                            isSearchable
-                        />
-                    </SelectWrapper>
+                    <SelectProfissao
+                        name="profissao_id"
+                        control={control}
+                        placeholder="Selecione a profissão"
+                        showLabel={false}
+                        required
+                    />
                 </FormGroup>
-
-                <Index variant="primary" type="submit">Salvar</Index>
             </ModalContainer>
-        </Modal>
+        </StandardModal>
     );
 };
 

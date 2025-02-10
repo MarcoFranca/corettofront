@@ -1,48 +1,124 @@
-import React from 'react';
-import styles from './Select.module.css';
+import React from "react";
+import Select, { SingleValue, MultiValue, ActionMeta } from "react-select";
+import { AsyncPaginate } from "react-select-async-paginate";
+import { Controller } from "react-hook-form";
+import { SelectWrapper, ErrorMessage, customSelectStyles, Label } from "./SelectCustom.styles";
+
+interface Option {
+    value: string;
+    label: string;
+    isDisabled?: boolean;
+}
 
 interface SelectProps {
-    label: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-    title?: string;
-    options: { value: string; label: string }[];
+    name: string;
+    control: any;
+    label?: string;
+    showLabel?: boolean;
+    value?: Option | null;
+    onChange?: (value: string | string[]) => void;
+    placeholder?: string;
+    options: Option[];
     required?: boolean;
-    className?: string; // Adiciona classes adicionais
-    errorMessage?: string; // Mensagem de erro
+    className?: string;
+    errorMessage?: string;
+    isMulti?: boolean;
+    isSearchable?: boolean;
+    isAsync?: boolean;
+    loadOptions?: (search: string, prevOptions: any, additional: any) => Promise<any>;
+    defaultOptions?: boolean;
 }
 
 const SelectCustom: React.FC<SelectProps> = ({
-                                           label,
-                                           value,
-                                           onChange,
-                                           title,
-                                           options,
-                                           required = false,
-                                           className = '',
-                                           errorMessage = '',
-                                       }) => {
+                                                 name,
+                                                 control,
+                                                 label = "",
+                                                 showLabel = true,
+                                                 value,
+                                                 onChange,
+                                                 placeholder = "Selecione...",
+                                                 options = [],
+                                                 required = false,
+                                                 className = "",
+                                                 errorMessage = "",
+                                                 isMulti = false,
+                                                 isSearchable = false,
+                                                 isAsync = false,
+                                                 loadOptions,
+                                                 defaultOptions = true,
+                                             }) => {
+
     return (
-        <div className={`${styles.selectWrapper} ${className}`}>
-            <label className={styles.label}>
-                {label}
-                {required && <span className={styles.required}>*</span>}
-            </label>
-            <select
-                className={`${styles.select} ${errorMessage ? styles.error : ''}`}
-                value={value}
-                onChange={onChange}
-                title={title}
-            >
-                <option value="" disabled>{title}</option>
-                {options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
-            {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-        </div>
+        <SelectWrapper className={className}>
+            {showLabel && <Label>{label} {required && <span>*</span>}</Label>}
+
+            <Controller
+                name={name}
+                control={control}
+                rules={{ required: required ? "Este campo é obrigatório" : false }}
+                render={({ field, fieldState }) => (
+                    isAsync ? (
+                        <AsyncPaginate
+                            {...field}
+                            loadOptions={loadOptions!}
+                            defaultOptions={defaultOptions}
+                            isMulti={isMulti}
+                            isSearchable
+                            placeholder={placeholder}
+                            styles={customSelectStyles(required)}
+                            value={
+                                isMulti
+                                    ? options.filter(opt => field.value?.includes(opt.value))
+                                    : options.find(opt => opt.value === field.value) || null
+                            }
+                            onChange={(selected: MultiValue<Option> | SingleValue<Option>, _: ActionMeta<Option>) => {
+                                let selectedValue: string | string[] = "";
+
+                                if (!selected) {
+                                    selectedValue = "";
+                                } else if (Array.isArray(selected)) {
+                                    selectedValue = selected.map(s => s.value);
+                                } else if ("value" in selected) {
+                                    selectedValue = selected.value;
+                                }
+
+                                field.onChange(selectedValue);
+                                if (onChange) onChange(selectedValue);
+                            }}
+                        />
+                    ) : (
+                        <Select
+                            {...field}
+                            options={options}
+                            isMulti={isMulti}
+                            isSearchable={isSearchable}
+                            placeholder={placeholder}
+                            styles={customSelectStyles(required)}
+                            value={
+                                isMulti
+                                    ? options.filter((opt) => Array.isArray(field.value) && field.value.includes(opt.value))
+                                    : options.find((opt) => opt.value === field.value) || null
+                            }
+                            onChange={(selected) => {
+                                let selectedValue: string | string[] = "";
+
+                                if (!selected) {
+                                    selectedValue = "";
+                                } else if (Array.isArray(selected)) {
+                                    selectedValue = selected.map((s) => s.value);
+                                } else if ("value" in selected) {
+                                    selectedValue = selected.value;
+                                }
+
+                                field.onChange(selectedValue);
+                                if (onChange) onChange(selectedValue);
+                            }}
+                        />
+                    )
+                )}
+            />
+            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        </SelectWrapper>
     );
 };
 

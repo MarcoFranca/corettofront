@@ -1,7 +1,7 @@
 import React from "react";
 import InputMask from "react-input-mask";
 import { InputContainer, Label, Input, Required, FloatingLabelWrapper, StaticLabelWrapper } from "./FloatingMaskedInput.styles";
-import {UseFormSetValue} from "react-hook-form";
+import {UseFormRegister, UseFormSetValue} from "react-hook-form";
 
 interface FloatingMaskedInputProps {
     label: string;
@@ -18,7 +18,7 @@ interface FloatingMaskedInputProps {
     errorMessage?: string;
     control: any; // ✅ Agora `control` é obrigatório
     setValue: UseFormSetValue<any>; // ✅ Agora aceita qualquer campo
-    register?: any; // ✅ Adicionamos suporte para `register`
+    register: UseFormRegister<any>; // ✅ Agora register está tipado corretamente
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -34,7 +34,6 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> = ({
                                                                      className = "",
                                                                      placeholder = "",
                                                                      floatLabel = true,
-                                                                     control,
                                                                      errorMessage = "",
                                                                      setValue,
                                                                      register, // ✅ Adicionado suporte ao `register`
@@ -58,7 +57,18 @@ console.log(name)
         <InputContainer className={className}>
             {floatLabel ? (
                 <FloatingLabelWrapper>
-                    {mask ? (
+                    {type === "date" ? (
+                        // 🔥 Caso o tipo seja "date", usamos um input padrão
+                        <Input
+                            {...inputProps}
+                            id={name}
+                            type="date"
+                            value={value} // 🔥 Certifique-se de passar o valor corretamente no formato "yyyy-MM-dd"
+                            required={required}
+                            placeholder=" " // 🔥 Mantemos espaço para ativar o float label
+                            onChange={handleChange} // Atualiza o valor no react-hook-form
+                        />
+                    ) : mask ? (
                         <InputMask
                             mask={mask}
                             maskPlaceholder={maskPlaceholder}

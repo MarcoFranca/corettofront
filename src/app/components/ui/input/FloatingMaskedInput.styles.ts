@@ -43,15 +43,16 @@ export const Input = styled.input`
 
     &:focus ~ label,
     &:not(:placeholder-shown) ~ label {
-        top: -5px;
+        top: -7px;
         font-size: 14px;
         color: #007bff;
+        background-color: white;
     }
 `;
 
 // Rótulo do input (flutuante)
 export const Label = styled.label`
-    background: white;
+    background: transparent;
     padding: 0 4px;
     transition: all 0.3s ease-in-out;
     pointer-events: none;
@@ -63,7 +64,7 @@ export const Label = styled.label`
         top: 12px;
         left: 12px;
         font-size: 14px;
-        color: #007bff;
+        color: #888;
     }
 
     &.static-label {

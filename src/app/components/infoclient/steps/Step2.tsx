@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FloatingLabelInput from '@/app/components/ui/input/FloatingLabelInput';
+import FloatingLabelInput from '@/app/components/ui/input/DELETAR APOS APOLICES/FloatingLabelInput';
 import CustomDropdown from '@/app/components/common/DropDown/CustomDropdown';
 import styles from './Step2Form.module.css'; // Novo arquivo de estilo específico para o Step2
 

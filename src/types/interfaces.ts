@@ -15,11 +15,9 @@ export interface Oportunidade {
     observacoes?: string; // Campo opcional
 }
 
-export interface IndicadoPorDetalhes {
+export interface IndicadoPor {
     tipo: 'cliente' | 'parceiro';
     id: string;
-    nome: string;
-    email: string;
 }
 
 export interface Relacionamentos {
@@ -39,7 +37,7 @@ export interface Lead {
     contato?: string;
     telefone: string;
     indicacao?:string;
-    indicado_por_detalhes?: IndicadoPorDetalhes;
+    indicado_por?: IndicadoPor;
     email: string;
     endereco?: string;
     status: string;

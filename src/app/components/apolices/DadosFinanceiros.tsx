@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import CustomDropdown from '@/app/components/common/DropDown/CustomDropdown';
-import FloatingLabelInput from '@/app/components/ui/input/FloatingLabelInput';
+import FloatingLabelInput from '@/app/components/ui/input/DELETAR APOS APOLICES/FloatingLabelInput';
 import styles from './ApoliceForm.module.css';
 import { PERIODICIDADES, FORMAS_PAGAMENTO } from '@/utils/selects';
 
