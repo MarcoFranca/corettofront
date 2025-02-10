@@ -3,41 +3,37 @@ import { useDispatch } from 'react-redux';
 import { createLead } from '@/store/slices/leadsSlice';
 import Modal from '@/app/components/Modal/simpleModal';
 import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
-import Button from '@/app/components/ui/Button';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
-import InputMask from 'react-input-mask';
 import api from '@/app/api/axios';
 import styles from './LeadModal.module.css';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { AppDispatch } from '@/store';
-import {Lead, LeadModalProps, OptionType, ProdutoOption, ProfissaoOption} from '@/types/interfaces';
+import {Lead, LeadModalProps, ProdutoOption, ProfissaoOption} from '@/types/interfaces';
 import CadastrarProfissaoForm from '@/app/components/Modal/cliente/CadastrarProfissaoForm';
 import { Profissao } from '@/types/interfaces';
-import {AsyncPaginate, LoadOptions} from 'react-select-async-paginate';
-import {fetchClientes} from "@/store/slices/clientesSlice";
+import StandardModal from "@/app/components/Modal/StandardModal";
+import {useForm} from "react-hook-form";
+import {Simulate} from "react-dom/test-utils";
+import reset = Simulate.reset;
+import SelectCustom from "@/app/components/ui/select/SelectCustom";
+import SelectProfissao from "@/app/components/ui/select/SelectProfissao/SelectProfissao";
+import SelectCliente from "@/app/components/ui/select/SelectCliente/SelectCliente";
 
 const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const dispatch: AppDispatch = useDispatch();
 
     // 📌 Estados do Formulário
-    const [nome, setNome] = useState('');
-    const [sobrenome, setSobrenome] = useState('');
-    const [genero, setGenero] = useState<'M' | 'F' | ''>('');
-    const [telefone, setTelefone] = useState('');
-    const [email, setEmail] = useState('');
+    const [isSubmittingblock, setIsSubmitting] = useState(false);
+    const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
     // 📌 Estados de Profissões
-    const [profissaoPrincipal, setProfissaoPrincipal] = useState<ProfissaoOption | null>(null);
-    const [subcategoria, setSubcategoria] = useState<ProfissaoOption | null>(null);
     const [profissoesPrincipais, setProfissoesPrincipais] = useState<ProfissaoOption[]>([]);
-    const [subcategorias, setSubcategorias] = useState<ProfissaoOption[]>([]);
 
     // 📌 Estados de Indicação
     const [indicadoPorTipo, setIndicadoPorTipo] = useState<'cliente' | 'parceiro' | ''>('');
     const [indicadoPorId, setIndicadoPorId] = useState<string | null>(null);
     const [parceirosDisponiveis, setParceirosDisponiveis] = useState<ProfissaoOption[]>([]);
-    const [cliente, setCliente] = useState<OptionType | null>(null);
 
     // 📌 Estados de Oportunidades
     const [produtosDisponiveis, setProdutosDisponiveis] = useState<{ value: string; label: string }[]>([]);
@@ -62,14 +58,16 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const fetchProdutosDisponiveis = async () => {
         try {
             const response = await api.get('/produtos-oportunidades/');
-            setProdutosDisponiveis(response.data.map((produto: any) => ({
+            return response.data.map((produto: any) => ({
                 value: produto.id,
                 label: produto.nome,
-            })));
+            }));
         } catch (error) {
             toast.error('😔 Erro ao carregar produtos de oportunidades.');
+            return [];
         }
     };
+
 
     const fetchParceiros = async () => {
         try {
@@ -95,31 +93,6 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
         }
     };
 
-    // 📌 Função para Carregar Clientes com Paginação
-    const loadClienteOptions: LoadOptions<OptionType, any, { page: number }> = async (
-        searchQuery,
-        loadedOptions,
-        additional
-    ) => {
-        const { page = 1 } = additional || {}; // 🔥 Garante que `page` nunca seja undefined
-        try {
-            const response = await api.get(`/clientes/?search=${searchQuery || ''}&page=${page}&limit=100`);
-            return {
-                options: response.data.results.map((cliente: any) => ({
-                    value: cliente.id,
-                    label: `${cliente.nome} ${cliente.sobre_nome || ''}`,
-                })),
-                hasMore: !!response.data.next,
-                additional: {
-                    page: page + 1,
-                },
-            };
-        } catch (error) {
-            toast.error('😔 Erro ao carregar clientes.');
-            return { options: [], hasMore: false };
-        }
-    };
-
     const handleAddOportunidade = () => {
         if (produtoSelecionado.length === 0) {
             toast.error('⚠️ Selecione pelo menos um produto para adicionar.');
@@ -127,269 +100,242 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
         }
 
         const novasOportunidades = produtoSelecionado.map((produto) => ({
-            produto_interesse: produto.label, // Nome do produto
-            prioridade: 'media', // Prioridade padrão
-            descricao: 'Foco inicial', // Descrição padrão
+            produto_interesse: produto.label,
+            prioridade: 'media',
+            descricao: 'Foco inicial',
         }));
 
-        const oportunidadesFiltradas = novasOportunidades.filter(
-            (novaOportunidade) =>
-                !oportunidades.some(
-                    (oportunidade) =>
-                        oportunidade.produto_interesse === novaOportunidade.produto_interesse
-                )
+        const novasOportunidadesUnicas = novasOportunidades.filter(
+            (nova) => !oportunidades.some((o) => o.produto_interesse === nova.produto_interesse)
         );
 
-        if (oportunidadesFiltradas.length === 0) {
-            toast.warning('Todos os produtos selecionados já foram adicionados.');
+        if (novasOportunidadesUnicas.length === 0) {
+            toast.warning('⚠️ Todos os produtos selecionados já foram adicionados.');
             return;
         }
 
-        setOportunidades((prev) => [...prev, ...oportunidadesFiltradas]);
-        setProdutoSelecionado([]); // Reseta a seleção
+        setOportunidades((prev) => [...prev, ...novasOportunidadesUnicas]);
+        setProdutoSelecionado([]);
     };
 
-    const handleProfissaoPrincipalChange = (selectedOption: ProfissaoOption | null) => {
-        setProfissaoPrincipal(selectedOption);
+    const methods = useForm({
+        mode: "onChange",
+        reValidateMode: "onChange",
+        defaultValues: {
+            nome: "",
+            sobrenome: "",
+            genero: "",
+            telefone: "",
+            email: "",
+            profissao_id: "", // 🔥 Garante que "profissao_id" está registrado no formulário
+        },
+    });
 
-        if (selectedOption) {
-            fetchSubcategorias(selectedOption.value);
-        } else {
-            setSubcategorias([]);
-        }
-    };
+    const {
+        register,
+        setValue,
+        reset,
+        formState: { isValid, isSubmitting }
+    } = methods;
 
-    const fetchSubcategorias = async (profissaoId: string) => {
+    const handleFormSubmit = async (data: any) => {
+        if (isSubmittingblock) return;
+        setIsSubmitting(true);
+
         try {
-            const response = await api.get(`/profissoes/${profissaoId}/subcategorias/`);
-            setSubcategorias(
-                response.data.map((subcategoria: any) => ({
-                    value: subcategoria.id,
-                    label: subcategoria.nome,
-                }))
+            console.log("📌 Enviando lead...", data);
+
+            // 🔥 Removendo caracteres não numéricos do telefone
+            const formattedTelefone = data.telefone.replace(/\D/g, '');
+
+            // 🔥 Garantindo oportunidades únicas
+            const oportunidadesUnicas = Array.from(
+                new Set(oportunidades.map((o) => o.produto_interesse))
+            ).map((produto_interesse) =>
+                oportunidades.find((o) => o.produto_interesse === produto_interesse)
             );
-        } catch (error) {
-            toast.error('😔 Erro ao carregar subcategorias.');
-        }
-    };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+            // 🔥 Preparando dados para envio
+            const leadData: Partial<Lead> = {
+                nome: data.nome,
+                sobre_nome: data.sobrenome || undefined,
+                genero: data.genero,
+                telefone: formattedTelefone,
+                email: data.email,
+                profissao_id: data.profissao_id || null,
+                oportunidades: oportunidadesUnicas,
 
-        if (!genero) {
-            setFieldErrors((prev) => ({ ...prev, genero: 'Por favor, selecione um gênero.' }));
-            toast.error('⚠️ Por favor, preencha todos os campos obrigatórios.');
-            return;
-        }
+                // 🔥 Aqui garantimos que apenas o ID do cliente é enviado para a API
+                ...(indicadoPorTipo === "cliente" && data.indicado_por_cliente_id
+                    ? { indicado_por_cliente_id: data.indicado_por_cliente_id.value } // 🔥 Pega apenas o ID
+                    : {}),
+                ...(indicadoPorTipo === "parceiro" && indicadoPorId
+                    ? { indicado_por_parceiro_id: indicadoPorId }
+                    : {}),
+            };
 
-        const formattedTelefone = telefone.replace(/\D/g, ''); // Remove caracteres não numéricos
+            console.log("📌 Enviando dados do lead para API:", leadData);
 
-        const oportunidadesUnicas = Array.from(
-            new Set(oportunidades.map((o) => o.produto_interesse))
-        ).map((produto_interesse) =>
-            oportunidades.find((o) => o.produto_interesse === produto_interesse)
-        );
+            // 🔥 Validação antes do envio
+            if (!data.genero) {
+                setToastMessage({ type: "error", message: "⚠️ Por favor, selecione um gênero." });
+                setIsSubmitting(false);
+                return;
+            }
 
-        // 📌 Certificar que `indicado_por_cliente_id` ou `indicado_por_parceiro_id` são enviados corretamente
-        const leadData: Partial<Lead> = {
-            nome,
-            sobre_nome: sobrenome || undefined,
-            genero,
-            telefone: formattedTelefone,
-            email,
-            profissao_id: subcategoria?.value || profissaoPrincipal?.value || undefined,
-            ...(indicadoPorTipo === 'cliente' && cliente ? { indicado_por_cliente_id: cliente.value } : {}),
-            ...(indicadoPorTipo === 'parceiro' && indicadoPorId ? { indicado_por_parceiro_id: indicadoPorId } : {}),
-            oportunidades: oportunidadesUnicas,
-        };
-
-        console.log("📌 Enviando dados do lead para API:", leadData); // Debug
-
-        try {
+            await new Promise((resolve) => setTimeout(resolve, 2000)); // 🔥 Simula um delay de 2s
             await dispatch(createLead(leadData)).unwrap();
-            toast.success('Lead cadastrado com sucesso! 🎉😃');
+
+            setToastMessage({ type: "success", message: "Lead cadastrado com sucesso! 🎉" });
+            reset();
             onRequestClose();
-            resetForm();
         } catch (error: any) {
             console.error("⚠️ Erro ao cadastrar lead:", error);
-            if (error.response?.data) {
-                setFieldErrors(error.response.data);
-            } else {
-                toast.error('⚠️ Erro ao cadastrar lead.');
-            }
+            setToastMessage({ type: "error", message: "⚠️ Erro ao cadastrar lead." });
+        } finally {
+            setIsSubmitting(false);
         }
-    };
-
-    const resetForm = () => {
-        setNome('');
-        setSobrenome('');
-        setGenero('');
-        setTelefone('');
-        setEmail('');
-        setProfissaoPrincipal(null);
-        setSubcategoria(null);
-        setIndicadoPorTipo('');
-        setIndicadoPorId(null);
-        setFieldErrors({});
     };
 
     return (
-        <Modal show={isOpen} onClose={onRequestClose} title="Cadastrar Lead">
-            <form onSubmit={handleSubmit} className={styles.form}>
-                {/*indicações*/}
-                <div className={styles.indicacaoSection}>
-                    <fieldset className={styles.indicacaoFieldset}>
-                        <legend className={styles.indicacaoLegend}>Indicação</legend>
-                        <div className={styles.radioGroup}>
-                            <label className={styles.radioOption}>
-                                <input
-                                    type="radio"
-                                    name="indicacao"
-                                    value="cliente"
-                                    checked={indicadoPorTipo === 'cliente'}
-                                    onChange={() => {
-                                        setIndicadoPorTipo('cliente');
-                                        fetchClientes();
-                                    }}
-                                />
-                                Cliente
-                            </label>
-                            <label className={styles.radioOption}>
-                                <input
-                                    type="radio"
-                                    name="indicacao"
-                                    value="parceiro"
-                                    checked={indicadoPorTipo === 'parceiro'}
-                                    onChange={() => {
-                                        setIndicadoPorTipo('parceiro');
-                                        fetchParceiros();
-                                    }}
-                                />
-                                Parceiro
-                            </label>
-                        </div>
-                        <div className={styles.selectWrapper}>
-                            {indicadoPorTipo === 'cliente' && (
-                                <AsyncPaginate
-                                    value={cliente}
-                                    loadOptions={loadClienteOptions}
-                                    onChange={setCliente}
-                                    additional={{ page: 1 }}
-                                    placeholder="Selecione um cliente..."
-                                    isSearchable
-                                    debounceTimeout={300}
-                                />
+        <StandardModal
+            isOpen={isOpen}
+            onRequestClose={onRequestClose}
+            title="Cadastrar Lead"
+            onSubmit={methods.handleSubmit(handleFormSubmit)} // ✅ Agora está correto!
+            buttonText="Cadastrar Lead"
+            buttonIcon={<AiOutlinePlus />}
+            methods={methods}
+            toastMessage={toastMessage} // 🔥 Passamos a mensagem para o modal
+        >
+            {/* Indicação */}
+            <div className={styles.indicacaoSection}>
+                <fieldset className={styles.indicacaoFieldset}>
+                    <legend className={styles.indicacaoLegend}>Indicação</legend>
+                    <div className={styles.radioGroup}>
+                        <label className={styles.radioOption}>
+                            <input
+                                type="radio"
+                                name="indicacao"
+                                value="cliente"
+                                checked={indicadoPorTipo === "cliente"}
+                                onChange={() => setIndicadoPorTipo("cliente")}
+                            />
+                            Cliente
+                        </label>
+                        <label className={styles.radioOption}>
+                            <input
+                                type="radio"
+                                name="indicacao"
+                                value="parceiro"
+                                checked={indicadoPorTipo === "parceiro"}
+                                onChange={() => setIndicadoPorTipo("parceiro")}
+                            />
+                            Parceiro
+                        </label>
+                    </div>
 
+                    <div className={styles.selectWrapper}>
+                        {indicadoPorTipo === "cliente" ? (
+                            <SelectCliente
+                                name="indicado_por_cliente_id"
+                                control={methods.control}
+                                placeholder="Selecione um cliente"
+                                required
+                                showLabel={false}
+                                errorMessage={fieldErrors.indicado_por_cliente_id}
+                            />
+                        ) : indicadoPorTipo === "parceiro" ? (
+                            <Select
+                                options={parceirosDisponiveis}
+                                value={parceirosDisponiveis.find((parceiro) => parceiro.value === indicadoPorId)}
+                                onChange={(option) => setIndicadoPorId(option?.value || null)}
+                                placeholder="Selecione um parceiro..."
+                                className={fieldErrors.indicado_por_parceiro_id ? styles.errorSelect : ""}
+                            />
+                        ) : null}
+                    </div>
+                </fieldset>
 
-                            )
-                            }
-                            {indicadoPorTipo === 'parceiro' && (
-                                <Select
-                                    options={parceirosDisponiveis}
-                                    value={parceirosDisponiveis.find((parceiro) => parceiro.value === indicadoPorId) || null}
-                                    onChange={(option) => setIndicadoPorId(option?.value || null)}
-                                    placeholder="Selecione um parceiro..."
-                                    className={fieldErrors.indicado_por_parceiro_id ? styles.errorSelect : ''}
-                                />
-                            )}
-                        </div>
-                    </fieldset>
-                    {(fieldErrors.indicado_por_cliente_id || fieldErrors.indicado_por_parceiro_id) && (
-                        <div className={styles.errorMessage}>
-                            {fieldErrors.indicado_por_cliente_id || fieldErrors.indicado_por_parceiro_id}
-                        </div>
-                    )}
-                </div>
+                {(fieldErrors.indicado_por_cliente_id || fieldErrors.indicado_por_parceiro_id) && (
+                    <div className={styles.errorMessage}>
+                        {fieldErrors.indicado_por_cliente_id || fieldErrors.indicado_por_parceiro_id}
+                    </div>
+                )}
+            </div>
                 {/*indicações*/}
 
                 <div className={styles.nameContainer}>
 
                     <FloatingMaskedInput
-                        name={'PrimeiroNome'}
-                        label="Nome"
+                        label="Primeiro Nome"
+                        name="nome"
                         type="text"
-                        value={nome}
-                        onChange={(e) => setNome(e.target.value)}
+                        register={register}
+                        setValue={setValue}
+                        control={methods.control}
                         required
-                        className={fieldErrors.nome ? styles.error : ''}
                         errorMessage={fieldErrors.nome}
                     />
                     <FloatingMaskedInput
-                        name={'SobreNome'}
-                        label="Sobrenome"
+                        label="Sobre Nome"
+                        name="sobrenome"
                         type="text"
-                        value={sobrenome}
-                        onChange={(e) => setSobrenome(e.target.value)}
-                        className={fieldErrors.sobrenome ? styles.error : ''}
+                        register={register}
+                        setValue={setValue}
+                        control={methods.control}
                         errorMessage={fieldErrors.sobrenome}
-                        required={false}
                     />
+
                 </div>
                 <div className={styles.contatoContainer}>
 
-                    <InputMask
-                        mask="(99) 99999-9999"
-                        value={telefone}
-                        maskChar={null}
-                        onChange={(e) => setTelefone(e.target.value)}
-                    >
-                        {(inputProps: any) => (
-                            <FloatingMaskedInput
-                                {...inputProps}
-                                label="Telefone"
-                                type="text"
-                                className={fieldErrors.telefone ? styles.error : ''}
-                                errorMessage={fieldErrors.telefone}
-                                required
-                            />
-                        )}
-                    </InputMask>
                     <FloatingMaskedInput
-                        name={'email'}
+                        label="Telefone"
+                        name="telefone"
+                        type="text"
+                        mask="(99) 99999-9999"
+                        register={register}
+                        setValue={setValue}
+                        control={methods.control}
+                        required
+                        errorMessage={fieldErrors.telefone}
+                    />
+                    <FloatingMaskedInput
                         label="Email"
+                        name="email"
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={fieldErrors.email ? styles.error : ''}
+                        register={register}
+                        setValue={setValue}
+                        control={methods.control}
                         errorMessage={fieldErrors.email}
                     />
                 </div>
-                <Select
-                    options={[
-                        {value: 'M', label: 'Masculino'},
-                        {value: 'F', label: 'Feminino'},
-                    ]}
-                    value={
-                        genero
-                            ? {value: genero, label: genero === 'M' ? 'Masculino' : 'Feminino'}
-                            : null
-                    }
-                    onChange={(selectedOption) =>
-                        setGenero((selectedOption as ProfissaoOption)?.value as 'M' | 'F')
-                    }
-                    placeholder="Selecione o Gênero *"
-                    classNamePrefix="custom-select"
-                    className={fieldErrors.genero ? `${styles.errorSelect}` : ''}
-                />
-                {fieldErrors.genero && <div className={styles.errorMessage}>{fieldErrors.genero}</div>}
-                <Select
-                    options={profissoesPrincipais}
-                    value={profissaoPrincipal}
-                    onChange={handleProfissaoPrincipalChange}
-                    placeholder="Selecione uma profissão..."
-                    isSearchable
-                    classNamePrefix="custom-select"
-                />
-                {subcategorias.length > 0 && (
-                    <Select
-                        options={subcategorias}
-                        value={subcategoria}
-                        onChange={(selectedOption) => setSubcategoria(selectedOption)}
-                        placeholder="Selecione uma subcategoria..."
-                        isSearchable
-                    />
-                )}
-                <button
+            <SelectCustom
+                name="genero"
+                control={methods.control}
+                label="Gênero"
+                showLabel={false} // 🔥 Com label
+                placeholder="Selecione um gênero"
+                options={[
+                    { value: "M", label: "Masculino" },
+                    { value: "F", label: "Feminino" },
+                ]}
+                required
+                errorMessage={fieldErrors.genero}
+            />
+
+            {fieldErrors.genero && <div className={styles.errorMessage}>{fieldErrors.genero}</div>}
+            <SelectProfissao
+                name="profissao_id"
+                control={methods.control}
+                placeholder="Selecione a profissão"
+                required
+                showLabel={false}
+                errorMessage={fieldErrors.profissao_id}
+            />
+
+            <button
                     type="button"
                     onClick={() => setProfissaoModalOpen(true)}
                     className={styles.cadastrarProfissao}
@@ -403,13 +349,19 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                         <legend className={styles.indicacaoLegend}>Oportunidades</legend>
                         <div className={styles.opportunityGrid}>
                             <Select
-                                options={produtosDisponiveis}
+                                options={produtosDisponiveis} // 🔥 Agora não carrega tudo de uma vez
                                 isMulti
                                 value={produtoSelecionado}
                                 onChange={(option) => setProdutoSelecionado(option as ProdutoOption[])}
                                 placeholder="Selecione um produto..."
                                 classNamePrefix="custom-select"
                                 className={styles.selectOpportunity}
+                                onFocus={async () => {
+                                    if (produtosDisponiveis.length === 0) {
+                                        const produtos = await fetchProdutosDisponiveis();
+                                        setProdutosDisponiveis(produtos); // 🔥 Carrega os produtos apenas uma vez
+                                    }
+                                }}
                             />
 
                         </div>
@@ -434,10 +386,6 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                     <div className={styles.opportunityList}>
                     </div>
                 </div>
-                <Button variant="primary" type="submit">
-                    Cadastrar Lead
-                </Button>
-            </form>
             {isProfissaoModalOpen && (
                 <Modal
                     show={isProfissaoModalOpen}
@@ -457,7 +405,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                     </div>
                 </Modal>
             )}
-        </Modal>
+        </StandardModal>
     );
 };
 

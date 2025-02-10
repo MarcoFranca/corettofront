@@ -17,14 +17,27 @@ import {
     PhoneInput,
 } from "./EditClientModal.Styles";
 
-const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onRequestClose, initialData, onSave }) => {
+const EditClientModal: React.FC<EditClientModalProps> =
+    ({
+         isOpen,
+         onRequestClose,
+         initialData,
+         onSave }) => {
+
     // ✅ Conectando o formulário corretamente ao `react-hook-form`
     const methods = useForm({
         mode: "onChange",
         defaultValues: initialData || {}, // ✅ Agora aceita qualquer campo dinamicamente
     });
 
-    const { handleSubmit, register, setValue, watch, reset, control, formState: { isValid, isSubmitting } } = methods;
+    const {
+        handleSubmit,
+        register,
+        setValue,
+        reset,
+        control,
+        formState: { isValid, isSubmitting }
+    } = methods;
 
 
     // ✅ Resetando os valores quando `initialData` mudar

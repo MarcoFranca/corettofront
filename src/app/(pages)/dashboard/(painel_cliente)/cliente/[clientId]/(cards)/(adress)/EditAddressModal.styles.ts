@@ -3,40 +3,32 @@ import styled from "styled-components";
 export const ModalContainer = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 20px;
-`;
-
-export const Row = styled.div`
-    display: flex;
-    gap: 10px;
+    gap: 16px;
 `;
 
 export const FormGroup = styled.div`
     display: flex;
     flex-direction: column;
-    flex: 1;
+    gap: 6px;
+    position: relative; /* ✅ Garante que os ícones possam ser posicionados corretamente */
 
     label {
-        font-size: 0.9rem;
         font-weight: bold;
-        margin-bottom: 5px;
         color: #333;
+    }
+
+    svg {
+        position: absolute;
+        right: 10px; /* ✅ Alinha os ícones à direita */
+        top: 50%;
+        transform: translateY(-50%);
+        color: #007bff;
     }
 `;
 
-export const Input = styled.input`
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-
-    &:focus {
-        outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
-    }
+export const Row = styled.div`
+    display: flex;
+    gap: 10px;
 `;
 
 export const ModalActions = styled.div`
@@ -46,29 +38,29 @@ export const ModalActions = styled.div`
 `;
 
 export const ConfirmButton = styled.button`
-  background: #4caf50;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
 
-  &:hover {
-    background: #45a049;
-  }
+    &:hover {
+        background: #45a049;
+    }
 `;
 
 export const CancelButton = styled.button`
-  background: #f44336;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
 
-  &:hover {
-    background: #e53935;
-  }
+    &:hover {
+        background: #e53935;
+    }
 `;

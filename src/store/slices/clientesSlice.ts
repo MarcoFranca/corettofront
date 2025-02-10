@@ -90,12 +90,33 @@ export const createCliente = createAsyncThunk<Cliente, Cliente>('clientes/create
     return response.data;
 });
 
-export const updateCliente = createAsyncThunk<Cliente, { id: string; updatedCliente: Partial<Cliente> }>(
+export const updateCliente = createAsyncThunk<
+    Cliente,
+    { id: string; updatedCliente: Partial<Cliente> }
+>(
     'clientes/updateCliente',
     async ({ id, updatedCliente }, { dispatch }) => {
-        const response = await api.patch(`/clientes/${id}/`, updatedCliente);
-        dispatch(fetchClientes());
-        return response.data;
+        try {
+            console.log("📌 Enviando atualização para cliente ID:", id);
+            console.log("📌 Dados enviados:", JSON.stringify(updatedCliente, null, 2)); // 🔥 Log completo
+
+            const response = await api.patch(`/clientes/${id}/`, {
+                ...updatedCliente,
+                endereco: updatedCliente.endereco || {}, // 🔥 Garante que o campo `endereco` está presente
+            }, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            console.log("✅ Cliente atualizado com sucesso:", response.data);
+
+            dispatch(fetchClientes());
+            dispatch(fetchClienteDetalhe(id));
+
+            return response.data;
+        } catch (error) {
+            console.error("❌ Erro ao atualizar cliente:", error);
+            throw error;
+        }
     }
 );
 

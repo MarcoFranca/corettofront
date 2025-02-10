@@ -135,12 +135,6 @@ const ContactInfoCard: React.FC<ContactInfoCardProps> = ({ cliente }) => {
                     <EmptyMessage>Nenhum contato adicional cadastrado.</EmptyMessage>
                 )}
 
-                {/*/!* 🔹 Botão para Adicionar Contato *!/*/}
-                {/*<AddContactButton onClick={openModal}>*/}
-                {/*    <Image src={AddImage} alt="Adicionar" width={24} height={24} />*/}
-                {/*    Adicionar Contato*/}
-                {/*</AddContactButton>*/}
-
                 {/* 🔹 Modal de Edição */}
                 <EditClientModal
                     isOpen={modalIsOpen}

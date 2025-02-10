@@ -239,6 +239,16 @@ export interface Endereco {
     cep?: string;
 }
 
+export interface EnderecoCadastro {
+    logradouro: string;
+    numero: string;
+    complemento?: string;
+    bairro: string;
+    cidade: string;
+    uf: string;
+    cep: string;
+}
+
 export interface Saude {
     peso?: number;
     altura?: number;
@@ -317,6 +327,14 @@ export interface EditClientModalProps {
         contatos_adicionais: ContatoAdicional[];
     };
     onSave: (data: any) => void;
+}
+
+export interface EditAddressModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    cliente: Cliente;
+    onSave: (data: any) => void;
+    initialData: EnderecoCadastro;
 }
 
 export interface EditPersonalInfoModalProps {
