@@ -1,4 +1,5 @@
 import { RefObject } from "react";
+import {UseFormReturn} from "react-hook-form";
 
 // ** Lead Interfaces **
 export type StatusReuniao =
@@ -116,6 +117,7 @@ export interface ScheduleMeetingFormProps {
 }
 
 export interface LeadModalProps {
+    methods: UseFormReturn<any>;
     isOpen: boolean;
     onRequestClose: () => void;
 }
@@ -356,6 +358,7 @@ export const genderOptions = [
 
 // ** Apólice Interfaces **
 export interface Apolice {
+    administradora: string;
     id: string;
     capital_segurado: string;
     beneficiario: string;

@@ -61,22 +61,27 @@ const StandardModal: React.FC<StandardModalProps> =
 
 
         const handleFormSubmit = async (data: any) => {
+            if (event) event.preventDefault(); // ✅ Evita o comportamento padrão do formulário
+            console.log("📌 Dados recebidos no submit:", data); // ✅ Verifica se os dados chegam
+
             try {
                 console.log("Simulando envio...");
-                await new Promise((resolve) => setTimeout(resolve,  2000)); // 🔥 Delay de 2 segundos
+                await new Promise((resolve) => setTimeout(resolve, 2000)); // 🔥 Delay de 2 segundos
                 console.log("Envio concluído!");
 
-                await onSubmit(data);
+                await onSubmit(data); // ✅ Envia os dados para a API
 
-                // ✅ Só exibe o toast padrão se o `toastMessage` não for definido no LeadModal
+                // ✅ Só exibe o toast padrão se `toastMessage` não for definido no LeadModal
                 if (!toastMessage) {
                     toast.success(successMessage);
                 }
                 onRequestClose();
             } catch (error) {
+                console.error("Erro ao enviar formulário:", error);
                 toast.error(errorMessage);
             }
         };
+
 
 
         return (

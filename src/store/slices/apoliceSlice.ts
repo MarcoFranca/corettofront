@@ -31,7 +31,7 @@ export const fetchApolices = createAsyncThunk<Apolices, { clientId: string }, { 
     'apolices/fetchApolices',
     async ({ clientId }, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/clientes/${clientId}/`);
+            const response = await api.get(`/apolices/${clientId}/`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao buscar apólices.');
@@ -81,7 +81,7 @@ export const createApolice = createAsyncThunk<Apolice, { formData: FormData; end
             };
 
             // Enviando todos os dados necessários via PATCH para atualizar o status
-            const patchResponse = await api.patch(`/clientes/${clientId}/`, clienteData);
+            const patchResponse = await api.patch(`/${clientId}/`, clienteData);
 
             console.log('Resposta do PATCH:', patchResponse.data);
 

@@ -1,108 +1,81 @@
 import React, { useState, useEffect } from 'react';
+import { UseFormReturn } from "react-hook-form";
 import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
-import Index from '@/app/components/ui/Button';
-import Select from 'react-select'; // Usando react-select
+import Button from '@/app/components/ui/Button';
+import Select from 'react-select';
 import api from '@/app/api/axios';
 import { toast } from 'react-toastify';
-import styles from './styles.module.css'
-import {Profissao} from "@/types/interfaces";
-
+import styles from './styles.module.css';
+import { Profissao } from "@/types/interfaces";
 
 interface CadastrarProfissaoFormProps {
-    onSuccess: (novaProfissao: Profissao) => void;
+    onSuccess: (novaProfissao: Profissao) => void; // ✅ Agora `onSuccess` está sendo corretamente tipado
+    methods: UseFormReturn<any>;
 }
 
-const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ onSuccess }) => {
-    const [nome, setNome] = useState('');
-    const [descricao, setDescricao] = useState('');
-    const [categoriaPai, setCategoriaPai] = useState<Profissao | null>(null); // Atualizado para Profissao
-    const [profissoesPrincipais, setProfissoesPrincipais] = useState<Profissao[]>([]);
+const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ onSuccess, methods }) => {
+    const { register, watch, handleSubmit, setValue, control, formState: { errors } } = methods;
 
-    // Buscar profissões principais ao montar o componente
+    const [profissoesPrincipais, setProfissoesPrincipais] = useState<Profissao[]>([]);
+    const [categoriaPai, setCategoriaPai] = useState<Profissao | null>(null);
+
+    const categoriaPaiSelecionada = watch("categoria_pai");
+
+    // 🔥 Buscar profissões principais ao montar o componente
     useEffect(() => {
         const fetchProfissoes = async () => {
             try {
-                const response = await api.get('/profissoes?categoria_pai='); // Filtra somente as profissões principais
+                const response = await api.get('/profissoes?categoria_pai=');
                 setProfissoesPrincipais(response.data);
             } catch (error) {
                 console.error('Erro ao buscar profissões principais:', error);
                 toast.error('Erro ao carregar profissões principais.');
             }
         };
-
         fetchProfissoes();
     }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); // Impede o comportamento padrão
-        if (!nome.trim()) {
-            toast.error('O nome da profissão é obrigatório.');
-            return;
-        }
-
-        try {
-            const response = await api.post('/profissoes/', {
-                nome,
-                descricao,
-                categoria_pai: categoriaPai?.id || null,
-            });
-            toast.success('Profissão cadastrada com sucesso!');
-            onSuccess(response.data); // Certifique-se de que o onSuccess não feche o modal antes de tudo ser executado
-        } catch (error: any) {
-            console.error('Erro ao cadastrar profissão:', error);
-            if (error.response && error.response.data) {
-                const errorMessage = error.response.data.detail || 'Erro ao cadastrar a profissão.';
-                toast.error(errorMessage);
-            } else {
-                toast.error('Erro de conexão. Tente novamente mais tarde.');
-            }
-        }
-    };
-
 
     return (
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <div>
             <FloatingMaskedInput
-                name={'profissao'}
+                name="nome"
                 label="Nome da Profissão"
                 type="text"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
                 required
+                control={control}
+                setValue={setValue}
+                register={register}
+                errorMessage={errors.nome?.message as string | undefined}
             />
+
             <FloatingMaskedInput
-                name={'descricaoProfissao'}
+                name="descricao"
                 label="Descrição"
                 type="text"
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
+                control={control}
+                setValue={setValue}
+                register={register}
+                errorMessage={errors.descricao?.message as string | undefined}
             />
+
             <Select
                 options={profissoesPrincipais.map((profissao) => ({
                     value: profissao.id,
                     label: profissao.nome,
                 }))}
-                value={
-                    categoriaPai
-                        ? { value: categoriaPai.id, label: categoriaPai.nome }
-                        : null
-                }
-                onChange={(selectedOption) =>
-                    setCategoriaPai(
-                        selectedOption
-                            ? profissoesPrincipais.find((prof) => prof.id === selectedOption.value) || null
-                            : null
-                    )
-                }
+                value={categoriaPaiSelecionada}
+                onChange={(selectedOption) => {
+                    console.log("📌 Categoria pai selecionada:", selectedOption);
+                    setValue("categoria_pai", selectedOption || null, { shouldValidate: true });
+                }}
                 placeholder="Selecione uma categoria pai (opcional)"
                 isClearable
                 isSearchable
                 className={styles.customSelectSpacing}
             />
-            <Index variant="primary" type="submit">
-                Cadastrar
-            </Index>
-        </form>
+
+        </div>
     );
 };
 

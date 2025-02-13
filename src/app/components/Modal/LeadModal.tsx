@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useDispatch } from 'react-redux';
 import { createLead } from '@/store/slices/leadsSlice';
-import Modal from '@/app/components/Modal/simpleModal';
 import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
@@ -28,6 +27,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
     // 📌 Estados de Profissões
+    const [categoriaPai, setCategoriaPai] = useState<Profissao | null>(null);
     const [profissoesPrincipais, setProfissoesPrincipais] = useState<ProfissaoOption[]>([]);
 
     // 📌 Estados de Indicação
@@ -127,15 +127,26 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             genero: "",
             telefone: "",
             email: "",
-            profissao_id: "", // 🔥 Garante que "profissao_id" está registrado no formulário
+            profissao_id: "",
         },
     });
+
+    const profissaoMethods = useForm({
+        mode: "onChange",
+        reValidateMode: "onChange",
+        defaultValues: {
+            nome: "",
+            descricao: "",
+            categoria_pai: null,
+        },
+    });
+
 
     const {
         register,
         setValue,
         reset,
-        formState: { isValid, isSubmitting }
+        formState: { isValid, isSubmitting, errors } // ✅ Agora `errors` está aqui!
     } = methods;
 
     const handleFormSubmit = async (data: any) => {
@@ -197,7 +208,30 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
         }
     };
 
+    const handleProfissaoSubmit = async (data: any) => {
+        console.log("📌 Dados antes do envio:", data);
+        console.log("📌 Categoria Pai Selecionada:"); // ✅ Verifica se a categoria pai está correta
+
+        try {
+            const response = await api.post("/profissoes/", {
+                nome: data.nome,
+                descricao: data.descricao,
+                categoria_pai: data.categoria_pai ? data.categoria_pai.value : null, // ✅ Agora passamos corretamente o valor do ID
+            });
+
+            console.log("📌 Resposta da API:", response);
+            toast.success("Profissão cadastrada com sucesso!");
+
+
+        } catch (error) {
+            console.error("❌ Erro ao cadastrar profissão:", error);
+            toast.error("Erro ao cadastrar a profissão.");
+        }
+    };
+
+
     return (
+        <>
         <StandardModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
@@ -330,7 +364,6 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                 name="profissao_id"
                 control={methods.control}
                 placeholder="Selecione a profissão"
-                required
                 showLabel={false}
                 errorMessage={fieldErrors.profissao_id}
             />
@@ -386,26 +419,32 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                     <div className={styles.opportunityList}>
                     </div>
                 </div>
-            {isProfissaoModalOpen && (
-                <Modal
-                    show={isProfissaoModalOpen}
-                    onClose={() => setProfissaoModalOpen(false)}
-                    title="Cadastrar Nova Profissão"
-                >
-                    <div className={styles.form}>
-                        <CadastrarProfissaoForm
-                            onSuccess={(novaProfissao: Profissao) => {
-                                setProfissoesPrincipais((prev) => [
-                                    ...prev,
-                                    {value: novaProfissao.id, label: novaProfissao.nome},
-                                ]);
-                                setProfissaoModalOpen(false);
-                            }}
-                        />
-                    </div>
-                </Modal>
-            )}
         </StandardModal>
+            {isProfissaoModalOpen && (
+                <StandardModal
+                    isOpen={isProfissaoModalOpen}
+                    onRequestClose={() => setProfissaoModalOpen(false)}
+                    title="Cadastrar Nova Profissão"
+                    onSubmit={profissaoMethods.handleSubmit(handleProfissaoSubmit)}
+                    buttonText="Cadastrar Profissão"
+                    buttonIcon={<AiOutlinePlus />}
+                    methods={profissaoMethods}
+                    toastMessage={toastMessage}
+                >
+                    <CadastrarProfissaoForm
+                        onSuccess={(novaProfissao: Profissao) => {
+                            console.log("✅ Profissão cadastrada com sucesso!", novaProfissao);
+                            setProfissoesPrincipais((prev) => [
+                                ...prev,
+                                { value: novaProfissao.id, label: novaProfissao.nome },
+                            ]);
+                            setProfissaoModalOpen(false);
+                        }}
+                        methods={profissaoMethods} // ✅ Passamos os métodos corretamente
+                    />
+                </StandardModal>
+            )}
+        </>
     );
 };
 
