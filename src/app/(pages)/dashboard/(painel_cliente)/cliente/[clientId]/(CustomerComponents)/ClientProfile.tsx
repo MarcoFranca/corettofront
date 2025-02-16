@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { fetchClienteDetalhe, updateClienteObservacao, updateClienteStatus } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
@@ -41,6 +41,7 @@ ChartJS.register(
 
 const ClientProfile: React.FC = () => {
     const pathname = usePathname();
+    const router = useRouter(); // 🚀 Adicionamos o `router`
     const [clientId, setClientId] = useState<string | null>(null);
     const [showObservation, setShowObservation] = useState<boolean>(false);
     const [observation, setObservation] = useState<string>('');
