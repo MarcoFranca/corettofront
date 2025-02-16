@@ -1,83 +1,46 @@
 import { useState } from "react";
-import { Apolices, Apolice } from "@/types/interfaces";
-import { FaDownload, FaInfoCircle, FaTrash } from "react-icons/fa";
+import { Apolice } from "@/types/interfaces";
+import { FaTrash } from "react-icons/fa";
 import Button from "@/app/components/ui/Button";
 import ConfirmationModal from "@/app/components/Modal/ConfirmDeleteModal";
+import { TableContainer, StyledTable, TableHeader, TableCell } from "./ApoliceTable.styles";
 
 interface Props {
-    apolices: Apolices;
-    filtro: string;
-    clienteId: string;
+    apolices: Apolice[];
 }
 
-const ApoliceTable = ({ apolices, filtro, clienteId }: Props) => {
+const ApoliceTable = ({ apolices }: Props) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [apoliceToDelete, setApoliceToDelete] = useState<Apolice | null>(null);
 
-    const apolicesFiltradas =
-        filtro === "todos"
-            ? Object.values(apolices).flat().filter(apolice => apolice !== null && apolice !== undefined) // ✅ Filtra valores inválidos
-            : (apolices[filtro as keyof Apolices] || []).filter(apolice => apolice !== null && apolice !== undefined);
-
-    const handleDelete = (apolice: Apolice) => {
-        setApoliceToDelete(apolice);
-        setIsModalOpen(true);
-    };
-
     return (
-        <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300">
+        <TableContainer>
+            <StyledTable>
                 <thead>
                 <tr>
-                    <th>Número</th>
-                    <th>Produto</th>
-                    <th>Administradora</th>
-                    <th>Data Início</th>
-                    <th>Forma Pagamento</th>
-                    <th>Valor</th>
-                    <th>Ações</th>
+                    <TableHeader>Número</TableHeader>
+                    <TableHeader>Produto</TableHeader>
+                    <TableHeader>Administradora</TableHeader>
+                    <TableHeader>Data Início</TableHeader>
+                    <TableHeader>Forma Pagamento</TableHeader>
+                    <TableHeader>Valor</TableHeader>
+                    <TableHeader>Ações</TableHeader>
                 </tr>
                 </thead>
                 <tbody>
-                {apolicesFiltradas.length > 0 ? (
-                    apolicesFiltradas.map((apolice) => {
-                        const apoliceObj = apolice ?? {}; // ✅ Garante que `apolice` nunca seja null
-
-                        return (
-                            <tr key={apoliceObj.id || Math.random().toString()}>
-                                <td>{apoliceObj.numero_apolice || "N/A"}</td>
-                                <td>{apoliceObj.produto || "N/A"}</td>
-                                <td>{apoliceObj.administradora || "N/A"}</td>
-                                <td>{apoliceObj.data_inicio ? new Date(apoliceObj.data_inicio).toLocaleDateString() : "N/A"}</td>
-                                <td>{apoliceObj.forma_pagamento || "N/A"}</td>
-                                <td>{apoliceObj.premio_pago ? `R$ ${apoliceObj.premio_pago}` : "N/A"}</td>
-                                <td>
-                                    <Button variant="primary">
-                                        <FaInfoCircle />
-                                    </Button>
-                                    <Button variant="danger" onClick={() => handleDelete(apoliceObj)}>
-                                        <FaTrash />
-                                    </Button>
-                                </td>
-                            </tr>
-                        );
-                    })
-                ) : (
-                    <tr>
-                        <td colSpan={7}>Nenhuma apólice encontrada.</td>
+                {apolices.map((apolice) => (
+                    <tr key={apolice.id}>
+                        <TableCell>{apolice.numero_apolice}</TableCell>
+                        <TableCell>{apolice.produto}</TableCell>
+                        <TableCell>{apolice.administradora}</TableCell>
+                        <TableCell>{new Date(apolice.data_inicio).toLocaleDateString()}</TableCell>
+                        <TableCell>{apolice.forma_pagamento}</TableCell>
+                        <TableCell>R$ {apolice.premio_pago}</TableCell>
                     </tr>
-                )}
+                ))}
                 </tbody>
-            </table>
-
-            {apoliceToDelete && (
-                <ConfirmationModal
-                    isOpen={isModalOpen}
-                    onRequestClose={() => setIsModalOpen(false)}
-                    onConfirm={() => console.log("Excluir apólice", apoliceToDelete)}
-                />
-            )}
-        </div>
+            </StyledTable>
+        </TableContainer>
     );
 };
 

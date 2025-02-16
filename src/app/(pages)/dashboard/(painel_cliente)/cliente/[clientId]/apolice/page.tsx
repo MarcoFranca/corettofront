@@ -1,43 +1,64 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { fetchApolices, deleteApolice } from "@/store/slices/apoliceSlice";
-import { fetchClienteDetalhe } from "@/store/slices/clientesSlice";
-import { useParams } from "next/navigation"; // 🔥 Correção aqui!
-import ApoliceTable from "./(component)/ApoliceTable";
-import ApoliceFilter from "./(component)/ApoliceFilter";
-import Link from "next/link";
-import Button from "@/app/components/ui/Button";
+import { useParams } from "next/navigation";
+import api from "@/app/api/axios";
+import { Apolices, Apolice } from "@/types/interfaces";
+import ApolicesOverview from "./(component)/ApolicesOverview";
+import ApolicesTable from "./(component)/ApoliceTable";
+import ApolicesModal from "./(component)/ApolicesModal";
+import { Container, Title, StyledButton, LoadingMessage, ErrorMessage } from "./ApolicesPage.styles";
 
-const ClienteApolicesPage: React.FC = () => {
-    const dispatch = useAppDispatch();
-    const { clientId } = useParams(); // 🔥 Pega o ID do cliente corretamente
+const ApolicesPage: React.FC = () => {
+    const { clientId } = useParams();
 
-    const clienteDetalhe = useAppSelector((state) => state.clientes.clienteDetalhe);
-    const apolices = useAppSelector((state) => state.apolices.apolices);
-    const status = useAppSelector((state) => state.apolices.status);
-
-    const [filtro, setFiltro] = useState("todos");
+    const [apolices, setApolices] = useState<Apolices | null>(null);
+    const [apolicesArray, setApolicesArray] = useState<Apolice[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (clientId) {
-            dispatch(fetchClienteDetalhe(clientId as string));
-            dispatch(fetchApolices({ clientId: clientId as string }));
+            fetchApolices();
         }
-    }, [clientId, dispatch]);
+    }, [clientId]);
+
+    const fetchApolices = async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await api.get<Apolices>(`/apolices/?cliente=${clientId}`);
+            setApolices(response.data);
+
+            const todasApolices: Apolice[] = Object.values(response.data)
+                .flat()
+                .filter((apolice): apolice is Apolice => apolice !== undefined);
+
+            setApolicesArray(todasApolices);
+        } catch (error) {
+            console.error("Erro ao buscar apólices:", error);
+            setError("Não foi possível carregar as apólices.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
-        <div className="container mx-auto p-6">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">Apólices de {clienteDetalhe?.nome}</h1>
-                <Link href={`/clientes/${clientId}/nova-apolice`}>
-                    <Button>+ Nova Apólice</Button>
-                </Link>
-            </div>
-            <ApoliceFilter setFiltro={setFiltro} />
-            <ApoliceTable apolices={apolices} filtro={filtro} clienteId={clientId as string} />
-        </div>
+        <Container>
+            <Title>📜 Apólices do Cliente</Title>
+
+            {loading && <LoadingMessage>🔄 Carregando apólices...</LoadingMessage>}
+            {error && <ErrorMessage>❌ {error}</ErrorMessage>}
+
+            {apolices && <ApolicesOverview apolices={apolices} />}
+            <ApolicesTable apolices={apolicesArray} />
+
+            <StyledButton onClick={() => setIsModalOpen(true)}>+ Nova Apólice</StyledButton>
+            <ApolicesModal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} onSave={fetchApolices} />
+        </Container>
     );
 };
 
-export default ClienteApolicesPage;
+export default ApolicesPage;
