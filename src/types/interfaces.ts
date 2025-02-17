@@ -355,6 +355,11 @@ export const genderOptions = [
     { value: 'F', label: 'Feminino' },
 ];
 
+interface ApolicesOverviewProps {
+    apolices: Apolices | Apolice[];
+}
+
+
 
 // ** Apólice Interfaces **
 export interface Apolice {
@@ -374,17 +379,20 @@ export interface Apolice {
     valor_investido: string;
     valor_carta: string;
     valor_acumulado: string;
+    tipo:string;
     fundo: string;
     franquia: string;
     capitalSegurado: string;
     periodicidade_pagamento: string;
-    forma_pagamento: string;
     observacoes: string;
     arquivo: string;
     categoria: string;
     acomodacao: string;
     abrangencia: string;
     valor_reembolso_consulta: string;
+    forma_pagamento?: string;  // ✅ Opcional
+    valor?: number;            // ✅ Opcional
+    status?: string;           // ✅ Opcional
     coparticipacao: boolean;
     regime_contratacao?: string;
     regime_tributacao?: string;

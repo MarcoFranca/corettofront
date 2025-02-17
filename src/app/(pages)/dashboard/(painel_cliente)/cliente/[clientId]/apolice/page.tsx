@@ -3,40 +3,53 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import api from "@/app/api/axios";
-import { Apolices, Apolice } from "@/types/interfaces";
-import ApolicesOverview from "./(component)/ApolicesOverview";
+import {Apolice, Apolices} from "@/types/interfaces";
 import ApolicesTable from "./(component)/ApoliceTable";
-import ApolicesModal from "./(component)/ApolicesModal";
+import ApoliceFiltro from "./(component)/ApoliceFilter";
 import { Container, Title, StyledButton, LoadingMessage, ErrorMessage } from "./ApolicesPage.styles";
+import ApolicesOverview
+    from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApolicesOverview";
+import ApolicesModal
+    from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApolicesModal";
 
 const ApolicesPage: React.FC = () => {
     const { clientId } = useParams();
-
-    const [apolices, setApolices] = useState<Apolices | null>(null);
-    const [apolicesArray, setApolicesArray] = useState<Apolice[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [apolices, setApolices] = useState<Apolice[]>([]);
+    const [tipoFiltro, setTipoFiltro] = useState('');
+    const [statusFiltro, setStatusFiltro] = useState('');
+    const [visaoGeral, setVisaoGeral] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [apolicesArray, setApolicesArray] = useState<Apolice[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // 📌 Função para agrupar Apólices em categorias
+    const agruparApolices = (apolicesArray: Apolice[]): Apolices => {
+        return {
+            plano_saude: apolicesArray.filter(apolice => apolice.tipo === "plano_saude"),
+            seguro_vida: apolicesArray.filter(apolice => apolice.tipo === "seguro_vida"),
+            previdencia: apolicesArray.filter(apolice => apolice.tipo === "previdencia"),
+            consorcio: apolicesArray.filter(apolice => apolice.tipo === "consorcio"),
+            investimento: apolicesArray.filter(apolice => apolice.tipo === "investimento"),
+            seguro_profissional: apolicesArray.filter(apolice => apolice.tipo === "seguro_profissional"),
+            seguro_residencial: apolicesArray.filter(apolice => apolice.tipo === "seguro_residencial"),
+        };
+    };
+
     useEffect(() => {
-        if (clientId) {
-            fetchApolices();
-        }
-    }, [clientId]);
+        fetchApolices();
+    }, [tipoFiltro, statusFiltro, visaoGeral, clientId]);
 
     const fetchApolices = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const response = await api.get<Apolices>(`/apolices/?cliente=${clientId}`);
+            const response = await api.get<Apolice[]>(
+                `/apolices/?cliente=${clientId}&tipo=${tipoFiltro}&status=${statusFiltro}&visao_geral=${visaoGeral}`
+            );
             setApolices(response.data);
-
-            const todasApolices: Apolice[] = Object.values(response.data)
-                .flat()
-                .filter((apolice): apolice is Apolice => apolice !== undefined);
-
-            setApolicesArray(todasApolices);
         } catch (error) {
             console.error("Erro ao buscar apólices:", error);
             setError("Não foi possível carregar as apólices.");
@@ -48,15 +61,24 @@ const ApolicesPage: React.FC = () => {
     return (
         <Container>
             <Title>📜 Apólices do Cliente</Title>
+            {/* ✅ Mostra o Overview com agrupamento correto */}
+            {apolices && <ApolicesOverview apolices={agruparApolices(apolices)} />}
+
+
+            <ApoliceFiltro
+                tipoFiltro={tipoFiltro}
+                setTipoFiltro={setTipoFiltro}
+                statusFiltro={statusFiltro}
+                setStatusFiltro={setStatusFiltro}
+                visaoGeral={visaoGeral}
+                setVisaoGeral={setVisaoGeral}
+                onFiltrar={fetchApolices}
+            />
 
             {loading && <LoadingMessage>🔄 Carregando apólices...</LoadingMessage>}
             {error && <ErrorMessage>❌ {error}</ErrorMessage>}
 
-            {apolices && <ApolicesOverview apolices={apolices} />}
-            <ApolicesTable apolices={apolicesArray} />
-
-            <StyledButton onClick={() => setIsModalOpen(true)}>+ Nova Apólice</StyledButton>
-            <ApolicesModal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} onSave={fetchApolices} />
+            <ApolicesTable apolices={apolices} />
         </Container>
     );
 };

@@ -2,6 +2,8 @@ import styled from "styled-components";
 
 // 🔹 Container Principal
 export const Container = styled.div`
+    width: 100%;
+    height: 100%;
     max-width: 1200px;
     margin: auto;
     padding: 20px;

@@ -1,19 +1,19 @@
-import styled from "styled-components";
+// styles/ApolicesOverview.styles.ts
+import styled from 'styled-components';
 
-// 🔹 Container do Panorama
 export const OverviewContainer = styled.div`
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    margin-bottom: 20px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
-// 🔹 Texto do Panorama
 export const OverviewText = styled.p`
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    margin: 5px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
 `;

@@ -1,46 +1,58 @@
-import { useState } from "react";
+// ApoliceTable.tsx
+import React from "react";
 import { Apolice } from "@/types/interfaces";
-import { FaTrash } from "react-icons/fa";
-import Button from "@/app/components/ui/Button";
-import ConfirmationModal from "@/app/components/Modal/ConfirmDeleteModal";
-import { TableContainer, StyledTable, TableHeader, TableCell } from "./ApoliceTable.styles";
+import { FaInfoCircle, FaTrash } from "react-icons/fa";
+import {
+    Table, TableData, TableHeader, TableRow
+} from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable.styles";
 
-interface Props {
+interface ApoliceTableProps {
     apolices: Apolice[];
 }
 
-const ApoliceTable = ({ apolices }: Props) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [apoliceToDelete, setApoliceToDelete] = useState<Apolice | null>(null);
-
+const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices }) => {
     return (
-        <TableContainer>
-            <StyledTable>
-                <thead>
-                <tr>
-                    <TableHeader>Número</TableHeader>
-                    <TableHeader>Produto</TableHeader>
-                    <TableHeader>Administradora</TableHeader>
-                    <TableHeader>Data Início</TableHeader>
-                    <TableHeader>Forma Pagamento</TableHeader>
-                    <TableHeader>Valor</TableHeader>
-                    <TableHeader>Ações</TableHeader>
-                </tr>
-                </thead>
-                <tbody>
-                {apolices.map((apolice) => (
-                    <tr key={apolice.id}>
-                        <TableCell>{apolice.numero_apolice}</TableCell>
-                        <TableCell>{apolice.produto}</TableCell>
-                        <TableCell>{apolice.administradora}</TableCell>
-                        <TableCell>{new Date(apolice.data_inicio).toLocaleDateString()}</TableCell>
-                        <TableCell>{apolice.forma_pagamento}</TableCell>
-                        <TableCell>R$ {apolice.premio_pago}</TableCell>
-                    </tr>
-                ))}
-                </tbody>
-            </StyledTable>
-        </TableContainer>
+        <Table>
+            <TableHeader>
+            <TableRow>
+                <th>Número</th>
+                <th>Produto</th>
+                <th>Administradora</th>
+                <th>Data Início</th>
+                <th>Forma Pagamento</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </TableRow>
+            </TableHeader>
+            <tbody>
+            {apolices.length > 0 ? (
+                apolices.map((apolice) => (
+                    <TableRow key={apolice.id}>
+                        <TableData>{apolice.numero_apolice || "N/A"}</TableData>
+                        <TableData>{apolice.produto || "N/A"}</TableData>
+                        <TableData>{apolice.administradora || "N/A"}</TableData>
+                        <TableData>{apolice.data_inicio ? new Date(apolice.data_inicio).toLocaleDateString() : "N/A"}</TableData>
+                        <TableData>{apolice.forma_pagamento || "N/A"}</TableData>
+                        <TableData>{apolice.valor ? `R$ ${apolice.valor.toFixed(2)}` : "N/A"}</TableData>
+                        <TableData>{apolice.status || "N/A"}</TableData>
+                        <TableData>
+                            <button className="btn-details">
+                                <FaInfoCircle /> Detalhes
+                            </button>
+                            <button className="btn-delete">
+                                <FaTrash /> Deletar
+                            </button>
+                        </TableData>
+                    </TableRow>
+                ))
+            ) : (
+                <TableRow>
+                    <TableData colSpan={8}>Nenhuma apólice encontrada.</TableData>
+                </TableRow>
+            )}
+            </tbody>
+        </Table>
     );
 };
 

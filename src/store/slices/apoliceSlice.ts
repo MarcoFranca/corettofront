@@ -1,37 +1,33 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
-import { Apolices, Apolice } from '@/types/interfaces';
+import { Apolice } from '@/types/interfaces';
 import api from "@/app/api/axios";
 
+// 📌 Estado inicial
 interface ApolicesState {
-    apolices: Apolices;
+    apolices: Apolice[];
     apoliceDetalhe: Apolice | null;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
-    isModalOpen: boolean;  // Novo estado para controlar o modal
+    isModalOpen: boolean;
 }
 
 const initialState: ApolicesState = {
-    apolices: {
-        plano_saude: [],
-        seguro_vida: [],
-        previdencia: [],
-        consorcio: [],
-        investimento: [],
-        seguro_profissional: [],
-        seguro_residencial: [],
-    },
+    apolices: [],
     apoliceDetalhe: null,
     status: 'idle',
     error: null,
-    isModalOpen: false,  // Inicialmente o modal está fechado
+    isModalOpen: false,
 };
 
-export const fetchApolices = createAsyncThunk<Apolices, { clientId: string }, { rejectValue: string }>(
+// 📌 Buscar todas as apólices com filtros
+export const fetchApolices = createAsyncThunk<Apolice[], { tipo?: string; status?: string; cliente?: string }>(
     'apolices/fetchApolices',
-    async ({ clientId }, { rejectWithValue }) => {
+    async ({ tipo, status, cliente }, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/apolices/${clientId}/`);
+            const response = await api.get('/apolices/', {
+                params: { tipo, status, cliente }
+            });
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao buscar apólices.');
@@ -39,11 +35,12 @@ export const fetchApolices = createAsyncThunk<Apolices, { clientId: string }, { 
     }
 );
 
-export const fetchApoliceDetalhe = createAsyncThunk<Apolice, { produto: string, apoliceId: string }, { rejectValue: string }>(
+// 📌 Buscar detalhes de uma apólice específica
+export const fetchApoliceDetalhe = createAsyncThunk<Apolice, string>(
     'apolices/fetchApoliceDetalhe',
-    async ({ produto, apoliceId }, { rejectWithValue }) => {
+    async (apoliceId, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/apolices/${produto}/${apoliceId}/`);
+            const response = await api.get(`/apolices/${apoliceId}/`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao buscar detalhes da apólice.');
@@ -51,105 +48,67 @@ export const fetchApoliceDetalhe = createAsyncThunk<Apolice, { produto: string, 
     }
 );
 
-export const createApolice = createAsyncThunk<Apolice, { formData: FormData; endpoint: string; clientId: string }, { rejectValue: string }>(
+// 📌 Criar uma nova apólice
+export const createApolice = createAsyncThunk<Apolice, { formData: FormData }>(
     'apolices/createApolice',
-    async ({ formData, endpoint, clientId }, { rejectWithValue, dispatch, getState }) => {
+    async ({ formData }, { rejectWithValue }) => {
         try {
-            // Criação da apólice
-            formData.append('cliente', clientId);
-            formData.append('status_proposta', 'true');
-            const response = await api.post(endpoint, formData, );
-
-            // Pegando o estado global para obter as informações do cliente
-            const state = getState() as RootState;
-            const clienteDetalhe = state.clientes.clienteDetalhe;
-
-            // Verificando se todas as informações necessárias estão disponíveis
-            if (!clienteDetalhe) {
-                throw new Error('Detalhes do cliente não encontrados.');
-            }
-
-            const clienteData = {
-                status: 'ativo',
-                nome: clienteDetalhe.nome,
-                telefone: clienteDetalhe.telefone,
-                email: clienteDetalhe.email,
-                cpf: clienteDetalhe.cpf,
-                data_nascimento: clienteDetalhe.data_nascimento,
-                genero: clienteDetalhe.genero,
-                profissao: clienteDetalhe.profissao,
-            };
-
-            // Enviando todos os dados necessários via PATCH para atualizar o status
-            const patchResponse = await api.patch(`/${clientId}/`, clienteData);
-
-            console.log('Resposta do PATCH:', patchResponse.data);
-
-            return response.data;  // Retorna a apólice criada
+            const response = await api.post('/apolices/', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            return response.data;
         } catch (error: any) {
-            console.error('Erro ao criar apólice ou atualizar cliente:', error.response?.data);
-            // console.error('Erro ao criar apólice ou atualizar cliente:', error);
-            // Disparar a ação para abrir o modal se houver erro de campos obrigatórios
-            if (error.response?.data?.cpf || error.response?.data?.telefone || error.response?.data?.email) {
-                dispatch(openModal());
-            }
             return rejectWithValue(error.response?.data || 'Erro ao criar apólice.');
         }
     }
 );
 
-export const deleteApolice = createAsyncThunk<
-    { apoliceId: string, produto: string }, // O que retornamos
-    { clientId: string, apoliceId: string, produto: string }, // Parâmetros
-    { rejectValue: string }
->(
-    'apolices/deleteApolice',
-    async ({ clientId, apoliceId, produto }, { rejectWithValue }) => {
+// 📌 Atualizar uma apólice
+export const updateApolice = createAsyncThunk<Apolice, { apoliceId: string; formData: FormData }>(
+    'apolices/updateApolice',
+    async ({ apoliceId, formData }, { rejectWithValue }) => {
         try {
-            await api.delete(`/apolices/${produto}/${apoliceId}/`);
-            return { apoliceId, produto };
+            const response = await api.patch(`/apolices/${apoliceId}/`, formData);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || 'Erro ao atualizar apólice.');
+        }
+    }
+);
+
+// 📌 Deletar uma apólice
+export const deleteApolice = createAsyncThunk<string, string>(
+    'apolices/deleteApolice',
+    async (apoliceId, { rejectWithValue }) => {
+        try {
+            await api.delete(`/apolices/${apoliceId}/`);
+            return apoliceId; // Retorna ID para remoção do estado
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao deletar apólice.');
         }
     }
 );
 
-export const updateApolice = createAsyncThunk<
-    Apolice, // O que retornamos
-    { formData: FormData; endpoint: string; clientId: string; apoliceId: string; produto: string }, // Parâmetros
-    { rejectValue: string }
->(
-    'apolices/updateApolice',
-    async ({ formData, endpoint, clientId, apoliceId, produto }, { rejectWithValue }) => {
-        try {
-            const response = await api.patch(`${endpoint}${apoliceId}/`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            return response.data; // Retorna a apólice atualizada
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data || 'Erro ao atualizar apólice.');
-        }
-    }
-);
-// Continue com a configuração normal do slice
-
-
-
+// 📌 Slice principal
 const apolicesSlice = createSlice({
     name: 'apolices',
     initialState,
     reducers: {
         openModal: (state) => {
-            state.isModalOpen = true;  // Abre o modal
+            state.isModalOpen = true;
         },
         closeModal: (state) => {
-            state.isModalOpen = false; // Fecha o modal
+            state.isModalOpen = false;
+        },
+        clearApolices: (state) => {
+            state.apolices = [];
+            state.apoliceDetalhe = null;
+            state.error = null;
         },
     },
     extraReducers: (builder) => {
         builder
+            // 📌 Buscar Apólices
             .addCase(fetchApolices.pending, (state) => {
                 state.status = 'loading';
                 state.error = null;
@@ -162,6 +121,8 @@ const apolicesSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.payload as string;
             })
+
+            // 📌 Buscar Detalhe
             .addCase(fetchApoliceDetalhe.pending, (state) => {
                 state.status = 'loading';
                 state.error = null;
@@ -174,55 +135,34 @@ const apolicesSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.payload as string;
             })
-            .addCase(createApolice.pending, (state) => {
-                state.status = 'loading';
-                state.error = null;
-            })
+
+            // 📌 Criar Apólice
             .addCase(createApolice.fulfilled, (state, action) => {
+                state.apolices.push(action.payload);
                 state.status = 'succeeded';
-                const produto = action.payload.produto;
-
-                // Verificação se o array do produto existe, caso contrário, inicializa-o
-                if (!state.apolices[produto]) {
-                    state.apolices[produto] = [];
-                }
-
-                state.apolices[produto].push(action.payload);
             })
             .addCase(createApolice.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload as string;
             })
-            .addCase(updateApolice.pending, (state) => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(updateApolice.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                const produto = action.payload.produto;
 
-                // Encontrar e atualizar a apólice no estado
-                const index = state.apolices[produto]?.findIndex(apolice => apolice.id === action.payload.id);
-                if (index !== undefined && index !== -1) {
-                    state.apolices[produto][index] = action.payload;
+            // 📌 Atualizar Apólice
+            .addCase(updateApolice.fulfilled, (state, action) => {
+                const index = state.apolices.findIndex(a => a.id === action.payload.id);
+                if (index !== -1) {
+                    state.apolices[index] = action.payload;
                 }
+                state.status = 'succeeded';
             })
             .addCase(updateApolice.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload as string;
             })
-            .addCase(deleteApolice.pending, (state) => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(deleteApolice.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                const produto = action.payload.produto;
 
-                // Remover a apólice deletada do estado
-                state.apolices[produto] = state.apolices[produto].filter(
-                    apolice => apolice.id !== action.payload.apoliceId
-                );
+            // 📌 Deletar Apólice
+            .addCase(deleteApolice.fulfilled, (state, action) => {
+                state.apolices = state.apolices.filter(a => a.id !== action.payload);
+                state.status = 'succeeded';
             })
             .addCase(deleteApolice.rejected, (state, action) => {
                 state.status = 'failed';
@@ -231,13 +171,15 @@ const apolicesSlice = createSlice({
     },
 });
 
-// Exportar as ações
-export const { openModal, closeModal } = apolicesSlice.actions;
+// 📌 Ações
+export const { openModal, closeModal, clearApolices } = apolicesSlice.actions;
 
+// 📌 Selectors
+export const selectApolices = (state: RootState) => state.apolices.apolices;
+export const selectApoliceDetalhe = (state: RootState) => state.apolices.apoliceDetalhe;
+export const selectApolicesStatus = (state: RootState) => state.apolices.status;
+export const selectApolicesError = (state: RootState) => state.apolices.error;
+export const selectIsModalOpen = (state: RootState) => state.apolices.isModalOpen;
+
+// 📌 Exportando Reducer
 export default apolicesSlice.reducer;
-
-// Selectors
-export const getApoliceDetalhe = (state: RootState) => state.apolices?.apoliceDetalhe || null;
-export const getApolicesStatus = (state: RootState) => state.apolices?.status || 'idle';
-export const getApolicesError = (state: RootState) => state.apolices?.error || null;
-export const getIsModalOpen = (state: RootState) => state.apolices?.isModalOpen || false;
