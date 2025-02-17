@@ -61,6 +61,7 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
         console.log("📌 Dados do formulário antes do envio:", JSON.stringify(data, null, 2));
 
         const enderecoPayload = {
+            id: cliente.endereco?.id || null,  // ✅ Garante que o ID seja enviado se o endereço já existir
             logradouro: data.logradouro || null,
             numero: data.numero || null,
             complemento: data.complemento || null,

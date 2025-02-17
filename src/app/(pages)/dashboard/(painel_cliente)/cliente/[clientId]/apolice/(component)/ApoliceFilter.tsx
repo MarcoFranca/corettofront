@@ -2,6 +2,7 @@ import React from "react";
 import {
     FiltroContainer, FiltroSelect
 } from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceFilter.styles";
+import {Button} from "antd";
 
 interface ApoliceFiltroProps {
     tipoFiltro: string;
@@ -46,7 +47,7 @@ const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
                 Visão Geral (Todas do Usuário)
             </label>
 
-            <button onClick={onFiltrar}>Filtrar</button>
+            <Button onClick={onFiltrar}>Filtrar</Button>
         </FiltroContainer>
     );
 };

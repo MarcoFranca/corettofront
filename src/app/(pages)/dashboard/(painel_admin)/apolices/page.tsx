@@ -1,8 +1,7 @@
-// 📂 ApolicesPage.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useAppDispatch } from "@/hooks/hooks"; // ✅ Certifique-se que está importando `useAppDispatch`
+import { useAppDispatch } from "@/hooks/hooks";
 import { fetchApolices } from "@/store/slices/apoliceSlice";
 import { Apolice } from "@/types/interfaces";
 import ApoliceWizard from "./(ApolicesWizard)/ApolicesWizard";
@@ -17,9 +16,10 @@ import {
     ContentContainer,
     FilterContainer
 } from "./ApolicesPage.styles";
+import {Drawer} from "antd";
 
 const ApolicesPage: React.FC = () => {
-    const dispatch = useAppDispatch(); // ✅ Usamos `dispatch` do Redux
+    const dispatch = useAppDispatch();
     const [apolices, setApolices] = useState<Apolice[]>([]);
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [tipoFiltro, setTipoFiltro] = useState<string>('');
@@ -27,7 +27,6 @@ const ApolicesPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // ✅ Executamos o Redux Thunk com dispatch
     const fetchApolicesList = async () => {
         setLoading(true);
         setError(null);
@@ -37,7 +36,7 @@ const ApolicesPage: React.FC = () => {
                     tipo: tipoFiltro,
                     status: statusFiltro,
                 })
-            ).unwrap(); // ✅ `.unwrap()` para acessar diretamente os dados
+            ).unwrap();
             setApolices(resultAction);
         } catch (error) {
             console.error("Erro ao buscar apólices:", error);
@@ -47,19 +46,17 @@ const ApolicesPage: React.FC = () => {
         }
     };
 
-    // ✅ Atualiza ao mudar filtros
     useEffect(() => {
         fetchApolicesList();
     }, [tipoFiltro, statusFiltro]);
 
     const handleWizardClose = () => {
         setIsWizardOpen(false);
-        fetchApolicesList(); // ✅ Atualiza a lista após o cadastro
+        fetchApolicesList();
     };
 
     return (
         <ApolicesContainer>
-            {/* 🧩 Header */}
             <HeaderContainer>
                 <Title>📑 Gestão de Apólices</Title>
                 <StyledButton onClick={() => setIsWizardOpen(true)}>
@@ -67,7 +64,6 @@ const ApolicesPage: React.FC = () => {
                 </StyledButton>
             </HeaderContainer>
 
-            {/* 🧩 Filtros */}
             <FilterContainer>
                 <ApoliceFilter
                     setVisaoGeral={() => {}}
@@ -80,17 +76,28 @@ const ApolicesPage: React.FC = () => {
                 />
             </FilterContainer>
 
-            {/* 🧩 Conteúdo */}
             <ContentContainer>
                 {loading && <p>🔄 Carregando apólices...</p>}
                 {error && <p style={{ color: 'red' }}>❌ {error}</p>}
                 <ApolicesTable apolices={apolices} />
             </ContentContainer>
 
-            {/* 🧩 Modal de Cadastro */}
-            {isWizardOpen && (
+            {/* 🧩 Modal de Cadastro - Agora Drawer Tela Cheia */}
+            <Drawer
+                title="Cadastro de Apólice"
+                placement="right"
+                closable={true}
+                onClose={handleWizardClose}
+                open={isWizardOpen}
+                width="100vw" // ✅ Tela inteira
+                height="100vh" // ✅ Ocupa toda a altura
+                styles={{
+                    body: { padding: 0, transition: "all 0.3s ease-in-out" },
+                    header: { fontSize: "20px", fontWeight: "bold" }
+                }}
+            >
                 <ApoliceWizard onClose={handleWizardClose} />
-            )}
+            </Drawer>
         </ApolicesContainer>
     );
 };

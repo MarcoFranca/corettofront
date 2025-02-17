@@ -41,6 +41,33 @@ export const fetchProfissoesOrganizadas = async (): Promise<{ label: string; opt
 };
 
 /**
+ * Busca as administradoras para o Select com retorno em Promise.
+ */
+export const loadAdministradoras = async (
+    searchQuery: string,
+    loadedOptions: Option[],
+    additional: { page: number }
+): Promise<{ options: Option[]; hasMore: boolean; additional: { page: number } }> => {
+    try {
+        const response = await api.get(`/administradoras/?search=${searchQuery}&page=${additional.page}`);
+
+        const options = response.data.results.map((admin: any) => ({
+            value: admin.id,
+            label: admin.nome,
+        }));
+
+        return {
+            options,
+            hasMore: !!response.data.next,
+            additional: { page: additional.page + 1 },
+        };
+    } catch (error) {
+        toast.error("Erro ao carregar administradoras.");
+        return { options: [], hasMore: false, additional: { page: additional.page } };
+    }
+};
+
+/**
  * Busca clientes com paginação para o `AsyncPaginate`.
  */
 export const loadClienteOptions: LoadOptions<Option, never, { page: number }> = async (

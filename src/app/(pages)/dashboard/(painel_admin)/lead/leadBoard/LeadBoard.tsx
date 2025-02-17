@@ -88,7 +88,10 @@ const LeadBoard: React.FC = () => {
                         <option value="pouco interesse">Pouco Interesse</option>
                     </select>
                 </div>
-                <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} />
+                <LeadModal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                />
             </div>
         );
     }

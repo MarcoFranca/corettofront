@@ -117,7 +117,6 @@ export interface ScheduleMeetingFormProps {
 }
 
 export interface LeadModalProps {
-    methods: UseFormReturn<any>;
     isOpen: boolean;
     onRequestClose: () => void;
 }
@@ -232,6 +231,7 @@ export interface Conjuge {
 }
 
 export interface Endereco {
+    id: any;
     logradouro?: string;
     numero?: string;
     complemento?: string;
