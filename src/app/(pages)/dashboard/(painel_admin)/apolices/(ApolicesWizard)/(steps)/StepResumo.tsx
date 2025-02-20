@@ -24,51 +24,76 @@ const StepResumo: React.FC<StepResumoProps> = ({ watch }) => {
             <ResumoCard>
                 <Descriptions title="Dados Principais" bordered column={1}>
                     <Descriptions.Item label="Cliente">
-                        {dadosPrincipais.cliente}
+                        {typeof dadosPrincipais.cliente === "object" && dadosPrincipais.cliente !== null
+                            ? String(dadosPrincipais.cliente.label ?? "Não informado")
+                            : String(dadosPrincipais.cliente ?? "Não informado")}
                     </Descriptions.Item>
                     <Descriptions.Item label="Tipo da Apólice">
-                        {dadosPrincipais.tipoApolice}
+                        {String(dadosPrincipais.tipoApolice ?? "Não informado")}
                     </Descriptions.Item>
                     <Descriptions.Item label="Administradora">
-                        {dadosPrincipais.administradora}
+                        {typeof dadosPrincipais.administradora === "object" && dadosPrincipais.administradora !== null
+                            ? String(dadosPrincipais.administradora.label ?? "Não informado")
+                            : String(dadosPrincipais.administradora ?? "Não informado")}
                     </Descriptions.Item>
                     <Descriptions.Item label="Número da Apólice">
-                        {dadosPrincipais.numeroApolice}
+                        {String(dadosPrincipais.numeroApolice ?? "Não informado")}
                     </Descriptions.Item>
                     <Descriptions.Item label="Data de Início">
-                        {dadosPrincipais.dataInicio}
+                        {String(dadosPrincipais.dataInicio ?? "Não informado")}
                     </Descriptions.Item>
                     <Descriptions.Item label="Data de Vencimento">
-                        {dadosPrincipais.dataVencimento || "Indeterminado"}
+                        {dadosPrincipais.dataVencimento ? String(dadosPrincipais.dataVencimento) : "Indeterminado"}
                     </Descriptions.Item>
                 </Descriptions>
             </ResumoCard>
 
+            {/* 📝 Exibir Detalhes da Apólice */}
             {dadosPrincipais.detalhes && (
                 <ResumoCard>
                     <Descriptions title="Detalhes da Apólice" bordered column={1}>
                         {Object.entries(dadosPrincipais.detalhes).map(([key, value]) => (
                             <Descriptions.Item label={key} key={key}>
-                                {String(value)}
+                                {typeof value === "object" && value !== null
+                                    ? "label" in value
+                                        ? String(value.label ?? "Não informado")
+                                        : JSON.stringify(value, null, 2)
+                                    : String(value ?? "Não informado")}
                             </Descriptions.Item>
                         ))}
                     </Descriptions>
                 </ResumoCard>
             )}
 
-            {dadosPrincipais.tipoApolice === "seguro_vida" &&
-                dadosPrincipais.coberturas?.length > 0 && (
-                    <ResumoCard>
-                        <SectionTitle>🛡️ Coberturas</SectionTitle>
-                        <CoberturasList>
-                            {dadosPrincipais.coberturas.map((cobertura: any, index: number) => (
-                                <li key={index}>
-                                    <strong>{cobertura.descricao}:</strong> R$ {cobertura.valor}
-                                </li>
-                            ))}
-                        </CoberturasList>
-                    </ResumoCard>
-                )}
+            {/* 🛡️ Exibir Coberturas se for Seguro de Vida */}
+            {dadosPrincipais.tipoApolice === "seguro_vida" && dadosPrincipais.coberturas?.length > 0 && (
+                <ResumoCard>
+                    <SectionTitle>🛡️ Coberturas</SectionTitle>
+                    <CoberturasList>
+                        {dadosPrincipais.coberturas.map((cobertura: any, index: number) => (
+                            <li key={index}>
+                                <strong>{String(cobertura.descricao ?? "Sem descrição")}:</strong> R$ {String(cobertura.valor ?? "0,00")}
+                            </li>
+                        ))}
+                    </CoberturasList>
+                </ResumoCard>
+            )}
+
+
+            {/* 🛡️ Exibir Coberturas se for Seguro de Vida */}
+            {dadosPrincipais.tipoApolice === "seguro_vida" && dadosPrincipais.coberturas?.length > 0 && (
+                <ResumoCard>
+                    <SectionTitle>🛡️ Coberturas</SectionTitle>
+                    <CoberturasList>
+                        {dadosPrincipais.coberturas.map((cobertura: any, index: number) => (
+                            <li key={index}>
+                                <strong>{cobertura.descricao}:</strong> R$ {String(cobertura.valor)}
+                            </li>
+                        ))}
+                    </CoberturasList>
+                </ResumoCard>
+            )}
+
         </StepContainer>
     );
 };

@@ -11,18 +11,29 @@ import { Input, Select } from "antd";
 // `;
 
 export const StepGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); // ✅ Duas colunas
+    gap: 1.5rem;
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 export const FormGroup = styled.div`
-  position: relative;
-  margin-bottom: 1rem;
+    position: relative;
+    //display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
 `;
 
 

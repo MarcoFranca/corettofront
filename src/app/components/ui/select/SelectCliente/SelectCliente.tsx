@@ -6,7 +6,7 @@ import { loadClienteOptions, Option } from "../selectUtils";
 interface SelectClienteProps {
     name: string;
     control: any;
-    label?: string;
+    label: React.ReactNode; // ✅ Aceita `JSX.Element` ou `string`
     placeholder?: string;
     required?: boolean;
     showLabel?: boolean;
@@ -27,7 +27,7 @@ const SelectCliente: React.FC<SelectClienteProps> = ({
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
             {showLabel && (
-                <label>
+                <label style={{ color: "#007bff" }}>
                     {label} {required && <span style={{ color: "red" }}>*</span>}
                 </label>
             )}

@@ -13,12 +13,12 @@ interface Option {
 interface SelectProps {
     name: string;
     control: any;
-    label?: string;
+    label?: React.ReactNode;
     showLabel?: boolean;
     value?: Option | null;
     onChange?: (value: string | string[]) => void;
     placeholder?: string;
-    options: Option[];
+    options?: Option[]; // ✅ Agora é opcional
     required?: boolean;
     className?: string;
     errorMessage?: string;
@@ -37,7 +37,7 @@ const SelectCustom: React.FC<SelectProps> = ({
                                                  value,
                                                  onChange,
                                                  placeholder = "Selecione...",
-                                                 options = [],
+                                                 options = [], // ✅ Definimos um padrão vazio
                                                  required = false,
                                                  className = "",
                                                  errorMessage = "",
@@ -67,10 +67,15 @@ const SelectCustom: React.FC<SelectProps> = ({
                             placeholder={placeholder}
                             styles={customSelectStyles(required)}
                             value={
-                                isMulti
-                                    ? options.filter(opt => field.value?.includes(opt.value))
-                                    : options.find(opt => opt.value === field.value) || null
+                                isAsync
+                                    ? field.value
+                                        ? { value: field.value, label: options.find(opt => opt.value === field.value)?.label || field.value }
+                                        : null
+                                    : isMulti
+                                        ? options.filter(opt => Array.isArray(field.value) && field.value.includes(opt.value))
+                                        : options.find(opt => opt.value === field.value) || null
                             }
+
                             onChange={(selected: MultiValue<Option> | SingleValue<Option>, _: ActionMeta<Option>) => {
                                 let selectedValue: string | string[] = "";
 
@@ -79,7 +84,7 @@ const SelectCustom: React.FC<SelectProps> = ({
                                 } else if (Array.isArray(selected)) {
                                     selectedValue = selected.map(s => s.value);
                                 } else if ("value" in selected) {
-                                    selectedValue = selected.value;
+                                    selectedValue = selected.label;
                                 }
 
                                 field.onChange(selectedValue);

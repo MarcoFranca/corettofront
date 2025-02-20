@@ -1,156 +1,177 @@
-// 📂 src/components/ApolicesWizard/ApoliceWizard.tsx
 "use client";
 
 import React, { useState } from "react";
-import {
-    useForm,
-    UseFormSetValue,
-    Path,
-    PathValue
-} from "react-hook-form";
-import { Steps } from "antd";
+import { useForm, UseFormSetValue, Path, PathValue } from "react-hook-form";
+import { message, Steps } from "antd";
 import StepDadosPrincipais from "./(steps)/StepDadosPrincipais";
 import StepDetalhesApolice from "./(steps)/StepDetalhesApolice";
 import StepCoberturas from "./(steps)/StepCoberturas";
 import StepResumo from "./(steps)/StepResumo";
+import UploadApolice from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/UploadApolice";
 import {
     WizardFullContainer,
     StepContainer,
-    StepGrid,
     ButtonGroup,
     StyledButton,
-    StepTitle,
-    StepSubtitle,
 } from "./ApoliceWizard.styles";
+import api from "@/app/api/axios";
 
 // ✅ Interface dos dados da apólice
 export interface ApoliceFormData {
-    cliente: string;
-    tipoApolice: string;
     detalhes: Record<string, any>;
     coberturas: { descricao: string; valor: number }[];
+    cliente: { value: string; label: string } | string | null;
+    parceiro?: string;
+    tipoApolice: string;
+    administradora: string;
+    numeroApolice: string;
+    dataInicio: string;
+    dataVencimento?: string;
+    dataRevisao?: string;
+    arquivoApolice?: File | null;
 }
 
 interface ApoliceWizardProps {
     onClose: () => void;
 }
 
-// 📍 Configuração dos Steps
-const steps = [
-    { title: "Dados Principais", description: "Preencha os dados principais" },
-    { title: "Detalhes", description: "Detalhes do plano" },
-    { title: "Coberturas", description: "Coberturas para seguro de vida" },
-    { title: "Resumo", description: "Revise as informações" },
-];
+// 🔥 Lista de campos que representam valores monetários
+const moneyFields = ["premioPago", "valorParcela", "valorFinalCarta", "aporte", "valor_cota"];
+
 
 const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
     const [step, setStep] = useState(0);
-
-    // ✅ useForm com tipagem correta
     const { handleSubmit, watch, setValue, control, register } = useForm<ApoliceFormData>({
         defaultValues: {
             cliente: "",
             tipoApolice: "",
             detalhes: {},
             coberturas: [],
+            arquivoApolice: null,
         },
     });
 
-
-
     const tipoApolice = watch("tipoApolice");
 
-    // ✅ Defina `setTypedValue` com `as` para compatibilizar os tipos
-    const setTypedValue: UseFormSetValue<ApoliceFormData> = (
-        name,
-        value
-    ) => {
+    const setTypedValue: UseFormSetValue<ApoliceFormData> = (name, value) => {
         setValue(name as Path<ApoliceFormData>, value as PathValue<ApoliceFormData, Path<ApoliceFormData>>);
     };
 
+    // 🔥 Função para converter checkboxes corretamente
+    const formatCheckbox = (value: any) => {
+        return value === true || value === "true";
+    };
+
+    // 🔥 Função para limpar valores vazios antes do envio
+    const formatValue = (value: any) => {
+        return value === "" || value === "undefined" || value === undefined ? null : value;
+    };
+
+    const onSubmit = async (data: ApoliceFormData) => {
+        const formData = new FormData();
+
+        // 🔥 Extraímos detalhes e removemos do JSON principal
+        const { detalhes, coberturas, arquivoApolice, ...rest } = data;
+
+        const cleanMoneyValue = (value: string | number) => {
+            if (typeof value === "number") return value; // Se já for número, mantém
+            if (typeof value === "string") {
+                return Number(value.replace(/[^\d,]/g, "").replace(",", ".")); // Remove máscara e converte
+            }
+            return null;
+        };
+
+        // Ajuste no envio para remover máscaras
+        const flattenedDetails = Object.entries(detalhes || {}).reduce((acc, [key, value]) => {
+            acc[key] = moneyFields.includes(key) ? cleanMoneyValue(value) : formatValue(value);
+            return acc;
+        }, {} as Record<string, any>);
 
 
+        // 🔥 Criamos o objeto final formatado
+        const formattedData = {
+            ...rest,
+            ...flattenedDetails, // ✅ Incluímos os detalhes desaninhados no nível principal
+            coberturas: Array.isArray(coberturas) && coberturas.length > 0 ? coberturas : [],
+            cliente: typeof data.cliente === "object" && data.cliente !== null ? data.cliente.value : data.cliente,
+            parceiro: formatValue(data.parceiro),
+            dataVencimento: formatValue(data.dataVencimento),
+            dataRevisao: formatValue(data.dataRevisao),
+            permitir_lance_livre: formatCheckbox(detalhes.permitir_lance_livre),
+            permitir_lance_fixo: formatCheckbox(detalhes.permitir_lance_fixo),
+            permitir_embutido_fixo: formatCheckbox(detalhes.permitir_embutido_fixo),
+            permitir_embutido_livre: formatCheckbox(detalhes.permitir_embutido_livre),
+        };
 
+        // 🔥 Adicionamos os dados ao FormData
+        Object.entries(formattedData).forEach(([key, value]) => {
+            if (typeof value === "object" && value !== null) {
+                formData.append(key, JSON.stringify(value)); // ✅ Serializa JSON corretamente
+            } else if (value !== null) {
+                formData.append(key, value as string);
+            }
+        });
 
+        // 🔥 Adicionamos o arquivo se existir
+        if (arquivoApolice instanceof File) {
+            formData.append("arquivoApolice", arquivoApolice);
+        }
 
-    const onSubmit = (data: ApoliceFormData) => {
-        console.log("Apólice cadastrada:", data);
-        onClose();
+        console.log("📡 Enviando dados da apólice:", Object.fromEntries(formData.entries()));
+
+        try {
+            const response = await api.post("apolices/consorcio/", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            if (response.status !== 201) {
+                throw new Error(`Erro ao cadastrar apólice: ${response.status}`);
+            }
+
+            message.success("Apólice cadastrada com sucesso!");
+            onClose();
+        } catch (error) {
+            console.error("Erro ao enviar apólice:", error);
+            message.error("Erro ao cadastrar apólice.");
+        }
     };
 
     const handleNext = () => setStep((prev) => prev + 1);
     const handleBack = () => setStep((prev) => prev - 1);
 
+    // 📌 **Configuração dinâmica dos steps**
+    const steps = [
+        { title: "Dados Principais", content: <StepDadosPrincipais control={control} setValue={setTypedValue} register={register} /> },
+        { title: "Detalhes", content: <StepDetalhesApolice control={control} setValue={setValue} register={register} tipoApolice={tipoApolice} /> },
+    ];
+
+    if (tipoApolice === "seguro_vida") {
+        steps.push(
+            { title: "Coberturas", content: <StepCoberturas control={control} /> },
+            { title: "Importação", content: <UploadApolice setValue={setValue} /> }
+        );
+    } else {
+        steps.push({ title: "Importação", content: <UploadApolice setValue={setValue} /> });
+    }
+
+    steps.push({ title: "Resumo", content: <StepResumo watch={watch} /> });
+
     return (
         <WizardFullContainer>
-            {/* 🧩 Barra de Progresso (Steps) */}
-            <Steps
-                current={step}
-                items={steps.map(({ title }) => ({
-                    title
-                }))}
-                size="small"
-                responsive={true}
-            />
+            <Steps current={step} items={steps.map(({ title }) => ({ title }))} size="small" responsive={true} />
 
-            {/* 🧩 Conteúdo das Etapas */}
-            <StepContainer>
-                {step === 0 && (
-                    <>
-                        <StepTitle>📂 Dados Principais</StepTitle>
-                        <StepSubtitle>Preencha os principais dados da apólice.</StepSubtitle>
-                        <StepGrid>
-                            <StepDadosPrincipais
-                                control={control}
-                                setValue={setTypedValue}
-                                register={register}
-                            />
-                        </StepGrid>
-                    </>
-                )}
+            <StepContainer>{steps[step].content}</StepContainer>
 
-                {step === 1 && (
-                    <>
-                        <StepTitle>📄 Detalhes da Apólice</StepTitle>
-                        <StepSubtitle>Informe as especificidades do plano.</StepSubtitle>
-                        <StepGrid>
-                            <StepDetalhesApolice control={control} tipoApolice={tipoApolice} />
-                        </StepGrid>
-                    </>
-                )}
-
-                {step === 2 && tipoApolice === "seguro_vida" && (
-                    <>
-                        <StepTitle>💙 Coberturas</StepTitle>
-                        <StepSubtitle>Liste as coberturas para o seguro de vida.</StepSubtitle>
-                        <StepGrid>
-                            <StepCoberturas control={control} />
-                        </StepGrid>
-                    </>
-                )}
-
-                {step === 3 && (
-                    <>
-                        <StepTitle>✅ Resumo</StepTitle>
-                        <StepSubtitle>Revise todas as informações antes de concluir.</StepSubtitle>
-                        <StepResumo watch={watch} />
-                    </>
-                )}
-            </StepContainer>
-
-            {/* 🧩 Botões de Navegação */}
             <ButtonGroup>
                 {step > 0 && (
                     <StyledButton onClick={handleBack} variant="secondary">
                         Voltar
                     </StyledButton>
                 )}
-                {step < 3 ? (
+                {step < steps.length - 1 ? (
                     <StyledButton onClick={handleNext}>Próximo</StyledButton>
                 ) : (
-                    <StyledButton onClick={handleSubmit(onSubmit)}>
-                        Finalizar
-                    </StyledButton>
+                    <StyledButton onClick={handleSubmit(onSubmit)}>Finalizar</StyledButton>
                 )}
             </ButtonGroup>
         </WizardFullContainer>

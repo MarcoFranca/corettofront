@@ -8,7 +8,7 @@ export const SelectWrapper = styled.div`
 
 export const Label = styled.label`
     font-weight: 600;
-    color: #333;
+    color: #007bff;
 
     span {
         color: red;

@@ -38,3 +38,31 @@ export const getCpfMask = (cpf: string): string => {
 export const getIdentityMask = (identidade: string): string => {
     return "99.999.999-*";
 };
+
+/**
+ * Remove a máscara e deixa apenas números.
+ * Exemplo: R$ 1.234,56 -> "123456"
+ */
+export const removeMoneyMask = (value: string): string => {
+    return value?.replace(/[^\d]/g, "");
+};
+
+/**
+ * Formata número em moeda brasileira (R$).
+ * Exemplo: "123456" -> "R$ 1.234,56"
+ */
+export const formatMoney = (value: string | number): string => {
+    const numericValue = Number(removeMoneyMask(String(value))) / 100;
+    return numericValue.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+};
+
+/**
+ * Máscara para InputMask (moeda brasileira).
+ * Usa máscara dinâmica para valores pequenos e grandes.
+ */
+export const getMoneyMask = (): string => {
+    return "999999999,99"; // ✅ Permite até 9 dígitos antes da vírgula
+};

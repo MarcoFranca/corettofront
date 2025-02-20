@@ -40,32 +40,33 @@ export const fetchProfissoesOrganizadas = async (): Promise<{ label: string; opt
     }
 };
 
-/**
- * Busca as administradoras para o Select com retorno em Promise.
- */
-export const loadAdministradoras = async (
-    searchQuery: string,
-    loadedOptions: Option[],
-    additional: { page: number }
-): Promise<{ options: Option[]; hasMore: boolean; additional: { page: number } }> => {
+// ✅ Ajuste a função para retornar `Promise<any>`
+export const loadAdministradoraOptions = async (
+    searchQuery = "",
+    loadedOptions: Option[] = [],
+    additional = { page: 1 }
+): Promise<{ options: Option[]; hasMore: boolean }> => {
     try {
-        const response = await api.get(`/administradoras/?search=${searchQuery}&page=${additional.page}`);
+        const response = await api.get("administradoras/");
 
-        const options = response.data.results.map((admin: any) => ({
-            value: admin.id,
-            label: admin.nome,
-        }));
+        // ✅ Definimos o tipo de 'admin' usando uma tipagem explícita
+        const filtered = response.data.filter((admin: Option) =>
+            admin.label.toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
         return {
-            options,
-            hasMore: !!response.data.next,
-            additional: { page: additional.page + 1 },
+            options: filtered.map((admin: Option) => ({
+                value: admin.value,         // ex: "porto_seguro"
+                label: admin.label,         // ex: "Porto Seguro"
+            })),
+            hasMore: false,
         };
     } catch (error) {
         toast.error("Erro ao carregar administradoras.");
-        return { options: [], hasMore: false, additional: { page: additional.page } };
+        return { options: [], hasMore: false };
     }
 };
+
 
 /**
  * Busca clientes com paginação para o `AsyncPaginate`.
@@ -123,3 +124,27 @@ export const loadIndicadoOptions = async (
         return { options: [], hasMore: false, additional: { page } };
     }
 };
+
+
+export const loadParceiroOptions = async (
+    searchQuery = "",
+    loadedOptions = [],
+    additional = { page: 1 }
+): Promise<{ options: Option[]; hasMore: boolean }> => {
+    try {
+        const response = await api.get("/parceiros/?search=" + searchQuery);
+        const parceiros = response.data;
+
+        return {
+            options: parceiros.map((parceiro: any) => ({
+                value: parceiro.id,           // ID técnico
+                label: parceiro.nome,         // Nome amigável
+            })),
+            hasMore: false,
+        };
+    } catch (error) {
+        toast.error("Erro ao carregar parceiros.");
+        return { options: [], hasMore: false };
+    }
+};
+

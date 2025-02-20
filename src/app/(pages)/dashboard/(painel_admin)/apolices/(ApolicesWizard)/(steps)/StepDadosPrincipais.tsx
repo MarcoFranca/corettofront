@@ -8,6 +8,8 @@ import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 import { StepGrid, FormGroup } from "./StepDadosPrincipais.styles";
 import { UseFormSetValue, UseFormRegister } from "react-hook-form";
 import {ApoliceFormData} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/ApolicesWizard";
+import {loadAdministradoraOptions, loadParceiroOptions} from "@/app/components/ui/select/selectUtils";
+import { FaUser, FaBuilding, FaFileAlt, FaCalendarAlt, FaHandshake, FaHashtag } from "react-icons/fa";
 
 interface StepDadosPrincipaisProps {
     control: any;
@@ -34,21 +36,35 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
 
     return (
         <StepGrid>
-            {/* Cliente com SelectCliente (Busca Paginada) */}
+            {/* Cliente */}
             <FormGroup>
                 <SelectCliente
                     name="cliente"
-                    label="Cliente"
+                    label={<><FaUser /> Cliente</>}
                     control={control}
                     required
+                    onChange={(selectedOption) => setValue("cliente", selectedOption || null)} // ✅ Agora aceita { value, label }
+
+                />
+
+            </FormGroup>
+
+            {/* Parceiro (Indicação) */}
+            <FormGroup>
+                <SelectCustom
+                    name="parceiro"
+                    label={<><FaHandshake /> Parceiro (Indicação)</>}
+                    control={control}
+                    isAsync={true}
+                    loadOptions={loadParceiroOptions}
                 />
             </FormGroup>
 
-            {/* Tipo de Apólice com SelectCustom */}
+            {/* Tipo de Apólice */}
             <FormGroup>
                 <SelectCustom
                     name="tipoApolice"
-                    label="Tipo de Apólice"
+                    label={<><FaFileAlt /> Tipo de Apólice</>}
                     options={tipoApoliceOptions}
                     control={control}
                     required
@@ -57,12 +73,12 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
 
             {/* Administradora */}
             <FormGroup>
-                <FloatingMaskedInput
+                <SelectCustom
                     name="administradora"
-                    label="Administradora"
+                    label={<><FaBuilding /> Administradora</>}
                     control={control}
-                    setValue={setValue}
-                    register={register}
+                    isAsync={true}
+                    loadOptions={loadAdministradoraOptions}
                     required
                 />
             </FormGroup>
@@ -71,7 +87,7 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
             <FormGroup>
                 <FloatingMaskedInput
                     name="numeroApolice"
-                    label="Número da Apólice"
+                    label={<><FaHashtag /> Número da Apólice</>}
                     control={control}
                     setValue={setValue}
                     register={register}
@@ -79,28 +95,38 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                 />
             </FormGroup>
 
-            {/* Data de Início */}
+            {/* Datas */}
             <FormGroup>
                 <FloatingMaskedInput
-                    name="dataInicio"
-                    label="Data de Início"
-                    type="date"
                     control={control}
-                    setValue={setValue}
+                    name="dataInicio"
+                    label={<><FaCalendarAlt /> Data de Início</>}
+                    type="date"
                     register={register}
+                    setValue={setValue}
                     required
                 />
             </FormGroup>
 
-            {/* Data de Vencimento */}
             <FormGroup>
                 <FloatingMaskedInput
                     name="dataVencimento"
-                    label="Data de Vencimento"
+                    label={<><FaCalendarAlt /> Data de Vencimento</>}
                     type="date"
                     control={control}
                     setValue={setValue}
                     register={register}
+                />
+            </FormGroup>
+
+            <FormGroup>
+                <FloatingMaskedInput
+                    control={control}
+                    name="dataRevisao"
+                    label={<><FaCalendarAlt /> Data de Revisão</>}
+                    type="date"
+                    register={register}
+                    setValue={setValue}
                 />
             </FormGroup>
         </StepGrid>

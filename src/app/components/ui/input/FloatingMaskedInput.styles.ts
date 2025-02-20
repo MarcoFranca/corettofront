@@ -73,7 +73,7 @@ export const Label = styled.label`
         left: 0;
         transform: none;
         font-size: 16px;
-        color: #151e3e;
+        color: #007bff;
         margin-bottom: 4px; /* 🔥 Agora o rótulo fica fixo acima do input */
     }
 `;
