@@ -11,11 +11,13 @@ import {ApoliceFormData} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(
 import {loadAdministradoraOptions, loadParceiroOptions} from "@/app/components/ui/select/selectUtils";
 import { FaUser, FaBuilding, FaFileAlt, FaCalendarAlt, FaHandshake, FaHashtag } from "react-icons/fa";
 import api from "@/app/api/axios";
+import SelectAdministradora from "@/app/components/ui/select/SelectAdministradoras/SelectAdministradoras";
 
 interface StepDadosPrincipaisProps {
     control: any;
     setValue: UseFormSetValue<ApoliceFormData>; // ✅ Ajuste aqui para aceitar a tipagem correta
     register: UseFormRegister<ApoliceFormData>;
+    watch: (name: string) => any;  // 🔥 Adicionado `watch`
 }
 
 
@@ -23,6 +25,7 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                                                                      control,
                                                                      setValue,
                                                                      register,
+                                                                     watch, // 🔥 Agora recebemos `watch`
                                                                  }) => {
 
     const [produtos, setProdutos] = useState<{ value: string; label: string }[]>([]);
@@ -53,6 +56,8 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
             setAdministradoras([]);
         }
     }, [produtoSelecionado]);
+
+
 
     return (
         <StepGrid>
@@ -111,28 +116,30 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
 
             {/* Administradora */}
             <FormGroup>
-                <SelectCustom
+                <SelectAdministradora
                     name="administradora"
                     label={<><FaBuilding /> Administradora</>}
                     control={control}
                     isAsync={true}
-                    loadOptions={(search) => loadAdministradoraOptions(produtoSelecionado || "")}
+                    loadOptions={loadAdministradoraOptions}
                     required
-                    onChange={(value) => {
-                        if (!value || typeof value === "string") {
-                            setValue("administradora", "" as any);
+                    value={watch("administradora") ? { value: watch("administradora"), label: administradoras.find((adm) => adm.value === watch("administradora"))?.label || "" } : null}
+                    onChange={(selectedOption) => {
+                        console.log("🔥 Administradora selecionada no select:", selectedOption); // 🔥 Verificar o que está chegando
+
+                        if (!selectedOption) {
+                            setValue("administradora", "");
                             return;
                         }
 
-                        if (Array.isArray(value)) {
-                            console.warn("Esperado um único objeto, mas recebeu um array:", value);
-                            setValue("administradora", "" as any);
-                            return;
-                        }
-
-                        setValue("administradora", String(value));  // 🔥 Agora sempre enviamos uma string
+                        console.log("🔥 Armazenando ID da administradora:", selectedOption.value);
+                        setValue("administradora", selectedOption.value);  // 🔥 Agora armazenamos apenas o ID
                     }}
                 />
+
+
+
+
             </FormGroup>
 
             {/* Número da Apólice */}

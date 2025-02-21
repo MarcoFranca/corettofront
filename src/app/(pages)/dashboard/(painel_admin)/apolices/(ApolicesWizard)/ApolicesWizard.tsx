@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useForm, UseFormSetValue, Path, PathValue } from "react-hook-form";
 import { message, Steps } from "antd";
 import StepDadosPrincipais from "./(steps)/StepDadosPrincipais";
@@ -64,6 +64,17 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
     const setTypedValue: UseFormSetValue<ApoliceFormData> = (name, value) => {
         setValue(name as Path<ApoliceFormData>, value as PathValue<ApoliceFormData, Path<ApoliceFormData>>);
     };
+
+    const administradoraSelecionada = watch("administradora");
+
+    useEffect(() => {
+        console.log("✅ Administradora selecionada:", administradoraSelecionada); // 🔥 Verifique se está retornando um valor único
+    }, [administradoraSelecionada]);
+
+    useEffect(() => {
+        console.log("✅ Administradora armazenada no formulário:", watch("administradora"));
+    }, [watch("administradora")]);
+
 
     // 🔥 Função para converter checkboxes corretamente
     const formatCheckbox = (value: any) => {
@@ -158,7 +169,13 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
 
     // 📌 **Configuração dinâmica dos steps**
     const steps = [
-        { title: "Dados Principais", content: <StepDadosPrincipais control={control} setValue={setTypedValue} register={register} /> },
+        { title: "Dados Principais", content: <StepDadosPrincipais
+                control={control}
+                setValue={setTypedValue}
+                register={register}
+                watch={watch}  // 🔥 Agora passamos `watch` para o componente
+            />
+        },
         { title: "Detalhes", content: <StepDetalhesApolice control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },
     ];
 
