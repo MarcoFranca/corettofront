@@ -41,28 +41,34 @@ export const fetchProfissoesOrganizadas = async (): Promise<{ label: string; opt
 };
 
 // ✅ Ajuste a função para retornar `Promise<any>`
-export const loadAdministradoraOptions = async (
-    searchQuery = "",
-    loadedOptions: Option[] = [],
-    additional = { page: 1 }
-): Promise<{ options: Option[]; hasMore: boolean }> => {
-    try {
-        const response = await api.get("administradoras/");
-
-        // ✅ Definimos o tipo de 'admin' usando uma tipagem explícita
-        const filtered = response.data.filter((admin: Option) =>
-            admin.label.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-
+export const loadAdministradoraOptions = async (produto: string) => {
+    if (!produto) try {
+        const response = await api.get(`administradoras/`);
         return {
-            options: filtered.map((admin: Option) => ({
-                value: admin.value,         // ex: "porto_seguro"
-                label: admin.label,         // ex: "Porto Seguro"
+            options: response.data.map((admin: { id: string; nome: string }) => ({
+                value: admin.id,
+                label: admin.nome,
             })),
             hasMore: false,
         };
     } catch (error) {
         toast.error("Erro ao carregar administradoras.");
+        console.error("Erro ao buscar administradoras:", error);
+        return { options: [], hasMore: false };
+    }  // Se não houver produto, retorna vazio.
+
+    try {
+        const response = await api.get(`administradoras/?produto=${produto}/`);
+        return {
+            options: response.data.map((admin: { id: string; nome: string }) => ({
+                value: admin.id,
+                label: admin.nome,
+            })),
+            hasMore: false,
+        };
+    } catch (error) {
+        toast.error("Erro ao carregar administradoras.");
+        console.error("Erro ao buscar administradoras:", error);
         return { options: [], hasMore: false };
     }
 };

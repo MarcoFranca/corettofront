@@ -22,14 +22,22 @@ export interface ApoliceFormData {
     coberturas: { descricao: string; valor: number }[];
     cliente: { value: string; label: string } | string | null;
     parceiro?: string;
-    tipoApolice: string;
-    administradora: string;
+    tipoApolice: string | null;  // ✅ Agora pode ser null
+    administradora: string | number; // 🔥 Agora aceita ID (number) ou string
     numeroApolice: string;
     dataInicio: string;
     dataVencimento?: string;
     dataRevisao?: string;
+    premioPago: number;
+    valorParcela: number;
+    periodicidadePagamento: string;  // 🔥 Adicionado
+    formaPagamento: string;  // 🔥 Adicionado
+    valorCota: number;  // 🔥 Adicionado
+    indiceCorrecao: string;  // 🔥 Adicionado
+    objetivo: string;  // 🔥 Adicionado
     arquivoApolice?: File | null;
 }
+
 
 interface ApoliceWizardProps {
     onClose: () => void;
@@ -92,7 +100,15 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
         const formattedData = {
             ...rest,
             ...flattenedDetails, // ✅ Incluímos os detalhes desaninhados no nível principal
-            coberturas: Array.isArray(coberturas) && coberturas.length > 0 ? coberturas : [],
+            dataInicio: data.dataInicio || new Date().toISOString().split("T")[0], // 🔥 Define um valor padrão
+            premioPago: Number(data.premioPago) || 0, // 🔥 Garante que seja um número
+            periodicidadePagamento: data.periodicidadePagamento || "mensal", // 🔥 Define um valor padrão
+            formaPagamento: data.formaPagamento || "boleto", // 🔥 Define um valor padrão
+            valorCota: Number(data.valorCota) || 0,
+            indiceCorrecao: data.indiceCorrecao || "IPCA",
+            objetivo: data.objetivo || "Não informado",
+            valorParcela: Number(data.valorParcela) || 0,
+            coberturas: Array.isArray(coberturas) ? coberturas : [], // 🔥 Agora é um array real
             cliente: typeof data.cliente === "object" && data.cliente !== null ? data.cliente.value : data.cliente,
             parceiro: formatValue(data.parceiro),
             dataVencimento: formatValue(data.dataVencimento),
@@ -102,6 +118,8 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             permitir_embutido_fixo: formatCheckbox(detalhes.permitir_embutido_fixo),
             permitir_embutido_livre: formatCheckbox(detalhes.permitir_embutido_livre),
         };
+        console.log("Valores monetários antes do envio:", formattedData);
+        console.log(cleanMoneyValue("R$ 1.200,50")); // Deve retornar 1200.50
 
         // 🔥 Adicionamos os dados ao FormData
         Object.entries(formattedData).forEach(([key, value]) => {
@@ -120,9 +138,8 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
         console.log("📡 Enviando dados da apólice:", Object.fromEntries(formData.entries()));
 
         try {
-            const response = await api.post("apolices/consorcio/", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            const response = await api.post("apolices/consorcio/", formData); // Testar sem "consorcio"
+
 
             if (response.status !== 201) {
                 throw new Error(`Erro ao cadastrar apólice: ${response.status}`);
@@ -142,10 +159,10 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
     // 📌 **Configuração dinâmica dos steps**
     const steps = [
         { title: "Dados Principais", content: <StepDadosPrincipais control={control} setValue={setTypedValue} register={register} /> },
-        { title: "Detalhes", content: <StepDetalhesApolice control={control} setValue={setValue} register={register} tipoApolice={tipoApolice} /> },
+        { title: "Detalhes", content: <StepDetalhesApolice control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },
     ];
 
-    if (tipoApolice === "seguro_vida") {
+    if (tipoApolice === "Seguro de Vida") {
         steps.push(
             { title: "Coberturas", content: <StepCoberturas control={control} /> },
             { title: "Importação", content: <UploadApolice setValue={setValue} /> }

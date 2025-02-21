@@ -1,7 +1,7 @@
 // 📂 src/components/ApolicesWizard/steps/StepDadosPrincipais.tsx
 "use client";
 
-import React from "react";
+import React, {useEffect, useState} from "react";
 import SelectCliente from "@/app/components/ui/select/SelectCliente/SelectCliente";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
@@ -10,6 +10,7 @@ import { UseFormSetValue, UseFormRegister } from "react-hook-form";
 import {ApoliceFormData} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/ApolicesWizard";
 import {loadAdministradoraOptions, loadParceiroOptions} from "@/app/components/ui/select/selectUtils";
 import { FaUser, FaBuilding, FaFileAlt, FaCalendarAlt, FaHandshake, FaHashtag } from "react-icons/fa";
+import api from "@/app/api/axios";
 
 interface StepDadosPrincipaisProps {
     control: any;
@@ -23,16 +24,35 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                                                                      setValue,
                                                                      register,
                                                                  }) => {
-    // Opções fixas para Tipo de Apólice
-    const tipoApoliceOptions = [
-        { value: "plano_saude", label: "Plano de Saúde" },
-        { value: "seguro_vida", label: "Seguro de Vida" },
-        { value: "consorcio", label: "Consórcio" },
-        { value: "previdencia", label: "Previdência" },
-        { value: "investimento", label: "Investimento" },
-        { value: "seguro_residencial", label: "Seguro Residencial" },
-        { value: "seguro_profissional", label: "Seguro Profissional" },
-    ];
+
+    const [produtos, setProdutos] = useState<{ value: string; label: string }[]>([]);
+    const [administradoras, setAdministradoras] = useState<{ value: string; label: string }[]>([]);
+    const [produtoSelecionado, setProdutoSelecionado] = useState<string | null>(null);
+
+    // 🔥 Buscar produtos da API ao carregar a página
+    useEffect(() => {
+        const fetchProdutos = async () => {
+            try {
+                const response = await api.get("/produtos/");
+                setProdutos(response.data.map((p: { nome: string }) => ({
+                    value: p.nome,
+                    label: p.nome,
+                })));
+            } catch (error) {
+                console.error("Erro ao buscar produtos:", error);
+            }
+        };
+        fetchProdutos();
+    }, []);
+
+    // 🔥 Buscar administradoras sempre que um produto for selecionado
+    useEffect(() => {
+        if (produtoSelecionado) {
+            loadAdministradoraOptions(produtoSelecionado).then((data) => setAdministradoras(data.options));
+        } else {
+            setAdministradoras([]);
+        }
+    }, [produtoSelecionado]);
 
     return (
         <StepGrid>
@@ -65,10 +85,28 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                 <SelectCustom
                     name="tipoApolice"
                     label={<><FaFileAlt /> Tipo de Apólice</>}
-                    options={tipoApoliceOptions}
+                    options={produtos}
                     control={control}
                     required
+                    onChange={(value) => {
+                        console.log(value)
+
+                        // 🔥 Garantimos que `value` sempre será tratado corretamente
+                        if (!value) {
+                            setProdutoSelecionado(null);
+                            console.log(value)
+                            setValue("tipoApolice", "" as any);
+                            return;
+                        }
+
+                        // 🔥 Se `value` for um array, pegamos apenas o primeiro item
+                        const selected = Array.isArray(value) ? value[0] : value;
+
+                        setProdutoSelecionado(selected);
+                        setValue("tipoApolice", selected);
+                    }}
                 />
+
             </FormGroup>
 
             {/* Administradora */}
@@ -78,8 +116,22 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                     label={<><FaBuilding /> Administradora</>}
                     control={control}
                     isAsync={true}
-                    loadOptions={loadAdministradoraOptions}
+                    loadOptions={(search) => loadAdministradoraOptions(produtoSelecionado || "")}
                     required
+                    onChange={(value) => {
+                        if (!value || typeof value === "string") {
+                            setValue("administradora", "" as any);
+                            return;
+                        }
+
+                        if (Array.isArray(value)) {
+                            console.warn("Esperado um único objeto, mas recebeu um array:", value);
+                            setValue("administradora", "" as any);
+                            return;
+                        }
+
+                        setValue("administradora", String(value));  // 🔥 Agora sempre enviamos uma string
+                    }}
                 />
             </FormGroup>
 

@@ -36,19 +36,19 @@ const StepDetalhesApolice: React.FC<StepDetalhesApoliceProps> =
      }) => {
 
         switch (tipoApolice) {
-            case "plano_saude":
+            case "Plano de Saúde":
                 return <PlanoSaude control={control} />;
-            case "seguro_vida":
+            case "Seguro de Vida":
                 return <SeguroVida control={control} />;
-            case "consorcio":
+            case "Consórcio":
                 return <Consorcio control={control} setValue={setValue} register={register}/>;
-            case "previdencia":
+            case "Previdência":
                 return <Previdencia control={control} />;
-            case "investimento":
+            case "Investimento":
                 return <Investimento control={control} />;
-            case "seguro_residencial":
+            case "Seguro Residencial":
                 return <SeguroResidencial control={control} />;
-            case "seguro_profissional":
+            case "Seguro Profissional":
                 return <SeguroProfissional control={control} />;
             default:
                 return <p>Selecione um tipo de apólice</p>;
