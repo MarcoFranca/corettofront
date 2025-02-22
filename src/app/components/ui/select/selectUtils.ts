@@ -42,44 +42,28 @@ export const fetchProfissoesOrganizadas = async (): Promise<{ label: string; opt
 
 // ✅ Ajuste a função para retornar `Promise<any>`
 export const loadAdministradoraOptions = async (produto: string) => {
-    if (!produto)
-
-        try {
-            const response = await api.get(`administradoras/`);
-            // console.log(response)
-            console.log("🎯 Administradoras carregadas do backend:", response.data); // 🔥 Exibir no console
-
-            const options = response.data.map((admin: { id: number; nome: string }) => ({
-                value: String(admin.id),  // 🔥 Converte `id` para `string`
-                label: admin.nome,  // 🔥 Mantém `label` como nome
-            })
-
-            );
-
-            console.log("🛠️ Administradoras convertidas para options:", options); // 🔥 Exibir no console
-
-            return { options };
-        } catch (error) {
-            console.error("❌ Erro ao carregar administradoras:", error);
-            return { options: [], hasMore: false };
+    try {
+        let url = "/administradoras/";
+        if (produto) {
+            url = `/administradoras/?produto=${produto}`;
         }
 
-    try {
-        const response = await api.get(`administradoras/?produto=${produto}/`);
-        console.log("🎯 Administradoras carregadas do backend produto:", response.data); // 🔥 Exibe os dados no console
-        return {
-            options: response.data.map((admin: { id: string; nome: string }) => ({
-                value: admin.id,
-                label: admin.nome,
-            })),
-            hasMore: false,
-        };
+        const response = await api.get(url);
+        console.log("🎯 Administradoras carregadas do backend:", response.data); // 🔥 Debug
+
+        const options = response.data.map((admin: { id: number | string; nome: string }) => ({
+            value: String(admin.id),  // 🔥 Garante que `value` seja sempre um `string`
+            label: admin.nome,        // 🔥 Garante que `label` seja sempre um `string`
+        }));
+
+        console.log("🛠️ Administradoras convertidas para options:", options); // 🔥 Debug
+        return { options, hasMore: false };
     } catch (error) {
-        toast.error("Erro ao carregar administradoras.");
-        console.error("Erro ao buscar administradoras:", error);
+        console.error("❌ Erro ao carregar administradoras:", error);
         return { options: [], hasMore: false };
     }
 };
+
 
 
 /**

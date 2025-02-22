@@ -120,25 +120,15 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                     name="administradora"
                     label={<><FaBuilding /> Administradora</>}
                     control={control}
-                    isAsync={true}
-                    loadOptions={loadAdministradoraOptions}
                     required
-                    value={watch("administradora") ? { value: watch("administradora"), label: administradoras.find((adm) => adm.value === watch("administradora"))?.label || "" } : null}
+                    loadOptions={loadAdministradoraOptions}
+                    options={administradoras ?? []} // ✅ Garante que `options` nunca seja `undefined`
+                    value={watch("administradora") || null} // ✅ Agora exibe `{ value, label }` corretamente
                     onChange={(selectedOption) => {
-                        console.log("🔥 Administradora selecionada no select:", selectedOption); // 🔥 Verificar o que está chegando
-
-                        if (!selectedOption) {
-                            setValue("administradora", "");
-                            return;
-                        }
-
-                        console.log("🔥 Armazenando ID da administradora:", selectedOption.value);
-                        setValue("administradora", selectedOption.value);  // 🔥 Agora armazenamos apenas o ID
+                        console.log("🔥 Administradora selecionada:", selectedOption);
+                        setValue("administradora", selectedOption ? { value: selectedOption.value, label: selectedOption.label } : null); // ✅ Agora armazenamos `{ value, label }`
                     }}
                 />
-
-
-
 
             </FormGroup>
 

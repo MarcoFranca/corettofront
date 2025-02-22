@@ -1,128 +1,74 @@
 import React from "react";
-import Select, { SingleValue, MultiValue, ActionMeta } from "react-select";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Controller } from "react-hook-form";
-import { SelectWrapper, ErrorMessage, customSelectStyles, Label } from "../SelectCustom.styles";
+import { Option } from "../selectUtils"; // ✅ Certifique-se de que `Option` é importado corretamente
 
-interface Option {
-    value: string;
-    label: string;
-    isDisabled?: boolean;
-}
-
-interface SelectProps {
+interface SelectAdministradoraProps {
     name: string;
     control: any;
     label?: React.ReactNode;
-    showLabel?: boolean;
-    value?: Option | null;
-    onChange?: (value: string | string[]) => void;
     placeholder?: string;
-    options?: Option[]; // ✅ Agora é opcional
     required?: boolean;
-    className?: string;
+    showLabel?: boolean;
     errorMessage?: string;
-    isMulti?: boolean;
-    isSearchable?: boolean;
-    isAsync?: boolean;
-    loadOptions?: (search: string, prevOptions: any, additional: any) => Promise<any>;
-    defaultOptions?: boolean;
+    onChange?: (value: Option | null) => void;
+    loadOptions: (search: string, prevOptions: any, additional: any) => Promise<any>;
+    options: Option[];
+    value?: Option | null; // ✅ Agora `value` está definido corretamente!
 }
 
-const SelectAdministradora: React.FC<SelectProps> = ({
-                                                 name,
-                                                 control,
-                                                 label = "",
-                                                 showLabel = true,
-                                                 value,
-                                                 onChange,
-                                                 placeholder = "Selecione...",
-                                                 options = [], // ✅ Definimos um padrão vazio
-                                                 required = false,
-                                                 className = "",
-                                                 errorMessage = "",
-                                                 isMulti = false,
-                                                 isSearchable = false,
-                                                 isAsync = false,
-                                                 loadOptions,
-                                                 defaultOptions = true,
-                                             }) => {
 
+const SelectAdministradora: React.FC<SelectAdministradoraProps> = (
+    {
+        name,
+        control,
+        label = "Administradora",
+        placeholder = "Selecione uma administradora",
+        required = false,
+        showLabel = true,
+        errorMessage = "",
+        onChange,
+        loadOptions,
+        options, // ✅ Agora `options` é uma propriedade corretamente tipada
+
+    }) => {
     return (
-        <SelectWrapper className={className}>
-            {showLabel && <Label>{label} {required && <span>*</span>}</Label>}
+        <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+            {showLabel && (
+                <label style={{ color: "#007bff" }}>
+                    {label} {required && <span style={{ color: "red" }}>*</span>}
+                </label>
+            )}
 
             <Controller
                 name={name}
                 control={control}
                 rules={{ required: required ? "Este campo é obrigatório" : false }}
-                render={({ field, fieldState }) => (
-                    isAsync ? (
-                        <AsyncPaginate
-                            {...field}
-                            loadOptions={loadOptions!}
-                            defaultOptions={defaultOptions}
-                            isMulti={isMulti}
-                            isSearchable
-                            placeholder={placeholder}
-                            styles={customSelectStyles(required)}
-                            value={
-                                isMulti
-                                    ? options.filter((opt) => Array.isArray(field.value) && field.value.includes(opt.value))
-                                    : options.find((opt) => String(opt.value) === String(field.value)) || null
-                            }
+                render={({ field }) => (
+                    <AsyncPaginate
+                        {...field}
+                        loadOptions={loadOptions}
+                        defaultOptions
+                        isSearchable
+                        additional={{ page: 1 }}
+                        placeholder={placeholder}
+                        classNamePrefix="custom-select"
+                        value={
+                            options.find((opt) => opt.value === field.value?.value) || field.value || null
+                        } // ✅ Agora exibe o nome corretamente
+                        onChange={(selected) => {
+                            const selectedValue = selected ? { value: selected.value, label: selected.label } : null;
+                            console.log("🔥 Administradora selecionada no select:", selectedValue);
+                            field.onChange(selectedValue); // ✅ Agora armazenamos `{ value, label }`
+                            if (onChange) onChange(selectedValue);
+                        }}
+                    />
 
-                            onChange={(selected: MultiValue<Option> | SingleValue<Option> | null, _: ActionMeta<Option>) => {
-                                let selectedValue: string | string[] = "";
-
-                                if (!selected) {
-                                    selectedValue = "";
-                                } else if (Array.isArray(selected)) {
-                                    selectedValue = selected.map((s) => s.value); // ✅ Agora armazena os IDs corretamente
-                                } else if (typeof selected === "object" && "value" in selected) {
-                                    selectedValue = selected.value; // ✅ Agora armazena apenas o `id`
-                                }
-
-                                console.log("🔥 Administradora selecionada no select:", selected); // 🔥 Depuração
-                                console.log("🔥 Armazenando ID da administradora:", selectedValue);
-
-                                field.onChange(selectedValue);
-                                if (onChange) onChange(selectedValue);
-                            }}
-                        />
-                    ) : (
-                        <Select
-                            {...field}
-                            options={options}
-                            isMulti={isMulti}
-                            isSearchable={isSearchable}
-                            placeholder={placeholder}
-                            styles={customSelectStyles(required)}
-                            value={
-                                isMulti
-                                    ? options.filter((opt) => Array.isArray(field.value) && field.value.includes(opt.value))
-                                    : options.find((opt) => opt.value === field.value) || null
-                            }
-                            onChange={(selected) => {
-                                let selectedValue: string | string[] = "";
-
-                                if (!selected) {
-                                    selectedValue = "";
-                                } else if (Array.isArray(selected)) {
-                                    selectedValue = selected.map((s) => s.value);
-                                } else if ("value" in selected) {
-                                    selectedValue = selected.value;
-                                }
-
-                                field.onChange(selectedValue);
-                                if (onChange) onChange(selectedValue);
-                            }}
-                        />
-                    )
                 )}
             />
-            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-        </SelectWrapper>
+
+            {errorMessage && <p style={{ color: "red", fontSize: "12px", marginTop: "2px" }}>{errorMessage}</p>}
+        </div>
     );
 };
 
