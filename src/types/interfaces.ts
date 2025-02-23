@@ -297,6 +297,7 @@ export interface Cliente {
     idade?: string;
     apolices: Apolices;
     apolices_detalhes?: ApolicesDetalhes;
+    total_apolices?: number;
     reunioes?: Reuniao[];
     vida_financeira?: VidaFinanceira;
     filhos: Filho[];
@@ -374,12 +375,12 @@ export interface Apolice {
     seguradora: string;
     data_inicio: string;
     data_vencimento: string;
-    premio_pago: string;
+    premio_pago?: number;
     nome_fundo: string;
     valor_investido: string;
     valor_carta: string;
     valor_acumulado: string;
-    tipo:string;
+    tipo_produto:string;
     fundo: string;
     franquia: string;
     capitalSegurado: string;

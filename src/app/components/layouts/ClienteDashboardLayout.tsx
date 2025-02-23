@@ -105,7 +105,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const renderSidebar = () => (
         <SidebarComponent
             profileImage={profileImage}
-            clientId={isClientPage ? pathname?.split('/').pop() || '' : ''} // Garante uma string válida
         />
     );
 

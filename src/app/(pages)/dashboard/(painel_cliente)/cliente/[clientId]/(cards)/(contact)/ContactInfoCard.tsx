@@ -24,7 +24,7 @@ import TellImage from "../../../../../../../../../public/assets/common/whats.svg
 import ContatoImage from "../../../../../../../../../public/assets/pages/profile/Contato.svg";
 import EditImage from "../../../../../../../../../public/assets/common/edit.svg";
 import styles from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard.module.css";
-import InputMask from "react-input-mask";
+import InputMask from "react-input-mask-next";
 import {getPhoneMask} from "@/utils/maskUtils";
 import Tippy from "@tippyjs/react";
 import {
@@ -81,7 +81,7 @@ const ContactInfoCard: React.FC<ContactInfoCardProps> = ({ cliente }) => {
                     arrow={true}
                     maxWidth={500}
                     delay={[1500,0]} // Atraso para exibir e esconder [show, hide]
-                    appendTo={document.body} // Resolve o problema de corte
+                    // appendTo="parent" // Resolve o problema de corte
                 >
                     <ContactIcon src={EditImage.src} alt="Editar" onClick={openModal} />
                 </Tippy>

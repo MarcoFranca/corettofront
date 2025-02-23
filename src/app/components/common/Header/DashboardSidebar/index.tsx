@@ -1,89 +1,71 @@
 'use client';
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useAppDispatch, useAppSelector, useMediaQuery } from "@/hooks/hooks";
 import { logout } from "@/store/slices/authSlice";
-import MenuMobile from "../DashboardMobile/MenuMobile";
-import Image from 'next/image';
-import styles from './styles.module.css';
-
-// Imagens
+import { Sidebar, ProfileSection, UserInfo, NavMenu, NavItem, LogoutButton, LogoWrapper, UserImageWrapper, Icon } from "./DashboardSidebar.styles";
+import { FaHome, FaUserFriends, FaWallet, FaTasks, FaCog, FaCalendarAlt, FaSignOutAlt, FaFileAlt } from "react-icons/fa";
+import Image from "next/image";
 import DefaultUserImage from "../../../../../../public/assets/common/user.svg";
-import LogoImage from '../../../../../../public/assets/logoIcons/Logo_transparente_clara_horizontal.svg';
-import DashboardImage from '../../../../../../public/assets/asideButtons/dashboard.svg';
-import DolarImage from '../../../../../../public/assets/asideButtons/Leads.svg';
-import CarteiraImage from '../../../../../../public/assets/asideButtons/carteira.svg';
-import TodoImage from '../../../../../../public/assets/asideButtons/todo.svg';
-import ConfigImage from '../../../../../../public/assets/asideButtons/engrenagem.svg';
-import AgendaImage from '../../../../../../public/assets/asideButtons/agenda2.svg';
-import Logout from '../../../../../../public/assets/login/logout_branco.svg';
-import Cell from "@/app/components/common/Header/DashboardSidebar/cell";
+import LogoImage from "../../../../../../public/assets/logoIcons/Logo_transparente_clara_horizontal.svg";
 
 const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => {
     const dispatch = useAppDispatch();
     const router = useRouter();
+    const pathname = usePathname(); // 🔥 Obtendo o caminho atual
     const user = useAppSelector((state) => state.auth?.user);
-
-    // Detecta se a tela é desktop (largura mínima de 768px)
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const handleLogout = () => {
         dispatch(logout());
-        router.push('/');
+        router.push("/");
     };
 
-    // Menu Desktop
-    if (isDesktop) {
-        return (
-            <aside className={styles.sidebar}>
-                <div className={styles.profile}>
-                    <Image src={LogoImage} alt="logo" className={styles.logo} priority />
-                </div>
-                <div className={styles.headerBar}>
-                    <div className={styles.userMenu}>
-                        <Image
-                            src={profileImage || DefaultUserImage}
-                            alt="user"
-                            className={styles.userImage}
-                            layout="intrinsic"
-                            width={60}
-                            height={60}
-                        />
-                        <p>{user?.username ?? 'Usuário'}</p>
-                        <button onClick={handleLogout} className={styles.logoutButton}>
-                            <Image
-                                src={Logout}
-                                alt={'logout'}
-                                className={styles.iconImage}
-                            />
-                            <p>Logout</p>
-                        </button>
-                    </div>
+    if (!isDesktop) return null; // Esconde a sidebar em dispositivos móveis
 
-                </div>
-                <nav>
-                    <ul>
-                        <Cell url='/dashboard/perfil' image={DashboardImage} alt="Dashboard" text={'DASHBOARD'}
-                              campo={'dashboard'}/>
-                        <Cell url='/dashboard/lead' image={DolarImage} alt="Lead" campo={'leads'} text={'LEADS'} />
-                        <Cell url='/dashboard/carteira' image={CarteiraImage} alt="Carteira" campo={'carteira'} text={'CARTEIRA'} />
-                        <Cell url='/dashboard/tarefas' image={TodoImage} alt="Tarefas" campo={'tarefas'} text={'TAREFAS'} />
-                        <Cell url='/dashboard/agenda' image={AgendaImage} alt="Agenda" campo={'agenda'} text={'AGENDA'} />
-                        <Cell url='/dashboard/config' image={ConfigImage} alt="Engrenagem" campo={'config'} text={'CONFIGURAÇÃO'} />
-                    </ul>
-                </nav>
-            </aside>
-        );
-    }
+    const isActive = (path: string) => pathname === path;
 
-    // Menu Mobile
     return (
-        <MenuMobile
-            profileImage={profileImage}
-            user={user}
-            onLogout={handleLogout}
-        />
+        <Sidebar>
+            <ProfileSection>
+                <LogoWrapper>
+                    <Image src={LogoImage} alt="Logo" width={150} height={50} />
+                </LogoWrapper>
+                <UserImageWrapper>
+                    <Image src={profileImage || DefaultUserImage} alt="User" width={60} height={60} />
+                </UserImageWrapper>
+                <UserInfo>{user?.username ?? "Usuário"}</UserInfo>
+            </ProfileSection>
+
+            <NavMenu>
+                <NavItem onClick={() => router.push("/dashboard")} className={isActive("/dashboard") ? "active" : ""}>
+                    <Icon><FaHome /></Icon> Dashboard
+                </NavItem>
+                <NavItem onClick={() => router.push("/dashboard/lead")} className={isActive("/dashboard/lead") ? "active" : ""}>
+                    <Icon><FaUserFriends /></Icon> Leads
+                </NavItem>
+                <NavItem onClick={() => router.push("/dashboard/carteira")} className={isActive("/dashboard/carteira") ? "active" : ""}>
+                    <Icon><FaWallet /></Icon> Carteira
+                </NavItem>
+                <NavItem onClick={() => router.push("/dashboard/tarefas")} className={isActive("/dashboard/tarefas") ? "active" : ""}>
+                    <Icon><FaTasks /></Icon> Tarefas
+                </NavItem>
+                <NavItem onClick={() => router.push("/dashboard/agenda")} className={isActive("/dashboard/agenda") ? "active" : ""}>
+                    <Icon><FaCalendarAlt /></Icon> Agenda
+                </NavItem>
+                <NavItem onClick={() => router.push("/dashboard/apolices")} className={isActive("/dashboard/apolices") ? "active" : ""}>
+                    <Icon><FaFileAlt /></Icon> Apólices
+                </NavItem>
+                <NavItem onClick={() => router.push("/dashboard/config")} className={isActive("/dashboard/config") ? "active" : ""}>
+                    <Icon><FaCog /></Icon> Configuração
+                </NavItem>
+            </NavMenu>
+
+            <LogoutButton onClick={handleLogout}>
+                <Icon><FaSignOutAlt /></Icon> Logout
+            </LogoutButton>
+        </Sidebar>
     );
 };
 

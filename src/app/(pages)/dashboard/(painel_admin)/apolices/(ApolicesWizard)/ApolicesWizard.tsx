@@ -146,8 +146,6 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
         }
     };
 
-
-
     const handleNext = () => setStep((prev) => prev + 1);
     const handleBack = () => setStep((prev) => prev - 1);
 

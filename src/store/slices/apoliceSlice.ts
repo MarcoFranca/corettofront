@@ -28,6 +28,7 @@ export const fetchApolices = createAsyncThunk<Apolice[], { tipo?: string; status
             const response = await api.get('/apolices/', {
                 params: { tipo, status, cliente }
             });
+            console.log(response);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao buscar apólices.');

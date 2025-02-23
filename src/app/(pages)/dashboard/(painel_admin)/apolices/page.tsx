@@ -8,14 +8,8 @@ import ApoliceWizard from "./(ApolicesWizard)/ApolicesWizard";
 import ApolicesTable from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable";
 import ApoliceFilter from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceFilter";
 
-import {
-    ApolicesContainer,
-    HeaderContainer,
-    StyledButton,
-    Title,
-    ContentContainer,
-    FilterContainer
-} from "./ApolicesPage.styles";
+import {ApolicesContainer, HeaderContainer, StyledButton, Title, ContentContainer, FilterContainer}
+    from "./ApolicesPage.styles";
 import {Drawer} from "antd";
 
 const ApolicesPage: React.FC = () => {
@@ -76,11 +70,11 @@ const ApolicesPage: React.FC = () => {
                 />
             </FilterContainer>
 
-            <ContentContainer>
+            <>
                 {loading && <p>🔄 Carregando apólices...</p>}
                 {error && <p style={{ color: 'red' }}>❌ {error}</p>}
                 <ApolicesTable apolices={apolices} />
-            </ContentContainer>
+            </>
 
             {/* 🧩 Modal de Cadastro - Agora Drawer Tela Cheia */}
             <Drawer
