@@ -30,10 +30,10 @@ const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => 
         <Sidebar>
             <ProfileSection>
                 <LogoWrapper>
-                    <Image src={LogoImage} alt="Logo" width={150} height={50} />
+                    <Image src={LogoImage} alt="Logo" width={150} height={50} priority />
                 </LogoWrapper>
                 <UserImageWrapper>
-                    <Image src={profileImage || DefaultUserImage} alt="User" width={60} height={60} />
+                    <Image src={profileImage || DefaultUserImage} alt="User" width={60} height={60} priority />
                 </UserImageWrapper>
                 <UserInfo>{user?.username ?? "Usuário"}</UserInfo>
             </ProfileSection>

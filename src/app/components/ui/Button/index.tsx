@@ -20,8 +20,8 @@ const Button: React.FC<ButtonProps> = ({
                                            ...props
                                        }) => {
     return (
-        <StyledButton variant={variant} {...props}>
-            <ButtonContent iconPosition={iconPosition}>
+        <StyledButton $variant={variant} {...props}>
+            <ButtonContent $iconPosition={iconPosition}>
                 {isLoading ? (
                     <IsLoadingText>
                         <span className="spinner" />

@@ -10,7 +10,6 @@ import api from '@/app/api/axios';
 import Modal from '@/app/components/Modal/simpleModal';
 import Index from '@/app/components/ui/Button';
 import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
-import {setToken, setUser} from "@/store/slices/authSlice";
 import {
     Card,
     CardsContainer,
@@ -18,10 +17,12 @@ import {
     ProfileContainer, SubuserTable,
     SubuserTableContainer, TableButton
 } from "./profiles.styled";
+import {useForm} from "react-hook-form";
 
 export default function ProfilePage() {
     const dispatch: AppDispatch = useDispatch();
-    const router = useRouter();
+    const { register, setValue, control } = useForm();
+
 
     const { data: profile, subUserData, subUsers } = useSelector((state: RootState) => state.profile);
 
@@ -38,29 +39,29 @@ export default function ProfilePage() {
     const [loadingSubUser, setLoadingSubUser] = useState(false);
 
     // Capture tokens from URL on page load and validate with the backend
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const accessToken = params.get("access_token");
-        const refreshToken = params.get("refresh_token");
-
-        if (accessToken && refreshToken) {
-            dispatch(setToken({ access: accessToken, refresh: refreshToken }));
-            localStorage.setItem("accessToken", accessToken);
-            localStorage.setItem("refreshToken", refreshToken);
-
-            api.get('/user_detail/', {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            }).then((response) => {
-                dispatch(setUser(response.data));
-                router.replace("/dashboard/perfil");
-            }).catch((error) => {
-                console.error("Erro ao validar token do Google:", error);
-                setMessage("Erro ao fazer login com Google.");
-            });
-        } else {
-            console.log("Tokens não encontrados no URL de redirecionamento.");
-        }
-    }, [dispatch, router]);
+    // useEffect(() => {
+    //     const params = new URLSearchParams(window.location.search);
+    //     const accessToken = params.get("access_token");
+    //     const refreshToken = params.get("refresh_token");
+    //
+    //     if (accessToken && refreshToken) {
+    //         dispatch(setToken({ access: accessToken, refresh: refreshToken }));
+    //         localStorage.setItem("accessToken", accessToken);
+    //         localStorage.setItem("refreshToken", refreshToken);
+    //
+    //         api.get('/user_detail/', {
+    //             headers: { Authorization: `Bearer ${accessToken}` }
+    //         }).then((response) => {
+    //             dispatch(setUser(response.data));
+    //             router.replace("/dashboard/perfil");
+    //         }).catch((error) => {
+    //             console.error("Erro ao validar token do Google:", error);
+    //             setMessage("Erro ao fazer login com Google.");
+    //         });
+    //     } else {
+    //         console.log("Tokens não encontrados no URL de redirecionamento.");
+    //     }
+    // }, [dispatch, router]);
 
 
 
@@ -269,7 +270,7 @@ export default function ProfilePage() {
                         </tbody>
                     </SubuserTable>
 
-                    <SubuserTable>
+                    <div>
                         <input
                             type="text"
                             name="username"
@@ -298,7 +299,7 @@ export default function ProfilePage() {
                         <Index type="submit" disabled={loadingSubUser}>
                             {loadingSubUser ? 'Adicionando...' : 'Adicionar Subusuário'}
                         </Index>
-                    </SubuserTable>
+                    </div>
                     {message && <p>{message}</p>}
                 </SubuserTableContainer>
             )}
@@ -312,11 +313,13 @@ export default function ProfilePage() {
                             label="Nome"
                             type="text"
                             name="first_name"
-                            placeholder="Digite seu nome"
                             value={profile?.user.first_name || ''}
                             onChange={handleInputChange}
                             required
                             floatLabel={true} // 🔥 Agora permite ativar/desativar o float
+                            register={register}  // ✅ Agora passando corretamente
+                            setValue={setValue}  // ✅ Agora passando corretamente
+                            control={control}    // ✅ Agora passando corretamente
                         />
 
                         {/* 🔹 Sobrenome */}
@@ -324,10 +327,12 @@ export default function ProfilePage() {
                             label="Sobrenome"
                             type="text"
                             name="last_name"
-                            placeholder="Digite seu sobrenome"
                             value={profile?.user.last_name || ''}
                             onChange={handleInputChange}
                             floatLabel={true}
+                            register={register}  // ✅ Agora passando corretamente
+                            setValue={setValue}  // ✅ Agora passando corretamente
+                            control={control}    // ✅ Agora passando corretamente
                         />
 
                         {/* 🔹 Foto (Arquivo) - NÃO usa FloatingMaskedInput */}

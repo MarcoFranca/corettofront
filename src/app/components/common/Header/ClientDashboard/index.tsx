@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter, usePathname, useParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { RootState } from "@/store";
@@ -20,7 +20,6 @@ const ClientDashboard = () => {
     const params = useParams() as Params;
     const clienteId = params.clientId ?? '';
     const clienteDetalhe = useAppSelector((state: RootState) => state.clientes.clienteDetalhe);
-    const apolicesDetalhes = clienteDetalhe?.apolices_detalhes;
 
     useEffect(() => {
         if (clienteId) {
@@ -36,7 +35,7 @@ const ClientDashboard = () => {
         <ClientSidebar>
             <ProfileSection>
                 <LogoWrapper>
-                    <Image src={LogoImage} alt="Logo" width={150} height={50} />
+                    <Image src={LogoImage} alt="Logo" width={150} height={50} priority />
                 </LogoWrapper>
                 <UserInfo>
                     <p>{clienteDetalhe?.nome ?? "Carregando..."}</p>
