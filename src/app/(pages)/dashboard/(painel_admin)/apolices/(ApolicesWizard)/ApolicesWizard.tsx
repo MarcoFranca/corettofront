@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import { useForm, UseFormSetValue, Path, PathValue } from "react-hook-form";
 import { message, Steps } from "antd";
 import StepDadosPrincipais from "./(steps)/StepDadosPrincipais";
@@ -8,44 +8,9 @@ import StepDetalhesApolice from "./(steps)/StepDetalhesApolice";
 import StepCoberturas from "./(steps)/StepCoberturas";
 import StepResumo from "./(steps)/StepResumo";
 import UploadApolice from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/UploadApolice";
-import {
-    WizardFullContainer,
-    StepContainer,
-    ButtonGroup,
-    StyledButton,
-} from "./ApoliceWizard.styles";
+import { WizardFullContainer, StepContainer, ButtonGroup, StyledButton,} from "./ApoliceWizard.styles";
 import api from "@/app/api/axios";
-
-// ✅ Interface dos dados da apólice
-export interface ApoliceFormData {
-    detalhes: Record<string, any>;
-    coberturas: { descricao: string; valor: number }[];
-    cliente: { value: string; label: string } | string | null;
-    parceiro?: string;
-    tipoApolice: string | null;  // ✅ Agora pode ser null
-    administradora: { value: string; label: string } | null; // ✅ Agora pode armazenar `{ value, label }`
-    numeroApolice: string;
-    dataInicio: string;
-    dataVencimento?: string;
-    dataRevisao?: string;
-    premioPago: number;
-    valorParcela: number;
-    periodicidadePagamento: string;  // 🔥 Adicionado
-    formaPagamento: string;  // 🔥 Adicionado
-    valorCota: number;  // 🔥 Adicionado
-    indiceCorrecao: string;  // 🔥 Adicionado
-    objetivo: string;  // 🔥 Adicionado
-    arquivoApolice?: File | null;
-}
-
-
-interface ApoliceWizardProps {
-    onClose: () => void;
-}
-
-// 🔥 Lista de campos que representam valores monetários
-const moneyFields = ["premioPago", "valorParcela", "valorFinalCarta", "aporte", "valor_cota"];
-
+import {ApoliceFormData, ApoliceWizardProps, moneyFields, tipoApoliceParaEndpoint} from "@/types/ApolicesInterface";
 
 const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
     const [step, setStep] = useState(0);
@@ -65,17 +30,6 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
         setValue(name as Path<ApoliceFormData>, value as PathValue<ApoliceFormData, Path<ApoliceFormData>>);
     };
 
-    const administradoraSelecionada = watch("administradora");
-
-    useEffect(() => {
-        console.log("✅ Administradora selecionada:", administradoraSelecionada); // 🔥 Verifique se está retornando um valor único
-    }, [administradoraSelecionada]);
-
-    useEffect(() => {
-        console.log("✅ Administradora armazenada no formulário:", watch("administradora"));
-    }, [watch("administradora")]);
-
-
     // 🔥 Função para converter checkboxes corretamente
     const formatCheckbox = (value: any) => {
         return value === true || value === "true";
@@ -92,6 +46,15 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
         // 🔥 Extraímos os dados antes de montar `formattedData`
         const { detalhes, coberturas, arquivoApolice, administradora, ...rest } = data;
 
+        const endpoint = tipoApolice ? tipoApoliceParaEndpoint[tipoApolice] : null;
+
+        if (!endpoint) {
+            console.error("🚨 Tipo de apólice inválido ou não mapeado:", tipoApolice);
+            message.error("Erro: Tipo de apólice inválido.");
+            return;
+        }
+
+        // 🔥 Função para limpar valores de dinheiro formatados
         const cleanMoneyValue = (value: string | number) => {
             if (typeof value === "number") return value;
             if (typeof value === "string") {
@@ -99,10 +62,10 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             }
             return null;
         };
-        console.log("📡 Arquivo antes do envio:", arquivoApolice);
-        console.log("📡 FormData antes do envio:", Object.fromEntries(formData.entries()));
 
-        // 🔥 Ajuste para remover máscaras
+        console.log("📂 Arquivo selecionado:", arquivoApolice);
+
+        // 🔥 Ajuste para remover máscaras e garantir formatação correta dos detalhes
         const flattenedDetails = Object.entries(detalhes || {}).reduce((acc, [key, value]) => {
             acc[key] = moneyFields.includes(key) ? cleanMoneyValue(value) : formatValue(value);
             return acc;
@@ -113,9 +76,9 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             ...rest,
             ...flattenedDetails,
 
-            administradora: administradora?.value ?? null, // ✅ Garante que o ID seja enviado corretamente
+            administradora: administradora?.value ?? null, // ✅ Envia apenas o ID correto
             data_inicio: data.dataInicio || new Date().toISOString().split("T")[0],
-            premio_pago: data.premioPago ? Number(data.premioPago) : 0, // ✅ Sempre um número
+            premio_pago: data.premioPago ? Number(data.premioPago) : 0,
             periodicidade_pagamento: data.periodicidadePagamento || "mensal",
             forma_pagamento: data.formaPagamento || "boleto",
             valor_cota: data.valorCota ? Number(data.valorCota) : 0,
@@ -135,14 +98,14 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             permitir_embutido_livre: formatCheckbox(detalhes.permitir_embutido_livre),
 
             // 📌 **Campos extras**
-            status: "ativa", // ✅ Backend espera um status fixo?
+            status: "ativa",
             estrategia: "usar lance fixo com embutido e 10% de recurso próprio",
             parcela_reduzida: true,
             data_ultimo_lance: "2025-02-04",
             tipo_lance: "fixo",
             detalhes_lance: "40%",
-            aporte: 100000.00, // ✅ Está em R$ ou número absoluto?
-            lance_fixo_opcoes: [30, 40], // ✅ Confirmar se o backend aceita um array de números
+            aporte: 100000.00,
+            lance_fixo_opcoes: [30, 40],
         };
 
         console.log("📡 Dados formatados para envio:", formattedData);
@@ -156,15 +119,20 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             }
         });
 
-        // 🔥 Adicionamos o arquivo se existir
+        // 🔥 Adicionamos o arquivo ao FormData se existir
         if (arquivoApolice instanceof File) {
-            formData.append("arquivoApolice", arquivoApolice);
+            console.log("📂 Anexando arquivo:", arquivoApolice.name);
+            formData.append("arquivo", arquivoApolice);  // 🔥 Mudamos a chave para `arquivo`, pois é o nome do campo no backend
         }
 
-        console.log("📡 Enviando dados da apólice:", Object.fromEntries(formData.entries()));
+        console.log("📡 Enviando dados da apólice para o backend...", Object.fromEntries(formData.entries()));
 
         try {
-            const response = await api.post("apolices/consorcio/", formData);
+            const response = await api.post(endpoint, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data", // ✅ Obrigatório para envio correto de arquivos
+                },
+            });
 
             if (response.status !== 201) {
                 throw new Error(`Erro ao cadastrar apólice: ${response.status}`);
@@ -173,10 +141,11 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             message.success("Apólice cadastrada com sucesso!");
             onClose();
         } catch (error) {
-            console.error("Erro ao enviar apólice:", error);
+            console.error("🚨 Erro ao enviar apólice:", error);
             message.error("Erro ao cadastrar apólice.");
         }
     };
+
 
 
     const handleNext = () => setStep((prev) => prev + 1);
