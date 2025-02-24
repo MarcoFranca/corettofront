@@ -12,28 +12,28 @@ const CheckboxOptions: React.FC<CheckboxOptionsProps> = ({ control }) => {
             <CheckboxTitle>🎛️ Permissões de Lances:</CheckboxTitle>
             <CheckboxGroupStyled>
                 <Controller
-                    name="detalhes.permitir_lance_livre"
+                    name="permitir_lance_livre"
                     control={control}
                     render={({ field }) => (
                         <StyledCheckbox {...field} checked={field.value}>Lance Livre</StyledCheckbox>
                     )}
                 />
                 <Controller
-                    name="detalhes.permitir_lance_fixo"
+                    name="permitir_lance_fixo"
                     control={control}
                     render={({ field }) => (
                         <StyledCheckbox {...field} checked={field.value}>Lance Fixo</StyledCheckbox>
                     )}
                 />
                 <Controller
-                    name="detalhes.permitir_embutido_fixo"
+                    name="permitir_embutido_fixo"
                     control={control}
                     render={({ field }) => (
                         <StyledCheckbox {...field} checked={field.value}>Embutido (Lance Fixo)</StyledCheckbox>
                     )}
                 />
                 <Controller
-                    name="detalhes.permitir_embutido_livre"
+                    name="permitir_embutido_livre"
                     control={control}
                     render={({ field }) => (
                         <StyledCheckbox {...field} checked={field.value}>Embutido (Lance Livre)</StyledCheckbox>

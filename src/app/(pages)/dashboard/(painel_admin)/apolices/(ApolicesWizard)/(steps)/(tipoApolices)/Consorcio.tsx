@@ -55,7 +55,7 @@ const useMoneyInput = (setValue: any, fieldName: string): MoneyInputHook => {
 
 const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) => {
     const valorCota = useMoneyInput(setValue, "detalhes.valorCota");
-    const valorParcela = useMoneyInput(setValue, "detalhes.valorParcela");
+    const valor_parcela = useMoneyInput(setValue, "detalhes.valorParcela");
     const valorFinalCarta = useMoneyInput(setValue, "detalhes.valorFinalCarta");
 
     return (
@@ -69,7 +69,7 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                     control={control}
                     setValue={setValue}
                     register={register}
-                    name="detalhes.grupo"
+                    name="grupo"
                     label="🏢 Número do Grupo"
                     required
                 />
@@ -77,7 +77,7 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                     control={control}
                     setValue={setValue}
                     register={register}
-                    name="detalhes.cota"
+                    name="cota"
                     label="🔢 Número da Cota"
                     required
                 />
@@ -85,14 +85,14 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                     control={control}
                     setValue={setValue}
                     register={register}
-                    name="detalhes.prazo"
+                    name="prazo"
                     label="🗓️ Prazo (meses)"
                     type="number"
                     required
                 />
                 <SelectCustom
                     control={control}
-                    name="detalhes.indiceCorrecao"
+                    name="indice_correcao"
                     label="📊 Índice de Correção"
                     options={indiceCorrecaoOptions}
                     required
@@ -101,7 +101,7 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                 <div>
                     <label>🎯 Objetivo do Consórcio *</label>
                     <Controller
-                        name="detalhes.objetivo"
+                        name="objetivo"
                         control={control}
                         render={({field}) => (
                             <TextArea {...field} placeholder="Descreva o objetivo (Ex: Comprar imóvel, carro...)"/>
@@ -119,14 +119,14 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                         control={control}
                         setValue={setValue}
                         register={register}
-                        name="detalhes.premioPago"
+                        name="premio_pago"
                         label="💎 Prêmio Pago (Valor da Carta)"
                         type="money"
                         required
                     />
                     <SelectCustom
                         control={control}
-                        name="detalhes.formaPagamento"
+                        name="forma_pagamento"
                         label="💰 Forma de Pagamento"
                         options={pagamentoOptions}
                         required
@@ -136,7 +136,7 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                         control={control}
                         setValue={setValue}
                         register={register}
-                        name="detalhes.valorParcela"
+                        name="valor_parcela"
                         label="💳 Valor da Parcela Mensal"
                         type="money"
                         required
@@ -152,7 +152,7 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                         control={control}
                         setValue={setValue}
                         register={register}
-                        name="detalhes.furo"
+                        name="furo"
                         label="🚪 Ordem de Prioridade (Furo)"
                         type="number"
                     />
@@ -160,14 +160,14 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                         control={control}
                         setValue={setValue}
                         register={register}
-                        name="detalhes.percentualReducaoParcela"
+                        name="percentual_reducao_parcela"
                         label="📉 Percentual de Redução"
                         type="number"
                     />
                     <div>
                     <label>📝 Estratégia</label>
                     <Controller
-                        name="detalhes.estrategia"
+                        name="estrategia"
                         control={control}
                         render={({field}) => (
                             <TextArea {...field} placeholder="Descreva sua estratégia de lance"/>

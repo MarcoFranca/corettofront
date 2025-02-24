@@ -69,9 +69,9 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
             }).format();
         };
 
-        // 🔥 Remove qualquer caractere não numérico
+        // 🔥 Remove qualquer caractere não numérico para números
         const cleanCurrency = (value: string) => {
-            return value.replace(/\D/g, ""); // Mantém apenas números
+            return value.replace(/[^\d]/g, ""); // Remove qualquer caractere não numérico
         };
 
         // 🏦 Manipula mudanças no input garantindo que o backend receba o valor correto
@@ -81,10 +81,15 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
             if (type === "money") {
                 const cleanValue = cleanCurrency(value);
                 const numericValue = Number(cleanValue) / 100; // Converte para decimal
-                setValue(name, numericValue, { shouldValidate: true }); // 🔥 Salva internamente sem máscara
 
+                console.log("📌 Valor sem máscara (antes de setValue):", numericValue); // ✅ Certifique-se que é um número correto
+
+                // 🔥 Garante que o formulário armazena o valor correto sem máscara
+                setValue(name, numericValue, { shouldValidate: true });
                 if (fieldOnChange) fieldOnChange(numericValue);
-                e.target.value = formatCurrency(numericValue); // 🔥 Exibe formatado
+
+                // **🔥 ATUALIZA APENAS O ELEMENTO SEM ALTERAR O RHF**
+                e.target.value = formatCurrency(numericValue);
             } else {
                 setValue(name, value, { shouldValidate: true });
                 if (fieldOnChange) fieldOnChange(value);
@@ -92,6 +97,7 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
 
             if (onChange) onChange(e);
         };
+
 
         return (
             <InputContainer className={className}>
@@ -182,15 +188,15 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
                                         required={required}
                                         value={
                                             type === "money"
-                                                ? formatCurrency(cleanCurrency(value || ""))
+                                                ? formatCurrency(value || 0) // 🔥 Exibe formatado, mas mantém o valor puro no form
                                                 : value || ""
                                         }
                                         onChange={(e) => {
-                                            const numericValue = Number(cleanCurrency(e.target.value)) / 100; // Converte para decimal
-                                            handleChange(e);
-                                            onChange(numericValue); // ✅ Agora é um número
+                                            const numericValue = Number(cleanCurrency(e.target.value)) / 100;
+                                            console.log("📌 Salvando no formulário sem máscara:", numericValue);
+                                            onChange(numericValue); // 🔥 Armazena apenas número no form
+                                            setValue(name, numericValue, { shouldValidate: true });
                                         }}
-
                                         onBlur={onBlur}
                                         ref={ref}
                                     />

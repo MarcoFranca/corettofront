@@ -37,7 +37,24 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
 
     // 🔥 Função para limpar valores vazios antes do envio
     const formatValue = (value: any) => {
-        return value === "" || value === "undefined" || value === undefined ? null : value;
+        return value === "" || value === undefined ? null : value;
+    };
+
+    const formatUUID = (value: any) => {
+        return value && typeof value === "object" ? value.value : value || null;
+    };
+
+    const formatDate = (date: string | null | undefined) => {
+        return date ? date.split("T")[0] : null;
+    };
+
+    const formatNumber = (value: any) => {
+        const num = Number(value);
+        return isNaN(num) ? null : num;
+    };
+
+    const formatString = (value: any) => {
+        return typeof value === "string" ? value.trim() : null;
     };
 
     const onSubmit = async (data: ApoliceFormData) => {
@@ -56,11 +73,16 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
 
         // 🔥 Função para limpar valores de dinheiro formatados
         const cleanMoneyValue = (value: string | number) => {
-            if (typeof value === "number") return value;
             if (typeof value === "string") {
                 return Number(value.replace(/[^\d,]/g, "").replace(",", "."));
             }
             return null;
+        };
+
+        const formatDate = (date: string | null | undefined) => {
+            if (!date) return null;
+            const parsedDate = new Date(date);
+            return isNaN(parsedDate.getTime()) ? null : parsedDate.toISOString().split("T")[0];
         };
 
         console.log("📂 Arquivo selecionado:", arquivoApolice);
@@ -70,54 +92,65 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             acc[key] = moneyFields.includes(key) ? cleanMoneyValue(value) : formatValue(value);
             return acc;
         }, {} as Record<string, any>);
-
+console.log('vou mamar',data.valor_parcela)
         // 🔥 Criamos o objeto final formatado
         const formattedData = {
-            ...rest,
-            ...flattenedDetails,
+            cliente: formatUUID(data.cliente),
+            administradora: formatUUID(data.administradora),
+            parceiro: formatUUID(data.parceiro),
 
-            administradora: administradora?.value ?? null, // ✅ Envia apenas o ID correto
-            data_inicio: data.dataInicio || new Date().toISOString().split("T")[0],
-            premio_pago: data.premioPago ? Number(data.premioPago) : 0,
-            periodicidade_pagamento: data.periodicidadePagamento || "mensal",
-            forma_pagamento: data.formaPagamento || "boleto",
-            valor_cota: data.valorCota ? Number(data.valorCota) : 0,
-            indice_correcao: data.indiceCorrecao || "IPCA",
-            objetivo: data.objetivo || "Não informado",
-            valor_parcela: data.valorParcela ? Number(data.valorParcela) : 0,
-            coberturas: Array.isArray(coberturas) ? coberturas : [],
+            numero_apolice: formatString(data.numero_apolice),
+            status: formatString(data.status) || "ativa",
 
-            cliente: typeof data.cliente === "object" && data.cliente !== null ? data.cliente.value : data.cliente,
-            parceiro: formatValue(data.parceiro),
-            data_vencimento: formatValue(data.dataVencimento),
-            data_revisao: formatValue(data.dataRevisao),
+            data_inicio: formatDate(data.data_inicio),
+            data_vencimento: formatDate(data.data_vencimento),
+            data_revisao: formatDate(data.data_revisao),
 
-            permitir_lance_livre: formatCheckbox(detalhes.permitir_lance_livre),
-            permitir_lance_fixo: formatCheckbox(detalhes.permitir_lance_fixo),
-            permitir_embutido_fixo: formatCheckbox(detalhes.permitir_embutido_fixo),
-            permitir_embutido_livre: formatCheckbox(detalhes.permitir_embutido_livre),
+            premio_pago: cleanMoneyValue(data.premio_pago), // 🔥 Garante que nunca é `null`
+            periodicidade_pagamento: formatString(data.periodicidade_pagamento) || "mensal",
+            forma_pagamento: formatString(data.forma_pagamento) || "boleto",
+            observacoes: formatString(data.observacoes),
 
-            // 📌 **Campos extras**
-            status: "ativa",
-            estrategia: "usar lance fixo com embutido e 10% de recurso próprio",
-            parcela_reduzida: true,
-            data_ultimo_lance: "2025-02-04",
-            tipo_lance: "fixo",
-            detalhes_lance: "40%",
-            aporte: 100000.00,
-            lance_fixo_opcoes: [30, 40],
+            coberturas: Array.isArray(data.coberturas) ? data.coberturas : [],
+
+            // 📌 Campos de consórcio
+            contemplada: data.contemplada || false,
+            grupo: formatString(data.grupo),
+            cota: formatString(data.cota),
+            prazo: formatNumber(data.prazo) || 0, // 🔥 Nunca enviar `null`
+            indice_correcao: formatString(data.indice_correcao),
+            furo: formatNumber(data.furo) || 0,
+            objetivo: formatString(data.objetivo),
+            estrategia: formatString(data.estrategia),
+            parcela_reduzida: data.parcela_reduzida ?? false,
+            percentual_reducao_parcela: formatNumber(data.percentual_reducao_parcela),
+
+            tipo_lance: formatString(data.tipo_lance),
+            detalhes_lance: formatString(data.detalhes_lance),
+            aporte: formatNumber(data.aporte),
+            valor_parcela: cleanMoneyValue(data.valor_parcela || 0), // 🔥 Importante garantir um valor numérico válido
+            parcelas_pagas: formatNumber(data.parcelas_pagas),
+            historico_pagamentos: data.historico_pagamentos ?? {},
+            historico_reajustes: data.historico_reajustes ?? {},
+
+            permitir_lance_fixo: data.permitir_lance_fixo ?? false,
+            permitir_lance_livre: data.permitir_lance_livre ?? false,
+            permitir_embutido_fixo: data.permitir_embutido_fixo ?? false,
+            permitir_embutido_livre: data.permitir_embutido_livre ?? false,
         };
 
         console.log("📡 Dados formatados para envio:", formattedData);
 
-        // 🔥 Adicionamos os dados ao FormData
         Object.entries(formattedData).forEach(([key, value]) => {
-            if (typeof value === "object" && value !== null) {
-                formData.append(key, JSON.stringify(value));
-            } else if (value !== null) {
-                formData.append(key, String(value));
+            if (value === null || value === undefined) return; // Ignora valores indefinidos
+
+            if (typeof value === "object" && !(value instanceof File)) {
+                formData.append(key, JSON.stringify(value)); // Somente stringifica objetos (arrays, JSONs)
+            } else {
+                formData.append(key, String(value)); // Evita adicionar aspas extras em valores primitivos
             }
         });
+
 
         // 🔥 Adicionamos o arquivo ao FormData se existir
         if (arquivoApolice instanceof File) {

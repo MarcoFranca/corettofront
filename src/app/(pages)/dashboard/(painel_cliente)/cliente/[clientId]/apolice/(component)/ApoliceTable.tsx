@@ -4,7 +4,8 @@ import { FaInfoCircle, FaTrash, FaFilePdf } from "react-icons/fa";
 import {
     Table, TableHeader, TableRow, TableData, TableActions, DetailsButton, DeleteButton, ViewButton, StatusBadge, TableContainer
 } from "./ApoliceTable.styles";
-import api from "@/app/api/axios"; // 🔥 Importando API para buscar administradoras
+import api from "@/app/api/axios";
+import {formatMoney} from "@/utils/maskUtils"; // 🔥 Importando API para buscar administradoras
 
 interface ApoliceTableProps {
     apolices: Apolice[];
@@ -77,7 +78,7 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices }) => {
                             <TableData>{administradoras[apolice.administradora] || "N/A"}</TableData>
                             <TableData>{apolice.data_inicio ? new Date(apolice.data_inicio).toLocaleDateString() : "N/A"}</TableData>
                             <TableData>{apolice.forma_pagamento || "N/A"}</TableData>
-                            <TableData>{apolice.premio_pago ? `R$ ${apolice.premio_pago}` : "N/A"}</TableData>
+                            <TableData>{apolice.premio_pago ? `R$ ${formatMoney(apolice.premio_pago)}` : "N/A"}</TableData>
                             <TableData>
                                 <StatusBadge color={getStatusColor(apolice.status || "indefinido")}>
                                     {apolice.status ? apolice.status.charAt(0).toUpperCase() + apolice.status.slice(1) : "Indefinido"}

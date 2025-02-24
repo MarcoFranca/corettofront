@@ -7,11 +7,11 @@ import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 import { StepGrid, FormGroup } from "./StepDadosPrincipais.styles";
 import { UseFormSetValue, UseFormRegister } from "react-hook-form";
-import {ApoliceFormData} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/ApolicesWizard";
 import {loadAdministradoraOptions, loadParceiroOptions} from "@/app/components/ui/select/selectUtils";
 import { FaUser, FaBuilding, FaFileAlt, FaCalendarAlt, FaHandshake, FaHashtag } from "react-icons/fa";
 import api from "@/app/api/axios";
 import SelectAdministradora from "@/app/components/ui/select/SelectAdministradoras/SelectAdministradoras";
+import {ApoliceFormData} from "@/types/ApolicesInterface";
 
 interface StepDadosPrincipaisProps {
     control: any;
@@ -135,7 +135,7 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
             {/* Número da Apólice */}
             <FormGroup>
                 <FloatingMaskedInput
-                    name="numeroApolice"
+                    name="numero_apolice"
                     label={<><FaHashtag /> Número da Apólice</>}
                     control={control}
                     setValue={setValue}
@@ -148,7 +148,7 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
             <FormGroup>
                 <FloatingMaskedInput
                     control={control}
-                    name="dataInicio"
+                    name="data_inicio"
                     label={<><FaCalendarAlt /> Data de Início</>}
                     type="date"
                     register={register}
@@ -159,7 +159,7 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
 
             <FormGroup>
                 <FloatingMaskedInput
-                    name="dataVencimento"
+                    name="data_vencimento"
                     label={<><FaCalendarAlt /> Data de Vencimento</>}
                     type="date"
                     control={control}
@@ -171,7 +171,7 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
             <FormGroup>
                 <FloatingMaskedInput
                     control={control}
-                    name="dataRevisao"
+                    name="data_revisao"
                     label={<><FaCalendarAlt /> Data de Revisão</>}
                     type="date"
                     register={register}
