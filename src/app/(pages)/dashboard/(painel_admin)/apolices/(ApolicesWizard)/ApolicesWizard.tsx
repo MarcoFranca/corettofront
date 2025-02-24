@@ -14,25 +14,31 @@ import {ApoliceFormData, ApoliceWizardProps, moneyFields, tipoApoliceParaEndpoin
 
 const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
     const [step, setStep] = useState(0);
-    const { handleSubmit, watch, setValue, control, register } = useForm<ApoliceFormData>({
+    const {
+        trigger,
+        handleSubmit,
+        watch,
+        setValue,
+        control,
+        register,
+        formState: { errors } // ✅ Agora está dentro do componente!
+    } = useForm<ApoliceFormData>({
+        mode: "onSubmit", // 🔥 Valida apenas no envio
         defaultValues: {
             cliente: "",
             tipoApolice: "",
             detalhes: {},
             coberturas: [],
             arquivoApolice: null,
-        },
-    });
+            data_vencimento: undefined,
+            data_revisao: undefined,
+        }
+        });
 
     const tipoApolice = watch("tipoApolice");
 
     const setTypedValue: UseFormSetValue<ApoliceFormData> = (name, value) => {
         setValue(name as Path<ApoliceFormData>, value as PathValue<ApoliceFormData, Path<ApoliceFormData>>);
-    };
-
-    // 🔥 Função para converter checkboxes corretamente
-    const formatCheckbox = (value: any) => {
-        return value === true || value === "true";
     };
 
     // 🔥 Função para limpar valores vazios antes do envio
@@ -42,10 +48,6 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
 
     const formatUUID = (value: any) => {
         return value && typeof value === "object" ? value.value : value || null;
-    };
-
-    const formatDate = (date: string | null | undefined) => {
-        return date ? date.split("T")[0] : null;
     };
 
     const formatNumber = (value: any) => {
@@ -92,7 +94,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             acc[key] = moneyFields.includes(key) ? cleanMoneyValue(value) : formatValue(value);
             return acc;
         }, {} as Record<string, any>);
-console.log('vou mamar',data.valor_parcela)
+        console.log('vou mamar',data.valor_parcela)
         // 🔥 Criamos o objeto final formatado
         const formattedData = {
             cliente: formatUUID(data.cliente),
@@ -103,8 +105,8 @@ console.log('vou mamar',data.valor_parcela)
             status: formatString(data.status) || "ativa",
 
             data_inicio: formatDate(data.data_inicio),
-            data_vencimento: formatDate(data.data_vencimento),
-            data_revisao: formatDate(data.data_revisao),
+            data_vencimento: data.data_vencimento ? formatDate(data.data_vencimento) : null,
+            data_revisao: data.data_revisao ? formatDate(data.data_revisao) : null,
 
             premio_pago: cleanMoneyValue(data.premio_pago), // 🔥 Garante que nunca é `null`
             periodicidade_pagamento: formatString(data.periodicidade_pagamento) || "mensal",
@@ -179,7 +181,19 @@ console.log('vou mamar',data.valor_parcela)
         }
     };
 
-    const handleNext = () => setStep((prev) => prev + 1);
+    const handleNext = async () => {
+        const isValid = await trigger();
+        console.log("🔍 Erros antes de avançar:", errors);
+
+        if (!isValid) {
+            message.error("Preencha todos os campos obrigatórios antes de continuar.");
+            return;
+        }
+
+        setStep((prev) => prev + 1);
+    };
+
+
     const handleBack = () => setStep((prev) => prev - 1);
 
     // 📌 **Configuração dinâmica dos steps**
@@ -189,6 +203,7 @@ console.log('vou mamar',data.valor_parcela)
                 setValue={setTypedValue}
                 register={register}
                 watch={watch}  // 🔥 Agora passamos `watch` para o componente
+                formState={{ errors }} // ✅ Agora os erros são passados corretamente
             />
         },
         { title: "Detalhes", content: <StepDetalhesApolice control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },

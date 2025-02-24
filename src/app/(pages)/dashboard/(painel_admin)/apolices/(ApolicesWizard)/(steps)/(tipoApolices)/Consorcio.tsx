@@ -1,14 +1,12 @@
 // 📂 tipoApolices/Consorcio.tsx
 import React, {useState} from 'react';
-import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
-import {formatMoney, removeMoneyMask} from "@/utils/utils";
+import {formatMoney} from "@/utils/utils";
 import {
     ConsorcioGrid, Input, OptionalSection, PaymentSection, SectionTitle
 } from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/Consorcio.styles";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import TextArea from "antd/es/input/TextArea";
 import {CheckboxGroup} from "@/app/components/Modal/agenda/CreateEventModal.styles";
-import {Checkbox} from "antd";
 import CheckboxOptions
     from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/CheckboxOptions";
 import {Controller} from "react-hook-form";
@@ -54,9 +52,6 @@ const useMoneyInput = (setValue: any, fieldName: string): MoneyInputHook => {
 
 
 const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) => {
-    const valorCota = useMoneyInput(setValue, "detalhes.valorCota");
-    const valor_parcela = useMoneyInput(setValue, "detalhes.valorParcela");
-    const valorFinalCarta = useMoneyInput(setValue, "detalhes.valorFinalCarta");
 
     return (
         <>
@@ -99,7 +94,7 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                 />
                 {/* 📝 Campos de Texto */}
                 <div>
-                    <label>🎯 Objetivo do Consórcio *</label>
+                    <label style={{color: "#007bff", fontWeight: 600}}>🎯 Objetivo do Consórcio</label>
                     <Controller
                         name="objetivo"
                         control={control}

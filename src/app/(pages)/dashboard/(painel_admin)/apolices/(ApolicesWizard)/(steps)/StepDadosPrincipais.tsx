@@ -18,15 +18,18 @@ interface StepDadosPrincipaisProps {
     setValue: UseFormSetValue<ApoliceFormData>; // ✅ Ajuste aqui para aceitar a tipagem correta
     register: UseFormRegister<ApoliceFormData>;
     watch: (name: string) => any;  // 🔥 Adicionado `watch`
+    formState: { errors: any }; // ✅ Adicionado `formState` com `errors`
 }
 
 
-const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
-                                                                     control,
-                                                                     setValue,
-                                                                     register,
-                                                                     watch, // 🔥 Agora recebemos `watch`
-                                                                 }) => {
+const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = (
+    {
+        control,
+        setValue,
+        register,
+        watch, // 🔥 Agora recebemos `watch`
+        formState: { errors }, // ✅ Extraindo os erros corretamente
+    }) => {
 
     const [produtos, setProdutos] = useState<{ value: string; label: string }[]>([]);
     const [administradoras, setAdministradoras] = useState<{ value: string; label: string }[]>([]);
@@ -69,9 +72,8 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                     control={control}
                     required
                     onChange={(selectedOption) => setValue("cliente", selectedOption || null)} // ✅ Agora aceita { value, label }
-
                 />
-
+                {errors.cliente && <p style={{ color: "red", fontSize: "12px" }}>Selecione um cliente</p>}
             </FormGroup>
 
             {/* Parceiro (Indicação) */}
@@ -111,7 +113,8 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                         setValue("tipoApolice", selected);
                     }}
                 />
-
+                {errors.tipoApolice && <p style={{ color: "red", fontSize: "12px", position: 'relative' }}>
+                    Selecione um Parceiro</p>}
             </FormGroup>
 
             {/* Administradora */}
@@ -129,7 +132,8 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                         setValue("administradora", selectedOption ? { value: selectedOption.value, label: selectedOption.label } : null); // ✅ Agora armazenamos `{ value, label }`
                     }}
                 />
-
+                {errors.administradora && <p style={{ color: "red", fontSize: "12px", position: 'relative' }}>
+                    Selecione uma Administradora</p>}
             </FormGroup>
 
             {/* Número da Apólice */}
@@ -142,6 +146,8 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                     register={register}
                     required
                 />
+                {errors.numero_apolice && <p style={{ color: "red", fontSize: "12px", position: 'relative' }}>
+                    Digito o Número da Apólice</p>}
             </FormGroup>
 
             {/* Datas */}
@@ -154,22 +160,28 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = ({
                     register={register}
                     setValue={setValue}
                     required
+                    errorMessage={errors.data_inicio && 'Selecione uma Data de Inicio'}
                 />
+                {/*{errors.data_inicio && <p style={{ color: "red", fontSize: "12px", position: 'relative' }}>*/}
+                {/*    Selecione um Data de Inicio</p>}*/}
             </FormGroup>
 
             <FormGroup>
                 <FloatingMaskedInput
+                    {...register("data_vencimento")}
                     name="data_vencimento"
                     label={<><FaCalendarAlt /> Data de Vencimento</>}
                     type="date"
                     control={control}
                     setValue={setValue}
                     register={register}
+                    required={false}
                 />
             </FormGroup>
 
             <FormGroup>
                 <FloatingMaskedInput
+                    {...register("data_revisao")} // 🔥 Garantindo que não seja obrigatório
                     control={control}
                     name="data_revisao"
                     label={<><FaCalendarAlt /> Data de Revisão</>}

@@ -45,9 +45,7 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
      }) => {
 
         const inputProps = register
-            ? register(name, {
-                required: { value: true, message: "Campo obrigatório" },
-            })
+            ? register(name, required ? { required: { value: true, message: "Campo obrigatório" } } : {})
             : {};
         console.log(name)
 
