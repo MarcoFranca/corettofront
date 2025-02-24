@@ -149,11 +149,15 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                             }
                         >
                             <option value="">Selecionar Cliente (Opcional)</option>
-                            {clientes.map((cliente) => (
-                                <option key={cliente.id} value={cliente.id}>
-                                    {cliente.nome}
-                                </option>
-                            ))}
+                            {Array.isArray(clientes) && clientes.length > 0 ? (
+                                clientes.map((cliente) => (
+                                    <option key={cliente.id} value={cliente.id}>
+                                        {cliente.nome}
+                                    </option>
+                                ))
+                            ) : (
+                                <option disabled>Nenhum cliente encontrado</option>
+                            )}
                         </select>
                     </Label>
                     <CheckboxGroup>

@@ -23,7 +23,7 @@ import {
 } from './ClientTable.styles';
 import api from "@/app/api/axios";
 import {toast} from "react-toastify";
-import InputMask from "react-input-mask";
+import InputMask from "react-input-mask-next";
 import {getPhoneMask} from "@/utils/maskUtils";
 import styles from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard.module.css";
 import Button from "@/app/components/ui/Button";
@@ -217,7 +217,7 @@ const ClientesTable: React.FC = () => {
 
                             </td>
                             <td>
-                                <Badge variant="outline" status={cliente.status}>
+                                <Badge $variant="outline" $status={cliente.status}>
                                     {STATUS_DETAILS[cliente.status]?.label || cliente.status}
                                 </Badge>
                             </td>

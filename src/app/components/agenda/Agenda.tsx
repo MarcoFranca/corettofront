@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, momentLocalizer, Views, SlotInfo } from 'react-big-calendar';
+import { Calendar, momentLocalizer, SlotInfo } from 'react-big-calendar';
 import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
@@ -59,11 +59,13 @@ const Agenda: React.FC = () => {
     const fetchClientes = async () => {
         try {
             const response = await api.get('/clientes/');
-            setClientes(response.data);
+            setClientes(response.data.results || []); // ✅ Garante que seja sempre um array
         } catch (error) {
             console.error('Erro ao carregar clientes:', error);
+            setClientes([]); // ✅ Evita que `clientes` fique `undefined`
         }
     };
+
 
     const handleSelectSlot = (slotInfo: SlotInfo) => {
         const date = moment(slotInfo.start).format('YYYY-MM-DD'); // Obtenha a data no formato correto

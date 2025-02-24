@@ -14,8 +14,8 @@ export type StatusType =
 
 type BadgeProps = {
     children: React.ReactNode;
-    variant?: 'solid' | 'outline';
-    status?: StatusType;
+    $variant?: 'solid' | 'outline';
+    $status?: StatusType;
     className?: string; // Suporte para classes externas
 };
 
@@ -39,13 +39,13 @@ const StyledBadge = styled.span<BadgeProps>`
     font-size: 1rem;
     font-weight: 600;
     border-radius: 9999px;
-    background-color: ${({ status }) => (status ? STATUS_DETAILS[status].color : '#e2e8f0')};
-    color: ${({ status }) => (status && STATUS_DETAILS[status].textColor ? STATUS_DETAILS[status].textColor : '#1a202c')};
-    border: ${({ variant }) => (variant === 'outline' ? '1px solid #a0aec0' : 'none')};
+    background-color: ${({ $status }) => ($status ? STATUS_DETAILS[$status].color : '#e2e8f0')};
+    color: ${({ $status }) => ($status && STATUS_DETAILS[$status].textColor ? STATUS_DETAILS[$status].textColor : '#1a202c')};
+    border: ${({ $variant }) => ($variant === 'outline' ? '1px solid #a0aec0' : 'none')};
 `;
 
-const Badge: React.FC<BadgeProps> = ({ children, variant = 'solid', status, className }) => {
-    return <StyledBadge variant={variant} status={status} className={className}>{children}</StyledBadge>;
+const Badge: React.FC<BadgeProps> = ({ children, $variant = 'solid', $status, className }) => {
+    return <StyledBadge $variant={$variant} $status={$status} className={className}>{children}</StyledBadge>;
 };
 
 export { Badge, STATUS_DETAILS }; // 🔥 Exportamos `STATUS_DETAILS` para ser reutilizado em outras partes do código
