@@ -14,7 +14,7 @@ import { LeadProps, Lead, StatusReuniao } from "@/types/interfaces";
 import ScheduleMeetingForm from '@/app/components/Modal/meeting/ScheduleMeetingForm';
 import EditLeadForm from '@/app/components/leads/EditLeadForm';
 import Tippy from '@tippyjs/react';
-import InputMask from 'react-input-mask';
+import InputMask from 'react-input-mask-next';
 import 'tippy.js/dist/tippy.css';
 import '@/app/(styles)/globals.css';
 import {FaWhatsapp} from "react-icons/fa";
@@ -45,7 +45,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
 
     useEffect(() => {
         setCurrentLead(lead);
-        console.log("Oportunidades no lead atual:", currentLead.oportunidades);
+        // console.log("Oportunidades no lead atual:", currentLead.oportunidades);
 
     }, [lead]);
 

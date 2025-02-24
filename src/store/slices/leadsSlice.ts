@@ -10,21 +10,29 @@ const initialState: LeadsState = {
 
 export const fetchLeads = createAsyncThunk<Lead[], { status?: string[] }>(
     'leads/fetchLeads',
-    async ({ status }) => {
-        console.log('🚀 Buscando leads com status:', status);
+    async ({ status }, { rejectWithValue }) => {
+        try {
 
-        let statusQuery = '';
-        if (Array.isArray(status) && status.length > 0) {
-            statusQuery = `status__in=${status.map(encodeURIComponent).join(',')}`;
+            let statusQuery = '';
+            if (Array.isArray(status) && status.length > 0) {
+                statusQuery = `status__in=${status.map(encodeURIComponent).join(',')}`;
+            }
+
+            const response = await api.get(`/clientes/?${statusQuery}`);
+            // Garantir que a resposta tem um array de leads
+            if (!response.data || typeof response.data !== 'object' || !Array.isArray(response.data.results)) {
+                console.warn("⚠️ Formato inesperado da resposta:", response.data);
+                return rejectWithValue("Formato de resposta inválido");
+            }
+
+            return response.data.results; // Retorna os leads corretamente
+        } catch (error: any) {
+            console.error("❌ Erro ao buscar leads:", error);
+            return rejectWithValue(error.response?.data || "Erro desconhecido ao buscar leads");
         }
-
-        const response = await api.get(`/clientes/?${statusQuery}`);
-
-        console.log('✅ Leads recebidos da API:', response.data);
-
-        return response.data.results || [];
     }
 );
+
 
 export const createLead = createAsyncThunk<Lead, Partial<Lead>>(
     'leads/createLead',

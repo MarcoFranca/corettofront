@@ -1,5 +1,4 @@
 import { RefObject } from "react";
-import {UseFormReturn} from "react-hook-form";
 
 // ** Lead Interfaces **
 export type StatusReuniao =
@@ -18,6 +17,7 @@ export interface Oportunidade {
 
 export interface IndicadoPor {
     tipo: 'cliente' | 'parceiro';
+    nome: string;
     id: string;
 }
 
@@ -39,6 +39,7 @@ export interface Lead {
     telefone: string;
     indicacao?:string;
     indicado_por?: IndicadoPor;
+    indicado_por_detalhes?: IndicadoPor;
     email: string;
     endereco?: string;
     status: string;

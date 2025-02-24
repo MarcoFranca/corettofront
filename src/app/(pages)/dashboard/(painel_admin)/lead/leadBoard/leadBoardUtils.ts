@@ -4,7 +4,6 @@ import { updateLeadStatus } from '@/store/slices/leadsSlice';
 import { Data, Lead } from "@/types/interfaces";
 
 export const initializeData = (leadsFromStore: any[] = []): Data => {
-    console.log("🚀 Leads recebidos para processamento:", leadsFromStore);
 
     const leads: { [key: string]: Lead } = {};
     const columns: { [key: string]: { id: string, title: string, leadIds: string[] } } = {
@@ -15,7 +14,6 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
     };
 
     if (!leadsFromStore || leadsFromStore.length === 0) {
-        console.warn("⚠️ Nenhum lead disponível para processamento.");
         return { leads, columns, columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'] };
     }
 
@@ -58,8 +56,6 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
             console.warn(`⚠️ Lead ID ${lead.id} sem pipeline_stage categorizado corretamente:`, lead.pipeline_stage);
         }
     });
-
-    console.log("✅ Dados finais para o Kanban:", { leads, columns });
 
     return {
         leads,
