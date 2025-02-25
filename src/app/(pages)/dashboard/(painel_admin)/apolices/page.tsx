@@ -12,6 +12,7 @@ import {ApolicesContainer, HeaderContainer, StyledButton, Title, ContentContaine
     from "./ApolicesPage.styles";
 import {Drawer} from "antd";
 import {FaPlus} from "react-icons/fa";
+import {DrawerContainer} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/ApoliceWizard.styles";
 
 const ApolicesPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -78,7 +79,7 @@ const ApolicesPage: React.FC = () => {
             </>
 
             {/* 🧩 Modal de Cadastro - Agora Drawer Tela Cheia */}
-            <Drawer
+            <DrawerContainer
                 title="Cadastro de Apólice"
                 placement="right"
                 closable={true}
@@ -86,13 +87,10 @@ const ApolicesPage: React.FC = () => {
                 open={isWizardOpen}
                 width="100vw" // ✅ Tela inteira
                 height="100vh" // ✅ Ocupa toda a altura
-                styles={{
-                    body: { padding: 0, transition: "all 0.3s ease-in-out" },
-                    header: { fontSize: "20px", fontWeight: "bold" }
-                }}
+
             >
                 <ApoliceWizard onClose={handleWizardClose} />
-            </Drawer>
+            </DrawerContainer>
         </ApolicesContainer>
     );
 };

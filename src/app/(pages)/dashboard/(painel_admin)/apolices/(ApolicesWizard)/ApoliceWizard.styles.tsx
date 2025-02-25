@@ -1,11 +1,115 @@
 // 📂 src/components/ApolicesWizard/ApoliceWizard.styles.ts
 import styled from "styled-components";
+import {Drawer, Steps} from "antd";
+
+
+const { Step } = Steps;
+
+// 🔥 Estilos Personalizados para os Steps
+export const CustomSteps = styled(Steps)`
+    .ant-steps-item-title {
+        font-size: 55px;
+        font-weight: 500;
+        color: ${({ theme }) => theme.colors.text};
+        transition: color 0.3s ease-in-out;
+    }
+
+    .ant-steps-item-description {
+        font-size: 12px;
+        color: ${({ theme }) => theme.colors.text};
+        opacity: 0.7;
+    }
+
+    /* Ícones dos Steps */
+    .ant-steps-item-icon {
+        background-color: ${({ theme }) => theme.colors.background};
+        border-radius: 50%;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .ant-steps-item-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 8px ${({ theme }) => theme.colors.primary};
+    }
+
+    /* Passo ATUAL */
+    .ant-steps-item-process .ant-steps-item-icon {
+        background-color: ${({ theme }) => theme.colors.primary};
+        color: white;
+        font-weight: bold;
+        border: 2px solid ${({ theme }) => theme.colors.primary};
+    }
+
+    .ant-steps-item-process .ant-steps-item-title {
+        font-weight: bold;
+        color: ${({ theme }) => theme.colors.primary};
+    }
+
+    /* Passo CONCLUÍDO */
+    .ant-steps-item-finish .ant-steps-item-icon {
+        background-color: ${({ theme }) => theme.colors.success};
+        color: white;
+        border: 2px solid ${({ theme }) => theme.colors.success};
+    }
+
+    .ant-steps-item-finish .ant-steps-item-title {
+        color: ${({ theme }) => theme.colors.success};
+        font-weight: bold;
+    }
+
+    /* Passo FUTURO */
+    .ant-steps-item-wait .ant-steps-item-icon {
+        background-color: ${({ theme }) => theme.colors.border};
+        color: ${({ theme }) => theme.colors.text};
+        border: 2px solid ${({ theme }) => theme.colors.border};
+    }
+
+    .ant-steps-item-wait .ant-steps-item-title {
+        color: ${({ theme }) => theme.colors.text};
+    }
+
+    /* Linha de Conexão */
+    .ant-steps-item-tail {
+        border-color: ${({ theme }) => theme.colors.primary};
+    }
+`;
+
+
+export const DrawerContainer = styled(Drawer)`
+    .ant-drawer-content {
+        background-color: ${({ theme }) => theme.colors.background}; /* ✅ Aplica o background */
+    }
+
+    .ant-drawer-header {
+        background-color: ${({ theme }) => theme.colors.secondary}; /* ✅ Estiliza o cabeçalho */
+        color: ${({ theme }) => theme.colors.text}; /* ✅ Altera a cor do título */
+        font-size: 20px;
+        font-weight: bold;
+        padding: 16px 16px 16px 48px;
+    }
+
+    .ant-drawer-body {
+        padding: 0;
+        transition: all 0.3s ease-in-out
+    }
+
+    .ant-drawer-close {
+        color: ${({ theme }) => theme.colors.text}; /* ✅ Altera a cor do botão "X" */
+        font-size: 15px;
+        transition: color 0.3s ease;
+
+        &:hover {
+            color: ${({ theme }) => theme.colors.error}; /* ✅ Muda a cor ao passar o mouse */
+        }
+    }
+
+`;
 
 export const WizardFullContainer = styled.div`
     height: 100% ;
     display: flex;
     flex-direction: column;
-    background-color: #f7f9fc;
+    background-color: ${({ theme }) => theme.colors.background};
     padding: 2rem;
     overflow-y: auto;
 `;

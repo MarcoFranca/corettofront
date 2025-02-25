@@ -8,7 +8,14 @@ import StepDetalhesApolice from "./(steps)/StepDetalhesApolice";
 import StepCoberturas from "./(steps)/StepCoberturas";
 import StepResumo from "./(steps)/StepResumo";
 import UploadApolice from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/UploadApolice";
-import { WizardFullContainer, StepContainer, ButtonGroup, StyledButton,} from "./ApoliceWizard.styles";
+import {
+    WizardFullContainer,
+    StepContainer,
+    ButtonGroup,
+    StyledButton,
+
+    CustomSteps,
+} from "./ApoliceWizard.styles";
 import api from "@/app/api/axios";
 import {ApoliceFormData, ApoliceWizardProps, moneyFields, tipoApoliceParaEndpoint} from "@/types/ApolicesInterface";
 
@@ -94,7 +101,6 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             acc[key] = moneyFields.includes(key) ? cleanMoneyValue(value) : formatValue(value);
             return acc;
         }, {} as Record<string, any>);
-        console.log('vou mamar',data.valor_parcela)
         // 🔥 Criamos o objeto final formatado
         const formattedData = {
             cliente: formatUUID(data.cliente),
@@ -222,7 +228,8 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
 
     return (
         <WizardFullContainer>
-            <Steps current={step} items={steps.map(({ title }) => ({ title }))} size="small" responsive={true} />
+            <CustomSteps current={step} items={steps.map(({ title }) =>
+                ({ title }))} size="small" responsive={true} />
 
             <StepContainer>{steps[step].content}</StepContainer>
 
