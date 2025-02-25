@@ -2,6 +2,7 @@ import React from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Controller } from "react-hook-form";
 import { loadClienteOptions, Option } from "../selectUtils";
+import styled from "styled-components";
 
 interface SelectClienteProps {
     name: string;
@@ -13,6 +14,13 @@ interface SelectClienteProps {
     errorMessage?: string;
     onChange?: (value: Option | null) => void;
 }
+
+const Label = styled.label`
+    color:${({ theme }) => theme.colorsSelect.label};
+    span{
+        color:${({ theme }) => theme.colors.error};
+    }
+`
 
 const SelectCliente: React.FC<SelectClienteProps> = ({
                                                          name,
@@ -27,9 +35,9 @@ const SelectCliente: React.FC<SelectClienteProps> = ({
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
             {showLabel && (
-                <label style={{ color: "#007bff" }}>
-                    {label} {required && <span style={{ color: "red" }}>*</span>}
-                </label>
+                <Label >
+                    {label} {required && <span>*</span>}
+                </Label>
             )}
 
             <Controller

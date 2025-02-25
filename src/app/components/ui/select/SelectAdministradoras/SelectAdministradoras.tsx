@@ -1,7 +1,8 @@
 import React from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Controller } from "react-hook-form";
-import { Option } from "../selectUtils"; // ✅ Certifique-se de que `Option` é importado corretamente
+import { Option } from "../selectUtils";
+import styled from "styled-components"; // ✅ Certifique-se de que `Option` é importado corretamente
 
 interface SelectAdministradoraProps {
     name: string;
@@ -16,7 +17,12 @@ interface SelectAdministradoraProps {
     options: Option[];
     value?: Option | null; // ✅ Agora `value` está definido corretamente!
 }
-
+const Label = styled.label`
+    color:${({ theme }) => theme.colorsSelect.label};
+    span{
+        color:${({ theme }) => theme.colors.error};
+    }
+`
 
 const SelectAdministradora: React.FC<SelectAdministradoraProps> = (
     {
@@ -35,9 +41,9 @@ const SelectAdministradora: React.FC<SelectAdministradoraProps> = (
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
             {showLabel && (
-                <label style={{ color: "#007bff" }}>
-                    {label} {required && <span style={{ color: "red" }}>*</span>}
-                </label>
+                <Label >
+                    {label} {required && <span>*</span>}
+                </Label>
             )}
 
             <Controller

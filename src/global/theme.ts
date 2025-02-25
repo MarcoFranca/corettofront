@@ -16,12 +16,20 @@ export const lightTheme = {
         tableHeaderText: "#ffffff",// Texto do cabeçalho
         tableRowEven: "#f8f9fa",   // Linhas pares da tabela
         tableHover: "#eaf2ff",     // Hover da tabela
-        muted: "#64748B"           // 🔥 Cinza suave para descrições (novo)
+        muted: "#64748B",           // 🔥 Cinza suave para descrições (novo)
     },
     colorsButton:{
         primary: "#3B82F6",
         secondary: "#120940",
         alert:"#EF4444"
+    },
+    colorsSelect:{
+        label: "#007bff",
+        backgroundColor: "#F8FAFC",
+    },
+    selectPosition:{
+        top: "-7px",
+        topFloat: "12px",
     }
 };
 
@@ -43,11 +51,20 @@ export const darkTheme = {
         tableHeaderText: "#ffffff",// Texto do cabeçalho
         tableRowEven: "#2c2c3a",   // Linhas pares
         tableHover: "#374b69",     // Hover da tabela
-        muted: "#94A3B8"           // 🔥 Cinza claro para descrições (novo)
+        muted: "#94A3B8",           // 🔥 Cinza claro para descrições (novo)
     },
     colorsButton:{
         primary: "#60A5FA",
         secondary: "#1209401E",
         alert:"#EF4444"
+    },
+    colorsSelect:{
+        label: "#d8e5f5",
+        backgroundColor: "transparent",
+    },
+    selectPosition:{
+        top: "-7px",
+        topFloat: "25px",
+        marginTop: "15px"
     }
 };

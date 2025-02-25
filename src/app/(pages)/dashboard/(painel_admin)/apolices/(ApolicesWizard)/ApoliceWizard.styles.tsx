@@ -7,70 +7,85 @@ const { Step } = Steps;
 
 // 🔥 Estilos Personalizados para os Steps
 export const CustomSteps = styled(Steps)`
+
+    /* 🌟 Ajuste Geral */
+    .ant-steps-item {
+        display: flex;
+        padding: 8px !important;
+        align-items: center;
+        text-align: center;
+    }
+    
+    /* 📌 TITULO DO STEP */
     .ant-steps-item-title {
-        font-size: 55px;
         font-weight: 500;
-        color: ${({ theme }) => theme.colors.text};
+        color: ${({ theme }) => theme.colors.text} !important;
         transition: color 0.3s ease-in-out;
     }
 
+    /* 📌 DESCRIÇÃO DO STEP */
     .ant-steps-item-description {
         font-size: 12px;
-        color: ${({ theme }) => theme.colors.text};
+        color: ${({ theme }) => theme.colors.text} !important;
         opacity: 0.7;
     }
 
-    /* Ícones dos Steps */
+    /* 📌 ÍCONE DO STEP */
     .ant-steps-item-icon {
-        background-color: ${({ theme }) => theme.colors.background};
-        border-radius: 50%;
+        background-color: ${({ theme }) => theme.colors.background} !important;
         transition: all 0.3s ease-in-out;
     }
-
+    
     .ant-steps-item-icon:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 8px ${({ theme }) => theme.colors.primary};
+        cursor: pointer;
+        transform: scale(1.05);
+        box-shadow: 0 0 8px ${({ theme }) => theme.colors.primary} !important;
     }
 
     /* Passo ATUAL */
     .ant-steps-item-process .ant-steps-item-icon {
-        background-color: ${({ theme }) => theme.colors.primary};
+        background-color: ${({ theme }) => theme.colors.primary} !important;
         color: white;
         font-weight: bold;
-        border: 2px solid ${({ theme }) => theme.colors.primary};
+        border: 2px solid ${({ theme }) => theme.colors.primary} !important;
     }
 
     .ant-steps-item-process .ant-steps-item-title {
         font-weight: bold;
-        color: ${({ theme }) => theme.colors.primary};
+        color: ${({ theme }) => theme.colors.button} !important;
     }
 
     /* Passo CONCLUÍDO */
     .ant-steps-item-finish .ant-steps-item-icon {
-        background-color: ${({ theme }) => theme.colors.success};
+        background-color: ${({ theme }) => theme.colors.success} !important;
         color: white;
-        border: 2px solid ${({ theme }) => theme.colors.success};
+        border: 2px solid ${({ theme }) => theme.colors.success} !important;
     }
-
+    //
     .ant-steps-item-finish .ant-steps-item-title {
-        color: ${({ theme }) => theme.colors.success};
+        color: ${({ theme }) => theme.colors.success} !important;
         font-weight: bold;
     }
 
     /* Passo FUTURO */
     .ant-steps-item-wait .ant-steps-item-icon {
-        background-color: ${({ theme }) => theme.colors.border};
-        color: ${({ theme }) => theme.colors.text};
-        border: 2px solid ${({ theme }) => theme.colors.border};
+        background-color: ${({ theme }) => theme.colors.border} !important;
+        color: ${({ theme }) => theme.colors.text} !important;
+        border: 2px solid ${({ theme }) => theme.colors.border} !important;
     }
 
     .ant-steps-item-wait .ant-steps-item-title {
-        color: ${({ theme }) => theme.colors.text};
+        color: ${({ theme }) => theme.colors.text} !important;
     }
 
+    /* 📌 Step FUTURO - Número dentro do Ícone */
+    .ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon {
+        color: ${({ theme }) => theme.colors.text} !important;
+    }
+    
     /* Linha de Conexão */
     .ant-steps-item-tail {
-        border-color: ${({ theme }) => theme.colors.primary};
+        border-color: ${({ theme }) => theme.colors.primary} !important;
     }
 `;
 
@@ -109,13 +124,13 @@ export const WizardFullContainer = styled.div`
     height: 100% ;
     display: flex;
     flex-direction: column;
-    background-color: ${({ theme }) => theme.colors.background};
+    background-color: ${({ theme }) => theme.colors.tableHover};
     padding: 2rem;
     overflow-y: auto;
 `;
 
 export const StepContainer = styled.div`
-    background-color: #fff;
+    background-color: ${({ theme }) => theme.colors.background};
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);

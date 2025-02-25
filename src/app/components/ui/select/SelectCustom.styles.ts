@@ -8,16 +8,16 @@ export const SelectWrapper = styled.div`
 
 export const Label = styled.label`
     font-weight: 600;
-    color: #007bff;
+    color: ${({ theme }) => theme.colorsSelect.label};
 
     span {
-        color: red;
+        color: ${({ theme }) => theme.colors.error};
         margin-left: 3px;
     }
 `;
 
 export const ErrorMessage = styled.p`
-    color: red;
+    color: ${({ theme }) => theme.colors.error};
     font-size: 12px;
     margin-top: 2px;
 `;

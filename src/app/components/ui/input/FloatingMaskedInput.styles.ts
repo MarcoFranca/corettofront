@@ -35,6 +35,7 @@ export const Input = styled.input`
     border-radius: 5px;
     font-size: 16px;
     transition: border-color 0.3s ease-in-out;
+    margin-top: ${({ theme }) => theme.selectPosition.marginTop};
 
     &:focus {
         border-color: #007bff;
@@ -43,10 +44,10 @@ export const Input = styled.input`
 
     &:focus ~ label,
     &:not(:placeholder-shown) ~ label {
-        top: -7px;
+        top: ${({ theme }) => theme.selectPosition.top};
         font-size: 14px;
-        color: #007bff;
-        background-color: white;
+        color: ${({ theme }) => theme.colorsSelect.label}; /* ✅ Altera a cor do título */
+        background-color: ${({ theme }) => theme.colorsSelect.backgroundColor};
     }
 `;
 
@@ -61,7 +62,7 @@ export const Label = styled.label`
 
     &.float {
         position: absolute;
-        top: 12px;
+        top: ${({ theme }) => theme.selectPosition.topFloat};
         left: 12px;
         font-size: 14px;
         color: #888;

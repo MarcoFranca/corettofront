@@ -2,13 +2,6 @@
 import styled from "styled-components";
 import { Input, Select } from "antd";
 
-// export const StepContainer = styled.div`
-//     display: flex;
-//     width: 100%;
-//     height: 100%;
-//     flex-direction: column;
-//     gap: 1.5rem;
-// `;
 
 export const StepGrid = styled.div`
     display: grid;
@@ -22,7 +15,6 @@ export const StepGrid = styled.div`
 
 export const FormGroup = styled.div`
     position: relative;
-    //display: flex;
     width: 100%;
     align-items: center;
     gap: 0.5rem;
@@ -36,11 +28,6 @@ export const FormGroup = styled.div`
     }
 `;
 
-
-// export const FormGroup = styled.div`
-//     display: flex;
-//     flex-direction: column;
-// `;
 
 export const Label = styled.label`
     font-size: 1rem;
