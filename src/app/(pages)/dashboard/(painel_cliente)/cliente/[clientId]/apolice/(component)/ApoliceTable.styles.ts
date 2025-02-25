@@ -6,26 +6,27 @@ export const TableContainer = styled.div`
     max-height: 80vh;  /* 🔥 Define altura máxima */
     overflow-y: auto;   /* 🔥 Scroll vertical */
     border-radius: 8px;
-    background-color: white;
+    background: ${({ theme }) => theme.colors.background};
     //padding: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 
 export const Table = styled.table`
     width: 100%;
-    border-collapse: separate;
+    //border-collapse: separate;
     border-radius: 8px;
     overflow: auto;
-    background-color: #ffffff;
+    color: ${({ theme }) => theme.colors.text};
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 `;
 
 export const TableHeader = styled.th`
     position: sticky;
     top: 0;
-    background-color: #f1f5f9;
-    color: #334155;
+    background: ${({ theme }) => theme.colors.tableHeader};
+    color: ${({ theme }) => theme.colors.tableHeaderText};
+    text-transform: uppercase;
     font-weight: bold;
     padding: 14px;
     text-align: left;
@@ -33,19 +34,22 @@ export const TableHeader = styled.th`
 `;
 
 export const TableRow = styled.tr`
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
     &:nth-child(even) {
-        background-color: #f8fafc;
+        background: ${({ theme }) => theme.colors.tableRowEven}; // 🔥 Alternância de cores
     }
 
     &:hover {
-        background-color: #e2e8f0;
+        background: ${({ theme }) => theme.colors.tableHover}; // ✨ Destaca ao passar o mouse
         transition: background-color 0.3s ease-in-out;
     }
 `;
 
 export const TableData = styled.td`
     padding: 12px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
     font-size: 0.9rem;
 `;
 

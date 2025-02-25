@@ -8,9 +8,10 @@ import ApoliceWizard from "./(ApolicesWizard)/ApolicesWizard";
 import ApolicesTable from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable";
 import ApoliceFilter from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceFilter";
 
-import {ApolicesContainer, HeaderContainer, StyledButton, Title, ContentContainer, FilterContainer}
+import {ApolicesContainer, HeaderContainer, StyledButton, Title, ContentContainer, FilterContainer, IconButton}
     from "./ApolicesPage.styles";
 import {Drawer} from "antd";
+import {FaPlus} from "react-icons/fa";
 
 const ApolicesPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -54,7 +55,7 @@ const ApolicesPage: React.FC = () => {
             <HeaderContainer>
                 <Title>📑 Gestão de Apólices</Title>
                 <StyledButton onClick={() => setIsWizardOpen(true)}>
-                    + Nova Apólice
+                    <IconButton><FaPlus /></IconButton> Nova Apólice
                 </StyledButton>
             </HeaderContainer>
 

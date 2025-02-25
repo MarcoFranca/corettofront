@@ -108,29 +108,29 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             data_vencimento: data.data_vencimento ? formatDate(data.data_vencimento) : null,
             data_revisao: data.data_revisao ? formatDate(data.data_revisao) : null,
 
-            premio_pago: cleanMoneyValue(data.premio_pago), // 🔥 Garante que nunca é `null`
+            premio_pago: cleanMoneyValue(data.detalhes.premio_pago), // 🔥 Garante que nunca é `null`
             periodicidade_pagamento: formatString(data.periodicidade_pagamento) || "mensal",
-            forma_pagamento: formatString(data.forma_pagamento) || "boleto",
+            forma_pagamento: formatString(data.detalhes.forma_pagamento) || "boleto",
             observacoes: formatString(data.observacoes),
 
             coberturas: Array.isArray(data.coberturas) ? data.coberturas : [],
 
             // 📌 Campos de consórcio
             contemplada: data.contemplada || false,
-            grupo: formatString(data.grupo),
-            cota: formatString(data.cota),
-            prazo: formatNumber(data.prazo) || 0, // 🔥 Nunca enviar `null`
-            indice_correcao: formatString(data.indice_correcao),
-            furo: formatNumber(data.furo) || 0,
-            objetivo: formatString(data.objetivo),
-            estrategia: formatString(data.estrategia),
-            parcela_reduzida: data.parcela_reduzida ?? false,
-            percentual_reducao_parcela: formatNumber(data.percentual_reducao_parcela),
+            grupo: formatString(data.detalhes.grupo),
+            cota: formatString(data.detalhes.cota),
+            prazo: formatNumber(data.detalhes.prazo) || 0, // 🔥 Nunca enviar `null`
+            indice_correcao: formatString(data.detalhes.indice_correcao),
+            furo: formatNumber(data.detalhes.furo) || 0,
+            objetivo: formatString(data.detalhes.objetivo),
+            estrategia: formatString(data.detalhes.estrategia),
+            // parcela_reduzida: data.parcela_reduzida ?? false,
+            percentual_reducao_parcela: formatNumber(data.detalhes.percentual_reducao_parcela),
 
             tipo_lance: formatString(data.tipo_lance),
             detalhes_lance: formatString(data.detalhes_lance),
             aporte: formatNumber(data.aporte),
-            valor_parcela: cleanMoneyValue(data.valor_parcela || 0), // 🔥 Importante garantir um valor numérico válido
+            valor_parcela: cleanMoneyValue(data.detalhes.valor_parcela || 0), // 🔥 Importante garantir um valor numérico válido
             parcelas_pagas: formatNumber(data.parcelas_pagas),
             historico_pagamentos: data.historico_pagamentos ?? {},
             historico_reajustes: data.historico_reajustes ?? {},

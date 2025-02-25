@@ -12,6 +12,7 @@ import MenuMobile from '@/app/components/common/Header/DashboardMobile/MenuMobil
 import Spinner from '@/app/components/common/spinner/sppiner';
 import DashboardSidebar from '@/app/components/common/Header/DashboardSidebar';
 import ClientDashboardSidebar from '@/app/components/common/Header/ClientDashboard';
+import ThemeToggle from "@/app/components/ui/Button/ThemeToggle";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -135,6 +136,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         return (
             <main className={styles.dashboardLayout}>
                 <div className={styles.dashboardLayoutContaint}>
+                    <div className={styles.themeToggle}>
+                        <ThemeToggle/>
+                    </div>
+
                     {renderSidebar()}
                     <div className={styles.canvaLayout}>{children}</div>
                 </div>
