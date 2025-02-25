@@ -27,6 +27,7 @@ export const SectionTitle = styled.h3`
 `;
 
 export const OptionalSection = styled.div`
+    margin-bottom: 1rem;
     padding: 1rem;
     border-radius: 6px;
     border: 1px dashed #d0d0d0;
@@ -36,6 +37,7 @@ export const OptionalSection = styled.div`
 export const PaymentSection = styled(OptionalSection)`
     background-color: #f3faff;
     border-color: #a5d8ff;
+    margin-top: 1rem;
 `;
 
 export const TextArea = styled.textarea`

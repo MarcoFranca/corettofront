@@ -2,34 +2,87 @@
 import React from 'react';
 import { Controller } from "react-hook-form";
 import {
-    FormGroup,
-    Label, StyledInput, StyledSwitch
-} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(Old Steps)/StepDetalhesApolice.styles";
+    PlanoSaudeGrid,
+    SectionTitle,
+    Input,
+    SelectStyled,
+    OptionalSection,
+    SwitchContainer,
+    SwitchLabel
+} from "./PlanoSaude.styles";
+import { Switch } from "antd";
+import SelectCustom from "@/app/components/ui/select/SelectCustom";
 
 interface PlanoSaudeProps {
     control: any;
+    setValue: any;
+    register: any;
 }
 
-const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control }) => {
+const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register }) => {
     return (
         <>
-            <FormGroup>
-                <Label>Categoria:</Label>
-                <Controller
+            <SectionTitle>📋 Informações do Plano</SectionTitle>
+            <PlanoSaudeGrid>
+                <Input
+                    control={control}
+                    setValue={setValue}
+                    register={register}
                     name="detalhes.categoria"
-                    control={control}
-                    render={({ field }) => <StyledInput {...field} placeholder="Categoria do Plano" />}
+                    label="📁 Categoria do Plano"
+                    required
                 />
-            </FormGroup>
 
-            <FormGroup>
-                <Label>Coparticipação:</Label>
-                <Controller
-                    name="detalhes.coparticipacao"
+                <SelectCustom
                     control={control}
-                    render={({ field }) => <StyledSwitch {...field} />}
+                    name="detalhes.acomodacao"
+                    label="🏥 Acomodação"
+                    options={[
+                        { value: "Apartamento", label: "Apartamento" },
+                        { value: "Enfermaria", label: "Enfermaria" },
+                    ]}
+                    required
                 />
-            </FormGroup>
+
+                <SelectCustom
+                    control={control}
+                    name="detalhes.abrangencia"
+                    label="📍 Abrangência"
+                    options={[
+                        { value: "Nacional", label: "Nacional" },
+                        { value: "Estadual", label: "Estadual" },
+                        { value: "Regional", label: "Regional" },
+                    ]}
+                    required
+                />
+            </PlanoSaudeGrid>
+
+            <OptionalSection>
+                <SectionTitle>⚙️ Configurações Opcionais</SectionTitle>
+                <PlanoSaudeGrid>
+                    <Input
+                        control={control}
+                        setValue={setValue}
+                        register={register}
+                        name="detalhes.valor_reembolso_consulta"
+                        label="💰 Reembolso Consulta (R$)"
+                        type="money"
+                    />
+
+                    <SwitchContainer>
+                        <Controller
+                            name="detalhes.coparticipacao"
+                            control={control}
+                            render={({ field }) => (
+                                <>
+                                    <Switch {...field} checked={field.value} />
+                                    <SwitchLabel>Coparticipação</SwitchLabel>
+                                </>
+                            )}
+                        />
+                    </SwitchContainer>
+                </PlanoSaudeGrid>
+            </OptionalSection>
         </>
     );
 };
