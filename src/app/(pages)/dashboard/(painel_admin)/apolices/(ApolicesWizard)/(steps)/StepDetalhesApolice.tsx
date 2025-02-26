@@ -23,6 +23,7 @@ interface StepDetalhesApoliceProps {
     control: any;
     setValue: any;   // ✅ Adicionado
     register: any;   // ✅ Adicionado
+    whatch:any;
     tipoApolice: string;
 }
 
@@ -32,12 +33,13 @@ const StepDetalhesApolice: React.FC<StepDetalhesApoliceProps> =
          control,
          tipoApolice,
          setValue,
-         register
+         register,
+        whatch
      }) => {
 
         switch (tipoApolice) {
             case "Plano de Saúde":
-                return <PlanoSaude register={register} setValue={setValue} control={control} />;
+                return <PlanoSaude watch={whatch} register={register} setValue={setValue} control={control} />;
             case "Seguro de Vida":
                 return <SeguroVida control={control} />;
             case "Consórcio":
