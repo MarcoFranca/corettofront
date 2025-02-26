@@ -8,7 +8,10 @@ interface ApolicesOverviewProps {
 
 const ApolicesOverview: React.FC<ApolicesOverviewProps> = ({ apolices }) => {
     const todasApolices = Object.values(apolices).flat();
-    const totalValor = todasApolices.reduce((acc, apolice) => acc + parseFloat(apolice.premio_pago || "0"), 0);
+    const totalValor = todasApolices.reduce(
+        (acc, apolice) => acc + parseFloat(String(apolice.premio_pago) || "0"),
+        0
+    );
     const totalApolices = todasApolices.length;
 
     return (
