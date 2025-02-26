@@ -3,7 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { fetchApoliceDetalhe, deleteApolice, getApoliceDetalhe, getApolicesStatus, getApolicesError } from '@/store/slices/apoliceSlice';
+import {
+    deleteApolice,
+    selectApolicesStatus,
+    selectApolicesError,
+    selectApoliceDetalhe, fetchApoliceDetalhe
+} from '@/store/slices/apoliceSlice';
 import {
     FichaContainer,
     GridContainer,
@@ -12,9 +17,7 @@ import {
     StatusField,
     StatusVigente,
     StatusCancelada,
-    PDFViewer,
     BackButton,
-    PDFContainer,
     FichaHeader,
     ActionButtons,
     EditButton,
@@ -37,23 +40,24 @@ const ApoliceDetalhes = () => {
     const apoliceId = Array.isArray(params.apoliceId) ? params.apoliceId[0] : params.apoliceId;
     const produtoTipo = Array.isArray(params.produto) ? params.produto[0] : params.produto;
 
-    const apoliceDetalhe = useAppSelector(getApoliceDetalhe);
-    const status = useAppSelector(getApolicesStatus);
-    const error = useAppSelector(getApolicesError);
+    const apoliceDetalhe = useAppSelector(selectApoliceDetalhe) as Apolice | null;
+    const status = useAppSelector(selectApolicesStatus);
+    const error = useAppSelector(selectApolicesError);
 
     useEffect(() => {
         if (apoliceId && produtoTipo) {
-            dispatch(fetchApoliceDetalhe({ produto: produtoTipo, apoliceId }));
+            dispatch(fetchApoliceDetalhe({ produto: produtoTipo, apoliceId })); // 🔥 Agora passamos o objeto corretamente
         }
     }, [apoliceId, produtoTipo, dispatch]);
 
     const handleDelete = () => {
-        dispatch(deleteApolice({ clientId, apoliceId, produto: produtoTipo })).then(() => {
+        dispatch(deleteApolice({ apoliceId })).then(() => {
             router.push(`/dashboard/cliente/${clientId}/apolice`);
         });
     };
 
-    if (status === 'loading') {
+
+    if (!apoliceDetalhe || Object.keys(apoliceDetalhe).length === 0) {
         return <p>Carregando os detalhes da apólice...</p>;
     }
 
@@ -84,7 +88,8 @@ const ApoliceDetalhes = () => {
                             <Field><Label>Seguradora:</Label> {apoliceDetalhe.seguradora}</Field>
                             <Field><Label>Início da Vigência:</Label> {apoliceDetalhe.data_inicio}</Field>
                             <Field><Label>Final da Vigência:</Label> {apoliceDetalhe.data_vencimento}</Field>
-                            <Field><Label>Prêmio Pago:</Label> {formatMoney(parseFloat(apoliceDetalhe.premio_pago))}
+                            <Field>
+                                <Label>Prêmio Pago:</Label> {formatMoney(parseFloat(apoliceDetalhe.premio_pago?.toString() || "0"))}
                             </Field>
                             <Field><Label>Forma de Pagamento:</Label> {apoliceDetalhe.forma_pagamento}</Field>
                             <Field><Label>Periodicidade:</Label> {apoliceDetalhe.periodicidade_pagamento}</Field>

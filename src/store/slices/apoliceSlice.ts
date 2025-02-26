@@ -37,11 +37,11 @@ export const fetchApolices = createAsyncThunk<Apolice[], { tipo?: string; status
 );
 
 // 📌 Buscar detalhes de uma apólice específica
-export const fetchApoliceDetalhe = createAsyncThunk<Apolice, string>(
+export const fetchApoliceDetalhe = createAsyncThunk<Apolice, { produto: string; apoliceId: string }>(
     'apolices/fetchApoliceDetalhe',
-    async (apoliceId, { rejectWithValue }) => {
+    async ({ produto, apoliceId }, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/apolices/${apoliceId}/`);
+            const response = await api.get(`/apolices/${produto}/${apoliceId}/`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao buscar detalhes da apólice.');
@@ -78,12 +78,12 @@ export const updateApolice = createAsyncThunk<Apolice, { apoliceId: string; form
 );
 
 // 📌 Deletar uma apólice
-export const deleteApolice = createAsyncThunk<string, string>(
+export const deleteApolice = createAsyncThunk<string, { apoliceId: string }>(
     'apolices/deleteApolice',
-    async (apoliceId, { rejectWithValue }) => {
+    async ({ apoliceId }, { rejectWithValue }) => {
         try {
             await api.delete(`/apolices/${apoliceId}/`);
-            return apoliceId; // Retorna ID para remoção do estado
+            return apoliceId;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao deletar apólice.');
         }
