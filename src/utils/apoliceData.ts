@@ -26,18 +26,25 @@ export const formattedDataBase = (data: ApoliceFormData) => ({
     periodicidade_pagamento: formatString(data.periodicidade_pagamento) || "mensal",
     forma_pagamento: formatString(data.detalhes.forma_pagamento) || "boleto",
     observacoes: formatString(data.observacoes),
+    beneficiarios: data.detalhes.beneficiarios ? data.detalhes.beneficiarios : [],
 });
 
 // ✅ 🚀 Estruturas Específicas para Cada Tipo de Apólice
 export const formattedDataByType = {
 
     "Plano de Saúde": (data: ApoliceFormData) => ({
-        categoria: data.detalhes.categoria,
-        acomodacao: data.detalhes.acomodacao,
-        abrangencia: data.detalhes.abrangencia,
+        categoria: formatString(data.detalhes.categoria),
+        acomodacao: formatString(data.detalhes.acomodacao),
+        abrangencia: formatString(data.detalhes.abrangencia),
         valor_reembolso_consulta: cleanMoneyValue(data.detalhes.valor_reembolso_consulta),
-        coparticipacao: data.detalhes.coparticipacao,
+        coparticipacao: !!data.detalhes.coparticipacao,
+        tipo_contratante: formatString(data.detalhes.tipo_contratante),
+        cpf_cnpj: formatString(data.detalhes.cpf_cnpj),
+
+        // ✅ Agora os beneficiários são stringificados para envio correto no FormData
+        beneficiarios: JSON.stringify(data.detalhes.beneficiarios || []),
     }),
+
     "Consórcio": (data: ApoliceFormData) => ({
         contemplada: data.contemplada || false,
         grupo: formatString(data.detalhes.grupo),
