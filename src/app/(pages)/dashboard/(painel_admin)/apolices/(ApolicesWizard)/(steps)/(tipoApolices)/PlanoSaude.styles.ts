@@ -15,8 +15,8 @@ export const PlanoSaudeGrid = styled.div`
 
 export const Input = styled(FloatingMaskedInput)`
     margin-top: 15px;
-`;
 
+`
 export const SelectStyled = styled(SelectCustom)`
     margin-top: 15px;
 `;

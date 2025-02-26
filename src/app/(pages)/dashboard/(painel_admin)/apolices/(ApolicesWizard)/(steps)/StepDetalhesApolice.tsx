@@ -37,7 +37,7 @@ const StepDetalhesApolice: React.FC<StepDetalhesApoliceProps> =
 
         switch (tipoApolice) {
             case "Plano de Saúde":
-                return <PlanoSaude control={control} />;
+                return <PlanoSaude register={register} setValue={setValue} control={control} />;
             case "Seguro de Vida":
                 return <SeguroVida control={control} />;
             case "Consórcio":

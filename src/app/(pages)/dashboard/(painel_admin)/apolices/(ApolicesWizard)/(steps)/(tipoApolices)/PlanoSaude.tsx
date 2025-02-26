@@ -5,7 +5,6 @@ import {
     PlanoSaudeGrid,
     SectionTitle,
     Input,
-    SelectStyled,
     OptionalSection,
     SwitchContainer,
     SwitchLabel
@@ -24,6 +23,15 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register }) 
         <>
             <SectionTitle>📋 Informações do Plano</SectionTitle>
             <PlanoSaudeGrid>
+                <Input
+                    control={control}
+                    setValue={setValue}
+                    register={register}
+                    name="detalhes.premio_pago"
+                    label="💎 Prêmio Pago (Valor do Plano)"
+                    type="money"
+                    required
+                />
                 <Input
                     control={control}
                     setValue={setValue}
@@ -73,9 +81,9 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register }) 
                         <Controller
                             name="detalhes.coparticipacao"
                             control={control}
-                            render={({ field }) => (
+                            render={({ field: { value, onChange } }) => (
                                 <>
-                                    <Switch {...field} checked={field.value} />
+                                    <Switch checked={value} onChange={onChange} />
                                     <SwitchLabel>Coparticipação</SwitchLabel>
                                 </>
                             )}

@@ -37,13 +37,16 @@ const StepResumo: React.FC<StepResumoProps> = ({ watch }) => {
                             : String(dadosPrincipais.administradora ?? "Não informado")}
                     </Descriptions.Item>
                     <Descriptions.Item label="Número da Apólice">
-                        {String(dadosPrincipais.numeroApolice ?? "Não informado")}
+                        {String(dadosPrincipais.numero_apolice ?? "Não informado")}
                     </Descriptions.Item>
                     <Descriptions.Item label="Data de Início">
-                        {String(dadosPrincipais.dataInicio ?? "Não informado")}
+                        {String(dadosPrincipais.data_inicio ?? "Não informado")}
                     </Descriptions.Item>
                     <Descriptions.Item label="Data de Vencimento">
-                        {dadosPrincipais.dataVencimento ? String(dadosPrincipais.dataVencimento) : "Indeterminado"}
+                        {dadosPrincipais.data_vencimento ? String(dadosPrincipais.dataVencimento) : "Indeterminado"}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Data de Revisão">
+                        {dadosPrincipais.data_revisao ? String(dadosPrincipais.dataVencimento) : "Indeterminado"}
                     </Descriptions.Item>
                 </Descriptions>
             </ResumoCard>
