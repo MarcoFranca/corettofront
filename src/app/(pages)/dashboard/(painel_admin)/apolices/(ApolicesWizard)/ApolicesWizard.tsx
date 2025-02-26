@@ -139,7 +139,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
                 formState={{ errors }} // ✅ Agora os erros são passados corretamente
             />
         },
-        { title: "Detalhes", content: <StepDetalhesApolice control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },
+        { title: "Detalhes", content: <StepDetalhesApolice whatch={watch} control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },
     ];
 
     if (tipoApolice === "Seguro de Vida") {
