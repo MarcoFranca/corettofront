@@ -21,7 +21,7 @@ const LeadBoard: React.FC = () => {
     const [filter, setFilter] = useState('all'); // Filtro selecionado
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const router = useRouter();
-    const tooltipContainerRef = useRef<HTMLDivElement>(null);
+    const tooltipContainerRef = useRef<HTMLDivElement | null>(null);
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     // Sempre busca os leads do backend ao montar o componente
@@ -131,7 +131,7 @@ const LeadBoard: React.FC = () => {
                                             index={index}
                                             handleLeadClick={(leadId) => router.push(`/dashboard/cliente/${leadId}`)}
                                             handleLeadDragStart={() => {}}
-                                            tooltipContainerRef={tooltipContainerRef}
+                                            tooltipContainerRef={tooltipContainerRef as React.RefObject<HTMLDivElement>}
                                         />
                                     );
                                 })
