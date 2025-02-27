@@ -16,7 +16,7 @@ const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
     const leadsFromStore = useAppSelector((state) => state.leads.leads);
     const status = useAppSelector((state) => state.leads.status);
-    const [data, setData] = useState(() => initializeData([]));
+    const [data, setData] = useState(() => initializeData(leadsFromStore || []));
     const [filter, setFilter] = useState('all'); // Filtro selecionado
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const router = useRouter();
@@ -31,11 +31,11 @@ const LeadBoard: React.FC = () => {
 
     // Atualiza os dados locais quando os leads são carregados
     useEffect(() => {
-        if (status === 'succeeded' && leadsFromStore.length > 0) {
+        if (status === 'succeeded' && Array.isArray(leadsFromStore) && leadsFromStore.length > 0) {
             console.log('Leads carregados do Redux:', leadsFromStore);
 
             const updatedData = initializeData(leadsFromStore);
-            console.log('Dados atualizados para o Board:', updatedData); // 🛠 Debug para ver os dados transformados
+            console.log('Dados atualizados para o Board:', updatedData);
             setData(updatedData);
         }
     }, [leadsFromStore, status]);
