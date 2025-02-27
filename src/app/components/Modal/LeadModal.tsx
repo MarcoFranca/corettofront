@@ -272,6 +272,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                     <div className={styles.selectWrapper}>
                         {indicadoPorTipo === "cliente" ? (
                             <SelectCliente
+                                label="Cliente"  // ✅ Adicionando a propriedade obrigatória
                                 name="indicado_por_cliente_id"
                                 control={methods.control}
                                 placeholder="Selecione um cliente"
