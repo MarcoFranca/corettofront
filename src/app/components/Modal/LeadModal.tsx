@@ -14,8 +14,6 @@ import CadastrarProfissaoForm from '@/app/components/Modal/cliente/CadastrarProf
 import { Profissao } from '@/types/interfaces';
 import StandardModal from "@/app/components/Modal/StandardModal";
 import {useForm} from "react-hook-form";
-import {Simulate} from "react-dom/test-utils";
-import reset = Simulate.reset;
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import SelectProfissao from "@/app/components/ui/select/SelectProfissao/SelectProfissao";
 import SelectCliente from "@/app/components/ui/select/SelectCliente/SelectCliente";
@@ -28,7 +26,6 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
     // 📌 Estados de Profissões
-    const [categoriaPai, setCategoriaPai] = useState<Profissao | null>(null);
     const [profissoesPrincipais, setProfissoesPrincipais] = useState<ProfissaoOption[]>([]);
 
     // 📌 Estados de Indicação
