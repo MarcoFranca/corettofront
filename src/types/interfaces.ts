@@ -400,6 +400,7 @@ export interface Apolice {
     coparticipacao: boolean;
     regime_contratacao?: string;
     regime_tributacao?: string;
+    tipo?:string;
     cliente: string;
     created_at: string;
     updated_at: string;
