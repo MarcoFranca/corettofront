@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
@@ -29,16 +30,19 @@ const LeadBoard: React.FC = () => {
     }, [dispatch]);
 
 
-    // Atualiza os dados locais quando os leads são carregados
     useEffect(() => {
         if (status === 'succeeded' && Array.isArray(leadsFromStore) && leadsFromStore.length > 0) {
             console.log('Leads carregados do Redux:', leadsFromStore);
 
             const updatedData = initializeData(leadsFromStore);
             console.log('Dados atualizados para o Board:', updatedData);
+
             setData(updatedData);
+        } else {
+            console.warn("Leads ainda não foram carregados ou a lista está vazia.");
         }
     }, [leadsFromStore, status]);
+
 
 
     const openModal = () => setModalIsOpen(true);
@@ -56,6 +60,11 @@ const LeadBoard: React.FC = () => {
     if (status === 'loading') {
         return (<Spinner text={'Carregando leads...'}/>)
     }
+
+    if (!leadsFromStore || !Array.isArray(leadsFromStore) || leadsFromStore.length === 0) {
+        return <p>Carregando leads...</p>;
+    }
+
 
     if (status === 'failed') {
         return (
@@ -106,25 +115,30 @@ const LeadBoard: React.FC = () => {
                 <Droppable droppableId="all-columns" direction="horizontal" type="COLUMN">
                     {(provided) => (
                         <div className={styles.board} {...provided.droppableProps} ref={provided.innerRef}>
-                            {data.columnOrder.map((columnId, index) => {
-                                const column = data.columns[columnId];
-                                if (!column) {
-                                    console.error('Column is undefined', columnId);
-                                    return null;
-                                }
+                            {data.columnOrder.length > 0 ? (
+                                data.columnOrder.map((columnId, index) => {
+                                    const column = data.columns[columnId];
+                                    if (!column) {
+                                        console.error('Column is undefined', columnId);
+                                        return null;
+                                    }
 
-                                return (
-                                    <Column
-                                        key={columnId}
-                                        column={column}
-                                        leads={data.leads}
-                                        index={index}
-                                        handleLeadClick={(leadId) => router.push(`/dashboard/cliente/${leadId}`)}
-                                        handleLeadDragStart={() => {}}
-                                        tooltipContainerRef={tooltipContainerRef}
-                                    />
-                                );
-                            })}
+                                    return (
+                                        <Column
+                                            key={columnId}
+                                            column={column}
+                                            leads={data.leads}
+                                            index={index}
+                                            handleLeadClick={(leadId) => router.push(`/dashboard/cliente/${leadId}`)}
+                                            handleLeadDragStart={() => {}}
+                                            tooltipContainerRef={tooltipContainerRef}
+                                        />
+                                    );
+                                })
+                            ) : (
+                                <p>Nenhuma lead disponível.</p>
+                            )}
+
                             {provided.placeholder}
                         </div>
                     )}
