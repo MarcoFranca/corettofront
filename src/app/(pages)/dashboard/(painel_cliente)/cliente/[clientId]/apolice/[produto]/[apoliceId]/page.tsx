@@ -147,7 +147,10 @@ const renderSpecificFields = (apoliceDetalhe: Apolice) => {
                     <Field><Label>Categoria:</Label> {apoliceDetalhe.categoria}</Field>
                     <Field><Label>Acomodação:</Label> {apoliceDetalhe.acomodacao}</Field>
                     <Field><Label>Abrangência:</Label> {apoliceDetalhe.abrangencia}</Field>
-                    <Field><Label>Valor de Reembolso de Consulta:</Label> {formatMoney(parseFloat(apoliceDetalhe.valor_reembolso_consulta))}</Field>
+                    <Field>
+                        <Label>Valor de Reembolso de Consulta:</Label>
+                        {formatMoney(parseFloat(apoliceDetalhe.valor_reembolso_consulta?.toString() || "0"))}
+                    </Field>
                     <Field><Label>Coparticipação:</Label> {apoliceDetalhe.coparticipacao ? 'Sim' : 'Não'}</Field>
                 </>
             );
