@@ -1,43 +1,42 @@
-'use client';
+'use client'
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import ApoliceForm from '@/app/components/apolices/ApoliceForm';
-import { createApolice, fetchApolices } from '@/store/slices/apoliceSlice'; // Import fetchApolices
+import { createApolice, fetchApolices } from '@/store/slices/apoliceSlice';
 import { RootState } from '@/store';
 import { useState, useEffect } from 'react';
 import { fetchClienteDetalhe, updateClienteToActive } from '@/store/slices/clientesSlice';
-import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal'; // Importando o modal
-import { Cliente } from '@/types/interfaces'; // Certifique-se de importar o tipo Cliente
+import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal';
+import { Cliente } from '@/types/interfaces';
 
 const NovaApolicePage = () => {
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useAppDispatch();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);  // Controle do modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Extraindo corretamente o clientId da URL
+    // Extraindo clientId corretamente
     const pathSegments = pathname.split('/');
     const clientId = pathSegments[pathSegments.length - 3];
 
-    // Buscando o clienteDetalhe do estado global
+    // Buscando clienteDetalhe do estado global
     const clienteDetalhe = useAppSelector((state: RootState) => state.clientes.clienteDetalhe);
 
     useEffect(() => {
         if (clientId) {
-            dispatch(fetchClienteDetalhe(clientId));  // Buscando os detalhes do cliente
+            dispatch(fetchClienteDetalhe(clientId));
         }
     }, [clientId, dispatch]);
 
     useEffect(() => {
-        // Verifica os campos obrigatórios quando o cliente é carregado
         if (clienteDetalhe?.status === 'lead') {
             const camposObrigatorios: (keyof Cliente)[] = ['email', 'cpf', 'data_nascimento', 'genero', 'profissao'];
             const camposFaltantes = camposObrigatorios.filter(campo => !clienteDetalhe[campo]);
 
             if (camposFaltantes.length > 0) {
                 setErrorMessage(`Campos obrigatórios faltando: ${camposFaltantes.join(', ')}`);
-                setIsModalOpen(true);  // Abre o modal automaticamente ao carregar a página
+                setIsModalOpen(true);
             }
         }
     }, [clienteDetalhe]);
@@ -60,22 +59,20 @@ const NovaApolicePage = () => {
         }
     };
 
-    const handleSubmit = async (data: any, endpoint: string) => {
+    const handleSubmit = async (data: any) => {
         try {
             const formData = new FormData();
             Object.keys(data).forEach((key) => {
                 formData.append(key, data[key]);
             });
 
-            const resultAction = await dispatch(createApolice({ clientId, formData, endpoint }));
+            // ✅ Removendo `endpoint`
+            const resultAction = await dispatch(createApolice({ formData }));
 
             if (createApolice.fulfilled.match(resultAction)) {
-                // Atualiza a lista de apólices após o cadastro
-                await dispatch(fetchApolices({ clientId }));
-
-                // Redireciona para a página de apólices
+                await dispatch(fetchApolices({ cliente: clientId }));
                 router.push(`/dashboard/cliente/${clientId}/apolice`);
-            } else if (createApolice.rejected.match(resultAction)) {
+            } else {
                 setErrorMessage("Erro ao criar a apólice.");
             }
         } catch (error) {
@@ -98,10 +95,12 @@ const NovaApolicePage = () => {
             <EditClientModal
                 isOpen={isModalOpen}
                 onRequestClose={() => setIsModalOpen(false)}
-                initialData={clienteDetalhe}
+                initialData={{
+                    email: clienteDetalhe?.email || '',
+                    telefone: clienteDetalhe?.telefone || '',
+                    contatos_adicionais: clienteDetalhe?.contatos_adicionais || []
+                }}
                 onSave={handleSaveClient}
-                title="Preencha os dados obrigatórios para cadastrar a apólice"
-                requiredFields={['email', 'cpf', 'data_nascimento', 'sexo', 'profissao']}
             />
         </>
     );

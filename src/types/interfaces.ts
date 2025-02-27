@@ -303,6 +303,7 @@ export interface Cliente {
     vida_financeira?: VidaFinanceira;
     filhos: Filho[];
     conjuge?: Conjuge;
+    contatos_adicionais?: ContatoAdicional[];
     estado_civil?: string;
     created_at?: string;
     updated_at?: string;
