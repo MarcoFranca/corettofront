@@ -201,7 +201,11 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ onSubmit, errorMessage, clien
             <EditClientModal
                 isOpen={isModalOpen}
                 onRequestClose={() => setIsModalOpen(false)}
-                initialData={{}} // Aqui você pode passar os dados iniciais se necessário
+                initialData={{
+                    email: '',
+                    telefone: '',
+                    contatos_adicionais: [] // 🔥 Certifique-se de que é um array
+                }}
                 onSave={handleSaveClient}
             />
         </div>
