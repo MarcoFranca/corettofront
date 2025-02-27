@@ -14,8 +14,7 @@ const EditApolicePage: React.FC = () => {
     const apoliceId = Array.isArray(params.apoliceId) ? params.apoliceId[0] : params.apoliceId;
     const produto = Array.isArray(params.produto) ? params.produto[0] : params.produto;
 
-    const handleUpdateApolice = (data: any, endpoint: string) => {
-        // Criando um objeto FormData para enviar os dados
+    const handleUpdateApolice = (data: any, endpoint?: string) => {
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
@@ -23,12 +22,13 @@ const EditApolicePage: React.FC = () => {
             }
         });
 
-        dispatch(updateApolice({ formData, endpoint, clientId, apoliceId, produto }))
+        dispatch(updateApolice({ formData, apoliceId, clientId, produto, endpoint }))
             .then(() => {
-                // Redirecionar para a página de detalhes ou lista após a atualização bem-sucedida
                 window.location.href = `/dashboard/cliente/${clientId}/apolice`;
             });
     };
+
+
 
     return (
         <EditApoliceForm

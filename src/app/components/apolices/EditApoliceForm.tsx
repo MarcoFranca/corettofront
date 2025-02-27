@@ -18,6 +18,7 @@ interface ApoliceFormProps {
     clientId: string;
 }
 
+
 const ApoliceForm: React.FC<ApoliceFormProps> = ({ apoliceId, produto, onSubmit }) => {
     const { register, handleSubmit, setValue, watch } = useForm();
     const [file, setFile] = useState<File | null>(null);
@@ -37,22 +38,24 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ apoliceId, produto, onSubmit 
     // Preencher os campos do formulário com os dados da apólice existente
     useEffect(() => {
         if (apoliceDetalhe) {
-            setValue('numero_apolice', apoliceDetalhe.numero_apolice);
-            setValue('seguradora', apoliceDetalhe.seguradora);
-            setValue('data_inicio', apoliceDetalhe.data_inicio);
-            setValue('data_vencimento', apoliceDetalhe.data_vencimento);
-            setValue('premio_pago', apoliceDetalhe.premio_pago);
-            setValue('forma_pagamento', apoliceDetalhe.forma_pagamento);
-            setValue('periodicidade_pagamento', apoliceDetalhe.periodicidade_pagamento);
-            setValue('observacoes', apoliceDetalhe.observacoes);
-            // Preencher campos específicos
+            setValue('numero_apolice', apoliceDetalhe.numero_apolice || '');
+            setValue('seguradora', apoliceDetalhe.seguradora || '');
+            setValue('data_inicio', apoliceDetalhe.data_inicio || '');
+            setValue('data_vencimento', apoliceDetalhe.data_vencimento || '');
+            setValue('premio_pago', apoliceDetalhe.premio_pago?.toString() || ''); // 🔥 Convertendo para string
+            setValue('forma_pagamento', apoliceDetalhe.forma_pagamento || '');
+            setValue('periodicidade_pagamento', apoliceDetalhe.periodicidade_pagamento || '');
+            setValue('observacoes', apoliceDetalhe.observacoes || '');
+
             if (produto === 'plano_saude') {
-                setValue('categoria', apoliceDetalhe.categoria);
-                setValue('acomodacao', apoliceDetalhe.acomodacao);
-                // Continue preenchendo os outros campos conforme necessário
+                setValue('categoria', apoliceDetalhe.categoria || '');
+                setValue('acomodacao', apoliceDetalhe.acomodacao || '');
+                setValue('valor_reembolso_consulta', apoliceDetalhe.valor_reembolso_consulta?.toString() || ''); // 🔥 Convertendo para string
             }
         }
     }, [apoliceDetalhe, setValue]);
+
+
 
     // Função para atualizar os valores dos campos dropdown
     const handleDropdownSelect = (name: string, value: string) => {
@@ -113,23 +116,23 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ apoliceId, produto, onSubmit 
                         register={register}
                         handleDropdownSelect={handleDropdownSelect}
                         initialValues={{
+                            observacoes: apoliceDetalhe?.observacoes || '',
+                            valorInvestido: apoliceDetalhe?.valor_investido?.toString() || '',
+                            valorCarta: apoliceDetalhe?.valor_carta?.toString() || '',
+                            fundo: apoliceDetalhe?.fundo || '',
+                            nomeFundo: apoliceDetalhe?.nome_fundo || '',
+                            valorAcumulado: apoliceDetalhe?.valor_acumulado?.toString() || '',
+                            capitalSegurado: apoliceDetalhe?.capitalSegurado?.toString() || '',
+                            beneficiario: apoliceDetalhe?.beneficiario || '',
+                            subcategoria: apoliceDetalhe?.subcategoria || '',
                             produto: apoliceDetalhe?.produto || '',
                             acomodacao: apoliceDetalhe?.acomodacao || '',
-                            categoria: apoliceDetalhe?.categoria || '',
-                            contratacao: apoliceDetalhe?.regime_contratacao || '',
-                            tributacao: apoliceDetalhe?.regime_tributacao || '',
                             abrangencia: apoliceDetalhe?.abrangencia || '',
-                            nomeFundo: apoliceDetalhe?.nome_fundo || '',
-                            valorInvestido: apoliceDetalhe?.valor_investido || '',
-                            valorCarta: apoliceDetalhe?.valor_carta || '',
-                            valorReembolso: apoliceDetalhe?.valor_reembolso_consulta || '',
-                            valorAcumulado: apoliceDetalhe?.valor_acumulado || '',
-                            subcategoria: apoliceDetalhe?.subcategoria || '',
-                            observacoes: apoliceDetalhe?.observacoes || '',
-                            fundo: apoliceDetalhe?.fundo || '',
-                            franquia: apoliceDetalhe?.franquia || '',
-                            capitalSegurado: apoliceDetalhe?.capitalSegurado || '',
-                            beneficiario: apoliceDetalhe?.beneficiario || '',
+                            tributacao: apoliceDetalhe?.regime_tributacao || '',
+                            contratacao: apoliceDetalhe?.regime_contratacao || '',
+                            categoria: apoliceDetalhe?.categoria || '',
+                            valorReembolso: apoliceDetalhe?.valor_reembolso_consulta?.toString() || '',
+                            franquia: apoliceDetalhe?.franquia?.toString() || '',
                         }}
                     />
                 </div>
@@ -142,7 +145,7 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ apoliceId, produto, onSubmit 
                         setValue={setValue}
                         watch={watch}
                         initialValues={{
-                            premio_pago: apoliceDetalhe?.premio_pago || '',
+                            premio_pago: apoliceDetalhe?.premio_pago?.toString() || '',  // 🔥 Convertendo para string
                             periodicidade_pagamento: apoliceDetalhe?.periodicidade_pagamento || '',
                             forma_pagamento: apoliceDetalhe?.forma_pagamento || ''
                         }}
@@ -173,12 +176,7 @@ const ApoliceForm: React.FC<ApoliceFormProps> = ({ apoliceId, produto, onSubmit 
             </form>
 
             {/* Modal para capturar os campos faltantes */}
-            <EditClientModal
-                isOpen={isModalOpen}
-                onRequestClose={() => setIsModalOpen(false)}
-                initialData={{}} // Aqui você pode passar os dados iniciais se necessário
-                onSave={(updatedData: any) => { /* Implementação do save */ }}
-            />
+
         </div>
     );
 };

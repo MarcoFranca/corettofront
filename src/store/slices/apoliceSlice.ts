@@ -65,17 +65,22 @@ export const createApolice = createAsyncThunk<Apolice, { formData: FormData }>(
 );
 
 // 📌 Atualizar uma apólice
-export const updateApolice = createAsyncThunk<Apolice, { apoliceId: string; formData: FormData }>(
+export const updateApolice = createAsyncThunk<
+    Apolice,
+    { apoliceId: string; formData: FormData; clientId?: string; endpoint?: string; produto?: string }
+>(
     'apolices/updateApolice',
-    async ({ apoliceId, formData }, { rejectWithValue }) => {
+    async ({ apoliceId, formData, clientId, endpoint, produto }, { rejectWithValue }) => {
         try {
-            const response = await api.patch(`/apolices/${apoliceId}/`, formData);
+            const url = endpoint ? endpoint : `/apolices/${produto}/${apoliceId}/`;
+            const response = await api.patch(url, formData);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Erro ao atualizar apólice.');
         }
     }
 );
+
 
 // 📌 Deletar uma apólice
 export const deleteApolice = createAsyncThunk<string, { apoliceId: string }>(

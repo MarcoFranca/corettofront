@@ -368,6 +368,7 @@ export interface Apolice {
     administradora: string;
     id: string;
     capital_segurado: string;
+
     beneficiario: string;
     subcategoria: string;
     status_proposta: string;
@@ -376,22 +377,22 @@ export interface Apolice {
     seguradora: string;
     data_inicio: string;
     data_vencimento: string;
-    premio_pago?: number;
+    premio_pago?: string | number;
     nome_fundo: string;
     valor_investido: string;
-    valor_carta: string;
-    valor_acumulado: string;
+    valor_carta?: string | number;
+    valor_acumulado?: string | number;
     tipo_produto:string;
     fundo: string;
     franquia: string;
-    capitalSegurado: string;
+    capitalSegurado?: string | number;
     periodicidade_pagamento: string;
     observacoes: string;
     arquivo: string;
     categoria: string;
     acomodacao: string;
     abrangencia: string;
-    valor_reembolso_consulta: string;
+    valor_reembolso_consulta?: string | number;
     forma_pagamento?: string;  // ✅ Opcional
     valor?: number;            // ✅ Opcional
     status?: string;           // ✅ Opcional
