@@ -41,7 +41,7 @@ const StepDetalhesApolice: React.FC<StepDetalhesApoliceProps> =
             case "Plano de Saúde":
                 return <PlanoSaude watch={whatch} register={register} setValue={setValue} control={control} />;
             case "Seguro de Vida":
-                return <SeguroVida control={control} />;
+                return <SeguroVida control={control} setValue={setValue} watch={whatch} register={register} />;
             case "Consórcio":
                 return <Consorcio control={control} setValue={setValue} register={register}/>;
             case "Previdência":

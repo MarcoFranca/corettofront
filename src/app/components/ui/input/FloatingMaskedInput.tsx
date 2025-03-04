@@ -88,7 +88,16 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
 
                 // **🔥 ATUALIZA APENAS O ELEMENTO SEM ALTERAR O RHF**
                 e.target.value = formatCurrency(numericValue);
-            } else {
+            }
+            else if (type === "number") {
+                // ✅ Garante que valores numéricos sejam enviados corretamente ao backend
+                const numericValue = Number(value);
+                console.log("📌 Convertendo para número:", numericValue);
+                setValue(name, numericValue, {shouldValidate: true});
+                if (fieldOnChange) fieldOnChange(numericValue);
+
+            }
+            else {
                 setValue(name, value, { shouldValidate: true });
                 if (fieldOnChange) fieldOnChange(value);
             }

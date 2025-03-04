@@ -1,7 +1,6 @@
 // utils/formatApoliceData.ts
 
 import { ApoliceFormData } from "@/types/ApolicesInterface";
-import currency from "currency.js";
 
 // 🏦 Funções auxiliares para formatação de valores
 const formatUUID = (value: any) => (value && typeof value === "object" ? value.value : value || null);
@@ -9,7 +8,7 @@ const formatNumber = (value: any) => (isNaN(Number(value)) ? null : Number(value
 const formatString = (value: any) => (typeof value === "string" ? value.trim() : null);
 const formatDate = (date: string | null | undefined) =>
     date ? new Date(date).toISOString().split("T")[0] : null;
-const cleanMoneyValue = (value: string | number) =>
+export const cleanMoneyValue = (value: string | number) =>
     typeof value === "string" ? Number(value.replace(/[^\d,]/g, "").replace(",", ".")) : value || null;
 
 // ✅ 🚀 Estrutura Base (comum para todas as apólices)
@@ -27,6 +26,7 @@ export const formattedDataBase = (data: ApoliceFormData) => ({
     forma_pagamento: formatString(data.detalhes.forma_pagamento) || "boleto",
     observacoes: formatString(data.observacoes),
     beneficiarios: data.detalhes.beneficiarios ? data.detalhes.beneficiarios : [],
+    coberturas: data.detalhes.coberturas ? data.detalhes.coberturas : [],
 });
 
 // ✅ 🚀 Estruturas Específicas para Cada Tipo de Apólice
@@ -67,7 +67,28 @@ export const formattedDataByType = {
         permitir_embutido_fixo: data.permitir_embutido_fixo ?? false,
         permitir_embutido_livre: data.permitir_embutido_livre ?? false,
     }),
-    "seguro_vida": (data: ApoliceFormData) => ({
-        coberturas: Array.isArray(data.coberturas) ? data.coberturas : [],
+    "Seguro de Vida": (data: ApoliceFormData) => ({
+        premio_pago: cleanMoneyValue(data.detalhes.premio_pago),
+        subcategoria: formatString(data.detalhes.subcategoria),
+        periodicidade_pagamento: formatString(data.detalhes.periodicidade_premio) || "mensal",
+        beneficiarios: JSON.stringify(
+            (Array.isArray(data.detalhes.beneficiarios) ? data.detalhes.beneficiarios : []).map(
+                (beneficiario, index) => ({
+                    nome: beneficiario?.nome || "",
+                    data_nascimento: beneficiario?.data_nascimento || "",
+                    percentual: formatNumber(data.detalhes.beneficiarios?.[index]?.percentual) || 0,  // ✅ Agora buscamos no índice correto
+                })
+            )
+        ),
+        coberturas: JSON.stringify(
+            (Array.isArray(data.detalhes.coberturas) ? data.detalhes.coberturas : []).map(
+                (cobertura, index) => ({
+                    nome_id: cobertura?.nome_id || "",  // ✅ Garante que `nome_id` seja string válida
+                    subclasse: cobertura?.subclasse || "",
+                    capital_segurado: cleanMoneyValue(data.detalhes.coberturas?.[index]?.capital_segurado) || 0,  // ✅ Garante que `capital_segurado` seja numérico
+                })
+            )
+        ),
+        classe_ajuste: formatString(data.detalhes.classe_ajuste),
     }),
 };

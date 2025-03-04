@@ -1,8 +1,7 @@
 import styled from "styled-components";
 import { Button } from "antd";
-import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 
-export const CoberturaGrid = styled.div`
+export const VidaGrid = styled.div`
     display: grid;
     align-items: center;
     justify-content: center;
@@ -11,14 +10,14 @@ export const CoberturaGrid = styled.div`
     padding: 1rem;
 `;
 
-export const CoberturaSection = styled.div`
+export const OptionalSection = styled.div`
     padding: 1rem;
     border-radius: 6px;
     border: 1px dashed ${({ theme }) => theme.colors.border};
     background-color: ${({ theme }) => theme.colors.background};
 `;
 
-// ✅ Botão Moderno para Adicionar Cobertura
+// ✅ Botão Moderno para Adicionar Beneficiário
 export const AddButton = styled(Button)`
     display: flex;
     align-items: center;
@@ -28,7 +27,7 @@ export const AddButton = styled(Button)`
     margin-top: 1rem;
 `;
 
-// ✅ Ícone de Lixeira para Remover Cobertura
+// ✅ Ícone de Lixeira para Remover Beneficiário
 export const RemoveButton = styled(Button)`
     display: flex;
     align-items: center;
@@ -38,7 +37,3 @@ export const RemoveButton = styled(Button)`
     border-radius: 50%;
     margin-left: 1rem;
 `;
-
-export const Input = styled(FloatingMaskedInput)`
-    margin-top: 15px;
-`

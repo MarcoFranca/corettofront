@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 import { useForm, UseFormSetValue, Path, PathValue } from "react-hook-form";
-import { message, Steps } from "antd";
+import { message } from "antd";
 import StepDadosPrincipais from "./(steps)/StepDadosPrincipais";
 import StepDetalhesApolice from "./(steps)/StepDetalhesApolice";
 import StepCoberturas from "./(steps)/StepCoberturas";
@@ -17,8 +17,9 @@ import {
     CustomSteps,
 } from "./ApoliceWizard.styles";
 import api from "@/app/api/axios";
-import {ApoliceFormData, ApoliceWizardProps, moneyFields, tipoApoliceParaEndpoint} from "@/types/ApolicesInterface";
-import {formattedDataBase, formattedDataByType} from "@/utils/apoliceData";
+import {ApoliceFormData, ApoliceWizardProps, tipoApoliceParaEndpoint} from "@/types/ApolicesInterface";
+import {cleanMoneyValue, formattedDataBase, formattedDataByType} from "@/utils/apoliceData";
+
 
 const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
     const [step, setStep] = useState(0);
@@ -70,6 +71,25 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
 
             console.log("📡 Enviando apólice...", formattedData);
 
+            // ✅ Adicionamos os beneficiários e coberturas para Seguro de Vida
+            if (data.tipoApolice === "Seguro de Vida") {
+                formattedData.beneficiarios = Array.isArray(data.detalhes.beneficiarios)
+                    ? data.detalhes.beneficiarios.map(beneficiario => ({
+                        nome: beneficiario.nome,
+                        data_nascimento: beneficiario.data_nascimento,
+                        percentual: Number(beneficiario.percentual),  // ✅ Garante que percentual seja número
+                    }))
+                    : [];
+
+                formattedData.coberturas = Array.isArray(data.detalhes.coberturas)
+                    ? data.detalhes.coberturas.map(cobertura => ({
+                        nome_id: cobertura.nome_id,
+                        subclasse: cobertura.subclasse,
+                        capital_segurado: cleanMoneyValue(cobertura.capital_segurado),  // ✅ Garante que capital_segurado seja número
+                    }))
+                    : [];
+            }
+
             // ✅ Adicionamos os beneficiários apenas para Plano de Saúde
             if (
                 data.tipoApolice === "Plano de Saúde" &&
@@ -83,7 +103,11 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             // ✅ Adiciona os dados ao `FormData`
             Object.entries(formattedData).forEach(([key, value]) => {
                 if (value !== null && value !== undefined) {
-                    formData.append(key, typeof value === "object" ? JSON.stringify(value) : String(value));
+                    if (Array.isArray(value)) {
+                        formData.append(key, JSON.stringify(value));  // ✅ Envia como array JSON
+                    } else {
+                        formData.append(key, typeof value === "object" ? JSON.stringify(value) : String(value));
+                    }
                 }
             });
 
@@ -144,7 +168,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
 
     if (tipoApolice === "Seguro de Vida") {
         steps.push(
-            { title: "Coberturas", content: <StepCoberturas control={control} /> },
+            { title: "Coberturas", content: <StepCoberturas watch={watch} control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },
             { title: "Importação", content: <UploadApolice setValue={setValue} /> }
         );
     } else {

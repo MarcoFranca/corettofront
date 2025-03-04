@@ -1,5 +1,4 @@
 
-// ✅ Interface dos dados da apólice
 export interface ApoliceFormData {
     coberturas: { descricao: string; valor: number }[];
     detalhes: Record<string, any>;
