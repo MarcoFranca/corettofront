@@ -3,10 +3,10 @@
 import React from "react";
 import { useFieldArray } from "react-hook-form";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import {
     CoberturaGrid, CoberturaSection, RemoveButton, AddButton, Input
 } from "./StepCoberturas.styles";
+import SelectCobertura from "@/app/components/ui/select/SelectCoberturas/SelectCoberturas";
 
 interface StepCoberturasProps {
     control: any;
@@ -34,18 +34,10 @@ const StepCoberturas: React.FC<StepCoberturasProps> = ({ control, setValue, regi
                 <div key={item.id}>
                     <CoberturaGrid>
                         {/* Nome da Cobertura (Selecionável) */}
-                        <SelectCustom
+                        <SelectCobertura
                             control={control}
-                            name={`detalhes.coberturas.${index}.nome_id`}  // ✅ Agora estamos garantindo que `nome_id` será corretamente identificado
+                            name={`detalhes.coberturas.${index}.nome_id`}
                             label="🏷️ Nome da Cobertura"
-                            options={[
-                                { value: "0d6a372c-eacd-4302-abf5-15a16da733d3", label: "DIT - Diária por Incapacidade Temporária" },
-                                { value: "e22cdd4a-733e-4b0c-85e2-fa0581a8019b", label: "Doenças Graves" },
-                                { value: "199685cc-73e9-4889-bb96-2061be27011e", label: "Morte Acidental" },
-                                { value: "bdb15f6f-932f-4b1e-a39c-6778b93f7481", label: "Cirurgia" },
-                                { value: "9c00d6b6-c847-43f6-93c9-481b7d419354", label: "Perda de Autonomia Pessoal" },
-                                { value: "1a2e0d83-3277-4981-a795-1a18427b5a2d", label: "Assistência Funeral" }
-                            ]}
                             required
                         />
 
