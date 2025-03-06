@@ -6,9 +6,12 @@ import {
 } from "./ApoliceTable.styles";
 import api from "@/app/api/axios";
 import {formatMoney} from "@/utils/maskUtils"; // 🔥 Importando API para buscar administradoras
+import { message, Modal } from "antd"; // 🔥 Importamos `message` e `Modal` do Ant Design
+
 
 interface ApoliceTableProps {
     apolices: Apolice[];
+    setApolices: (apolices: Apolice[]) => void; // ✅ Agora passamos `setApolices` para atualizar a lista
 }
 
 // Função para definir a cor do status
@@ -34,7 +37,7 @@ const getStatusColor = (status: string) => {
     }
 };
 
-const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices }) => {
+const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices }) => {
     const [administradoras, setAdministradoras] = useState<Record<string, string>>({});
 
     useEffect(() => {
@@ -53,6 +56,27 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices }) => {
 
         fetchAdministradoras();
     }, []);
+
+    // 🗑️ Função para deletar apólice
+    const handleDelete = async (apoliceId: string) => {
+        Modal.confirm({
+            title: "Tem certeza que deseja excluir esta apólice?",
+            content: "Esta ação não pode ser desfeita!",
+            okText: "Sim, excluir",
+            okType: "danger",
+            cancelText: "Cancelar",
+            async onOk() {
+                try {
+                    await api.delete(`/apolices/${apoliceId}/`); // 🔥 Ajuste o endpoint conforme necessário
+                    setApolices(apolices.filter(apolice => apolice.id !== apoliceId)); // ✅ Remove a apólice da lista
+                    message.success("Apólice excluída com sucesso!");
+                } catch (error) {
+                    console.error("Erro ao excluir apólice:", error);
+                    message.error("Erro ao excluir apólice. Tente novamente.");
+                }
+            }
+        });
+    };
 
     return (
         <TableContainer>
@@ -102,7 +126,7 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices }) => {
                                 </DetailsButton>
 
                                 {/* 🗑 Botão de deletar */}
-                                <DeleteButton>
+                                <DeleteButton onClick={() => handleDelete(apolice.id)}>
                                     <FaTrash />
                                 </DeleteButton>
                             </TableActions>

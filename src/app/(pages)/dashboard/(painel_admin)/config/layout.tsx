@@ -4,7 +4,7 @@ import React from "react";
 
 
 export const metadata: Metadata = {
-  title: 'Coretto-config',
+  title: 'Corretor Lab - config',
   description: "CRM inteligente feito para corretores",
 };
 

@@ -2,24 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import {fetchClientes, deleteCliente, fetchClientesSearch} from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
+import { useRouter } from "next/navigation"; // 🔥 Importamos o hook de navegação
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css'; // Importa o CSS padrão do Tippy.js
+
 import {
-    MdOutlineDelete,
     MdPersonOutline,
     MdMailOutline,
     MdCloudDownload,
     MdCloudUpload,
-    MdOutlineSimCardDownload
+    MdOutlineSimCardDownload, MdTouchApp
 } from 'react-icons/md';
-import { FaWhatsapp } from 'react-icons/fa';
+import {FaTrash, FaWhatsapp} from 'react-icons/fa';
 
 import Link from 'next/link';
 import Pagination from '@/app/components/Pagination';
 import { Badge, STATUS_DETAILS } from '@/app/components/ui/Badge';
 import {
-    Container,
-    Filters,
-    Table,
-    Actions, Linked, FileInput, ButtonContain
+    Filters, Table, DeleteButton, Linked, FileInput, ButtonContain,
+    TableContainer, TableRow, TableHeader, TableActions,
+    TableData, DetailsButton, ViewButton, SpanApolice, TippyContainer
 } from './ClientTable.styles';
 import api from "@/app/api/axios";
 import {toast} from "react-toastify";
@@ -32,6 +34,7 @@ import {STATUS_CHOICES} from "@/utils/statusOptions";
 
 
 const ClientesTable: React.FC = () => {
+    const router = useRouter(); // ✅ Hook de navegação do Next.js
     const dispatch = useAppDispatch();
     const clientes = useAppSelector((state: RootState) => state.clientes.clientes);
     const totalClientes = useAppSelector((state: RootState) => state.clientes.totalClientes);
@@ -134,24 +137,23 @@ const ClientesTable: React.FC = () => {
 
 
     return (
-        <Container>
-            <h2>💼 Carteira de Clientes</h2>
+        <>
             <Filters>
                 <Button onClick={handleExport} disabled={isProcessing}>
                     <ButtonContain>
-                    <MdCloudDownload size={20}/> <p>Exportar Clientes</p>
+                        <MdCloudDownload size={20}/> <p>Exportar Clientes</p>
                     </ButtonContain>
                 </Button>
                 <FileInput>
                     <input type="file" onChange={handleImport} disabled={isProcessing}/>
                     <ButtonContain>
-                    <MdCloudUpload size={20}/> Importar Clientes
+                        <MdCloudUpload size={20}/> Importar Clientes
                     </ButtonContain>
                 </FileInput>
                 <Button onClick={handleDownloadTemplate} disabled={isProcessing}>
-                   <ButtonContain>
-                    <MdOutlineSimCardDownload size={20}/> Baixar Modelo
-                   </ButtonContain>
+                    <ButtonContain>
+                        <MdOutlineSimCardDownload size={20}/> Baixar Modelo
+                    </ButtonContain>
                 </Button>
                 <select value={filter || ''} onChange={(e) => setFilter(e.target.value || undefined)}>
                     <option value="">Todos</option>
@@ -162,94 +164,105 @@ const ClientesTable: React.FC = () => {
                 <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                        placeholder="🔍 Buscar nome..."/>
             </Filters>
+            <TableContainer>
 
-            {status === 'loading' && <p>Carregando...</p>}
-            {error && <p className="text-red-500">{error}</p>}
-            <Table>
-                <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Sobre Nome</th>
-                    <th>Email</th>
-                    <th>Telefone</th>
-                    <th>Status</th>
-                    <th>Apolices</th>
-                    <th>actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {clientes.length > 0 ? (
-                    clientes.map((cliente) => (
-                        <tr key={cliente.id}>
-                            <td>{cliente.nome}</td>
-                            <td>{cliente.sobre_nome}</td>
-                            <td>
-                                <Linked href={`mailto:${cliente.email}`} passHref>
-                                    <MdMailOutline/> {cliente.email}
-                                </Linked>
-                            </td>
-                            <td>
-                                <Linked href={`https://wa.me/+55${cliente.telefone}?text=${cliente.nome}`} passHref
-                                        target={'_blank'}>
-                                    <FaWhatsapp/> <InputMask
-                                    mask={getPhoneMask(cliente.telefone)}
-                                    value={cliente.telefone}
-                                    readOnly
-                                    className={styles.phoneInput} // Estilo personalizado
-                                />
-                                </Linked>
-                                {/* 🔹 Verifica se há contatos adicionais antes de mapear */}
-                                {cliente.relacionamentos?.contatos_adicionais?.length ? (
-                                    cliente.relacionamentos.contatos_adicionais.map((contato, index) => (
-                                        <Linked key={index} href={`https://wa.me/+55${contato.valor}?text=${cliente.nome}`} passHref target={'_blank'}>
-                                            <FaWhatsapp />
-                                            <InputMask
-                                                mask={getPhoneMask(contato.valor)}
-                                                value={contato.valor}
-                                                readOnly
-                                                className={styles.phoneInput} // Estilo personalizado
-                                            />
-                                        </Linked>
-                                    ))
-                                ) : (
-                                    <p></p> // 🔹 Mensagem caso não haja contatos
-                                )}
-
-                            </td>
-                            <td>
-                                <Badge $variant="outline" $status={cliente.status}>
-                                    {STATUS_DETAILS[cliente.status]?.label || cliente.status}
-                                </Badge>
-                            </td>
-                            <td>
-                                {cliente.apolices.planos_saude_apolices?.length > 0 && (
-                                    <span>📜 {cliente.apolices.planos_saude_apolices.length} Planos de Saúde</span>
-                                )}
-                                {cliente.apolices.seguros_vida_apolices?.length > 0 && (
-                                    <span>🛡 {cliente.apolices.seguros_vida_apolices.length} Seguros de Vida</span>
-                                )}
-                            </td>
-                            <td>
-                                <Actions>
-                                    <Link href={`/dashboard/cliente/${cliente.id}`} passHref>
-                                        <MdPersonOutline size={20}/>
-                                    </Link>
-                                    <MdOutlineDelete
-                                        size={20}
-                                        onClick={() => handleDelete(cliente.id)}
-                                        className="cursor-pointer text-red-600 hover:text-red-800"
+                <Table>
+                    {status === 'loading' && <p>Carregando...</p>}
+                    {error && <p className="text-red-500">{error}</p>}
+                    <thead>
+                    <TableRow>
+                        <TableHeader>Nome</TableHeader>
+                        <TableHeader>Email</TableHeader>
+                        <TableHeader>Telefone</TableHeader>
+                        <TableHeader>Status</TableHeader>
+                        <TableHeader>Apolices</TableHeader>
+                        <TableHeader>actions</TableHeader>
+                    </TableRow>
+                    </thead>
+                    <tbody>
+                    {clientes.length > 0 ? (
+                        clientes.map((cliente) => (
+                            <TableRow key={cliente.id}>
+                                <TableData>{cliente.nome} {cliente.sobre_nome}</TableData>
+                                <TableData>
+                                    <Linked href={`mailto:${cliente.email}`} passHref>
+                                        <MdMailOutline/> {cliente.email}
+                                    </Linked>
+                                </TableData>
+                                <TableData>
+                                    <Linked href={`https://wa.me/+55${cliente.telefone}?text=${cliente.nome}`} passHref
+                                            target={'_blank'}>
+                                        <FaWhatsapp/> <InputMask
+                                        mask={getPhoneMask(cliente.telefone)}
+                                        value={cliente.telefone}
+                                        readOnly
+                                        className={styles.phoneInput} // Estilo personalizado
                                     />
-                                </Actions>
-                            </td>
+                                    </Linked>
+                                    {/* 🔹 Verifica se há contatos adicionais antes de mapear */}
+                                    {cliente.relacionamentos?.contatos_adicionais?.length ? (
+                                        cliente.relacionamentos.contatos_adicionais.map((contato, index) => (
+                                            <Linked key={index} href={`https://wa.me/+55${contato.valor}?text=${cliente.nome}`} passHref target={'_blank'}>
+                                                <FaWhatsapp />
+                                                <InputMask
+                                                    mask={getPhoneMask(contato.valor)}
+                                                    value={contato.valor}
+                                                    readOnly
+                                                    className={styles.phoneInput} // Estilo personalizado
+                                                />
+                                            </Linked>
+                                        ))
+                                    ) : (
+                                        <p></p> // 🔹 Mensagem caso não haja contatos
+                                    )}
+
+                                </TableData>
+                                <TableData>
+                                    <Badge $variant="outline" $status={cliente.status}>
+                                        {STATUS_DETAILS[cliente.status]?.label || cliente.status}
+                                    </Badge>
+                                </TableData>
+                                <TableData>
+                                    {cliente.total_apolices? <SpanApolice>📜 {cliente.total_apolices} Apólices</SpanApolice> : (
+                                        <SpanApolice>Não tem apólices ativas</SpanApolice>
+                                    )}
+                                </TableData>
+                                <TableActions>
+                                    <Tippy
+                                        content={
+                                                <TippyContainer className={styles.tippyClick}>
+                                                    <MdTouchApp size={18}/>
+                                                    <p>Perfil do cliente</p>
+                                                </TippyContainer>
+
+                                        }
+                                        placement="bottom"
+                                        theme="custom"
+                                        animation="shift-away"
+                                        delay={[1000, 200]} // Atraso para exibir e esconder [show, hide]
+
+                                    >
+                                    <ViewButton
+                                        onClick={() => router.push(`/dashboard/cliente/${cliente.id}`)}
+                                    >
+                                        <MdPersonOutline />
+                                    </ViewButton>
+                                    </Tippy>
+
+                                    <DeleteButton onClick={() => handleDelete(cliente.id)}>
+                                        <FaTrash />
+                                    </DeleteButton>
+                                </TableActions>
+                            </TableRow>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={4}>Nenhum cliente encontrado.</td>
                         </tr>
-                    ))
-                ) : (
-                    <tr>
-                        <td colSpan={4}>Nenhum cliente encontrado.</td>
-                    </tr>
-                )}
-                </tbody>
-            </Table>
+                    )}
+                    </tbody>
+                </Table>
+            </TableContainer>
             <Pagination
                 currentPage={currentPage}
                 totalPages={Math.ceil(totalClientes / itemsPerPage)}
@@ -257,7 +270,7 @@ const ClientesTable: React.FC = () => {
                 itemsPerPage={itemsPerPage}
                 setItemsPerPage={setItemsPerPage}
             />
-        </Container>
+        </>
     );
 };
 

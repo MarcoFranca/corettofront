@@ -61,7 +61,7 @@ const LeadBoard: React.FC = () => {
         return (<Spinner text={'Carregando leads...'}/>)
     }
 
-    if (!leadsFromStore || !Array.isArray(leadsFromStore) || leadsFromStore.length === 0) {
+    if (!leadsFromStore || !Array.isArray(leadsFromStore)) {
         return <p>Carregando leads...</p>;
     }
 

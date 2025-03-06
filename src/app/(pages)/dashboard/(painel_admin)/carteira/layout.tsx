@@ -4,7 +4,7 @@ import React from "react";
 
 
 export const metadata: Metadata = {
-  title: 'Coretto-carteira',
+  title: 'Corretor Lab - carteira',
   description: "CRM inteligente feito para corretores",
 };
 

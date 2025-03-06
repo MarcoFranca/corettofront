@@ -2,13 +2,17 @@
 
 
 import ClientesTable from "@/app/components/ListaClientes/ClientesTable";
+import React from "react";
+import {Container} from "./CarteiraPage.styles";
 
-const LeadPage = () => {
+const CarteiraPage = () => {
 
     return (
-
-                <ClientesTable/>
+        <Container>
+            <h2>💼 Carteira de Clientes</h2>
+            <ClientesTable/>
+        </Container>
     );
 };
 
-export default LeadPage;
+export default CarteiraPage;

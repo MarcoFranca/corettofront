@@ -1,13 +1,6 @@
-.dashboardLayout {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-    width: 100vw;
-    align-items: center;
-}
+import styled from "styled-components";
 
-.container{
+export const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,5 +12,9 @@
     overflow: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
+`
+export const ConfigContaint = styled.div`
+    display: flex;
+    gap: 8px;
+`
 
-}

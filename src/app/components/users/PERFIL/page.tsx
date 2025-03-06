@@ -18,6 +18,7 @@ import {
     SubuserTableContainer, TableButton
 } from "./profiles.styled";
 import {useForm} from "react-hook-form";
+import PaymentCard from "@/app/components/config/pagamentos/PaymentCard";
 
 export default function ProfilePage() {
     const dispatch: AppDispatch = useDispatch();
@@ -204,24 +205,9 @@ export default function ProfilePage() {
             <h2>Bem-vindo, {displayName}!</h2>
 
             <CardsContainer>
-                <Card>
-                    <CardTitle>
-                        <h3>Plano Atual</h3>
-                    </CardTitle>
-                    <p><strong>Status:</strong> {profile?.assinatura_status === 'trialing' ? 'Em período de teste' : profile?.assinatura_status === 'active' ? 'Ativo' : 'Inativo'}</p>
-                    <p><strong>Nome do Plano:</strong> {profile?.plano?.nome || 'Nenhum plano escolhido'}</p>
-                    <p><strong>Preço:</strong> R$ {profile?.plano?.preco || 'N/A'}</p>
-                    {!isSubUser && (
-                        <>
-                            <p><strong>Limite de Subusuários:</strong> {profile?.plano?.limite_subusuarios || 'N/A'}</p>
-                            <p><strong>Subusuários Atuais:</strong> {subUsers.length} / {profile?.plano?.limite_subusuarios || '0'}</p>
-                        </>
-                    )}
-                    <Index onClick={handleOpenPortal} disabled={loadingPortal}>
-                        {loadingPortal ? 'Abrindo portal...' : 'Ver Pagamentos e Recibos'}
-                    </Index>
-                    {errorPortal && <p>{errorPortal}</p>}
-                </Card>
+                    <PaymentCard
+                        exibirLimites={true}
+                    />
 
                 <Card>
                     <CardTitle>

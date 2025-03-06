@@ -75,7 +75,7 @@ const ApolicesPage: React.FC = () => {
             <>
                 {loading && <p>🔄 Carregando apólices...</p>}
                 {error && <p style={{ color: 'red' }}>❌ {error}</p>}
-                <ApolicesTable apolices={apolices} />
+                <ApolicesTable apolices={apolices} setApolices={setApolices} />
             </>
 
             {/* 🧩 Modal de Cadastro - Agora Drawer Tela Cheia */}
