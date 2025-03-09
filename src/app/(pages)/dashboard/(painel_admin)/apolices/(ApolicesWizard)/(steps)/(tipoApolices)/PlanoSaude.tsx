@@ -105,9 +105,15 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, wa
                         <Input control={control} setValue={setValue} register={register}
                                name={`detalhes.beneficiarios[${index}].nome`} label="👤 Nome do Beneficiário" required />
 
-                        <Input control={control} setValue={setValue} register={register}
-                               name={`detalhes.beneficiarios[${index}].idade`} label="🎂 Idade"
-                               type="number" required />
+                        <Input
+                            name={`detalhes.beneficiarios.${index}.data_nascimento`}
+                            label="🎂 Data de Nascimento"
+                            type="date"
+                            control={control}
+                            setValue={setValue}
+                            register={register}
+                            required={false}
+                        />
 
                         <SelectCustom control={control} name={`detalhes.beneficiarios[${index}].parentesco`} label="🧬 Parentesco"
                                       options={parentescoOptions} required />

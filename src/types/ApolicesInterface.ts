@@ -34,7 +34,7 @@ export interface ApoliceFormData {
     detalhes_lance?: string;
     aporte?: number | null;
     valor_final_carta?: number | null;
-    valor_parcela?: number;
+    valor_carta?: number;
     parcelas_pagas?: number;
     historico_pagamentos?: Record<string, any>;
     historico_reajustes?: Record<string, any>;

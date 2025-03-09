@@ -8,6 +8,8 @@ import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import {
     VidaGrid, OptionalSection, RemoveButton, AddButton
 } from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/SeguroVida.styles";
+import {FaPlus} from "react-icons/fa";
+import {Button} from "antd";
 
 interface SeguroVidaProps {
     control: any;
@@ -73,7 +75,7 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
                                 setValue={setValue}
                                 register={register}
                                 name={`detalhes.beneficiarios.${index}.nome`}
-                                label="👤 Nome"
+                                label="👤 Nome do Beneficiário"
                                 required
                             />
 
@@ -109,16 +111,12 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
                         </VidaGrid>
                     </div>
                 ))}
+            {/* ✅ Botão Moderno para Adicionar Beneficiário */}
+                <Button type="dashed" onClick={() => addBeneficiario({ nome: "", data_nascimento: "", percentual: 0 })} block>
+                    <FaPlus /> Adicionar Beneficiário
+                </Button>
             </OptionalSection>
 
-            {/* ✅ Botão Moderno para Adicionar Beneficiário */}
-            <AddButton
-                icon={<PlusOutlined />}
-                type="primary"
-                onClick={() => addBeneficiario({ nome: "", data_nascimento: "", percentual: 0 })}
-            >
-                Adicionar Beneficiário
-            </AddButton>
         </>
     );
 };

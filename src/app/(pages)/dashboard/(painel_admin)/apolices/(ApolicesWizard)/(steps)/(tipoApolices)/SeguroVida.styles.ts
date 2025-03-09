@@ -8,11 +8,13 @@ export const VidaGrid = styled.div`
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
     padding: 1rem;
+    margin-bottom: 8px;
 `;
 
 export const OptionalSection = styled.div`
     padding: 1rem;
     border-radius: 6px;
+    margin-bottom: 8px;
     border: 1px dashed ${({ theme }) => theme.colors.border};
     background-color: ${({ theme }) => theme.colors.background};
 `;

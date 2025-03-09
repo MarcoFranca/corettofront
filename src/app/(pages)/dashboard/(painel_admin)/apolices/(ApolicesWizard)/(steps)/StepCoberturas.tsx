@@ -7,6 +7,8 @@ import {
     CoberturaGrid, CoberturaSection, RemoveButton, AddButton, Input
 } from "./StepCoberturas.styles";
 import SelectCobertura from "@/app/components/ui/select/SelectCoberturas/SelectCoberturas";
+import {FaPlus} from "react-icons/fa";
+import {Button} from "antd";
 
 interface StepCoberturasProps {
     control: any;
@@ -82,13 +84,9 @@ const StepCoberturas: React.FC<StepCoberturasProps> = ({ control, setValue, regi
             ))}
 
             {/* Botão Moderno para Adicionar Cobertura */}
-            <AddButton
-                icon={<PlusOutlined />}
-                type="primary"
-                onClick={() => addCobertura({ nome: "", subclasse: "", capital_segurado: 0 })}
-            >
-                Adicionar Cobertura
-            </AddButton>
+            <Button type="dashed" onClick={() => addCobertura({ nome: "", subclasse: "", capital_segurado: 0 })} block>
+                <FaPlus /> Adicionar Cobertura
+            </Button>
         </CoberturaSection>
     );
 };

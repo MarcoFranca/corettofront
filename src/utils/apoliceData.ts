@@ -58,7 +58,7 @@ export const formattedDataByType = {
         tipo_lance: formatString(data.tipo_lance),
         detalhes_lance: formatString(data.detalhes_lance),
         aporte: formatNumber(data.aporte),
-        valor_parcela: cleanMoneyValue(data.detalhes.valor_parcela || 0),
+        valor_carta: cleanMoneyValue(data.detalhes.valor_carta || 0),
         parcelas_pagas: formatNumber(data.parcelas_pagas),
         historico_pagamentos: data.historico_pagamentos ?? {},
         historico_reajustes: data.historico_reajustes ?? {},

@@ -4,6 +4,7 @@ import React from 'react';
 import GoogleAccountSettings from "@/app/components/config/google/GoogleAccountSettings";
 import PaymentCard from "@/app/components/config/pagamentos/PaymentCard";
 import {ConfigContaint, Container} from "@/app/(pages)/dashboard/(painel_admin)/config/config.styled";
+import CoberturaNomeConfig from "@/app/(pages)/dashboard/(painel_admin)/config/coberturas/CoberturaNomeConfig";
 
 const UserSettings: React.FC = () => {
     return (
@@ -16,8 +17,9 @@ const UserSettings: React.FC = () => {
                 <PaymentCard
                     exibirLimites={true}
                 />
-                {/* Adicione outros componentes de configuração aqui */}
+                {/* 🔥 Gerenciamento de Coberturas */}
             </ConfigContaint>
+                <CoberturaNomeConfig />
         </Container>
     );
 };

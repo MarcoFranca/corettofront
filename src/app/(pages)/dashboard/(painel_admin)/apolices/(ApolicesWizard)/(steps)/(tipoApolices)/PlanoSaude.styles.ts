@@ -34,6 +34,7 @@ export const SectionTitle = styled.h3`
 export const OptionalSection = styled.div`
     padding: 1rem;
     border-radius: 6px;
+    margin-bottom: 8px;
     border: 1px dashed ${({ theme }) => theme.colors.border};
     background-color: ${({ theme }) => theme.colors.background};
 `;

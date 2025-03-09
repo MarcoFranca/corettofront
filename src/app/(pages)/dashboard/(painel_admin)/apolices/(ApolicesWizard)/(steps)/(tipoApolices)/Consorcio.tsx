@@ -115,7 +115,7 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                         setValue={setValue}
                         register={register}
                         name="detalhes.premio_pago"
-                        label="💎 Prêmio Pago (Valor da Carta)"
+                        label="💎 Prêmio Pago"
                         type="money"
                         required
                     />
@@ -131,8 +131,8 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                         control={control}
                         setValue={setValue}
                         register={register}
-                        name="detalhes.valor_parcela"
-                        label="💳 Valor da Parcela Mensal"
+                        name="detalhes.valor_carta"
+                        label="💳 Valor da Carta"
                         type="money"
                         required
                     />
