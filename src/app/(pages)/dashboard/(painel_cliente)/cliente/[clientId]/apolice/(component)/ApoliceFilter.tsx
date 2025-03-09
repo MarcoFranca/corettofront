@@ -1,35 +1,56 @@
+'use client';
 import React from "react";
+import { useRouter } from "next/navigation";
 import {
-    FiltroContainer, FiltroSelect
+    FiltroContainer,
+    TipoPill,
+    FiltroSelect,
 } from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceFilter.styles";
-import {Button} from "antd";
 
 interface ApoliceFiltroProps {
     tipoFiltro: string;
-    setTipoFiltro: (value: string) => void;
+    setTipoFiltro: (tipo: string) => void;
     statusFiltro: string;
-    setStatusFiltro: (value: string) => void;
+    setStatusFiltro: (status: string) => void;
     visaoGeral: boolean;
-    setVisaoGeral: (value: boolean) => void;
+    setVisaoGeral: (visaoGeral: boolean) => void;
     onFiltrar: () => void;
 }
+
+const tiposApolice = [
+    { tipo: '', label: 'Todas' },
+    { tipo: 'plano_saude', label: 'Plano de Saúde' },
+    { tipo: 'seguro_vida', label: 'Seguro de Vida' },
+    { tipo: 'previdencia', label: 'Previdência' },
+    { tipo: 'consorcio', label: 'Consórcio' },
+    { tipo: 'investimento', label: 'Investimento' },
+    { tipo: 'seguro_profissional', label: 'Seguro Profissional' },
+    { tipo: 'seguro_residencial', label: 'Seguro Residencial' },
+];
 
 const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
                                                          tipoFiltro, setTipoFiltro,
                                                          statusFiltro, setStatusFiltro,
                                                          visaoGeral, setVisaoGeral,
-                                                         onFiltrar
                                                      }) => {
+    const router = useRouter();
+
+    const handleNavigate = (tipo: string) => {
+        setTipoFiltro(tipo);
+        router.push(`/dashboard/apolices/${tipo}`);
+    };
+
     return (
-        <FiltroContainer className="filtros">
-            <FiltroSelect value={tipoFiltro} onChange={(e) => setTipoFiltro(e.target.value)}>
-                <option value="">Todos os Tipos</option>
-                <option value="consorcio">Consórcio</option>
-                <option value="seguro_vida">Seguro de Vida</option>
-                <option value="plano_saude">Plano de Saúde</option>
-                <option value="investimento">Investimento</option>
-                <option value="previdencia">Previdência</option>
-            </FiltroSelect>
+        <FiltroContainer>
+            {tiposApolice.map(({ tipo, label }) => (
+                <TipoPill
+                    key={tipo}
+                    active={tipoFiltro === tipo}
+                    onClick={() => handleNavigate(tipo)}
+                >
+                    {label}
+                </TipoPill>
+            ))}
 
             <FiltroSelect value={statusFiltro} onChange={(e) => setStatusFiltro(e.target.value)}>
                 <option value="">Todos os Status</option>
@@ -38,16 +59,14 @@ const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
                 <option value="encerrada">Encerrada</option>
             </FiltroSelect>
 
-            <label>
-                <input
-                    type="checkbox"
-                    checked={visaoGeral}
-                    onChange={() => setVisaoGeral(!visaoGeral)}
-                />
-                Visão Geral (Todas do Usuário)
-            </label>
-
-            <Button onClick={onFiltrar}>Filtrar</Button>
+            <FiltroSelect value={tipoFiltro} onChange={(e) => setTipoFiltro(e.target.value)}>
+                <option value="">Todos os Tipos</option>
+                <option value="consorcio">Consórcio</option>
+                <option value="seguro_vida">Seguro de Vida</option>
+                <option value="plano_saude">Plano de Saúde</option>
+                <option value="investimento">Investimento</option>
+                <option value="previdencia">Previdência</option>
+            </FiltroSelect>
         </FiltroContainer>
     );
 };

@@ -13,6 +13,9 @@ import {ApolicesContainer, HeaderContainer, StyledButton, Title, ContentContaine
 import {Drawer} from "antd";
 import {FaPlus} from "react-icons/fa";
 import {DrawerContainer} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/ApoliceWizard.styles";
+import ApolicesCharts from "@/app/(pages)/dashboard/(painel_admin)/apolices/(kpiApolices)/ApolicesCharts";
+import api from "@/app/api/axios";
+import KpiCardsApolices from "@/app/(pages)/dashboard/(painel_admin)/apolices/(kpiApolices)/KpiCards";
 
 const ApolicesPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -24,6 +27,8 @@ const ApolicesPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     const fetchApolicesList = async () => {
+
+
         setLoading(true);
         setError(null);
         try {
@@ -44,12 +49,69 @@ const ApolicesPage: React.FC = () => {
 
     useEffect(() => {
         fetchApolicesList();
+        fetchStats();
     }, [tipoFiltro, statusFiltro]);
+
+
+    const fetchStats = async () => {
+        try {
+            const response = await api.get("/dashboard/");
+            setStats(response.data);
+        } catch (error) {
+            console.error("Erro ao carregar estatísticas:", error);
+        }
+    };
+
+    const fetchApolicesData = async () => {
+        setLoading(true);
+        try {
+            const result = await dispatch(fetchApolices({ tipo: tipoFiltro, status: statusFiltro })).unwrap();
+            setApolices(result);
+        } catch (error) {
+            console.error("Erro ao buscar apólices:", error);
+            setError("Erro ao buscar apólices.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchApolicesData();
+        fetchStats();
+    }, [tipoFiltro, statusFiltro]);
+
 
     const handleWizardClose = () => {
         setIsWizardOpen(false);
         fetchApolicesList();
-    };
+    }
+
+    const [stats, setStats] = useState({
+        clientes: {
+            total: 0,
+            leads: 0,
+            ativos: 0,
+            nova_negociacao: 0,
+            novos_este_mes: 0,
+            taxa_conversao: 0,
+            indice_retencao: 0,
+        },
+        apolices: {
+            total: 0,
+            valor_total: 0,
+            valor_mensalizado: 0,
+            revisoes_este_mes: 0,
+            por_tipo: {
+                planosaude: 0,
+                segurovida: 0,
+                previdencia: 0,
+                consorcio: 0,
+                investimento: 0,
+                seguroprofissional: 0,
+                seguroresidencial: 0,
+            },
+        },
+    });
 
     return (
         <ApolicesContainer>
@@ -60,6 +122,8 @@ const ApolicesPage: React.FC = () => {
                 </StyledButton>
             </HeaderContainer>
 
+            <ContentContainer>
+                <KpiCardsApolices stats={stats} /> {/* ✅ KPIs */}
             <FilterContainer>
                 <ApoliceFilter
                     setVisaoGeral={() => {}}
@@ -78,6 +142,7 @@ const ApolicesPage: React.FC = () => {
                 <ApolicesTable apolices={apolices} setApolices={setApolices} />
             </>
 
+                {/*<ApolicesCharts stats={stats} /> /!* ✅ Gráficos analíticos *!/*/}
             {/* 🧩 Modal de Cadastro - Agora Drawer Tela Cheia */}
             <DrawerContainer
                 title="Cadastro de Apólice"
@@ -91,6 +156,7 @@ const ApolicesPage: React.FC = () => {
             >
                 <ApoliceWizard onClose={handleWizardClose} />
             </DrawerContainer>
+            </ContentContainer>
         </ApolicesContainer>
     );
 };

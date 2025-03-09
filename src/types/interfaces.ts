@@ -362,6 +362,30 @@ interface ApolicesOverviewProps {
     apolices: Apolices | Apolice[];
 }
 
+interface Beneficiario {
+    id: string;
+    nome: string;
+    data_nascimento: string;
+    parentesco: string;
+}
+
+export interface ApolicePlanoSaude {
+    id: string;
+    numero_apolice: string;
+    administradora:string;
+    categoria: string;
+    acomodacao: string;
+    abrangencia: string;
+    valor_reembolso_consulta?: number;
+    coparticipacao: boolean;
+    tipo_contratante: 'PF' | 'PJ';
+    cpf_cnpj?: string;
+    administradora_nome?: string;
+    premio_pago: number;
+    beneficiarios: Beneficiario[];
+    data_revisao?: string;
+    arquivo:string;
+}
 
 
 // ** Apólice Interfaces **

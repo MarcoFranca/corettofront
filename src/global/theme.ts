@@ -3,6 +3,9 @@ export const lightTheme = {
     colors:{
         primary: "#1E293B",       // Azul escuro
         secondary: "#f5f5f5",      // Cinza claro
+        gray:{
+            Light: "#e9ecef"
+        }, // cinza claro que você pode usar
         background: "#F8FAFC",     // Fundo quase branco
         text: "#1E293B",           // Texto escuro
         title: "#2c3e50",          // Azul profundo
@@ -39,6 +42,9 @@ export const darkTheme = {
         primary: "#0F172A",        // Azul bem escuro
         secondary: "#1E293B",      // Fundo de contraste
         background: "#1E293B",     // Fundo geral
+        gray: {
+            Light: "#e9ecef"
+        }, // cinza claro que você pode usar
         text: "#F8FAFC",           // Texto branco
         title: "#dde1ec",          // Azul claro
         button: "#60A5FA",         // Azul claro (botão)

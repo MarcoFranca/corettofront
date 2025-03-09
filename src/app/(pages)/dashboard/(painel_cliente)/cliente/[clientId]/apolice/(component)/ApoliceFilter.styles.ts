@@ -19,3 +19,23 @@ export const FiltroSelect = styled.select`
         border-color: #94a3b8;
     }
 `;
+
+
+interface TipoPillProps {
+    active: boolean;
+}
+
+export const TipoPill = styled.button<TipoPillProps>`
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background-color: ${({ active, theme }) => active ? theme.colors.primary : theme.colors.gray.light};
+    color: ${({ active }) => (active ? '#fff' : '#555')};
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: ${({ theme, active }) => active ? theme.colors.primaryDark : theme.colors.gray.light};
+    }
+`;
