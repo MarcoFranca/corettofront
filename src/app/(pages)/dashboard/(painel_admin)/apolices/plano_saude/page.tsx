@@ -1,16 +1,18 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import api from "@/app/api/axios";
-import ApolicesTable from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable";
 import KpiCards from "./(kpicards)/KpiCards";
 import PlanoSaudeCharts from "./(kpicards)/PlanoSaudeCharts";
-import {Apolice, ApolicePlanoSaude} from "@/types/interfaces";
+import PlanoSaudeTable from "@/app/components/apolices/tables/PlanoSaudeTable";
 import {
     PlanoSaudeContainer,
-    Title
-} from "@/app/(pages)/dashboard/(painel_admin)/apolices/plano_saude/ApolicesPage.styles";
-import PlanoSaudeTable from "@/app/components/apolices/tables/PlanoSaudeTable";
+    Title, CardsContainer, TableChartTable, TableChart,
+} from "./ApolicesPage.styles";
+import {ApolicePlanoSaude} from "@/types/ApolicesInterface";
+import {useRouter} from "next/navigation";
+import {ActionButtons} from "@/app/(pages)/dashboard/(painel_admin)/apolices/[id]/ApoliceDetalhes.styles";
+import {FaArrowLeft} from "react-icons/fa";
 
 interface Stats {
     total_apolices: number;
@@ -27,7 +29,7 @@ const PlanoSaudePage: React.FC = () => {
         valor_total: 0,
         media_valor: 0,
         revisoes_este_mes: 0,
-        por_administradora: {}
+        por_administradora: {},
     });
 
     const fetchApolices = async () => {
@@ -53,17 +55,29 @@ const PlanoSaudePage: React.FC = () => {
         fetchPlanoSaudeStats();
     }, []);
 
+    const router = useRouter();
+
     return (
         <PlanoSaudeContainer>
-            <Title>🩺 Gestão de Planos de Saúde</Title>
-            <KpiCards stats={stats} />
-            <div>
-                <PlanoSaudeTable apolices={apolices} setApolices={setApolices} />
-            </div>
-            <div>
-                <PlanoSaudeCharts stats={stats} />
+            <CardsContainer>
+                {/* 🔹 Botões de ação */}
+                <ActionButtons>
+                <Title>🩺 Gestão de Planos de Saúde</Title>
+                    <button onClick={() => router.back()} className="back-btn">
+                        <FaArrowLeft /> Voltar
+                    </button>
+                </ActionButtons>
+                <KpiCards stats={stats} />
+            </CardsContainer>
 
-            </div>
+            {/* 📌 Wrapper que organiza a tabela e o gráfico lado a lado */}
+                <TableChartTable >
+                    <Title>📋 Dados das Apólices</Title>
+                    <PlanoSaudeTable apolices={apolices} setApolices={setApolices} />
+                </TableChartTable>
+                <TableChart >
+                    <PlanoSaudeCharts stats={stats} />
+                </TableChart>
         </PlanoSaudeContainer>
     );
 };

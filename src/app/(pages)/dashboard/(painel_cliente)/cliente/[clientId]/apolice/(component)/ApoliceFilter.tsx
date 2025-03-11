@@ -36,7 +36,6 @@ const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
     const router = useRouter();
 
     const handleNavigate = (tipo: string) => {
-        setTipoFiltro(tipo);
         router.push(`/dashboard/apolices/${tipo}`);
     };
 

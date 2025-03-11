@@ -59,6 +59,14 @@ export const TableActions = styled.td`
     padding: 10px;
 `;
 
+export const DetailsCoparticipacao = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-size: 18px; 
+`
+
 export const DetailsButton = styled.button`
     background-color: #007bff;
     color: white;

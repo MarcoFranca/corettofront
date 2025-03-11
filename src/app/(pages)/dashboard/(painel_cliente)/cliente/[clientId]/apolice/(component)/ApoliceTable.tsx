@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ Importação do useRouter para navegação
 import { Apolice } from "@/types/interfaces";
 import { FaInfoCircle, FaTrash, FaFilePdf } from "react-icons/fa";
 import {
@@ -38,6 +39,7 @@ const getStatusColor = (status: string) => {
 };
 
 const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices }) => {
+    const router = useRouter(); // ✅ Hook do Next.js para navegação
     const [administradoras, setAdministradoras] = useState<Record<string, string>>({});
 
     useEffect(() => {
@@ -76,6 +78,11 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices }) =>
                 }
             }
         });
+    };
+
+    // 🔍 Função para redirecionar para os detalhes da apólice
+    const handleDetailsClick = (id: string) => {
+        router.push(`/dashboard/apolices/${id}`);
     };
 
     return (
@@ -121,7 +128,7 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices }) =>
                                 )}
 
                                 {/* 🔍 Botão de detalhes */}
-                                <DetailsButton>
+                                <DetailsButton onClick={() => handleDetailsClick(apolice.id)}>
                                     <FaInfoCircle />
                                 </DetailsButton>
 

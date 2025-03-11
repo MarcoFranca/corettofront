@@ -4,51 +4,65 @@ export const TableContainer = styled.div`
     position: relative;
     width: 100%;
     max-height: 61vh;
-    overflow-y: auto;
+    overflow: auto;
     border-radius: 8px;
-    background: ${({ theme }) => theme.colors.background};
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: ${({ theme }) => theme.colors.background};
+
 `;
 
 export const StyledTable = styled.table`
     width: 100%;
     border-collapse: collapse;
-    border-radius: 8px;
+    text-align: left;
     color: ${({ theme }) => theme.colors.text};
+
+
+    th, td {
+        padding: 8px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    th {
+        background: ${({ theme }) => theme.colors.background};
+        color: ${({ theme }) => theme.colors.text};
+        font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f8f9fc;
+    }
+
+    tbody tr:hover {
+        background-color: #e9f5ff;
+        transition: 0.3s;
+    }
 `;
 
 export const TableHeader = styled.th`
-    position: sticky;
-    top: 0;
     background: ${({ theme }) => theme.colors.tableHeader};
     color: ${({ theme }) => theme.colors.tableHeaderText};
-    text-transform: uppercase;
-    font-weight: bold;
-    padding: 14px;
-    text-align: left;
-    font-size: 0.9rem;
+    font-weight: 600;
 `;
 
 export const TableRow = styled.tr`
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-
-    &:nth-child(even) {
-        background: ${({ theme }) => theme.colors.tableRowEven};
-    }
-
     &:hover {
-        background: ${({ theme }) => theme.colors.tableHover};
-        transition: background-color 0.3s ease-in-out;
+        background: #e9f5ff;
     }
 `;
 
 export const TableData = styled.td`
-    padding: 12px;
-    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-    font-size: 0.9rem;
+    font-size: 14px;
+    color: #212529;
 `;
+
+export const TableDataContent = styled.div`
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+`
+
 
 export const StatusBadge = styled.span<{ color: string }>`
     display: inline-block;

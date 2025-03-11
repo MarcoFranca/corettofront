@@ -66,3 +66,28 @@ export const formatMoney = (value: string | number): string => {
 export const getMoneyMask = (): string => {
     return "999999999,99"; // ✅ Permite até 9 dígitos antes da vírgula
 };
+
+export const formatCPFOrCNPJ = (value: string | null): string => {
+    if (!value) return "N/A";
+
+    // Remove caracteres não numéricos
+    const cleanValue = value.replace(/\D/g, "");
+
+    if (cleanValue.length === 11) {
+        // Formata como CPF (000.000.000-00)
+        return cleanValue.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+    } else if (cleanValue.length === 14) {
+        // Formata como CNPJ (00.000.000/0000-00)
+        return cleanValue.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+    }
+
+    return value; // Retorna como está caso não seja CPF nem CNPJ válido
+};
+
+export const formatCurrency = (value: string | number): string => {
+    return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2
+    }).format(Number(value) || 0);
+};

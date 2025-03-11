@@ -1,33 +1,35 @@
 "use client";
 
 import React from "react";
-import { ApolicePlanoSaude} from "@/types/interfaces";
 import {
     TableContainer,
     StyledTable,
     TableHeader,
     TableRow,
     TableData,
-    StatusBadge
+    StatusBadge, TableDataContent
 } from "@/app/components/apolices/tables/PlanoSaudeTable.styles";
 import {
     DeleteButton,
-    DetailsButton,
+    DetailsButton, DetailsCoparticipacao,
     TableActions,
     ViewButton
 } from "@/app/components/apolices/tables/ApoliceTable.styles";
-import {FaFilePdf, FaInfoCircle, FaTrash} from "react-icons/fa";
-import {message, Modal} from "antd";
+import { FaFilePdf, FaInfoCircle, FaTrash, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { message, Modal } from "antd";
 import api from "@/app/api/axios";
+import { formatCPFOrCNPJ, formatCurrency } from "@/utils/maskUtils";
+import { formatDateBR, formatDateRelative } from "@/utils/format";
+import {ApolicePlanoSaude} from "@/types/ApolicesInterface";
+import {useRouter} from "next/navigation";
 
 interface ApolicesTableProps {
     apolices: ApolicePlanoSaude[];
-    setApolices: (apolices: ApolicePlanoSaude[]) => void; // ✅ Agora passamos `setApolices` para atualizar a lista
-
+    setApolices: (apolices: ApolicePlanoSaude[]) => void;
 }
 
-
 const ApolicesTable: React.FC<ApolicesTableProps> = ({ apolices, setApolices }) => {
+    const router = useRouter(); // ✅ Hook do Next.js para navegação
 
     // 🗑️ Função para deletar apólice
     const handleDelete = async (apoliceId: string) => {
@@ -39,8 +41,8 @@ const ApolicesTable: React.FC<ApolicesTableProps> = ({ apolices, setApolices }) 
             cancelText: "Cancelar",
             async onOk() {
                 try {
-                    await api.delete(`/apolices/${apoliceId}/`); // 🔥 Ajuste o endpoint conforme necessário
-                    setApolices(apolices.filter(apolice => apolice.id !== apoliceId)); // ✅ Remove a apólice da lista
+                    await api.delete(`/apolices/${apoliceId}/`);
+                    setApolices(apolices.filter(apolice => apolice.id !== apoliceId));
                     message.success("Apólice excluída com sucesso!");
                 } catch (error) {
                     console.error("Erro ao excluir apólice:", error);
@@ -50,13 +52,19 @@ const ApolicesTable: React.FC<ApolicesTableProps> = ({ apolices, setApolices }) 
         });
     };
 
+    // 🔍 Função para redirecionar para os detalhes da apólice
+    const handleDetailsClick = (id: string) => {
+        router.push(`/dashboard/apolices/${id}`);
+    };
+
     return (
         <TableContainer>
             <StyledTable>
                 <thead>
                 <tr>
                     <TableHeader>Nº Apólice</TableHeader>
-                    <TableHeader>Cliente (CPF/CNPJ)</TableHeader>
+                    <TableHeader>Nome do Cliente</TableHeader>
+                    <TableHeader>Documento</TableHeader>
                     <TableHeader>Administradora</TableHeader>
                     <TableHeader>Contratação</TableHeader>
                     <TableHeader>Categoria</TableHeader>
@@ -73,22 +81,34 @@ const ApolicesTable: React.FC<ApolicesTableProps> = ({ apolices, setApolices }) 
                 {apolices.map((apolice) => (
                     <TableRow key={apolice.id}>
                         <TableData>{apolice.numero_apolice}</TableData>
-                        <TableData>{apolice.cpf_cnpj || "N/A"}</TableData>
+                        <TableData>{apolice.numero_apolice}</TableData>
+                        <TableData>{formatCPFOrCNPJ(apolice.cpf_cnpj || "N/A")}</TableData>
                         <TableData>{apolice.administradora_nome || "N/A"}</TableData>
                         <TableData>{apolice.tipo_contratante === "PJ" ? "Pessoa Jurídica" : "Pessoa Física"}</TableData>
                         <TableData>{apolice.categoria || "N/A"}</TableData>
                         <TableData>{apolice.acomodacao || "N/A"}</TableData>
                         <TableData>{apolice.abrangencia || "N/A"}</TableData>
-                        <TableData>{apolice.beneficiarios?.length || 0}</TableData>
-                        <TableData>R$ {(Number(apolice.premio_pago) || 0).toFixed(2)}</TableData>
-                        <TableData>{apolice.data_revisao || "N/A"}</TableData>
                         <TableData>
-                            <StatusBadge color={apolice.coparticipacao ? "#4caf50" : "#ff6c61"}>
-                                {apolice.coparticipacao ? "✅ Sim" : "❌ Não"}
-                            </StatusBadge>
+                            <TableDataContent>
+                                {apolice.beneficiarios?.length || 0}
+                            </TableDataContent>
+                        </TableData>
+                        <TableData>{formatCurrency(apolice.premio_pago || 0)}</TableData>
+                        <TableData title={formatDateBR(apolice.data_revisao ?? null)}>
+                            <TableDataContent>
+                                {formatDateRelative(apolice.data_revisao || "N/A")}
+                            </TableDataContent>
+                        </TableData>
+                        <TableData>
+                            <DetailsCoparticipacao>
+                                {apolice.coparticipacao ? (
+                                    <FaCheckCircle style={{ color: "#4caf50"}} />
+                                ) : (
+                                    <FaTimesCircle style={{ color: "#ff6c61"}} />
+                                )}
+                            </DetailsCoparticipacao>
                         </TableData>
                         <TableActions>
-                            {/* 🔍 Botão de visualizar apólice (arquivo PDF) */}
                             {apolice.arquivo ? (
                                 <ViewButton onClick={() => window.open(apolice.arquivo, "_blank")}>
                                     <FaFilePdf />
@@ -100,11 +120,10 @@ const ApolicesTable: React.FC<ApolicesTableProps> = ({ apolices, setApolices }) 
                             )}
 
                             {/* 🔍 Botão de detalhes */}
-                            <DetailsButton>
+                            <DetailsButton onClick={() => handleDetailsClick(apolice.id)}>
                                 <FaInfoCircle />
                             </DetailsButton>
 
-                            {/* 🗑 Botão de deletar */}
                             <DeleteButton onClick={() => handleDelete(apolice.id)}>
                                 <FaTrash />
                             </DeleteButton>
