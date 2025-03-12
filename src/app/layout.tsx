@@ -4,7 +4,7 @@ import "./(styles)/globals.css";
 import ReduxProvider from './ReduxProvider';
 import React from "react";
 import '../styles/antd-styles.css';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import GoogleProvider from "./GoogleProvider"; // <-- Componente client
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProviderWrapper } from "@/contexts/ThemeContext";
@@ -34,7 +34,7 @@ export default function RootLayout({
         <html lang="en">
         <body id={'__next'} className={inter.className}>
         <ReduxProvider>
-            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+            <GoogleProvider>
                 <ThemeProviderWrapper>
                     {children}
                     <ToastContainer
@@ -49,7 +49,7 @@ export default function RootLayout({
                         pauseOnHover
                     />
                 </ThemeProviderWrapper>
-            </GoogleOAuthProvider>
+                </GoogleProvider>
         </ReduxProvider>
         </body>
         </html>
