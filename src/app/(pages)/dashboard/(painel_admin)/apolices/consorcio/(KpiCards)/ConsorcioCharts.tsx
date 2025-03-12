@@ -3,7 +3,7 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import { CardCharts } from "@/app/(pages)/dashboard/(painel_admin)/apolices/consorcio/(kpicards)/KpiCards.styles";
+import {CardCharts} from "@/app/(pages)/dashboard/(painel_admin)/apolices/consorcio/ApolicesPage.styles";
 
 interface ConsorcioChartsProps {
     stats: {
