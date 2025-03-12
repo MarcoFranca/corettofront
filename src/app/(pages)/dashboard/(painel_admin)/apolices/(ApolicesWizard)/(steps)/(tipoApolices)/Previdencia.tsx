@@ -1,9 +1,11 @@
 import React from 'react';
+
+import {Controller} from "react-hook-form";
 import {
     FormGroup,
-    Label, StyledInput
-} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(Old Steps)/StepDetalhesApolice.styles";
-import {Controller} from "react-hook-form";
+    StyledInput
+} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/StepDadosPrincipais.styles";
+import {Label} from "recharts";
 
 interface PrevidenciaProps {
     control: any;

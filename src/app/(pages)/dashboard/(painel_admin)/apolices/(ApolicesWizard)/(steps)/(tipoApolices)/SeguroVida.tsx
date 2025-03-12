@@ -1,12 +1,12 @@
 import React from "react";
 import { useFieldArray } from "react-hook-form";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons"; // ✅ Importando Ícones do Ant Design
+import { DeleteOutlined } from "@ant-design/icons"; // ✅ Importando Ícones do Ant Design
 import {
     Input
 } from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import {
-    VidaGrid, OptionalSection, RemoveButton, AddButton
+    VidaGrid, OptionalSection, RemoveButton
 } from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/SeguroVida.styles";
 import {FaPlus} from "react-icons/fa";
 import {Button} from "antd";
