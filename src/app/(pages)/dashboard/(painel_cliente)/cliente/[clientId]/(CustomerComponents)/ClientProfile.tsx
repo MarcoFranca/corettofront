@@ -12,10 +12,10 @@ import ProfileImageMan from '../../../../../../../../public/assets/common/user.s
 import ProfileImageWoman from '../../../../../../../../public/assets/common/PerfilMulher.svg';
 import Image from "next/image";
 import Card from '@/app/components/common/Card';
-import Modal from 'react-modal';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Importa o CSS padrão do Tippy.js
 import { MdTouchApp } from "react-icons/md";
+import { useForm } from "react-hook-form";
 
 import {
     Chart as ChartJS,
@@ -29,6 +29,7 @@ import {
 import Spinner from "@/app/components/common/spinner/sppiner";
 import { StatusType , STATUS_DETAILS } from '@/app/components/ui/Badge';
 import ClientTabs from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/ClientTabs";
+import StandardModal from "@/app/components/Modal/StandardModal";
 
 ChartJS.register(
     CategoryScale,
@@ -53,6 +54,12 @@ const ClientProfile: React.FC = () => {
     const [selectedStatus, setSelectedStatus] = useState<string>(''); // Inicialize com string vazia
 
     const openStatusModal = () => setIsStatusModalOpen(true);
+    const formMethods = useForm({
+        defaultValues: {
+            status: selectedStatus,
+        },
+    });
+
 
 
     useEffect(() => {
@@ -162,8 +169,18 @@ const ClientProfile: React.FC = () => {
                                 </div>
                             </div>
 
-                            <Modal isOpen={isStatusModalOpen} onRequestClose={() => setIsStatusModalOpen(false)}
-                                   className={styles.statusModal}>
+                            <StandardModal
+                                isOpen={isStatusModalOpen}
+                                onRequestClose={() => setIsStatusModalOpen(false)}
+                                title="Alterar Status"
+                                onSubmit={async (data) => {
+                                    if (clientId) {
+                                        await dispatch(updateClienteStatus({ id: clientId, status: data.status }));
+                                        setIsStatusModalOpen(false);
+                                    }
+                                }}
+                                methods={formMethods}
+                            >
                                 <h2 className={styles.modalTitle}>Alterar Status</h2>
                                 <select
                                     value={selectedStatus}
@@ -196,7 +213,7 @@ const ClientProfile: React.FC = () => {
                                         Cancelar
                                     </button>
                                 </div>
-                            </Modal>
+                            </StandardModal>
 
 
                             <p className={styles.creationDate}>
