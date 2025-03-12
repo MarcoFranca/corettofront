@@ -3,10 +3,6 @@
 import React, { useEffect, useState } from "react";
 import api from "@/app/api/axios";
 
-import {
-    ConsorcioContainer,
-    Title, CardsContainer, TableChartTable, TableChart,
-} from "./ApolicesPage.styles";
 import {ApoliceConsorcio} from "@/types/ApolicesInterface";
 import {useRouter} from "next/navigation";
 import {ActionButtons} from "@/app/(pages)/dashboard/(painel_admin)/apolices/[id]/ApoliceDetalhes.styles";
@@ -14,6 +10,12 @@ import {FaArrowLeft} from "react-icons/fa";
 import KpiCardsConsorcio from "@/app/(pages)/dashboard/(painel_admin)/apolices/consorcio/(KpiCards)/KpiCards";
 import ConsorcioTable from "@/app/(pages)/dashboard/(painel_admin)/apolices/consorcio/(KpiCards)/ConsorcioTable";
 import ConsorcioCharts from "@/app/(pages)/dashboard/(painel_admin)/apolices/consorcio/(KpiCards)/ConsorcioCharts";
+import {
+    ConsorcioContainer, TableChart,
+    TableChartTable
+} from "@/app/(pages)/dashboard/(painel_admin)/apolices/consorcio/ApolicesPage.styles";
+import {CardsContainer} from "@/app/components/users/PERFIL/profiles.styled";
+import {Title} from "chart.js";
 
 interface Stats {
     total_apolices: number;
@@ -23,7 +25,7 @@ interface Stats {
     por_administradora: Record<string, number>;
 }
 
-const ConsorcioPage: React.FC = () => {
+const SeguroResidencialPage: React.FC = () => {
     const [apolices, setApolices] = useState<ApoliceConsorcio[]>([]);
     const [stats, setStats] = useState<Stats>({
         total_apolices: 0,
@@ -64,7 +66,7 @@ const ConsorcioPage: React.FC = () => {
         <ConsorcioContainer>
             <CardsContainer>
                 <ActionButtons>
-                    <Title>🏦 Gestão de Consórcios</Title>
+                    <h3>🏦 Gestão de Consórcios</h3>
                     <button onClick={() => router.back()} className="back-btn">
                         <FaArrowLeft /> Voltar
                     </button>
@@ -73,7 +75,7 @@ const ConsorcioPage: React.FC = () => {
             </CardsContainer>
 
             <TableChartTable>
-                <Title>📋 Dados das Apólices</Title>
+                <h3>📋 Dados das Apólices</h3>
                 <ConsorcioTable apolices={apolices} setApolices={setApolices} />
             </TableChartTable>
 
@@ -84,4 +86,4 @@ const ConsorcioPage: React.FC = () => {
     );
 };
 
-export default ConsorcioPage;
+export default SeguroResidencialPage;

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import api from "@/app/api/axios";
-import KpiCards from "./(kpicards)/KpiCards";
+import KpiCardsPlanoSaude from "./(kpicards)/KpiCardsPlanoSaude";
 import PlanoSaudeCharts from "./(kpicards)/PlanoSaudeCharts";
 import PlanoSaudeTable from "@/app/components/apolices/tables/PlanoSaudeTable";
 import {
@@ -36,6 +36,7 @@ const PlanoSaudePage: React.FC = () => {
         try {
             const response = await api.get("/apolices/plano_saude/", { params: { tipo: "plano_saude" } });
             setApolices(response.data);
+            console.log(response)
         } catch (error) {
             console.error("Erro ao buscar apólices de plano de saúde:", error);
         }
@@ -45,6 +46,7 @@ const PlanoSaudePage: React.FC = () => {
         try {
             const response = await api.get("apolices/plano_saude/stats/");
             setStats(response.data);
+            console.log(response)
         } catch (error) {
             console.error("Erro ao buscar estatísticas de planos de saúde:", error);
         }
@@ -67,7 +69,7 @@ const PlanoSaudePage: React.FC = () => {
                         <FaArrowLeft /> Voltar
                     </button>
                 </ActionButtons>
-                <KpiCards stats={stats} />
+                <KpiCardsPlanoSaude stats={stats} />
             </CardsContainer>
 
             {/* 📌 Wrapper que organiza a tabela e o gráfico lado a lado */}

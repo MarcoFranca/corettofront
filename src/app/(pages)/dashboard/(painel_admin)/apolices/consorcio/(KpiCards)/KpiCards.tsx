@@ -2,14 +2,15 @@
 
 import React from "react";
 import { Stats } from "@/types/interfaces";
-import { CardContainer, KpiCard } from "./KpiCards.styles";
 import { FaFileAlt, FaMoneyBillWave, FaBell, FaChartLine } from "react-icons/fa";
+import {CardContainer} from "@/app/(pages)/dashboard/(dash)/Dashboard.styles";
+import {KpiCard} from "@/app/(pages)/dashboard/(painel_admin)/apolices/consorcio/(KpiCards)/KpiCards.styles";
 
 interface KpiCardsProps {
     stats: Stats;
 }
 
-const KpiCards: React.FC<KpiCardsProps> = ({ stats }) => {
+const KpiCardsConsorcio: React.FC<KpiCardsProps> = ({ stats }) => {
     return (
         <CardContainer>
             {/* 📄 Total de Apólices */}
@@ -39,7 +40,7 @@ const KpiCards: React.FC<KpiCardsProps> = ({ stats }) => {
                 </div>
             </KpiCard>
 
-            {/* 🔔 Revisões Pendentes (Clicável) */}
+            {/* 🔔 Revisões Pendentes */}
             <KpiCard className="clickable">
                 <div className="icon"><FaBell /></div>
                 <div className="content">
@@ -51,4 +52,4 @@ const KpiCards: React.FC<KpiCardsProps> = ({ stats }) => {
     );
 };
 
-export default KpiCards;
+export default KpiCardsConsorcio;

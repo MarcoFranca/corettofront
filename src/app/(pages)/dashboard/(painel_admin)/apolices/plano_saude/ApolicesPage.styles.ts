@@ -29,7 +29,7 @@ export const TableChartTable = styled.div`
     width: 100%;
     padding: 16px;
     overflow: auto;
-    max-height: 250px;
+    max-height: 350px;
 `
 
 export const TableChart = styled.div`
