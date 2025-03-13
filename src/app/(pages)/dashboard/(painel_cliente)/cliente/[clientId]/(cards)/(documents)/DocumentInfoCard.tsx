@@ -18,7 +18,7 @@ import {
 import DocumentosImage from "../../../../../../../../../public/assets/pages/profile/Documentos.svg";
 import EditImage from "../../../../../../../../../public/assets/common/edit.svg";
 import {getCpfMask, getIdentityMask} from "@/utils/maskUtils";
-import InputMask from "react-input-mask";
+import InputMask from "react-input-mask-next";
 import {
     DetailsContainer
 } from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(documents)/DocumentsFolder.styles";

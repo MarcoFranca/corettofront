@@ -6,11 +6,10 @@ import api from "@/app/api/axios";
 import {Apolice, Apolices} from "@/types/interfaces";
 import ApolicesTable from "./(component)/ApoliceTable";
 import ApoliceFiltro from "./(component)/ApoliceFilter";
-import { Container, Title, StyledButton, LoadingMessage, ErrorMessage } from "./ApolicesPage.styles";
+import { Container, Title, LoadingMessage, ErrorMessage } from "./ApolicesPage.styles";
 import ApolicesOverview
     from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApolicesOverview";
-import ApolicesModal
-    from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApolicesModal";
+
 
 const ApolicesPage: React.FC = () => {
     const { clientId } = useParams();
@@ -20,9 +19,6 @@ const ApolicesPage: React.FC = () => {
     const [visaoGeral, setVisaoGeral] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    const [apolicesArray, setApolicesArray] = useState<Apolice[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // 📌 Função para agrupar Apólices em categorias
     const agruparApolices = (apolicesArray: Apolice[]): Apolices => {
@@ -78,7 +74,7 @@ const ApolicesPage: React.FC = () => {
             {loading && <LoadingMessage>🔄 Carregando apólices...</LoadingMessage>}
             {error && <ErrorMessage>❌ {error}</ErrorMessage>}
 
-            <ApolicesTable apolices={apolices} />
+            <ApolicesTable setApolices={setApolices} apolices={apolices} />
         </Container>
     );
 };
