@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
-import { updateClienteSaude } from '@/store/slices/clientesSlice';
-import styles from './EditHealthModal.module.css';
-import { RootState } from '@/store';
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import StandardModal from "@/app/components/Modal/StandardModal";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { updateClienteSaude } from "@/store/slices/clientesSlice";
+import styles from "./EditHealthModal.module.css";
+import { RootState } from "@/store";
 
 interface EditHealthModalProps {
     isOpen: boolean;
@@ -13,86 +14,68 @@ interface EditHealthModalProps {
 }
 
 const EditHealthModal: React.FC<EditHealthModalProps> = ({ isOpen, onRequestClose, initialData, onSave }) => {
-    const [formData, setFormData] = useState(initialData);
     const dispatch = useAppDispatch();
     const clienteId = useAppSelector((state: RootState) => state.clientes.clienteDetalhe?.id);
 
+    const methods = useForm({
+        defaultValues: initialData,
+        mode: "onChange",
+    });
+
+    const { register, handleSubmit, setValue } = methods;
+
     useEffect(() => {
-        setFormData(initialData);
-    }, [initialData]);
+        Object.keys(initialData).forEach((key) => setValue(key, initialData[key]));
+    }, [initialData, setValue]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-    const handleSave = () => {
+    const handleSave = (data: any) => {
         if (clienteId) {
             const saudeData = {
-                ...formData,
-                altura: parseFloat(formData.altura.replace(',', '.')),
-                peso: parseFloat(formData.peso.replace(',', '.'))
+                ...data,
+                altura: parseFloat(data.altura.replace(",", ".")),
+                peso: parseFloat(data.peso.replace(",", "."))
             };
             dispatch(updateClienteSaude({ id: clienteId, saudeData }));
-            onSave(formData);
+            onSave(data);
         }
         onRequestClose();
     };
 
     const formatLabel = (label: string) => {
-        return label.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+        return label.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
     };
 
     return (
-        <Modal
+        <StandardModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            contentLabel="Atualizar Dados de Saúde"
-            className={styles.modal}
-            overlayClassName={styles.overlay}
+            title="Atualizar Dados de Saúde"
+            onSubmit={handleSubmit(handleSave)}
+            buttonText="Salvar"
+            buttonIcon={null}
+            successMessage="Dados de saúde atualizados com sucesso!"
+            errorMessage="Erro ao atualizar dados de saúde, tente novamente."
+            methods={methods} // ✅ Agora passamos um `useForm` completo
         >
-            <h2>Atualizar Dados de Saúde</h2>
-            <form>
+            <div className={styles.modalContent}>
                 <label>
-                    {formatLabel('altura')}:
-                    <input
-                        type="text"
-                        name="altura"
-                        value={formData.altura || ''}
-                        onChange={handleChange}
-                    />
+                    {formatLabel("altura")}:
+                    <input type="text" {...register("altura")} />
                 </label>
                 <label>
-                    {formatLabel('peso')}:
-                    <input
-                        type="text"
-                        name="peso"
-                        value={formData.peso || ''}
-                        onChange={handleChange}
-                    />
+                    {formatLabel("peso")}:
+                    <input type="text" {...register("peso")} />
                 </label>
                 <label>
-                    {formatLabel('doenca_preexistente')}:
-                    <textarea
-                        name="doenca_preexistente"
-                        value={formData.doenca_preexistente || ''}
-                        onChange={handleChange}
-                    />
+                    {formatLabel("doenca_preexistente")}:
+                    <textarea {...register("doenca_preexistente")} />
                 </label>
                 <label>
-                    {formatLabel('historico_familiar_doencas')}:
-                    <textarea
-                        name="historico_familiar_doencas"
-                        value={formData.historico_familiar_doencas || ''}
-                        onChange={handleChange}
-                    />
+                    {formatLabel("historico_familiar_doencas")}:
+                    <textarea {...register("historico_familiar_doencas")} />
                 </label>
-                <button type="button" onClick={handleSave}>Salvar</button>
-            </form>
-        </Modal>
+            </div>
+        </StandardModal>
     );
 };
 

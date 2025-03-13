@@ -1,12 +1,13 @@
-import React from 'react';
-import ReactModal from 'react-modal';
+import React from "react";
+import { useForm } from "react-hook-form";
+import StandardModal from "@/app/components/Modal/StandardModal";
 import {
     ModalActions, ModalButton,
     ModalContent,
     ModalHeader,
     ModalMessage,
     ModalOverlay
-} from './ConfirmDeleteModal.styles'; // Importe seus estilos
+} from "./ConfirmDeleteModal.styles"; // Importe seus estilos
 
 interface ConfirmDeleteModalProps {
     isOpen: boolean;
@@ -23,25 +24,38 @@ const ConfirmationModal: React.FC<ConfirmDeleteModalProps> = ({
                                                                   title,
                                                                   message,
                                                               }) => {
+    const methods = useForm();
+
     return (
-        <ReactModal
+        <StandardModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            overlayClassName="Overlay" // Custom overlay styling
-            className="Modal" // Custom modal styling
-            ariaHideApp={false} // Disable this if you don't set up appElement for accessibility
+            title={title}
+            onSubmit={methods.handleSubmit(() => {
+                onConfirm();
+                onRequestClose();
+            })}
+            buttonText="Confirmar"
+            buttonIcon={null}
+            successMessage="Ação confirmada com sucesso!"
+            errorMessage="Erro ao confirmar a ação, tente novamente."
+            methods={methods} // ✅ Passando um `useForm` válido
         >
             <ModalOverlay>
                 <ModalContent>
                     <ModalHeader>{title}</ModalHeader>
                     <ModalMessage>{message}</ModalMessage>
                     <ModalActions>
-                        <ModalButton className="cancel" onClick={onRequestClose}>Cancelar</ModalButton>
-                        <ModalButton className="confirm" onClick={onConfirm}>Confirmar</ModalButton>
+                        <ModalButton className="cancel" type="button" onClick={onRequestClose}>
+                            Cancelar
+                        </ModalButton>
+                        <ModalButton className="confirm" type="submit">
+                            Confirmar
+                        </ModalButton>
                     </ModalActions>
                 </ModalContent>
             </ModalOverlay>
-        </ReactModal>
+        </StandardModal>
     );
 };
 

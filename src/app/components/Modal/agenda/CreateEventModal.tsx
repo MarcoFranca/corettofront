@@ -1,6 +1,7 @@
-import React from 'react';
-import Modal from 'react-modal';
-import { ModalContent, Title, Label, ButtonGroup, CheckboxGroup } from './CreateEventModal.styles';
+import React from "react";
+import { useForm } from "react-hook-form";
+import StandardModal from "@/app/components/Modal/StandardModal";
+import { ModalContent, Title, Label, ButtonGroup, CheckboxGroup } from "./CreateEventModal.styles";
 
 interface Cliente {
     id: string;
@@ -12,15 +13,14 @@ interface CreateEvent {
     description: string;
     startTime: string;
     endTime: string;
-    date: string; // Inclua a propriedade date
-    type: 'task' | 'meeting';
-    urgency: 'Low' | 'Medium' | 'High' | 'Critical';
+    date: string;
+    type: "task" | "meeting";
+    urgency: "Low" | "Medium" | "High" | "Critical";
     clienteId: string | null;
     add_to_google_calendar: boolean;
     add_to_google_meet: boolean;
     add_to_zoom: boolean;
 }
-
 
 interface CreateEventModalProps {
     isOpen: boolean;
@@ -39,22 +39,33 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                                                                handleSave,
                                                                clientes,
                                                            }) => {
+    const methods = useForm({
+        defaultValues: newEvent,
+        mode: "onChange",
+    });
+
     const isFormValid = () => {
         return (
-            newEvent.title.trim() !== '' &&
-            newEvent.startTime.trim() !== '' &&
-            newEvent.endTime.trim() !== ''
+            newEvent.title.trim() !== "" &&
+            newEvent.startTime.trim() !== "" &&
+            newEvent.endTime.trim() !== ""
         );
     };
 
     return (
-        <Modal
+        <StandardModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            contentLabel="Novo Evento"
-            ariaHideApp={false}
-            overlayClassName="customOverlay"
-            className="customContent"
+            title="Novo Evento"
+            onSubmit={methods.handleSubmit(() => {
+                handleSave();
+                onRequestClose();
+            })}
+            buttonText="Salvar"
+            buttonIcon={null}
+            successMessage="Evento criado com sucesso!"
+            errorMessage="Erro ao criar evento, tente novamente."
+            methods={methods}
         >
             <ModalContent>
                 <Title>Novo Evento</Title>
@@ -108,7 +119,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                             onChange={(e) =>
                                 setNewEvent({
                                     ...newEvent,
-                                    type: e.target.value as 'task' | 'meeting',
+                                    type: e.target.value as "task" | "meeting",
                                 })
                             }
                         >
@@ -124,10 +135,10 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                                 setNewEvent({
                                     ...newEvent,
                                     urgency: e.target.value as
-                                        | 'Low'
-                                        | 'Medium'
-                                        | 'High'
-                                        | 'Critical',
+                                        | "Low"
+                                        | "Medium"
+                                        | "High"
+                                        | "Critical",
                                 })
                             }
                         >
@@ -140,7 +151,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                     <Label>
                         Cliente:
                         <select
-                            value={newEvent.clienteId || ''}
+                            value={newEvent.clienteId || ""}
                             onChange={(e) =>
                                 setNewEvent({
                                     ...newEvent,
@@ -168,7 +179,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                                 onChange={(e) =>
                                     setNewEvent({
                                         ...newEvent,
-                                        add_to_google_calendar: e.target.checked, // Valor booleano
+                                        add_to_google_calendar: e.target.checked,
                                     })
                                 }
                             />
@@ -181,7 +192,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                                 onChange={(e) =>
                                     setNewEvent({
                                         ...newEvent,
-                                        add_to_google_meet: e.target.checked, // Valor booleano
+                                        add_to_google_meet: e.target.checked,
                                     })
                                 }
                             />
@@ -194,7 +205,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                                 onChange={(e) =>
                                     setNewEvent({
                                         ...newEvent,
-                                        add_to_zoom: e.target.checked, // Valor booleano
+                                        add_to_zoom: e.target.checked,
                                     })
                                 }
                             />
@@ -220,7 +231,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
                     </ButtonGroup>
                 </form>
             </ModalContent>
-        </Modal>
+        </StandardModal>
     );
 };
 

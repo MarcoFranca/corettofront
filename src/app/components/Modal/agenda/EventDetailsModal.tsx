@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
-import { ModalContent, Title, Label, ButtonGroup, CheckboxGroup } from './EventDetailsModal.styles';
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import StandardModal from "@/app/components/Modal/StandardModal";
+import { ModalContent, Title, Label, ButtonGroup, CheckboxGroup } from "./EventDetailsModal.styles";
+import moment from "moment";
 
 interface EventDetailsModalProps {
     isOpen: boolean;
@@ -28,14 +29,25 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
         setEditableEvent({ ...editableEvent, [field]: value });
     };
 
+    const methods = useForm({
+        defaultValues: editableEvent,
+        mode: "onChange",
+    });
+
     return (
-        <Modal
+        <StandardModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            contentLabel="Detalhes do Evento"
-            ariaHideApp={false}
-            overlayClassName="customOverlay"
-            className="customContent"
+            title="Detalhes do Evento"
+            onSubmit={methods.handleSubmit(() => {
+                onUpdate(editableEvent);
+                onRequestClose();
+            })}
+            buttonText="Salvar"
+            buttonIcon={null}
+            successMessage="Evento atualizado com sucesso!"
+            errorMessage="Erro ao atualizar evento, tente novamente."
+            methods={methods}
         >
             <ModalContent>
                 <Title>Detalhes do Evento</Title>
@@ -43,39 +55,31 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                     Título:
                     <input
                         type="text"
-                        value={editableEvent.title || ''}
-                        onChange={(e) => handleFieldChange('title', e.target.value)}
+                        value={editableEvent.title || ""}
+                        onChange={(e) => handleFieldChange("title", e.target.value)}
                     />
                 </Label>
                 <Label>
                     Descrição:
                     <textarea
-                        value={editableEvent.description || ''}
-                        onChange={(e) => handleFieldChange('description', e.target.value)}
+                        value={editableEvent.description || ""}
+                        onChange={(e) => handleFieldChange("description", e.target.value)}
                     />
                 </Label>
                 <Label>
                     Hora de Início:
                     <input
                         type="time"
-                        value={
-                            editableEvent.start
-                                ? moment(editableEvent.start).format('HH:mm') // Formate usando moment
-                                : ''
-                        }
-                        onChange={(e) => handleFieldChange('start', e.target.value)}
+                        value={editableEvent.start ? moment(editableEvent.start).format("HH:mm") : ""}
+                        onChange={(e) => handleFieldChange("start", e.target.value)}
                     />
                 </Label>
                 <Label>
                     Hora de Término:
                     <input
                         type="time"
-                        value={
-                            editableEvent.end
-                                ? moment(editableEvent.end).format('HH:mm') // Formate usando moment
-                                : ''
-                        }
-                        onChange={(e) => handleFieldChange('end', e.target.value)}
+                        value={editableEvent.end ? moment(editableEvent.end).format("HH:mm") : ""}
+                        onChange={(e) => handleFieldChange("end", e.target.value)}
                     />
                 </Label>
                 <CheckboxGroup>
@@ -83,7 +87,7 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                         <input
                             type="checkbox"
                             checked={!!editableEvent.add_to_google_calendar}
-                            onChange={(e) => handleFieldChange('add_to_google_calendar', e.target.checked)}
+                            onChange={(e) => handleFieldChange("add_to_google_calendar", e.target.checked)}
                         />
                         Adicionar ao Google Agenda
                     </label>
@@ -91,7 +95,7 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                         <input
                             type="checkbox"
                             checked={!!editableEvent.add_to_google_meet}
-                            onChange={(e) => handleFieldChange('add_to_google_meet', e.target.checked)}
+                            onChange={(e) => handleFieldChange("add_to_google_meet", e.target.checked)}
                         />
                         Adicionar ao Google Meet
                     </label>
@@ -99,27 +103,24 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                         <input
                             type="checkbox"
                             checked={!!editableEvent.add_to_zoom}
-                            onChange={(e) => handleFieldChange('add_to_zoom', e.target.checked)}
+                            onChange={(e) => handleFieldChange("add_to_zoom", e.target.checked)}
                         />
                         Adicionar ao Zoom
                     </label>
                 </CheckboxGroup>
                 <ButtonGroup>
-                    <button
-                        className="save"
-                        onClick={() => onUpdate(editableEvent)}
-                    >
+                    <button className="save" type="submit">
                         Salvar
                     </button>
-                    <button className="delete" onClick={onDelete}>
+                    <button className="delete" type="button" onClick={onDelete}>
                         Deletar
                     </button>
-                    <button className="close" onClick={onRequestClose}>
+                    <button className="close" type="button" onClick={onRequestClose}>
                         Fechar
                     </button>
                 </ButtonGroup>
             </ModalContent>
-        </Modal>
+        </StandardModal>
     );
 };
 

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import { useForm } from 'react-hook-form';
+import StandardModal from '@/app/components/Modal/StandardModal';
 import { AgendaItem } from '@/types/interfaces'; // Use o modelo unificado
 import styles from './MeetingModal.module.css';
 
@@ -13,31 +14,39 @@ interface MeetingModalProps {
 }
 
 const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onRequestClose, onSubmit, initialData }) => {
-    const [data, setData] = useState<Partial<AgendaItem>>(initialData || { type: 'meeting' }); // Define `type` como padrão
+    const [data, setData] = useState<Partial<AgendaItem>>(initialData || { type: 'meeting' });
 
     useEffect(() => {
-        setData(initialData || { type: 'meeting' }); // Define o tipo padrão como `meeting`
+        setData(initialData || { type: 'meeting' });
     }, [initialData]);
+
+    const methods = useForm({
+        defaultValues: data,
+        mode: 'onChange',
+    });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setData({ ...data, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = () => {
         onSubmit(data);
+        onRequestClose();
     };
 
     return (
-        <Modal
+        <StandardModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            contentLabel="Gerenciar Evento"
-            className={styles.modal}
-            overlayClassName={styles.overlay}
+            title={data.type === 'meeting' ? 'Marcar Reunião' : 'Criar Tarefa'}
+            onSubmit={methods.handleSubmit(handleSubmit)}
+            buttonText="Salvar"
+            buttonIcon={null}
+            successMessage="Evento salvo com sucesso!"
+            errorMessage="Erro ao salvar evento, tente novamente."
+            methods={methods}
         >
-            <h2>{data.type === 'meeting' ? 'Marcar Reunião' : 'Criar Tarefa'}</h2>
-            <form onSubmit={handleSubmit}>
+            <div className={styles.modalContent}>
                 <div className={styles.formGroup}>
                     <label>Título</label>
                     <input
@@ -105,20 +114,8 @@ const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onRequestClose, onS
                         className={styles.input}
                     />
                 </div>
-                <div className={styles.buttons}>
-                    <button type="submit" className={styles.submitButton}>
-                        Salvar
-                    </button>
-                    <button
-                        type="button"
-                        onClick={onRequestClose}
-                        className={styles.cancelButton}
-                    >
-                        Cancelar
-                    </button>
-                </div>
-            </form>
-        </Modal>
+            </div>
+        </StandardModal>
     );
 };
 
