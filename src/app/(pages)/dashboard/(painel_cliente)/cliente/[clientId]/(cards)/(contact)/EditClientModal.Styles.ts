@@ -1,6 +1,8 @@
 // src/app/components/Modal/profile/EditClientModal.styles.ts
 import styled, { keyframes } from "styled-components";
-import InputMask from "react-input-mask"; // Máscara
+import InputMask from "react-input-mask-next";
+import {forwardRef} from "react";
+
 
 // 🔹 Estilização do Container do Modal
 export const ModalContainer = styled.div`
@@ -112,10 +114,12 @@ export const EmptyMessage = styled.p`
     margin-top: 10px;
 `;
 
+// Estilizamos o componente funcional ao invés de `InputMask` diretamente
 export const PhoneInput = styled(InputMask)`
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9rem;
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
 `;
+

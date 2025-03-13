@@ -16,6 +16,7 @@ import {
     ContactSelect,
     PhoneInput,
 } from "./EditClientModal.Styles";
+import InputMask from "react-input-mask-next";
 
 const EditClientModal: React.FC<EditClientModalProps> =
     ({
@@ -65,20 +66,24 @@ const EditClientModal: React.FC<EditClientModalProps> =
         setContatosAdicionais(contatosAdicionais.filter((_, i) => i !== index));
     };
 
-    const handleContatoChange = (index: number, valor: string) => {
-        const cleanedValue = removeMask(valor);
-        const updatedContatos = [...contatosAdicionais];
-        updatedContatos[index] = { ...updatedContatos[index], valor: cleanedValue };
-        setContatosAdicionais(updatedContatos);
-    };
+        const handleContatoChange = (index: number, e: any) => {
+            const cleanedValue = removeMask(e.target.value);
+            const updatedContatos = [...contatosAdicionais];
+            updatedContatos[index] = { ...updatedContatos[index], valor: cleanedValue };
+            setContatosAdicionais(updatedContatos);
+        };
 
-    const handleTipoChange = (index: number, tipo: string) => {
-        const updatedContatos = [...contatosAdicionais];
-        updatedContatos[index] = { ...updatedContatos[index], tipo };
-        setContatosAdicionais(updatedContatos);
-    };
 
-    // ✅ Agora o formulário está corretamente conectado ao `react-hook-form`
+
+
+        const handleTipoChange = (index: number, e: React.ChangeEvent<HTMLSelectElement>) => {
+    const updatedContatos = [...contatosAdicionais];
+    updatedContatos[index] = { ...updatedContatos[index], tipo: e.target.value };
+    setContatosAdicionais(updatedContatos);
+};
+
+
+        // ✅ Agora o formulário está corretamente conectado ao `react-hook-form`
     const handleSubmitForm = async (data: any) => {
         try {
             onSave({
@@ -144,7 +149,7 @@ const EditClientModal: React.FC<EditClientModalProps> =
                         <ContactSelect>
                             <select
                                 value={contato.tipo}
-                                onChange={(e) => handleTipoChange(index, e.target.value)}
+                                onChange={(e) => handleTipoChange(index, e)}
                             >
                                 <option value="celular">Celular</option>
                                 <option value="residencial">Residencial</option>
