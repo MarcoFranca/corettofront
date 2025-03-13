@@ -1,7 +1,7 @@
-// ConfirmDeleteModal.tsx
-import React from 'react';
-import ReactModal from 'react-modal';
-import styles from './ConfirmDeleteModal.module.css';
+import React from "react";
+import { useForm } from "react-hook-form";
+import StandardModal from "@/app/components/Modal/StandardModal";
+import styles from "./ConfirmDeleteModal.module.css";
 
 interface ConfirmDeleteModalProps {
     isOpen: boolean;
@@ -10,20 +10,30 @@ interface ConfirmDeleteModalProps {
 }
 
 const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({ isOpen, onRequestClose, onConfirm }) => {
+    const methods = useForm({
+        defaultValues: {},
+        mode: "onChange"
+    });
+
+    const { handleSubmit } = methods;
+
     return (
-        <ReactModal
+        <StandardModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            className={styles.modalContent}
-            overlayClassName={styles.modalOverlay}
+            title="Confirmar Exclusão"
+            onSubmit={handleSubmit(() => {
+                onConfirm();
+                onRequestClose();
+            })}
+            buttonText="Sim"
+            buttonIcon={null}
+            successMessage="Item excluído com sucesso!"
+            errorMessage="Erro ao excluir item, tente novamente."
+            methods={methods} // ✅ Agora passamos um `useForm` válido
         >
-            <h2>Confirmar Exclusão</h2>
-            <p>Tem certeza que deseja deletar esta tarefa?</p>
-            <div className={styles.buttons}>
-                <button onClick={onConfirm} className={styles.confirmButton}>Sim</button>
-                <button onClick={onRequestClose} className={styles.cancelButton}>Não</button>
-            </div>
-        </ReactModal>
+            <p className={styles.modalText}>Tem certeza que deseja deletar esta tarefa?</p>
+        </StandardModal>
     );
 };
 
