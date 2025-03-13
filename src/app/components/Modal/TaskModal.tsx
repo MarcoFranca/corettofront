@@ -1,7 +1,7 @@
-// components/modal/TaskModal.tsx
-import React from 'react';
-import Modal from 'react-modal';
-import styles from './TaskModal.module.css';
+import React from "react";
+import { useForm } from "react-hook-form";
+import StandardModal from "@/app/components/Modal/StandardModal";
+import styles from "./TaskModal.module.css";
 
 interface TaskModalProps {
     isOpen: boolean;
@@ -10,18 +10,21 @@ interface TaskModalProps {
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onRequestClose, children }) => {
+    const methods = useForm({ defaultValues: {}, mode: "onChange" });
+
     return (
-        <Modal
+        <StandardModal
             isOpen={isOpen}
-    onRequestClose={onRequestClose}
-    contentLabel="Task Modal"
-    className={styles.modalContent}
-    overlayClassName={styles.modalOverlay}
+            onRequestClose={onRequestClose}
+            title="Tarefa"
+            onSubmit={methods.handleSubmit(() => onRequestClose())}
+            buttonText="Fechar"
+            buttonIcon={null}
+            methods={methods} // ✅ Passando `useForm` válido
         >
-        {children}
-        <button onClick={onRequestClose} className={styles.closeModalButton}>Fechar</button>
-        </Modal>
-);
+            <div className={styles.modalContent}>{children}</div>
+        </StandardModal>
+    );
 };
 
 export default TaskModal;
