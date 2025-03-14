@@ -1,5 +1,5 @@
 import React from "react";
-import InputMask from "react-input-mask";
+import InputMask from "react-input-mask-next";
 import { InputContainer, Label, Input, Required, FloatingLabelWrapper, StaticLabelWrapper } from "./FloatingMaskedInput.styles";
 import {Controller, UseFormRegister, UseFormSetValue} from "react-hook-form";
 import currency from "currency.js";
@@ -137,17 +137,16 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
                                 mask={mask}
                                 maskPlaceholder={maskPlaceholder}
                                 {...register(name, { required })}
+                                onChange={handleChange}
+                                inputRef={register(name).ref} // ✅ Passa a ref diretamente
                             >
-                                {(inputProps) => (
-                                    <Input
-                                        {...inputProps}
-                                        id={name}
-                                        type={type}
-                                        required={required}
-                                        placeholder=" " // 🔥 Mantemos espaço para ativar o float label
-                                    />
-                                )}
+                                <Input
+                                    id={name}
+                                    required={required}
+                                    placeholder=" "
+                                />
                             </InputMask>
+
                         ) : (
                             <Input
                                 {...inputProps}
@@ -172,16 +171,14 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
                                 mask={mask}
                                 maskPlaceholder={maskPlaceholder}
                                 {...register(name, { required })}
+                                onChange={handleChange}
+                                inputRef={register(name).ref} // ✅ Passa a ref diretamente
                             >
-                                {(inputProps) => (
-                                    <Input
-                                        {...inputProps}
-                                        id={name}
-                                        type={type}
-                                        required={required}
-                                        placeholder={placeholder || ""} // 🔥 Agora o placeholder funciona corretamente
-                                    />
-                                )}
+                                <Input
+                                    id={name}
+                                    required={required}
+                                    placeholder=" "
+                                />
                             </InputMask>
                         ) : (
                             <Controller
