@@ -28,10 +28,9 @@ import {
     FaUserClock,
     FaUserFriends,
     FaUserInjured,
-    FaUserLock,
     FaUserNurse,
     FaMoneyCheckAlt,
-    FaIdCard, FaIdCardAlt, FaRegIdCard, FaRegImage
+    FaIdCard, FaIdCardAlt, FaRegImage
 } from "react-icons/fa";
 import { ApolicePlanoSaude } from "@/types/ApolicesInterface";
 import { useRouter } from "next/navigation";
@@ -120,7 +119,7 @@ const PlanoSaudeDetalhes: React.FC<PlanoSaudeDetalhesProps> = ({ apolice }) => {
                         <Value>{apolice.acomodacao || "N/A"}</Value>
 
                         <Label><FaUserCheck color={'#007bff'}  /> Coparticipação:</Label>
-                        <Value>{apolice.coparticipacao ? "Sim" : "Não" || "N/A"}</Value>
+                        <Value>{apolice.coparticipacao ? "Sim" : "Não" }</Value>
                     </div>
                     <div>
                         <Label><FaHospitalUser color={'#007bff'}/> Abrangência:</Label>
