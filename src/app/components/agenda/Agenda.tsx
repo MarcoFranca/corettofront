@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, momentLocalizer, SlotInfo } from 'react-big-calendar';
 import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
@@ -9,6 +8,9 @@ import api from '@/app/api/axios';
 import styles from './Agenda.module.css';
 import CreateEventModal from '@/app/components/Modal/agenda/CreateEventModal';
 import EventDetailsModal from '@/app/components/Modal/agenda/EventDetailsModal';
+
+import { Calendar, momentLocalizer, SlotInfo } from "react-big-calendar";
+
 
 moment.locale('pt-BR');
 const localizer = momentLocalizer(moment);
