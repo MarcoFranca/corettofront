@@ -107,9 +107,9 @@ const LeadBoard: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.headerBar}>
-                <Image src={CadastroLead} alt="Cadastro" className={styles.button} onClick={openModal} />
-            </div>
+            {/*<div className={styles.headerBar}>*/}
+            {/*    <Image src={CadastroLead} alt="Cadastro" className={styles.button} onClick={openModal} />*/}
+            {/*</div>*/}
             <div ref={tooltipContainerRef} className={styles.tooltipContainer} />
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="all-columns" direction="horizontal" type="COLUMN">
@@ -144,7 +144,7 @@ const LeadBoard: React.FC = () => {
                     )}
                 </Droppable>
             </DragDropContext>
-            <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} />
+            {/*<LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} />*/}
         </div>
     );
 };

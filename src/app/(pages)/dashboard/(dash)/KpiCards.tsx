@@ -45,7 +45,7 @@ const KpiCards: React.FC<StatsProps> = ({ stats }) => {
             <Card>
                 <IconWrapper><FaMoneyBillWave size={30} /></IconWrapper>
                 <h3>Receita Mensalizada</h3>
-                <p>R$ {stats.apolices.valor_mensalizado.toFixed(2)}</p>
+                <p>R$ {stats.apolices.valor_mensalizado.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
             </Card>
         </CardContainer>
     );

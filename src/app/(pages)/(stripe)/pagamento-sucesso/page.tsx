@@ -12,10 +12,6 @@ export default function PagamentoSucesso() {
     const router = useRouter();
 
     useEffect(() => {
-        console.log("🔍 Session ID Recebido:", session_id);
-    }, [session_id]);
-
-    useEffect(() => {
         if (session_id) {
             console.log("Session ID recebido:", session_id);
             setLoading(false);

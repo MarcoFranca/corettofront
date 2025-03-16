@@ -91,3 +91,16 @@ export const formatCurrency = (value: string | number): string => {
         minimumFractionDigits: 2
     }).format(Number(value) || 0);
 };
+
+export const formatPhoneNumber = (telefone: string) => {
+    const rawPhone = removeMask(telefone); // Remove qualquer formatação existente
+
+    if (rawPhone.length === 10) {
+        // Telefone fixo (XX) XXXX-XXXX
+        return rawPhone.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+    } else if (rawPhone.length === 11) {
+        // Celular (XX) XXXXX-XXXX
+        return rawPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    }
+    return telefone; // Se o número estiver inválido, mantém como está
+};
