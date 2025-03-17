@@ -47,7 +47,7 @@ export interface Lead {
     status_reuniao: StatusReuniao;
     genero?: "M" | "F";
     profissao_id?: string | null;
-    observacoes?: string; // ✅ Inclua isso aqui
+    observacoes?: string;
     parceiros?:string;
     pipeline_stage?: string;
     created_at: string;

@@ -25,6 +25,7 @@ export const fetchLeads = createAsyncThunk<Lead[], { status?: string[] }>(
                 return rejectWithValue("Formato de resposta inválido");
             }
 
+            console.log('bilau', response.data.results);
             return response.data.results; // Retorna os leads corretamente
         } catch (error: any) {
             console.error("❌ Erro ao buscar leads:", error);
@@ -48,8 +49,11 @@ export const updateLead = createAsyncThunk<Lead, { id: string; updatedLead: Part
 });
 
 // Adicionando de volta a função updateLeadStatus
-export const updateLeadStatus = createAsyncThunk<Lead, { id: string; status: string }>('leads/updateLeadStatus', async ({ id, status }) => {
-    const response = await api.patch(`/clientes/${id}/`, { pipeline_stage: status });
+export const updateLeadStatus = createAsyncThunk<
+    Lead,
+    { id: string; status: string; pipeline_stage?: string }
+>('leads/updateLeadStatus', async ({ id, status, pipeline_stage }) => {
+    const response = await api.patch(`/clientes/${id}/`, { status, pipeline_stage });
     return response.data;
 });
 

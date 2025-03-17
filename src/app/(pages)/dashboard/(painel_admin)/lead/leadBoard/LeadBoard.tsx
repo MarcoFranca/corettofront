@@ -12,6 +12,12 @@ import Image from 'next/image';
 import { useMediaQuery } from '@/hooks/hooks';
 import styles from './LeadBoard.module.css';
 import Spinner from "@/app/components/common/spinner/sppiner";
+import {
+    Board,
+    Container,
+    StackedColumns,
+    StackedColumnsVerticalSup
+} from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard.styles";
 
 const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -106,24 +112,18 @@ const LeadBoard: React.FC = () => {
     }
 
     return (
-        <div className={styles.container}>
-            {/*<div className={styles.headerBar}>*/}
-            {/*    <Image src={CadastroLead} alt="Cadastro" className={styles.button} onClick={openModal} />*/}
-            {/*</div>*/}
+        <Container>
             <div ref={tooltipContainerRef} className={styles.tooltipContainer} />
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="all-columns" direction="horizontal" type="COLUMN">
                     {(provided) => (
-                        <div className={styles.board} {...provided.droppableProps} ref={provided.innerRef}>
-                            {data.columnOrder.length > 0 ? (
-                                data.columnOrder.map((columnId, index) => {
-                                    const column = data.columns[columnId];
-                                    if (!column) {
-                                        console.error('Column is undefined', columnId);
-                                        return null;
-                                    }
+                        <Board {...provided.droppableProps} ref={provided.innerRef}>
 
-                                    return (
+                            {/* 📌 Renderiza as colunas normais */}
+                            {data.columnOrder.slice(0, 4).map((columnId, index) => {
+                                const column = data.columns[columnId];
+                                return (
+                                    <div className={styles.horizontalColumns}>
                                         <Column
                                             key={columnId}
                                             column={column}
@@ -133,19 +133,55 @@ const LeadBoard: React.FC = () => {
                                             handleLeadDragStart={() => {}}
                                             tooltipContainerRef={tooltipContainerRef as React.RefObject<HTMLDivElement>}
                                         />
+                                    </div>
+                                );
+                            })}
+
+                            {/* 📌 Renderiza as colunas "Clientes Ativos" e "Clientes Perdidos" uma em cima da outra */}
+                            <StackedColumns>
+                                {data.columnOrder.slice(4,5).map((columnId, index) => {
+                                    const column = data.columns[columnId];
+                                    return (
+                                        <StackedColumnsVerticalSup key={columnId}>
+                                            <Column
+                                                key={columnId}
+                                                column={column}
+                                                leads={data.leads}
+                                                index={index}
+                                                handleLeadClick={(leadId) => router.push(`/dashboard/cliente/${leadId}`)}
+                                                handleLeadDragStart={() => {}}
+                                                tooltipContainerRef={tooltipContainerRef as React.RefObject<HTMLDivElement>}
+                                            />
+                                        </StackedColumnsVerticalSup>
                                     );
-                                })
-                            ) : (
-                                <p>Nenhuma lead disponível.</p>
-                            )}
+                                })}
+                                {data.columnOrder.slice(5).map((columnId, index) => {
+                                    const column = data.columns[columnId];
+                                    return (
+                                        <StackedColumnsVerticalSup key={columnId}>
+
+                                            <Column
+                                                key={columnId}
+                                                column={column}
+                                                leads={data.leads}
+                                                index={index}
+                                                handleLeadClick={(leadId) => router.push(`/dashboard/cliente/${leadId}`)}
+                                                handleLeadDragStart={() => {}}
+                                                tooltipContainerRef={tooltipContainerRef as React.RefObject<HTMLDivElement>}
+                                            />
+                                        </StackedColumnsVerticalSup>
+                                    );
+                                })}
+                            </StackedColumns>
 
                             {provided.placeholder}
-                        </div>
+                        </Board>
                     )}
                 </Droppable>
             </DragDropContext>
+
             {/*<LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} />*/}
-        </div>
+        </Container>
     );
 };
 

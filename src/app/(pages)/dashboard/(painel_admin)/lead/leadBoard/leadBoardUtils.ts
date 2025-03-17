@@ -11,10 +11,12 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
         'column-2': { id: 'column-2', title: 'NEGOCIANDO', leadIds: [] },
         'column-3': { id: 'column-3', title: 'FINALIZAÇÃO', leadIds: [] },
         'column-4': { id: 'column-4', title: 'POUCO INTERESSE', leadIds: [] },
+        'column-5': { id: 'column-5', title: 'CLIENTES ATIVOS ✅', leadIds: [] }, // ✅ Nova coluna para clientes ativos
+        'column-6': { id: 'column-6', title: 'CLIENTES PERDIDOS ❌', leadIds: [] }, // ✅ Nova coluna para recusados
     };
 
     if (!leadsFromStore || leadsFromStore.length === 0) {
-        return { leads, columns, columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'] };
+        return { leads, columns, columnOrder: ['column-1', 'column-2', 'column-3', 'column-4', 'column-5', 'column-6'] };
     }
 
     leadsFromStore.forEach((lead) => {
@@ -39,6 +41,7 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
             indicado_por_detalhes: lead.indicado_por_detalhes || null,
             oportunidades: lead.relacionamentos?.oportunidades || [],
             parceiros: lead.relacionamentos?.parceiros || [],
+            observacoes: lead.observacoes || '', // ✅ Agora `observacoes` é preservado!
         };
 
         // 🚀 Verifica o `pipeline_stage` e categoriza corretamente
@@ -52,6 +55,10 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
             columns['column-3'].leadIds.push(lead.id.toString());
         } else if (pipelineStage.includes('pouco interesse')) {
             columns['column-4'].leadIds.push(lead.id.toString());
+        } else if (pipelineStage.includes('ativo')) {
+            columns['column-5'].leadIds.push(lead.id.toString()); // ✅ Clientes Ativos
+        } else if (pipelineStage.includes('recusado')) {
+            columns['column-6'].leadIds.push(lead.id.toString()); // ✅ Clientes Perdidos
         } else {
             console.warn(`⚠️ Lead ID ${lead.id} sem pipeline_stage categorizado corretamente:`, lead.pipeline_stage);
         }
@@ -60,7 +67,7 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
     return {
         leads,
         columns,
-        columnOrder: ['column-1', 'column-2', 'column-3', 'column-4'],
+        columnOrder: ['column-1', 'column-2', 'column-3', 'column-4', 'column-5', 'column-6'],
     };
 };
 
@@ -74,79 +81,85 @@ export const handleDragEnd = (
     const { destination, source, draggableId } = result;
 
     if (!destination) {
-        console.warn("No destination for the drag event.");
+        console.warn("⚠️ Nenhum destino definido para o evento de drag.");
         return;
     }
 
     const start = data.columns[source.droppableId];
     const finish = data.columns[destination.droppableId];
 
-    if (!start) {
-        console.error(`Column with ID ${source.droppableId} not found.`);
+    if (!start || !finish) {
+        console.error("❌ Coluna de origem ou destino não encontrada.");
         return;
     }
-
-    if (!finish) {
-        console.error(`Column with ID ${destination.droppableId} not found.`);
-        return;
-    }
-
 
     if (start === finish) {
+        // ✅ Movendo dentro da mesma coluna → Apenas reordena os IDs
         const newLeadIds = Array.from(start.leadIds);
         newLeadIds.splice(source.index, 1);
         newLeadIds.splice(destination.index, 0, draggableId);
 
-        const newColumn = {
-            ...start,
-            leadIds: newLeadIds,
-        };
+        const newColumn = { ...start, leadIds: newLeadIds };
 
-        const newState = {
-            ...data,
-            columns: {
-                ...data.columns,
-                [newColumn.id]: newColumn,
-            },
-        };
+        const newState = { ...data, columns: { ...data.columns, [newColumn.id]: newColumn } };
 
         setData(newState);
         return;
     }
 
+    // ✅ Removendo da coluna inicial
     const startLeadIds = Array.from(start.leadIds);
     startLeadIds.splice(source.index, 1);
-    const newStart = {
-        ...start,
-        leadIds: startLeadIds,
-    };
+    const newStart = { ...start, leadIds: startLeadIds };
 
+    // ✅ Adicionando na coluna de destino
     const finishLeadIds = Array.from(finish.leadIds);
     finishLeadIds.splice(destination.index, 0, draggableId);
-    const newFinish = {
-        ...finish,
-        leadIds: finishLeadIds,
-    };
+    const newFinish = { ...finish, leadIds: finishLeadIds };
 
     const newState = {
         ...data,
-        columns: {
-            ...data.columns,
-            [newStart.id]: newStart,
-            [newFinish.id]: newFinish,
-        },
+        columns: { ...data.columns, [newStart.id]: newStart, [newFinish.id]: newFinish },
     };
 
     setData(newState);
 
+    // 🚀 Atualizando o backend
     const updatedLead = leadsFromStore.find((lead) => lead.id?.toString() === draggableId);
     if (!updatedLead) {
-        console.error(`Lead with ID ${draggableId} not found in leadsFromStore.`);
+        console.error(`❌ Lead com ID ${draggableId} não encontrado.`);
         return;
     }
 
-    const newStatus = newFinish.title.toLowerCase();
-    console.log(`Updating lead ID ${draggableId} to pipeline_stage ${newStatus}`);
-    dispatch(updateLeadStatus({ id: draggableId, status: newStatus }));
+    // ✅ Define o novo `pipeline_stage`
+    let newPipelineStage = newFinish.title.toLowerCase().replace(/[^\w\s]/gi, '').trim();
+    let newStatus = updatedLead.status; // Mantém o status original como padrão
 
+    // ✅ Se foi movido para "Clientes Ativos", o status muda para "ativo"
+    if (finish.id === "column-5") {
+        newStatus = "ativo";
+    }
+
+    // ✅ Se foi movido para "Clientes Perdidos", o status muda para "recusado"
+    if (finish.id === "column-6") {
+        newStatus = "recusado";
+    }
+
+    // 🔥 Atualiza apenas se o status ou pipeline_stage mudar
+    if (newStatus !== updatedLead.status || newPipelineStage !== updatedLead.pipeline_stage) {
+        console.log(`🚀 Atualizando lead ID ${draggableId}: pipeline_stage=${newPipelineStage}, status=${newStatus}`);
+
+        try {
+            dispatch(updateLeadStatus({ id: draggableId, status: newStatus, pipeline_stage: newPipelineStage }));
+
+            // ✅ Remove manualmente da lista ao confirmar sucesso
+            setData((prevData) => {
+                const updatedColumns = { ...prevData.columns };
+                updatedColumns[start.id].leadIds = updatedColumns[start.id].leadIds.filter(id => id !== draggableId);
+                return { ...prevData, columns: updatedColumns };
+            });
+        } catch (error) {
+            console.error("❌ Erro ao atualizar lead:", error);
+        }
+    }
 };

@@ -45,7 +45,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
 
     useEffect(() => {
         setCurrentLead(lead);
-        // console.log("Oportunidades no lead atual:", currentLead.oportunidades);
+        console.log("Oportunidades no lead atual:", lead);
 
     }, [lead]);
 
@@ -97,7 +97,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
         const formattedPhone = formatPhoneNumber(phone);
         return `https://wa.me/${formattedPhone}`;
     };
-
+    // console.log("biruleibi", currentLead)
 
     return (
         <>
@@ -155,6 +155,13 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
                                         />
                                     </a>
                                 </p>
+                                <p>
+                                    <strong>Observações:</strong>{" "}
+                                    {currentLead?.observacoes && currentLead.observacoes.trim() !== ""
+                                        ? currentLead.observacoes
+                                        : "Nenhuma observação"}
+                                </p>
+
                             </div>
                         }
                         theme="custom"

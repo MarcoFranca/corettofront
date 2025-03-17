@@ -12,12 +12,53 @@
 .board {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    align-items: center;
     box-sizing: border-box;
-    padding: 8px;
-    gap: 32px;
     width: 100%;
     margin-top: 6rem;
+    background-color: #0d6efd;
+}
+
+/* 📌 Layout das colunas normais */
+.horizontalColumns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 32px;
+    width: 90%;
+}
+
+/* 📌 Layout das colunas "Clientes Ativos" e "Clientes Perdidos" */
+.stackedColumns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40%;
+    height: 100%;
+    background-color: #ec971f;
+    padding: 16px;
+    margin-top: 6rem;
+    z-index: 999;
+}
+
+.stackedColumnsVerticalSup{
+    display: flex;
+    /*background: #0c2859;*/
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin-top: 2rem;
+    z-index: 999;
+}
+
+.stackedColumnsVertical{
+    display: flex;
+    background: #0c2859;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin-top: 2rem;
+    z-index: 999;
 }
 
 .leadModalContainer{
@@ -34,9 +75,10 @@
     flex-direction: column;
     position: relative;
     align-items: center;
-    justify-content: flex-end;
-    max-width: 33%;
+    /*justify-content: flex-end;*/
+    /*max-width: 33%;*/
     width: 200px;
+
 }
 
 .column > h3 {

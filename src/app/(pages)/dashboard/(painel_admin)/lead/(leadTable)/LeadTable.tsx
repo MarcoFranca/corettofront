@@ -10,6 +10,7 @@ import { getWhatsAppLink } from "@/utils/functions";
 import { FaCalendarAlt, FaEdit, FaTrash, FaWhatsapp } from "react-icons/fa";
 import { formatPhoneNumber } from "@/utils/maskUtils";
 import { Key } from 'react';
+import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
 
 const LeadTable: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -17,6 +18,7 @@ const LeadTable: React.FC = () => {
     const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showScheduleForm, setShowScheduleForm] = useState(false);
 
     useEffect(() => {
         dispatch(fetchLeads({ status: ["lead", "negociacao", "nova_negociacao"] }));
@@ -30,12 +32,46 @@ const LeadTable: React.FC = () => {
         dispatch(deleteLead(id));
     };
 
+    const STATUS_REUNIAO_MAP: Record<string, string> = {
+        "reuniao_marcada": "Reunião Marcada",
+        "retornar": "Retornar",
+        "nao_tem_interesse": "Não Tem Interesse",
+        "nao_atendeu": "Não Atendeu",
+        "marcar_reuniao": "Marcar Reunião"
+    };
+
+    const handleScheduleFormClose = () => {
+        setShowScheduleForm(false);
+
+        if (selectedLead) {
+            const updatedLead: Partial<Lead> = {
+                status_reuniao: "reuniao_marcada" as Lead["status_reuniao"], // ✅ Apenas o campo necessário
+            };
+
+            // 🚀 Atualiza apenas o status da reunião
+            dispatch(updateLead({ id: selectedLead.id, updatedLead }));
+
+            // 🚀 Recarrega os leads para refletir a mudança
+            dispatch(fetchLeads({ status: ["lead", "negociacao", "nova_negociacao"] }));
+        }
+    };
+
+
+
     const handleSave = () => {
         if (selectedLead) {
-            dispatch(updateLead({ id: selectedLead.id, updatedLead: selectedLead }));
+            const updatedLead: Partial<Lead> = {
+                pipeline_stage: selectedLead.pipeline_stage,
+                observacoes: selectedLead.observacoes,
+                status_reuniao: selectedLead.status_reuniao,
+            };
+
+            dispatch(updateLead({ id: selectedLead.id, updatedLead }));
             setIsModalOpen(false);
         }
     };
+
+
 
     const columns = [
         { title: "Nome", dataIndex: "nome", key: "nome" },
@@ -51,6 +87,13 @@ const LeadTable: React.FC = () => {
             ),
         },
         {
+            title: "Próxima Reunião",
+            dataIndex: "proxima_reuniao",
+            key: "proxima_reuniao",
+            render: (data: string | null) =>
+                data ? new Date(data).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "Nenhuma agendada",
+        },
+        {
             title: "Pipeline",
             dataIndex: "pipeline_stage",
             key: "pipeline_stage",
@@ -59,6 +102,8 @@ const LeadTable: React.FC = () => {
                 { text: "Negociando", value: "negociando" },
                 { text: "Finalização", value: "finalização" },
                 { text: "Pouco Interesse", value: "pouco interesse" },
+                { text: "Clientes Ativos", value: "clientes ativos" },
+                { text: "Clientes Pesrdidos", value: "clientes perdidos" },
             ],
             onFilter: (value: boolean | Key, record: Lead) => record.pipeline_stage === value,
         },
@@ -66,14 +111,23 @@ const LeadTable: React.FC = () => {
             title: "Status Reunião",
             dataIndex: "status_reuniao",
             key: "status_reuniao",
-            filters: [
-                { text: "Reunião Marcada", value: "reuniao_marcada" },
-                { text: "Marcar Reunião", value: "marcar_reuniao" },
-                { text: "Retornar", value: "retornar" },
-                { text: "Não Atendeu", value: "nao_atendeu" },
-                { text: "Não Tem Interesse", value: "nao_tem_interesse" },
-            ],
+            filters: Object.entries(STATUS_REUNIAO_MAP).map(([value, text]) => ({ text, value })),
             onFilter: (value: boolean | Key, record: Lead) => record.status_reuniao === value,
+            render: (status: string) => (
+                <span>{STATUS_REUNIAO_MAP[status] || "Desconhecido"}</span> // ✅ Mostra rótulo correto
+            ),
+        },
+        {
+            title: "Observações",
+            dataIndex: "observacoes",
+            key: "observacoes",
+            render: (obs: string) => (
+                obs ? (
+                    <Tooltip title={obs}>
+                        <span>{obs.length > 50 ? `${obs.substring(0, 50)}...` : obs}</span>
+                    </Tooltip>
+                ) : "Nenhuma observação"
+            ),
         },
         {
             title: "Ações",
@@ -84,7 +138,7 @@ const LeadTable: React.FC = () => {
                         <Button icon={<FaEdit />} onClick={() => { setSelectedLead(record); setIsModalOpen(true); }} />
                     </Tooltip>
                     <Tooltip title="Criar Reunião">
-                        <Button icon={<FaCalendarAlt />} />
+                        <Button icon={<FaCalendarAlt />} onClick={() => { setSelectedLead(record); setShowScheduleForm(true); }} />
                     </Tooltip>
                     <Tooltip title="Excluir">
                         <Button icon={<FaTrash />} danger onClick={() => handleDelete(record.id)} />
@@ -104,6 +158,15 @@ const LeadTable: React.FC = () => {
                 pagination={{ pageSize: 10 }}
             />
 
+            {selectedLead && showScheduleForm && (
+                <ScheduleMeetingForm
+                    entityId={selectedLead.id}
+                    entityName={selectedLead.nome}
+                    entityType="lead"
+                    onClose={handleScheduleFormClose}
+                />
+            )}
+
             <Modal
                 title="Editar Lead"
                 open={isModalOpen}
@@ -116,27 +179,28 @@ const LeadTable: React.FC = () => {
                     <>
                         <label>Pipeline Stage</label>
                         <Select
-                            value={selectedLead.pipeline_stage}
-                            onChange={(value) => setSelectedLead(prev => prev ? ({ ...prev, pipeline_stage: value }) : null)}
+                            value={selectedLead?.pipeline_stage}
+                            onChange={(value) => setSelectedLead(prev => prev ? ({ ...prev, pipeline_stage: value }) : prev)}
                             options={[
                                 { value: "leads de entrada", label: "Leads de Entrada" },
                                 { value: "negociando", label: "Negociando" },
                                 { value: "finalização", label: "Finalização" },
                                 { value: "pouco interesse", label: "Pouco Interesse" },
+                                { text: "Clientes Ativos", value: "clientes ativos" },
+                                { text: "Clientes Perdidos", value: "clientes perdidos" },
                             ]}
                             style={{ marginBottom: 10, width: "100%" }}
                         />
-
-                        <label>Status Reunião</label>
                         <Select
-                            value={selectedLead.status_reuniao}
-                            onChange={(value) => setSelectedLead(prev => prev ? ({ ...prev, status_reuniao: value }) : null)}
+                            value={selectedLead?.status_reuniao}
+                            onChange={(value) => setSelectedLead(prev => prev ? ({ ...prev, status_reuniao: value }) : prev)}
                             options={[
-                                { value: "marcar_reuniao", label: "Marcar Reunião" },
                                 { value: "reuniao_marcada", label: "Reunião Marcada" },
                                 { value: "retornar", label: "Retornar" },
-                                { value: "nao_atendeu", label: "Não Atendeu" },
                                 { value: "nao_tem_interesse", label: "Não Tem Interesse" },
+                                { value: "nao_atendeu", label: "Não Atendeu" },
+                                { value: "marcar_reuniao", label: "Marcar Reunião" },
+
                             ]}
                             style={{ marginBottom: 10, width: "100%" }}
                         />
@@ -144,12 +208,13 @@ const LeadTable: React.FC = () => {
                         <label>Observações</label>
                         <Input.TextArea
                             rows={4}
-                            value={selectedLead.observacoes || ""}
-                            onChange={(e) => setSelectedLead(prev => prev ? ({ ...prev, observacoes: e.target.value }) : null)}
+                            value={selectedLead?.observacoes || ""}
+                            onChange={(e) => setSelectedLead(prev => prev ? ({ ...prev, observacoes: e.target.value }) : prev)}
                         />
                     </>
                 )}
             </Modal>
+
         </TableContainer>
     );
 };
