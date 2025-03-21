@@ -1,15 +1,34 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import styles from './ApolicesTable.module.css';
 import { FaEye, FaDownload } from 'react-icons/fa';
 import { Apolices } from "@/types/interfaces";
 import { formatMoney } from "@/utils/utils";
+import api from "@/app/api/axios";
 
 const ApolicesTable: React.FC = () => {
     const clienteDetalhe = useSelector((state: RootState) => state.clientes.clienteDetalhe);
     const apolicesDetalhes = clienteDetalhe?.apolices_detalhes;
     const apolices = (clienteDetalhe?.apolices || {}) as Apolices;
+    const [administradoras, setAdministradoras] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        const fetchAdministradoras = async () => {
+            try {
+                const response = await api.get("/administradoras/"); // 🔥 Ajuste a URL conforme o backend
+                const adminMap: Record<string, string> = {};
+                response.data.forEach((admin: { id: string; nome: string }) => {
+                    adminMap[admin.id] = admin.nome;
+                });
+                setAdministradoras(adminMap);
+            } catch (error) {
+                console.error("Erro ao buscar administradoras:", error);
+            }
+        };
+
+        fetchAdministradoras();
+    }, []);
 
     // Juntando todas as apólices de diferentes tipos em um único array
     const todasApolices = [
@@ -79,11 +98,11 @@ const ApolicesTable: React.FC = () => {
             <table className={styles.table}>
                 <thead>
                 <tr>
-                    <th>Número da Apólice</th>
+                    <th>Número</th>
                     <th>Produto</th>
                     <th>Seguradora</th>
                     <th>Data de Início</th>
-                    <th>Data de Vencimento</th>
+                    <th>Vencimento</th>
                     <th>Ações</th>
                 </tr>
                 </thead>
@@ -91,8 +110,8 @@ const ApolicesTable: React.FC = () => {
                 {todasApolices.map((apolice) => (
                     <tr key={apolice.id}>
                         <td>{apolice.numero_apolice}</td>
-                        <td>{apolice.produto}</td>
-                        <td>{apolice.seguradora}</td>
+                        <td>{apolice.tipo_produto || "N/A"}</td>
+                        <td>{administradoras[apolice.administradora] || "N/A"}</td>
                         <td>{new Date(apolice.data_inicio).toLocaleDateString()}</td>
                         <td>{new Date(apolice.data_vencimento).toLocaleDateString()}</td>
                         <td>

@@ -52,6 +52,8 @@ export interface Lead {
     pipeline_stage?: string;
     created_at: string;
     updated_at: string;
+    indicado_por_cliente_id?: string; // <- Adicione esta linha se não existir
+    indicado_por_parceiros_ids?: string[]; // <- Adicione esta linha se não exist
 }
 
 export interface Profissao {

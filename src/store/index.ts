@@ -11,6 +11,7 @@ import clientesReducer from '@/store/slices/clientesSlice';
 import apoliceReducer from '@/store/slices/apoliceSlice';
 import profileReducer from '@/store/slices/profileSlice';
 import googleIntegrationReducer from '@/store/slices/googleIntegrationSlice'
+import parceirosReducer from "@/store/slices/parceirosSlice";
 
 // Configuração de persistência
 const persistConfig = {
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
     apolices: apoliceReducer,
     profile: profileReducer,
     googleIntegration: googleIntegrationReducer,
+    parceiros: parceirosReducer,
 });
 
 // Persistência aplicada ao reducer combinado

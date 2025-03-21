@@ -109,14 +109,30 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
                             <div>
                                 <h2>Informações importantes</h2>
 
-                                <p>
+                                <>
                                     <strong>Indicação:</strong>{' '}
-                                    {
-                                        currentLead.indicado_por_detalhes
-                                            ? `${currentLead.indicado_por_detalhes.nome} (${currentLead.indicado_por_detalhes.tipo})`
-                                            : 'Nenhuma indicação registrada'
-                                    }
-                                </p>
+                                    {currentLead.indicado_por_detalhes ? (
+                                        <ul  style={{
+                                            margin: '0',
+                                            padding: '0',
+                                            listStyleType: 'disc' as 'disc',
+                                            marginLeft: '20px'
+                                        }}>
+                                            {currentLead.indicado_por_detalhes.tipo === "cliente" ? (
+                                                <li>
+                                                    <strong>Cliente:</strong> {currentLead.indicado_por_detalhes.nome}
+                                                </li>
+                                            ) : (
+                                                <li>
+                                                    <strong>Parceiro:</strong> {currentLead.indicado_por_detalhes.nome}
+                                                </li>
+                                            )}
+                                        </ul>
+                                    ) : (
+                                        "Nenhuma indicação"
+                                    )}
+                                </>
+
 
                                 <p>
                                     <strong>Oportunidades:</strong>{' '}
@@ -173,7 +189,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
                         interactive={true} // Permite interações no conteúdo do tooltip
                         appendTo={document.body} // Resolve o problema de corte
                     >
-                        <div
+                    <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}

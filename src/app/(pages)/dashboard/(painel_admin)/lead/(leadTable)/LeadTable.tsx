@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Table, Tooltip, Modal, Select, Input } from "antd";
+import { Button, Table, Tooltip, Modal, Select, Input, Radio } from "antd";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { fetchLeads, deleteLead, updateLead } from "@/store/slices/leadsSlice";
 import { Lead } from "@/types/interfaces";
@@ -11,14 +11,16 @@ import { FaCalendarAlt, FaEdit, FaTrash, FaWhatsapp } from "react-icons/fa";
 import { formatPhoneNumber } from "@/utils/maskUtils";
 import { Key } from 'react';
 import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
+import EditLeadModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/EditLead";
 
 const LeadTable: React.FC = () => {
     const dispatch = useAppDispatch();
     const leads = useAppSelector((state) => state.leads.leads);
     const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
-    const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
+    const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         dispatch(fetchLeads({ status: ["lead", "negociacao", "nova_negociacao"] }));
@@ -40,6 +42,7 @@ const LeadTable: React.FC = () => {
         "marcar_reuniao": "Marcar Reunião"
     };
 
+
     const handleScheduleFormClose = () => {
         setShowScheduleForm(false);
 
@@ -55,22 +58,6 @@ const LeadTable: React.FC = () => {
             dispatch(fetchLeads({ status: ["lead", "negociacao", "nova_negociacao"] }));
         }
     };
-
-
-
-    const handleSave = () => {
-        if (selectedLead) {
-            const updatedLead: Partial<Lead> = {
-                pipeline_stage: selectedLead.pipeline_stage,
-                observacoes: selectedLead.observacoes,
-                status_reuniao: selectedLead.status_reuniao,
-            };
-
-            dispatch(updateLead({ id: selectedLead.id, updatedLead }));
-            setIsModalOpen(false);
-        }
-    };
-
 
 
     const columns = [
@@ -130,12 +117,28 @@ const LeadTable: React.FC = () => {
             ),
         },
         {
+            title: "Indicação",
+            dataIndex: "indicado_por_detalhes",
+            key: "indicado_por_detalhes",
+            render: (indicado_por_detalhes: any) => (
+                indicado_por_detalhes
+                    ? indicado_por_detalhes.tipo === "cliente"
+                        ? <Tooltip title={indicado_por_detalhes.nome}>
+                            <strong>Cliente:</strong> {indicado_por_detalhes.nome}
+                        </Tooltip>
+                        : <Tooltip title={indicado_por_detalhes.nome}>
+                            <strong>Parceiro:</strong> {indicado_por_detalhes.nome}
+                        </Tooltip>
+                    : "Sem indicação"
+            ),
+        },
+        {
             title: "Ações",
             key: "actions",
             render: (_: unknown, record: Lead) => (
                 <div style={{ display: "flex", gap: 10 }}>
                     <Tooltip title="Editar">
-                        <Button icon={<FaEdit />} onClick={() => { setSelectedLead(record); setIsModalOpen(true); }} />
+                        <Button icon={<FaEdit />} onClick={() => { setSelectedLead(record); setIsEditModalOpen(true); }}/>
                     </Tooltip>
                     <Tooltip title="Criar Reunião">
                         <Button icon={<FaCalendarAlt />} onClick={() => { setSelectedLead(record); setShowScheduleForm(true); }} />
@@ -167,53 +170,13 @@ const LeadTable: React.FC = () => {
                 />
             )}
 
-            <Modal
-                title="Editar Lead"
-                open={isModalOpen}
-                onOk={handleSave}
-                onCancel={() => setIsModalOpen(false)}
-                okText="Salvar"
-                cancelText="Cancelar"
-            >
-                {selectedLead && (
-                    <>
-                        <label>Pipeline Stage</label>
-                        <Select
-                            value={selectedLead?.pipeline_stage}
-                            onChange={(value) => setSelectedLead(prev => prev ? ({ ...prev, pipeline_stage: value }) : prev)}
-                            options={[
-                                { value: "leads de entrada", label: "Leads de Entrada" },
-                                { value: "negociando", label: "Negociando" },
-                                { value: "finalização", label: "Finalização" },
-                                { value: "pouco interesse", label: "Pouco Interesse" },
-                                { text: "Clientes Ativos", value: "clientes ativos" },
-                                { text: "Clientes Perdidos", value: "clientes perdidos" },
-                            ]}
-                            style={{ marginBottom: 10, width: "100%" }}
-                        />
-                        <Select
-                            value={selectedLead?.status_reuniao}
-                            onChange={(value) => setSelectedLead(prev => prev ? ({ ...prev, status_reuniao: value }) : prev)}
-                            options={[
-                                { value: "reuniao_marcada", label: "Reunião Marcada" },
-                                { value: "retornar", label: "Retornar" },
-                                { value: "nao_tem_interesse", label: "Não Tem Interesse" },
-                                { value: "nao_atendeu", label: "Não Atendeu" },
-                                { value: "marcar_reuniao", label: "Marcar Reunião" },
-
-                            ]}
-                            style={{ marginBottom: 10, width: "100%" }}
-                        />
-
-                        <label>Observações</label>
-                        <Input.TextArea
-                            rows={4}
-                            value={selectedLead?.observacoes || ""}
-                            onChange={(e) => setSelectedLead(prev => prev ? ({ ...prev, observacoes: e.target.value }) : prev)}
-                        />
-                    </>
-                )}
-            </Modal>
+            {selectedLead && isEditModalOpen && (
+                <EditLeadModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    lead={selectedLead}
+                />
+            )}
 
         </TableContainer>
     );

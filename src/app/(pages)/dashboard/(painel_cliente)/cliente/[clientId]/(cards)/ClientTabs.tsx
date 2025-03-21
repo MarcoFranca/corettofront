@@ -50,7 +50,7 @@ const ClientTabs: React.FC<ClientTabsProps> = ({ cliente, financeData }) => {
                 <HealthInfoCard cliente={cliente} />
             </TabPanel>
             <TabPanel>
-                <ApolicesTable />
+                <ApolicesTable  />
             </TabPanel>
             <TabPanel>
                 <Card title="Informações Financeiras">

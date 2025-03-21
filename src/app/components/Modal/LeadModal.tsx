@@ -32,6 +32,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const [indicadoPorTipo, setIndicadoPorTipo] = useState<'cliente' | 'parceiro' | ''>('');
     const [indicadoPorId, setIndicadoPorId] = useState<string | null>(null);
     const [parceirosDisponiveis, setParceirosDisponiveis] = useState<ProfissaoOption[]>([]);
+    const [indicadosPorParceiros, setIndicadosPorParceiros] = useState<string[]>([]);
 
     // 📌 Estados de Oportunidades
     const [produtosDisponiveis, setProdutosDisponiveis] = useState<{ value: string; label: string }[]>([]);
@@ -178,8 +179,8 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                 ...(indicadoPorTipo === "cliente" && data.indicado_por_cliente_id
                     ? { indicado_por_cliente_id: data.indicado_por_cliente_id.value } // 🔥 Pega apenas o ID
                     : {}),
-                ...(indicadoPorTipo === "parceiro" && indicadoPorId
-                    ? { indicado_por_parceiro_id: indicadoPorId }
+                ...(indicadoPorTipo === "parceiro" && indicadosPorParceiros.length > 0
+                    ? { indicado_por_parceiros_ids: indicadosPorParceiros }
                     : {}),
             };
 
@@ -281,11 +282,12 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                         ) : indicadoPorTipo === "parceiro" ? (
                             <Select
                                 options={parceirosDisponiveis}
-                                value={parceirosDisponiveis.find((parceiro) => parceiro.value === indicadoPorId)}
-                                onChange={(option) => setIndicadoPorId(option?.value || null)}
-                                placeholder="Selecione um parceiro..."
-                                className={fieldErrors.indicado_por_parceiro_id ? styles.errorSelect : ""}
+                                isMulti
+                                value={parceirosDisponiveis.filter((parceiro) => indicadosPorParceiros.includes(parceiro.value))}
+                                onChange={(options) => setIndicadosPorParceiros(options.map(option => option.value))}
+                                placeholder="Selecione parceiros..."
                             />
+
                         ) : null}
                     </div>
                 </fieldset>

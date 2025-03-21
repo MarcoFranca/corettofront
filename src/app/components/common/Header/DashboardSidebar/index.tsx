@@ -57,6 +57,9 @@ const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => 
                 <NavItem onClick={() => router.push("/dashboard/apolices")} className={isActive("/dashboard/apolices") ? "active" : ""}>
                     <Icon><FaFileAlt /></Icon> Apólices
                 </NavItem>
+                <NavItem onClick={() => router.push("/dashboard/parceiros")} className={isActive("/dashboard/parceiros") ? "active" : ""}>
+                    <Icon><FaUserFriends /></Icon> Parceiros
+                </NavItem>
                 <NavItem onClick={() => router.push("/dashboard/config")} className={isActive("/dashboard/config") ? "active" : ""}>
                     <Icon><FaCog /></Icon> Configuração
                 </NavItem>

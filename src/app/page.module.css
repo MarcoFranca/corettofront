@@ -1,94 +1,233 @@
-.main{
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 9rem);
-  gap: 5rem;
-  background-color: #8BC6EC;
-  background-image: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
-}
-
-.hero{
-  height: 25rem;
-  width: auto;
-}
-
-.heroContant{
+.homeCotainer {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  height: 100%;
+  align-items: center;
+  background: linear-gradient(135deg, #8BC6EC, #9599E2);
 }
 
-.heroContant>h1{
-  font-size: 2.5rem;
-  width: 42rem;
-  line-height: 5rem;
-}
-
-.heroContant>p{
-  font-size: 1.5rem;
-  width: 42rem;
-  line-height: 2.3rem;
-
-}
-
-.heroContantButton{
+.main {
+  width: 100%;
+  max-width: 1600px;
+  padding: 0 2rem;
   display: flex;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 8rem;
 }
 
-.button{
-  font-size: 1rem;
+/* Hero Section */
+.heroSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  height: calc(100vh - 120px);
+}
+
+.heroContent {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.heroContent h1 {
+  font-size: 3rem;
+  line-height: 1.5;
   font-weight: bold;
-  margin-top: 2rem;
-  padding: 1rem;
-  width: 15rem;
-  background-color: #020f60;
-  border-radius: 0.3rem;
-  cursor: pointer;
-  transition: 0.3s;
-  border: 1px solid #07011e;
-  color: #ffffff;
+  color: #07011e;
 }
 
-.button:hover{
-  background-color: rgba(198, 165, 46);
-  border: 1px solid transparent;
-
+.heroContent p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #333;
 }
 
-.buttonVendas{
-  font-size: 1rem;
+.buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 0.8rem 1.5rem;
   font-weight: bold;
-  margin-top: 2rem;
-  padding: 1rem;
-  width: 15rem;
-  border-radius: 0.3rem;
+  text-align: center;
+  border-radius: 8px;
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: 0.3s;
-  border: 1px solid #07011e;
-
+  text-decoration: none;
 }
 
-.buttonVendas:hover{
-  background-color: rgba(198, 165, 46);
-  border: 1px solid transparent;
-
+.primaryButton {
+  background-color: #07011e;
+  color: #fff !important;
+  border: none;
 }
 
+.primaryButton:hover {
+  background-color: #005bb5;
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: #07011e;
+  border: 2px solid #07011e;
+}
+
+.secondaryButton:hover {
+  background-color: rgba(198, 165, 46, 0.9);
+  color: #fff;
+  border-color: transparent;
+}
+
+.heroImage {
+  max-width: 50%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* Funcionalidades em Destaque */
+.featuresSection {
+  text-align: center;
+}
+
+.featuresSection h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #07011e;
+}
+
+.featuresGrid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 320px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  padding: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.featureCard h3 {
+  color: #07011e;
+  margin-top: 1rem;
+}
+
+.featureCardTitle{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+
+}
+.featureCard p {
+  padding: 0.5rem 1rem 1.5rem;
+  color: #555;
+}
+
+/* Pricing Section */
+.pricingSection {
+  text-align: center;
+}
+
+.pricingSection h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #07011e;
+}
+
+.pricingCard {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  display: inline-block;
+  max-width: 400px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.price {
+  font-size: 2.5rem;
+  color: #07011e;
+  margin-bottom: 1rem;
+}
+
+.price span {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.pricingCard ul {
+  text-align: left;
+  list-style: none;
+  padding: 0;
+}
+
+.pricingCard ul li {
+  margin-bottom: 0.75rem;
+}
+
+/* Video Section */
+.videoSection {
+  text-align: center;
+}
+
+.videoSection h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #07011e;
+}
+
+.videoWrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* FAQ Section */
+.faqSection {
+  text-align: center;
+}
+
+.faqSection h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #07011e;
+}
+
+.faqItem {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 0;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.faqItem h4 {
+  color: #07011e;
+  margin-bottom: 0.5rem;
+}
+
+.faqItem p {
+  color: #555;
+}
+
+/* Footer */
 .footer {
+  width: 100%;
   background-color: #040c3b;
   color: white;
   text-align: center;
   padding: 20px;
-  width: 100%;
-  /*margin-top: 20px;*/
-}
-
-.footerLinks {
-  margin-top: 10px;
 }
 
 .footerLinks a {
@@ -101,58 +240,53 @@
   text-decoration: underline;
 }
 
+/* Responsividade para Mobile */
 @media (max-width: 768px) {
-
   .main {
+    padding: 2rem 1rem;
+  }
+
+  .heroSection {
     flex-direction: column;
-    padding: 1rem;
-    gap: 2rem;
-  }
-
-  .hero {
-    height: auto;
-    max-width: 90%; /* Ocupa a largura total */
-  }
-
-  .heroContant{
-    align-items: center;
-    width: 100%;
-  }
-
-  .heroContant > h1 {
     text-align: center;
-    font-size: 1.5rem;
-    line-height: 2rem;
-    width: 100%;
   }
 
-  .heroContant > p {
-    text-align: center;
-    width: 100%;
+  .heroImage {
+    max-width: 90%;
+  }
+
+  .heroContent h1 {
+    font-size: 2rem;
+  }
+
+  .heroContent p {
     font-size: 1rem;
-    line-height: 1.5rem;
   }
 
-  .heroContantButton{
+  .buttons {
     flex-direction: column;
     align-items: center;
   }
 
-  .button, .buttonVendas {
-    text-align: center;
-    display: flex;
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .featuresGrid {
+    flex-direction: column;
     align-items: center;
-    font-size: 0.7rem;
-    width: 90%; /* Largura maior para se ajustar ao espaço */
   }
 
-  .main{
-    height: auto;
+  .featureCard {
+    width: 90%;
   }
 
-  .heroContantButton{
-    display: flex;
-    gap: initial;
+  .pricingCard {
+    width: 90%;
   }
 
+  .videoWrapper iframe {
+    height: 250px;
+  }
 }

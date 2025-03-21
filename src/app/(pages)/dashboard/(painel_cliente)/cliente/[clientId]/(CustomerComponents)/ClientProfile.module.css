@@ -420,6 +420,12 @@
     margin-bottom: 0;
 }
 
+.tabs{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
 .tab {
     padding: 10px 20px;
     cursor: pointer;
@@ -463,9 +469,9 @@
     border: 1px solid #ddd;
     border-radius: 0 0 8px 8px;
     padding: 20px;
-    margin-top: -1px; /* Conecta o conteúdo com a aba ativa */
+    width: 90%;
     background-color: #fff;
-    border-top: none; /* Remove a borda superior do conteúdo */
+    margin-left: 1px;
 }
 
 /* EditClientModal.module.css */
