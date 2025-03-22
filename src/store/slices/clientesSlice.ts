@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/app/api/axios';
 import { Cliente, ClientesState } from '@/types/interfaces';
+import { Saude } from "@/types/interfaces";
 
 const initialState: ClientesState = {
     clientes: [],
@@ -120,14 +121,18 @@ export const updateCliente = createAsyncThunk<
     }
 );
 
-export const updateClienteSaude = createAsyncThunk<Cliente, { id: string; saudeData: Partial<Cliente['saude']> }>(
-    'clientes/updateClienteSaude',
-    async ({ id, saudeData }, { dispatch }) => {
-        const response = await api.patch(`/clientes/${id}/`, { saude: saudeData });
-        dispatch(fetchClienteDetalhe(id));
-        return response.data;
-    }
-);
+export const updateClienteSaude = createAsyncThunk<
+    Saude, // Retorno
+    { id: string; saudeData: Partial<Saude> }
+>("clientes/updateClienteSaude", async ({ id, saudeData }, { dispatch }) => {
+    const response = await api.patch(`/saude/${id}/`, saudeData);
+
+    // Atualiza os dados completos do cliente
+    dispatch(fetchClienteDetalhe(id));
+
+    return response.data;
+});
+
 
 export const deleteCliente = createAsyncThunk<string, string>('clientes/deleteCliente', async (id, { dispatch }) => {
     await api.delete(`/clientes/${id}/`);
@@ -210,11 +215,17 @@ const clientesSlice = createSlice({
                     state.clienteDetalhe = action.payload;
                 }
             })
+
             .addCase(updateClienteSaude.fulfilled, (state, action) => {
-                if (state.clienteDetalhe && state.clienteDetalhe.id === action.payload.id) {
-                    state.clienteDetalhe.saude = action.payload.saude;
+                if (state.clienteDetalhe) {
+                    state.clienteDetalhe.relacionamentos = {
+                        ...(state.clienteDetalhe.relacionamentos || {}),
+                        saude: action.payload
+                    };
                 }
             })
+
+
             .addCase(updateClienteObservacao.fulfilled, (state, action) => {
                 const index = state.clientes.findIndex(cliente => cliente.id === action.payload.id);
                 if (index !== -1) {

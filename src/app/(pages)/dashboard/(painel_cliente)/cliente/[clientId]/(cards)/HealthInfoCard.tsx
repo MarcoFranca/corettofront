@@ -92,25 +92,25 @@ const HealthInfoCard: React.FC<HealthInfoCardProps> = ({ cliente }) => {
                             <Image src={AlturaImage} alt="Altura" className={styles.StaticIconSaude}/>
                             <div className={styles.ImcTexts}>
                                 <h3 className={styles.TitleImc}>Altura</h3>
-                                <p className={styles.FontImc}>{cliente.saude?.altura || 'Não informada'} (M)</p>
+                                <p className={styles.FontImc}>{cliente.relacionamentos?.saude?.altura || 'Não informada'} (M)</p>
                             </div>
                         </div>
                         <div className={styles.profileCellRowIMCLeftContent}>
                             <Image src={BalancaImage} alt="Peso" className={styles.StaticIconSaude}/>
                             <div className={styles.ImcTexts}>
                                 <h3 className={styles.TitleImc}>Peso</h3>
-                                <p className={styles.FontImc}>{cliente.saude?.peso || 'Não informado'} Kg</p>
+                                <p className={styles.FontImc}>{cliente.relacionamentos?.saude?.peso || 'Não informado'} Kg</p>
                             </div>
                         </div>
                         <div className={styles.profileCellRowIMCLeftContent}>
-                            {cliente.saude?.imc ? (
-                                <Image src={imageImc(cliente.saude?.imc_grau || '')} alt={'IMC'} className={styles.StaticIconSaude} priority />
+                            {cliente.relacionamentos?.saude?.imc ? (
+                                <Image src={imageImc(cliente.relacionamentos?.saude?.imc_grau || '')} alt={'IMC'} className={styles.StaticIconSaude} priority />
                             ) : ''}
                             <div className={styles.ImcTexts}>
                                 <h3 className={styles.TitleImc}>IMC</h3>
-                                <p className={styles.FontImc}>{cliente.saude?.imc ? cliente.saude.imc.toFixed(2) : 'Não calculado'}</p>
-                                <h4 className={`${styles.FontImc} ${getImcGrauClass(cliente.saude?.imc_grau)}`}>
-                                    {cliente.saude?.imc_grau || 'Não calculado'}
+                                <p className={styles.FontImc}>{cliente.relacionamentos?.saude?.imc ? cliente.relacionamentos?.saude.imc.toFixed(2) : 'Não calculado'}</p>
+                                <h4 className={`${styles.FontImc} ${getImcGrauClass(cliente.relacionamentos?.saude?.imc_grau)}`}>
+                                    {cliente.relacionamentos?.saude?.imc_grau || 'Não calculado'}
                                 </h4>
                             </div>
                         </div>
@@ -121,18 +121,18 @@ const HealthInfoCard: React.FC<HealthInfoCardProps> = ({ cliente }) => {
                 <div className={styles.profileCellRowDoenca}>
                     <div className={styles.titleWithIcon}>
                         <h4>Doença Preexistente</h4>
-                        {cliente.saude?.doenca_preexistente && (
+                        {cliente.relacionamentos?.saude?.doenca_preexistente && (
                             <Image
                                 src={CopyIcon}
                                 alt="Copiar"
                                 className={styles.copyIcon}
-                                onClick={() => copyToClipboard(cliente.saude?.doenca_preexistente || '')}
+                                onClick={() => copyToClipboard(cliente.relacionamentos?.saude?.doenca_preexistente || '')}
                                 priority
                             />
                         )}
                     </div>
                     <div className={styles.infoCard}>
-                    <p className={styles.infoCard}>{cliente.saude?.doenca_preexistente || 'Nenhuma'}</p>
+                    <p className={styles.infoCard}>{cliente.relacionamentos?.saude?.doenca_preexistente || 'Nenhuma'}</p>
 
                     </div>
                 </div>
@@ -141,27 +141,27 @@ const HealthInfoCard: React.FC<HealthInfoCardProps> = ({ cliente }) => {
                 <div className={styles.profileCellRowDoenca}>
                     <div className={styles.titleWithIcon}>
                         <h4>Histórico Familiar de Doenças</h4>
-                        {cliente.saude?.historico_familiar_doencas && (
+                        {cliente.relacionamentos?.saude?.historico_familiar_doencas && (
                             <Image
                                 src={CopyIcon}
                                 alt="Copiar"
                                 className={styles.copyIcon}
-                                onClick={() => copyToClipboard(cliente.saude?.historico_familiar_doencas || '')}
+                                onClick={() => copyToClipboard(cliente.relacionamentos?.saude?.historico_familiar_doencas || '')}
                                 priority
                             />
                         )}
                     </div>
-                    <p className={styles.infoCard}>{cliente.saude?.historico_familiar_doencas || 'Nenhum'}</p>
+                    <p className={styles.infoCard}>{cliente.relacionamentos?.saude?.historico_familiar_doencas || 'Nenhum'}</p>
                 </div>
             </div>
             <EditHealthModal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 initialData={{
-                    altura: cliente.saude?.altura?.toString().replace('.', ',') || '',
-                    peso: cliente.saude?.peso?.toString().replace('.', ',') || '',
-                    doenca_preexistente: cliente.saude?.doenca_preexistente || '',
-                    historico_familiar_doencas: cliente.saude?.historico_familiar_doencas || '',
+                    altura: cliente.relacionamentos?.saude?.altura?.toString().replace('.', ',') || '',
+                    peso: cliente.relacionamentos?.saude?.peso?.toString().replace('.', ',') || '',
+                    doenca_preexistente: cliente.relacionamentos?.saude?.doenca_preexistente || '',
+                    historico_familiar_doencas: cliente.relacionamentos?.saude?.historico_familiar_doencas || '',
                 }}
                 onSave={handleSave}
             />

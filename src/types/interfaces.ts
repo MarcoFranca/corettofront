@@ -26,7 +26,7 @@ export interface Relacionamentos {
     parceiros?: any[];
     reunioes?: any[];
     oportunidades?: Oportunidade[];
-    saude?: any;
+    saude?: Saude;
     endereco?: any;
 }
 
@@ -256,6 +256,7 @@ export interface EnderecoCadastro {
 }
 
 export interface Saude {
+    id: string;
     peso?: number;
     altura?: number;
     imc?: number;
@@ -311,7 +312,6 @@ export interface Cliente {
     created_at?: string;
     updated_at?: string;
     endereco?: Endereco;
-    saude?: Saude;
     relacionamentos?: Relacionamentos; // ✅ Garantindo o tipo correto
 }
 

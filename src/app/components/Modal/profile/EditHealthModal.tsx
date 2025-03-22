@@ -3,8 +3,13 @@ import { useForm } from "react-hook-form";
 import StandardModal from "@/app/components/Modal/StandardModal";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { updateClienteSaude } from "@/store/slices/clientesSlice";
-import styles from "./EditHealthModal.module.css";
 import { RootState } from "@/store";
+import {
+    Input,
+    Label,
+    ModalContent,
+    TextArea
+} from "@/app/components/Modal/profile/EditHealthModal.styles";
 
 interface EditHealthModalProps {
     isOpen: boolean;
@@ -57,24 +62,24 @@ const EditHealthModal: React.FC<EditHealthModalProps> = ({ isOpen, onRequestClos
             errorMessage="Erro ao atualizar dados de saúde, tente novamente."
             methods={methods} // ✅ Agora passamos um `useForm` completo
         >
-            <div className={styles.modalContent}>
-                <label>
+            <ModalContent>
+                <Label>
                     {formatLabel("altura")}:
-                    <input type="text" {...register("altura")} />
-                </label>
-                <label>
+                    <Input type="text" {...register("altura")} />
+                </Label>
+                <Label>
                     {formatLabel("peso")}:
-                    <input type="text" {...register("peso")} />
-                </label>
-                <label>
+                    <Input type="text" {...register("peso")} />
+                </Label>
+                <Label>
                     {formatLabel("doenca_preexistente")}:
-                    <textarea {...register("doenca_preexistente")} />
-                </label>
-                <label>
+                    <TextArea {...register("doenca_preexistente")} />
+                </Label>
+                <Label>
                     {formatLabel("historico_familiar_doencas")}:
-                    <textarea {...register("historico_familiar_doencas")} />
-                </label>
-            </div>
+                    <TextArea {...register("historico_familiar_doencas")} />
+                </Label>
+            </ModalContent>
         </StandardModal>
     );
 };
