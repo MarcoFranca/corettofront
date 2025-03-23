@@ -9,7 +9,7 @@ import styles from './styles.module.css';
 import api from '@/app/api/axios';
 import { useMediaQuery } from '@/hooks/hooks';
 import MenuMobile from '@/app/components/common/Header/DashboardMobile/MenuMobile';
-import Spinner from '@/app/components/common/spinner/sppiner';
+import Spinner from '@/app/components/ui/loading/spinner/sppiner';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Steps, Button } from 'antd';
 import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import { RootState } from '@/store';
-import { fetchClienteDetalhe, updateCliente} from '@/store/slices/clientesSlice';
+import {fetchClienteDetalhe, updateCliente} from '@/store/slices/clientesSlice';
 import Step1 from './steps/Step1';
 import Step2 from './steps/Step2';
 import Step3 from './steps/Step3';
@@ -99,12 +99,12 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                 patrimonio: clienteDetalhe.vida_financeira?.patrimonio?.toString() || '',
                 dividas: clienteDetalhe.vida_financeira?.dividas?.toString() || '',
                 projetosFuturos: clienteDetalhe.vida_financeira?.projetos_futuros || '',
-                peso: clienteDetalhe.saude?.peso?.toString() || '',
-                altura: clienteDetalhe.saude?.altura?.toString() || '',
-                temDoencaPreexistente: clienteDetalhe.saude?.tem_doenca_preexistente || false,
-                doencaPreexistente: clienteDetalhe.saude?.doenca_preexistente || '',
-                temHistoricoFamiliarDoencas: clienteDetalhe.saude?.tem_historico_familiar_doencas || false,
-                historicoFamiliarDoencas: clienteDetalhe.saude?.historico_familiar_doencas || '',
+                peso: clienteDetalhe.relacionamentos?.saude?.peso?.toString() || '',
+                altura: clienteDetalhe.relacionamentos?.saude?.altura?.toString() || '',
+                temDoencaPreexistente: clienteDetalhe.relacionamentos?.saude?.tem_doenca_preexistente || false,
+                doencaPreexistente: clienteDetalhe.relacionamentos?.saude?.doenca_preexistente || '',
+                temHistoricoFamiliarDoencas: clienteDetalhe.relacionamentos?.saude?.tem_historico_familiar_doencas || false,
+                historicoFamiliarDoencas: clienteDetalhe.relacionamentos?.saude?.historico_familiar_doencas || '',
                 reunioes: clienteDetalhe.reunioes || [],
             });
         }
@@ -138,6 +138,7 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
     };
 
     const handleSubmit = async () => {
+
         try {
             if (!clientId) {
                 console.error('Cliente ID não encontrado. Não é possível atualizar.');
@@ -171,15 +172,6 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({ clientId }) => {
                     patrimonio: formData.patrimonio ? parseFloat(formData.patrimonio) : undefined,
                     dividas: formData.dividas ? parseFloat(formData.dividas) : undefined,
                     projetos_futuros: formData.projetosFuturos || undefined,
-                },
-
-                saude: {
-                    peso: formData.peso ? parseFloat(formData.peso) : undefined,
-                    altura: formData.altura ? parseFloat(formData.altura) : undefined,
-                    tem_doenca_preexistente: formData.temDoencaPreexistente,
-                    doenca_preexistente: formData.doencaPreexistente || undefined,
-                    tem_historico_familiar_doencas: formData.temHistoricoFamiliarDoencas,
-                    historico_familiar_doencas: formData.historicoFamiliarDoencas || undefined,
                 },
 
                 // 🔥 **Correção no envio de filhos**

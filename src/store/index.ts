@@ -1,26 +1,16 @@
+// store/index.ts
 import { configureStore } from '@reduxjs/toolkit';
-import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 import { combineReducers } from '@reduxjs/toolkit';
-
 import authReducer from './slices/authSlice';
 import leadsReducer from './slices/leadsSlice';
-import meetingReducer from '@/store/slices/meetingSlice';
-import agendaReducer from '@/store/slices/agendaSlice';
-import clientesReducer from '@/store/slices/clientesSlice';
-import apoliceReducer from '@/store/slices/apoliceSlice';
-import profileReducer from '@/store/slices/profileSlice';
-import googleIntegrationReducer from '@/store/slices/googleIntegrationSlice'
-import parceirosReducer from "@/store/slices/parceirosSlice";
+import meetingReducer from './slices/meetingSlice';
+import agendaReducer from './slices/agendaSlice';
+import clientesReducer from './slices/clientesSlice';
+import apoliceReducer from './slices/apoliceSlice';
+import profileReducer from './slices/profileSlice';
+import googleIntegrationReducer from './slices/googleIntegrationSlice';
+import parceirosReducer from './slices/parceirosSlice';
 
-// Configuração de persistência
-const persistConfig = {
-    key: 'root',
-    storage,
-    whitelist: ['leads', 'auth'], // Reducers que serão persistidos
-};
-
-// Combinar reducers
 const rootReducer = combineReducers({
     auth: authReducer,
     clientes: clientesReducer,
@@ -33,19 +23,39 @@ const rootReducer = combineReducers({
     parceiros: parceirosReducer,
 });
 
-// Persistência aplicada ao reducer combinado
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-const store = configureStore({
-    reducer: persistedReducer,
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-            serializableCheck: false, // Necessário para redux-persist
-        }),
-});
-
-export const persistor = persistStore(store);
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
 
-export default store;
+// ⚠️ Evita criar persistência no SSR
+const isClient = typeof window !== 'undefined';
+
+let store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({ serializableCheck: false }),
+});
+
+let persistor: any = null;
+
+if (isClient) {
+    const { persistStore, persistReducer } = require('redux-persist');
+    const storage = require('redux-persist/lib/storage').default;
+
+    const persistConfig = {
+        key: 'root',
+        storage,
+        whitelist: ['auth', 'leads'], // ajuste conforme necessário
+    };
+
+    const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+    store = configureStore({
+        reducer: persistedReducer,
+        middleware: (getDefaultMiddleware) =>
+            getDefaultMiddleware({ serializableCheck: false }),
+    });
+
+    persistor = persistStore(store);
+}
+
+export { store as default, persistor };

@@ -39,6 +39,7 @@ const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => 
             </ProfileSection>
 
             <NavMenu>
+
                 <NavItem onClick={() => router.push("/dashboard")} className={isActive("/dashboard") ? "active" : ""}>
                     <Icon><FaHome /></Icon> Dashboard
                 </NavItem>

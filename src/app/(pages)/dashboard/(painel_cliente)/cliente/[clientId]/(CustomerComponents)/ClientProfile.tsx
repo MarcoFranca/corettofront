@@ -26,7 +26,7 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import Spinner from "@/app/components/common/spinner/sppiner";
+import Spinner from "@/app/components/ui/loading/spinner/sppiner";
 import { StatusType , STATUS_DETAILS } from '@/app/components/ui/Badge';
 import ClientTabs from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/ClientTabs";
 import StandardModal from "@/app/components/Modal/StandardModal";

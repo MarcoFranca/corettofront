@@ -1,4 +1,4 @@
-import Spinner from "@/app/components/common/spinner/sppiner";
+import Spinner from "@/app/components/ui/loading/spinner/sppiner";
 
 const SplashScreen: React.FC = () => (
     <div className="splashScreen">

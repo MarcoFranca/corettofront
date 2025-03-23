@@ -2,37 +2,40 @@
 
 import React, { useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import store, { persistor } from '@/store';
-import Spinner from "@/app/components/common/spinner/sppiner";
-import SplashScreen from "@/app/components/common/SplashScreen/SplashScreen";
+import store from '@/store';
+import dynamic from 'next/dynamic';
+import Spinner from "@/app/components/ui/loading/spinner/sppiner";
+import type { Persistor } from 'redux-persist';
+
+// Lazy load do PersistGate, pois só pode rodar no client
+const PersistGate = dynamic(
+    () => import('redux-persist/integration/react').then(mod => mod.PersistGate),
+    { ssr: false }
+);
+
+// Também carrega o persistor dinamicamente
+const getPersistor = () => import('@/store').then(mod => mod.persistor);
 
 interface ReduxProviderProps {
     children: React.ReactNode;
 }
 
 const ReduxProvider: React.FC<ReduxProviderProps> = ({ children }) => {
-    const [isBootstrapped, setIsBootstrapped] = useState(false);
+    const [persistor, setPersistor] = useState<Persistor | null>(null);
 
     useEffect(() => {
-        const unsubscribe = persistor.subscribe(() => {
-            if (persistor.getState().bootstrapped) {
-                setIsBootstrapped(true);
-            }
+        getPersistor().then((persistorInstance) => {
+            setPersistor(persistorInstance); // ✅ Agora está certo
         });
-
-        return () => {
-            unsubscribe();
-        };
     }, []);
 
-    if (isBootstrapped) {
-        return <SplashScreen />;
+    if (!persistor) {
+        return <Spinner text="Carregando estado..." />;
     }
 
     return (
         <Provider store={store}>
-            <PersistGate persistor={persistor}>
+            <PersistGate persistor={persistor} loading={<Spinner />}>
                 {children}
             </PersistGate>
         </Provider>

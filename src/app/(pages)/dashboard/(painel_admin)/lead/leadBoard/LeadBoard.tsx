@@ -11,7 +11,7 @@ import CadastroLead from '../../../../../../../public/assets/pages/leads/cadastr
 import Image from 'next/image';
 import { useMediaQuery } from '@/hooks/hooks';
 import styles from './LeadBoard.module.css';
-import Spinner from "@/app/components/common/spinner/sppiner";
+import Spinner from "@/app/components/ui/loading/spinner/sppiner";
 import {
     Board,
     Container,
