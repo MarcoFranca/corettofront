@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store';
-import { setUserFromLocalStorage, setTokenFromLocalStorage, logout } from '@/store/slices/authSlice';
+import { RootState } from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/store';
+import { setUserFromLocalStorage, setTokenFromLocalStorage, logout } from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/store/slices/authSlice';
 import styles from './styles.module.css';
-import api from '@/app/api/axios';
-import { useMediaQuery } from '@/hooks/hooks';
-import MenuMobile from '@/app/components/common/Header/DashboardMobile/MenuMobile';
-import Spinner from '@/app/components/ui/loading/spinner/sppiner';
+import api from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/app/api/axios';
+import { useMediaQuery } from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/hooks/hooks';
+import MenuMobile from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/app/components/common/Header/DashboardMobile/MenuMobile';
+import Spinner from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/app/components/ui/loading/spinner/sppiner';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;

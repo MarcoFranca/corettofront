@@ -67,7 +67,7 @@ const LoginForm = () => {
     return (
         <div className={styles.container_form}>
             <form onSubmit={handleSubmit} className={styles.form}>
-                <Image src={LogoImag} alt={'logotipo'} className={styles.image} />
+                <Image src={LogoImag} alt={'logotipo'} className={styles.image} priority/>
                 <input
                     type="text"
                     placeholder="Nome de Usuário"
@@ -106,12 +106,12 @@ const LoginForm = () => {
                     <p>ou</p>
                     <div className={styles.line} />
                 </div>
-                {/*<div className={styles.social_login}>*/}
-                {/*    <button onClick={() => handleGoogleLogin()} className={styles.googleButton}>*/}
-                {/*        <Image src={GoogleImag} alt={'google Icon'} className={styles.social_image}/>*/}
-                {/*        Entrar com Google*/}
-                {/*    </button>*/}
-                {/*</div>*/}
+                    {/*<div className={styles.social_login}>*/}
+                    {/*    <button onClick={() => handleGoogleLogin()} className={styles.googleButton}>*/}
+                    {/*        <Image src={GoogleImag} alt={'google Icon'} className={styles.social_image}/>*/}
+                    {/*        Entrar com Google*/}
+                    {/*    </button>*/}
+                    {/*</div>*/}
                 <Link href={'/reset-password'} className={styles.sword}>Esqueceu a senha?</Link>
             </form>
             <div className={styles.cadastre}>

@@ -12,6 +12,12 @@ import { motion } from "framer-motion";
 import businessPlanAnimation from "@/../public/lotties/business-plan.json";
 import calendarAnimation from "@/../public/lotties/calendar.json";
 import automateAnimation from "@/../public/lotties/automacao.json";
+import YouTube, { YouTubeProps } from "react-youtube";
+
+type YouTubeErrorEvent = {
+    data: number;
+};
+
 
 
 export default function Home() {
@@ -157,22 +163,35 @@ export default function Home() {
                 >
                     <h2>Veja o CorretorLab em ação</h2>
                     <div className={styles.videoWrapper}>
-                        <iframe
-                            width="100%"
-                            height="500"
-                            src="https://www.youtube.com/embed/seu_video_aqui"
-                            title="Demonstração CorretorLab"
-                            allowFullScreen
-                        ></iframe>
+                        <YouTube
+                            videoId="cuJw8_D3zZk"
+                            opts={{
+                                width: '100%',
+                                height: '500',
+                                playerVars: {
+                                    autoplay: 0,
+                                    controls: 0,
+                                    rel: 0,
+                                    modestbranding: 1,
+                                    disablekb: 1,
+                                    iv_load_policy: 3,
+                                    fs: 0,
+                                    playsinline: 1,
+                                },
+                            }}
+                            onError={(e: { data: number }) => {
+                                console.error("Erro no player do YouTube:", e.data);
+                            }}
+                        />
                     </div>
                 </motion.section>
 
                 {/* FAQ */}
                 <motion.section
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    viewport={{ once: true }}
+                    initial={{opacity: 0, y: 50}}
+                    whileInView={{opacity: 1, y: 0}}
+                    transition={{duration: 0.8}}
+                    viewport={{once: true}}
                     className={styles.faqSection}
                 >
                     <h2>Perguntas Frequentes</h2>

@@ -4,10 +4,11 @@ import "./(styles)/globals.css";
 import ReduxProvider from './ReduxProvider';
 import React from "react";
 import '../styles/antd-styles.css';
-import GoogleProvider from "./GoogleProvider"; // <-- Componente client
+import GoogleProvider from "./GoogleProvider";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProviderWrapper } from "@/contexts/ThemeContext";
+import RouterInterceptor from "@/utils/RouterInterceptor";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,6 +38,7 @@ export default function RootLayout({
             <GoogleProvider>
                 <ThemeProviderWrapper>
                     {children}
+                    <RouterInterceptor />
                     <ToastContainer
                         position="top-right"
                         autoClose={5000}
@@ -49,7 +51,7 @@ export default function RootLayout({
                         pauseOnHover
                     />
                 </ThemeProviderWrapper>
-                </GoogleProvider>
+            </GoogleProvider>
         </ReduxProvider>
         </body>
         </html>

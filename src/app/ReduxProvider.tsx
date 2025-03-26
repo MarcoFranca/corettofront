@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import store from '@/store';
 import dynamic from 'next/dynamic';
-import Spinner from "@/app/components/ui/loading/spinner/sppiner";
 import type { Persistor } from 'redux-persist';
+import Loading from "@/app/loading";
 
 // Lazy load do PersistGate, pois só pode rodar no client
 const PersistGate = dynamic(
@@ -30,12 +30,12 @@ const ReduxProvider: React.FC<ReduxProviderProps> = ({ children }) => {
     }, []);
 
     if (!persistor) {
-        return <Spinner text="Carregando estado..." />;
+        return Loading()
     }
 
     return (
         <Provider store={store}>
-            <PersistGate persistor={persistor} loading={<Spinner />}>
+            <PersistGate persistor={persistor} loading={Loading()}>
                 {children}
             </PersistGate>
         </Provider>

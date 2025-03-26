@@ -10,6 +10,7 @@ import apoliceReducer from './slices/apoliceSlice';
 import profileReducer from './slices/profileSlice';
 import googleIntegrationReducer from './slices/googleIntegrationSlice';
 import parceirosReducer from './slices/parceirosSlice';
+import uiReducer from './slices/uiSlice'
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
     profile: profileReducer,
     googleIntegration: googleIntegrationReducer,
     parceiros: parceirosReducer,
+    ui: uiReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

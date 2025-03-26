@@ -1,7 +1,6 @@
 // app/dashboard/loading.tsx
-'use client';
-import SplashScreen from "@/app/components/ui/loading/SplashScreen/SplashScreen";
+import CustomLoading from "@/app/components/ui/loading/CustomLoading";
 
 export default function Loading() {
-    return <SplashScreen />;
+    return <CustomLoading />;
 }

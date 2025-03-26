@@ -3,20 +3,23 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation'; // Adicione o usePathname
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store';
-import { setUserFromLocalStorage, setTokenFromLocalStorage, logout } from '@/store/slices/authSlice';
 import styles from './styles.module.css';
-import api from '@/app/api/axios';
-import { useMediaQuery } from '@/hooks/hooks';
-import MenuMobile from '@/app/components/common/Header/DashboardMobile/MenuMobile';
-import Spinner from '@/app/components/ui/loading/spinner/sppiner';
-import DashboardSidebar from '@/app/components/common/Header/DashboardSidebar';
-import ClientDashboardSidebar from '@/app/components/common/Header/ClientDashboard';
+import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
+import ClientDashboardSidebar from "@/app/components/common/Header/ClientDashboardSidebar";
+import api from "@/app/api/axios";
+import {RootState} from "@/store";
+import {useMediaQuery} from "@/hooks/hooks";
+import MenuMobile from "@/app/components/common/Header/DashboardMobile/MenuMobile";
+import {setTokenFromLocalStorage, setUserFromLocalStorage} from "@/store/slices/authSlice";
+import { logout } from "@/store/slices/authSlice";
 import ThemeToggle from "@/app/components/ui/Button/ThemeToggle";
+import RouteChangeLoader from "@/app/components/ui/loading/RouteChangeLoader";
+import {setRouteLoading} from "@/store/slices/uiSlice";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
 }
+
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const dispatch = useDispatch();
@@ -27,6 +30,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const [profileImage, setProfileImage] = useState<string>('');
     const [message, setMessage] = useState('');
     const isDesktop = useMediaQuery('(min-width: 768px)');
+    const routeLoading = useSelector((state: RootState) => state.ui.routeLoading);
+
 
     const user = useSelector((state: RootState) => state.auth?.user);
     const token = useSelector((state: RootState) => state.auth?.token);
@@ -34,6 +39,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     // Lógica para decidir qual sidebar exibir
     const isClientPage = pathname?.startsWith('/dashboard/cliente/');
     const SidebarComponent = isClientPage ? ClientDashboardSidebar : DashboardSidebar;
+
+
 
     const handleLogout = () => {
         dispatch(logout());
@@ -95,18 +102,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         }
     }, [user, token, loading, router]);
 
-    if (loading || !user || !token?.access) {
-        return (
-            <main className={styles.dashboardLayout}>
-                <Spinner text="Carregando interface do dashboard..." />
-            </main>
-        );
-    }
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            dispatch(setRouteLoading(false));
+        }, 300); // 👈 força 300ms de loading mínimo
+
+        return () => clearTimeout(timeout);
+    }, [pathname, dispatch]);
+
 
     const renderSidebar = () => (
-        <SidebarComponent
-            profileImage={profileImage}
-        />
+        <SidebarComponent profileImage={profileImage} />
     );
 
     if (isDesktop) {
@@ -129,6 +135,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                         {renderSidebar()}
                         <div className={styles.canvaLayout}>{children}</div>
                     </div>
+                    <RouteChangeLoader />
                 </main>
             );
         }
@@ -143,6 +150,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                     {renderSidebar()}
                     <div className={styles.canvaLayout}>{children}</div>
                 </div>
+                <RouteChangeLoader />
             </main>
         );
     }
@@ -157,6 +165,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 />
                 <div className={styles.canvaLayoutMobile}>{children}</div>
             </div>
+            <RouteChangeLoader />
         </main>
     );
 };

@@ -5,17 +5,19 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { fetchApolices } from "@/store/slices/apoliceSlice";
 import { Apolice } from "@/types/interfaces";
 import ApoliceWizard from "./(ApolicesWizard)/ApolicesWizard";
-import ApolicesTable from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable";
+const ApolicesTable = dynamic(() =>
+    import('@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable'),
+    { loading: () => <RouteChangeLoader /> });
 import ApoliceFilter from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceFilter";
 
 import {ApolicesContainer, HeaderContainer, StyledButton, Title, ContentContainer, FilterContainer, IconButton}
     from "./ApolicesPage.styles";
-import {Drawer} from "antd";
 import {FaPlus} from "react-icons/fa";
 import {DrawerContainer} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/ApoliceWizard.styles";
-import ApolicesCharts from "@/app/(pages)/dashboard/(painel_admin)/apolices/(kpiApolices)/ApolicesCharts";
 import api from "@/app/api/axios";
 import KpiCardsApolices from "@/app/(pages)/dashboard/(painel_admin)/apolices/(kpiApolices)/KpiCards";
+import RouteChangeLoader from "@/app/components/ui/loading/RouteChangeLoader";
+import dynamic from "next/dynamic";
 
 const ApolicesPage: React.FC = () => {
     const dispatch = useAppDispatch();

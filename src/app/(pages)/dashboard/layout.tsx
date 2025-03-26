@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
       <ClienteDashboardLayout>
-        {children}
+          {children}
       </ClienteDashboardLayout>
   );
 }
