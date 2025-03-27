@@ -5,7 +5,7 @@ import DashboardSidebar from '@/app/components/common/Header/DashboardSidebar';
 import ClientDashboardSidebar from '../../../components/common/Header/ClientDashboardSidebar';
 import { usePathname, useRouter } from 'next/navigation';
 import ThemeToggle from '@/app/components/ui/Button/ThemeToggle';
-import { useAppDispatch, useAppSelector, useMediaQuery } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector, useMediaQuery } from '@/services/hooks/hooks';
 import { RootState } from '@/store';
 import Spinner from '@/app/components/ui/loading/spinner/sppiner';
 

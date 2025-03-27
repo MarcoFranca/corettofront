@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchAgendaItems } from '@/store/slices/agendaSlice';
 import { RootState } from '@/store';

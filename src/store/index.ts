@@ -11,6 +11,7 @@ import profileReducer from './slices/profileSlice';
 import googleIntegrationReducer from './slices/googleIntegrationSlice';
 import parceirosReducer from './slices/parceirosSlice';
 import uiReducer from './slices/uiSlice'
+import soundReducer from './slices/soundSlice';
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
     googleIntegration: googleIntegrationReducer,
     parceiros: parceirosReducer,
     ui: uiReducer,
+    sound: soundReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -46,7 +48,7 @@ if (isClient) {
     const persistConfig = {
         key: 'root',
         storage,
-        whitelist: ['auth', 'leads'], // ajuste conforme necessário
+        whitelist: ['auth', 'sound', 'leads'], // ajuste conforme necessário
     };
 
     const persistedReducer = persistReducer(persistConfig, rootReducer);

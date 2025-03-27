@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { Cliente } from '@/types/interfaces';
 import styles from '../../(CustomerComponents)/ClientProfile.module.css';
-import { useAppDispatch } from '@/hooks/hooks';
+import { useAppDispatch } from '@/services/hooks/hooks';
 import { updateCliente } from '@/store/slices/clientesSlice';
 import moment from 'moment';
 import 'moment/locale/pt-br'; // Importa o locale pt-BR

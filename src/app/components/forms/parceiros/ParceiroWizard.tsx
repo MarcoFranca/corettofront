@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Form, Input, Button, Select, message } from "antd";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch } from "@/services/hooks/hooks";
 import { createParceiro } from "@/store/slices/parceirosSlice";
 
 const { Option } = Select;

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Typography, Tag, Button, Drawer, Form, Input, Select, message } from "antd";
 import { useRouter, useParams } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import { fetchParceiroById, updateParceiro, Parceiro, Cliente } from "@/store/slices/parceirosSlice";
 import { FaEdit } from "react-icons/fa";
 

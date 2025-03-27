@@ -5,7 +5,7 @@ import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 import { toast } from "react-toastify";
 import { EditAddressModalProps } from "@/types/interfaces";
 import { buscaEnderecoPorCEP } from "@/utils/cep";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch } from "@/services/hooks/hooks";
 import { updateCliente } from "@/store/slices/clientesSlice";
 import { ModalContainer, FormGroup, Row} from "./EditAddressModal.styles";
 import { FaSearch, FaRoad, FaHome, FaMapMarkerAlt, FaCity, FaMap } from "react-icons/fa"; // ✅ Importando os ícones

@@ -1,16 +1,15 @@
 // next.config.js
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
+import bundleAnalyzer from '@next/bundle-analyzer';
+
+const withBundleAnalyzer = bundleAnalyzer({
     enabled: process.env.ANALYZE === 'true',
 });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
-    swcMinify: true, // ✅ Ativa minificação mais rápida
-    compress: true, // ✅ Ativa gzip na build final
-    experimental: {
-        appDir: true,
-    },
+    swcMinify: true,
+    compress: true,
     images: {
         remotePatterns: [
             {
@@ -22,4 +21,4 @@ const nextConfig = {
     },
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+export default withBundleAnalyzer(nextConfig);

@@ -7,7 +7,7 @@ import CamposEspecificos from './CamposEspecificos';
 import { useRouter } from 'next/navigation';
 import { FaArrowLeft, FaDownload, FaTrash } from 'react-icons/fa';
 import EditClientModal from '@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import { fetchApoliceDetalhe } from '@/store/slices/apoliceSlice';
 import { RootState } from '@/store';
 

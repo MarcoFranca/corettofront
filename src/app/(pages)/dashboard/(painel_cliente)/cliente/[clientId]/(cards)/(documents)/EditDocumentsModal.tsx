@@ -4,7 +4,7 @@ import StandardModal from "@/app/components/Modal/StandardModal";
 import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 import { toast } from "react-toastify";
 import { Cliente } from "@/types/interfaces";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch } from "@/services/hooks/hooks";
 import { updateCliente } from "@/store/slices/clientesSlice";
 import { ModalContainer, FormGroup } from "./EditDocumentsModal.styles";
 import { removeMask, getCpfMask, getIdentityMask } from "@/utils/maskUtils";

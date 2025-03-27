@@ -8,7 +8,7 @@ import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
 import ClientDashboardSidebar from "@/app/components/common/Header/ClientDashboardSidebar";
 import api from "@/app/api/axios";
 import {RootState} from "@/store";
-import {useMediaQuery} from "@/hooks/hooks";
+import {useMediaQuery} from "@/services/hooks/hooks";
 import MenuMobile from "@/app/components/common/Header/DashboardMobile/MenuMobile";
 import {setTokenFromLocalStorage, setUserFromLocalStorage} from "@/store/slices/authSlice";
 import { logout } from "@/store/slices/authSlice";

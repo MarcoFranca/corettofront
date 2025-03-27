@@ -9,6 +9,7 @@ import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProviderWrapper } from "@/contexts/ThemeContext";
 import RouterInterceptor from "@/utils/RouterInterceptor";
+import SoundPlayer from "@/utils/soundPlayer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,6 +38,7 @@ export default function RootLayout({
         <ReduxProvider>
             <GoogleProvider>
                 <ThemeProviderWrapper>
+                    <SoundPlayer />
                     {children}
                     <RouterInterceptor />
                     <ToastContainer

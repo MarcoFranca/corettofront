@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {usePathname, useRouter} from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import { fetchClienteDetalhe, updateClienteObservacao, updateClienteStatus } from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import styles from './ClientProfile.module.css';

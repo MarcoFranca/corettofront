@@ -1,6 +1,6 @@
 'use client'
 import { useRouter, usePathname } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import ApoliceForm from '@/app/components/apolices/ApoliceForm';
 import { createApolice, fetchApolices } from '@/store/slices/apoliceSlice';
 import { RootState } from '@/store';

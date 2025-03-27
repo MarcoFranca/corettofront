@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import { fetchAgendaItems, createAgendaItem, deleteAgendaItem, updateAgendaItem } from '@/store/slices/agendaSlice';
 import { RootState } from '@/store';
 import api from '@/app/api/axios';

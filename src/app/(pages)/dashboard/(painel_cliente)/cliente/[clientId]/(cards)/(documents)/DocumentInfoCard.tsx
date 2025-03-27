@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Cliente } from '@/types/interfaces';
-import { useAppSelector } from '@/hooks/hooks';
+import { useAppSelector } from '@/services/hooks/hooks';
 import Image from "next/image";
 import EditDocumentsModal from "./EditDocumentsModal";
 import { RootState } from "@/store";

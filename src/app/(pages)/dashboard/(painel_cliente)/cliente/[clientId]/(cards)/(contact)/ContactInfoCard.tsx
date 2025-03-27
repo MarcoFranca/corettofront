@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import EditClientModal from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(contact)/EditClientModal";
 import { Cliente, ContatoAdicional } from "@/types/interfaces";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch } from "@/services/hooks/hooks";
 import { updateCliente } from "@/store/slices/clientesSlice";
 import Image from "next/image";
 import Link from "next/link";

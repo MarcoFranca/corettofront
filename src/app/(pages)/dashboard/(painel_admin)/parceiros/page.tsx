@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Input, Tag, Drawer } from "antd";
 import { useRouter } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import { fetchParceiros } from "@/store/slices/parceirosSlice";
 import { FaPlus, FaEye } from "react-icons/fa";
 import ParceiroWizard from "@/app/components/forms/parceiros/ParceiroWizard";

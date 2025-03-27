@@ -2,7 +2,7 @@
 import React from 'react';
 import EditApoliceForm from '@/app/components/apolices/EditApoliceForm';
 import { useParams } from 'next/navigation';
-import { useAppDispatch } from '@/hooks/hooks';
+import { useAppDispatch } from '@/services/hooks/hooks';
 import { updateApolice } from '@/store/slices/apoliceSlice';
 
 const EditApolicePage: React.FC = () => {

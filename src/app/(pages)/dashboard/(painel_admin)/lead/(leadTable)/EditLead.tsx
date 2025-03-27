@@ -5,10 +5,11 @@ import { Modal, Select, Input, Radio } from "antd";
 import { RadioChangeEvent } from "antd/es/radio";
 import { Lead, StatusReuniao } from "@/types/interfaces";
 import api from "@/app/api/axios";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch } from "@/services/hooks/hooks";
 import { updateLead } from "@/store/slices/leadsSlice";
 import SelectCliente from "@/app/components/ui/select/SelectCliente/SelectCliente";
 import { useForm, Controller } from "react-hook-form";
+import {playSound} from "@/store/slices/soundSlice";
 
 interface EditLeadModalProps {
     isOpen: boolean;
@@ -25,6 +26,7 @@ const EditLeadModal: React.FC<EditLeadModalProps> = ({ isOpen, onClose, lead }) 
 
     useEffect(() => {
         if (isOpen && lead) {
+            dispatch(playSound("openModal"));
             setEditedLead({
                 ...lead,
                 indicado_por_cliente_id: lead.indicado_por_detalhes?.tipo === "cliente"

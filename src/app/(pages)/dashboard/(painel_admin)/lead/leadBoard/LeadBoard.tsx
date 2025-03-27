@@ -2,14 +2,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import { fetchLeads } from '@/store/slices/leadsSlice';
 import { initializeData, handleDragEnd } from './leadBoardUtils';
 import Column from './Column';
 import LeadModal from '@/app/components/Modal/LeadModal';
 import CadastroLead from '../../../../../../../public/assets/pages/leads/cadastroLead.svg';
 import Image from 'next/image';
-import { useMediaQuery } from '@/hooks/hooks';
+import { useMediaQuery } from '@/services/hooks/hooks';
 import styles from './LeadBoard.module.css';
 import Spinner from "@/app/components/ui/loading/spinner/sppiner";
 import {

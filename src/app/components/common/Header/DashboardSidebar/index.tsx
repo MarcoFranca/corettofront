@@ -3,14 +3,14 @@
 
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useAppDispatch, useAppSelector, useMediaQuery } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector, useMediaQuery } from "@/services/hooks/hooks";
 import { logout } from "@/store/slices/authSlice";
 import { Sidebar, ProfileSection, UserInfo, NavMenu, NavItem, LogoutButton, LogoWrapper, UserImageWrapper, Icon } from "./DashboardSidebar.styles";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import DefaultUserImage from "../../../../../../public/assets/common/user.svg";
 import LogoImage from "../../../../../../public/assets/logoIcons/Logo_transparente_clara_horizontal.svg";
-import { usePrefetchNavigation } from "@/hooks/usePrefetchNavigation";
+import { usePrefetchNavigation } from "@/services/hooks/usePrefetchNavigation";
 import {setRouteLoading} from "@/store/slices/uiSlice";
 
 // Dynamic import dos ícones

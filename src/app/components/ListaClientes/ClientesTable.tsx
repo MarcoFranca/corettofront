@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import {fetchClientes, deleteCliente, fetchClientesSearch} from '@/store/slices/clientesSlice';
 import { RootState } from '@/store';
 import { useRouter } from "next/navigation"; // 🔥 Importamos o hook de navegação

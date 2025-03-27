@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/store';
-import { setUserFromLocalStorage, setTokenFromLocalStorage, logout } from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/store/slices/authSlice';
 import styles from './styles.module.css';
-import api from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/app/api/axios';
-import { useMediaQuery } from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/hooks/hooks';
-import MenuMobile from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/app/components/common/Header/DashboardMobile/MenuMobile';
-import Spinner from '../../../../../../../Users/marco/Downloads/corettofront-master (5)/corettofront-master/src/app/components/ui/loading/spinner/sppiner';
+import {RootState} from "@/store";
+import {logout, setTokenFromLocalStorage, setUserFromLocalStorage} from "@/store/slices/authSlice";
+import api from "@/app/api/axios";
+import {useMediaQuery} from "@/services/hooks/hooks";
+import Spinner from "@/app/components/ui/loading/spinner/sppiner";
+import MenuMobile from "@/app/components/common/Header/DashboardMobile/MenuMobile";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -90,13 +90,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, SidebarComp
         }
     }, [user, token, loading, router]);
 
-    if (loading || !user || !token?.access) {
-        return (
-            <main className={styles.dashboardLayout}>
-                <Spinner text="Carregando interface do dashboard..." />
-            </main>
-        );
-    }
+
 
     if (isDesktop) {
         if (!planoAtivo) {

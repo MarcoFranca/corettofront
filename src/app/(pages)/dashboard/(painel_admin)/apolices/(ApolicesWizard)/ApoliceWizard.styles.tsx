@@ -127,6 +127,7 @@ export const WizardFullContainer = styled.div`
     background-color: ${({ theme }) => theme.colors.tableHover};
     padding: 2rem;
     overflow-y: auto;
+    z-index: 999999;
 `;
 
 export const StepContainer = styled.div`

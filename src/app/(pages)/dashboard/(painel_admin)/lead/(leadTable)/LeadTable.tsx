@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Table, Tooltip, Modal, Select, Input, Radio } from "antd";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { fetchLeads, deleteLead, updateLead } from "@/store/slices/leadsSlice";
+import { Button, Table, Tooltip } from "antd";
+import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
+import {fetchLeads, deleteLead, updateLead, createLead} from "@/store/slices/leadsSlice";
 import { Lead } from "@/types/interfaces";
 import { TableContainer } from "./LeadTable.styles";
 import { getWhatsAppLink } from "@/utils/functions";
@@ -12,15 +12,20 @@ import { formatPhoneNumber } from "@/utils/maskUtils";
 import { Key } from 'react';
 import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
 import EditLeadModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/EditLead";
+import {sanitizeLeadForCreate, useConfirm} from "@/services/hooks/useConfirm"; // ✅ correto
+import { useLeadBackup } from "@/services/hooks/useLeadBackup";
+import {playSound} from "@/store/slices/soundSlice"; // caminho correto dependendo de onde criou
+
 
 const LeadTable: React.FC = () => {
     const dispatch = useAppDispatch();
     const leads = useAppSelector((state) => state.leads.leads);
     const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const { confirm } = useConfirm();
+    const { saveBackup, getBackup } = useLeadBackup();
 
     useEffect(() => {
         dispatch(fetchLeads({ status: ["lead", "negociacao", "nova_negociacao"] }));
@@ -30,9 +35,51 @@ const LeadTable: React.FC = () => {
         setFilteredLeads(leads);
     }, [leads]);
 
+    useEffect(() => {
+        if (isEditModalOpen) {
+            dispatch(playSound("openModal"));
+        }
+    }, [isEditModalOpen, dispatch]);
+
+    useEffect(() => {
+        if (!isEditModalOpen) {
+            dispatch(playSound("closeModal"));
+        }
+    }, [isEditModalOpen, dispatch]);
+
+    useEffect(() => {
+        if (!showScheduleForm) {
+            dispatch(playSound("closeModal"));
+        }
+    }, [showScheduleForm]);
+
+
+
     const handleDelete = (id: string) => {
-        dispatch(deleteLead(id));
+        const leadToDelete = leads.find((lead) => lead.id === id);
+        if (leadToDelete) saveBackup(id, leadToDelete); // 🔐 salve o lead antes de deletar
+
+        confirm({
+            title: "Excluir Lead",
+            message: "Tem certeza que deseja excluir esse lead?",
+            sound: "delete",
+            successMessage: "Lead excluído com sucesso!",
+            minDuration: 800,
+            onConfirm: async () => {
+                await dispatch(deleteLead(id)).unwrap();
+            },
+            undo: {
+                label: "Desfazer",
+                onUndo: () => {
+                    const raw = getBackup(id); // ✅ agora o hook existe
+                    if (!raw) return;
+                    const cleaned = sanitizeLeadForCreate(raw);
+                    dispatch(createLead(cleaned));
+                },
+            },
+        });
     };
+
 
     const STATUS_REUNIAO_MAP: Record<string, string> = {
         "reuniao_marcada": "Reunião Marcada",
@@ -41,6 +88,12 @@ const LeadTable: React.FC = () => {
         "nao_atendeu": "Não Atendeu",
         "marcar_reuniao": "Marcar Reunião"
     };
+
+    useEffect(() => {
+        if (showScheduleForm) {
+            dispatch(playSound("openModal"));
+        }
+    }, [showScheduleForm, dispatch]);
 
 
     const handleScheduleFormClose = () => {

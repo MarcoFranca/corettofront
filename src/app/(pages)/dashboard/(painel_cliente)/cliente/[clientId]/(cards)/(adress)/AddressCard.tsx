@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Cliente } from "@/types/interfaces";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import Image from "next/image";
 import EditAddressModal from "./EditAddressModal";
 import { RootState } from "@/store";

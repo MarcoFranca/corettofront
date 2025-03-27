@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useAppDispatch } from "@/hooks/hooks";
+import dynamic from "next/dynamic";
+import { useAppDispatch } from "@/services/hooks/hooks";
 import { fetchApolices } from "@/store/slices/apoliceSlice";
 import { Apolice } from "@/types/interfaces";
 import ApoliceWizard from "./(ApolicesWizard)/ApolicesWizard";
@@ -17,7 +18,6 @@ import {DrawerContainer} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(
 import api from "@/app/api/axios";
 import KpiCardsApolices from "@/app/(pages)/dashboard/(painel_admin)/apolices/(kpiApolices)/KpiCards";
 import RouteChangeLoader from "@/app/components/ui/loading/RouteChangeLoader";
-import dynamic from "next/dynamic";
 
 const ApolicesPage: React.FC = () => {
     const dispatch = useAppDispatch();

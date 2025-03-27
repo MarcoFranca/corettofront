@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useRouter, usePathname, useParams } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import { RootState } from "@/store";
 import { fetchClienteDetalhe } from "@/store/slices/clientesSlice";
 import { setRouteLoading } from "@/store/slices/uiSlice"; // ✅ Importar a ação

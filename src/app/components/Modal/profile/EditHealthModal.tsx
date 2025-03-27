@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import StandardModal from "@/app/components/Modal/StandardModal";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import { updateClienteSaude } from "@/store/slices/clientesSlice";
 import { RootState } from "@/store";
 import {

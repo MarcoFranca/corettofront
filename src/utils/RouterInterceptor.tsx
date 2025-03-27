@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAppDispatch } from '@/hooks/hooks';
+import { useAppDispatch } from '@/services/hooks/hooks';
 import { setRouteLoading } from '@/store/slices/uiSlice';
 
 const RouterInterceptor = () => {

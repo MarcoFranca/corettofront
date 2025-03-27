@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Steps, Button } from 'antd';
-import { useAppDispatch, useAppSelector } from '@/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import { RootState } from '@/store';
 import {fetchClienteDetalhe, updateCliente} from '@/store/slices/clientesSlice';
 import Step1 from './steps/Step1';
