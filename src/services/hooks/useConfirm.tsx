@@ -5,7 +5,7 @@ import { Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useAppDispatch } from "@/services/hooks/hooks";
 import { playSound } from "@/store/slices/soundSlice";
-import { toast, ToastContentProps } from "react-toastify";
+import { toastSuccess, toastError } from "@/utils/toastWithSound";
 import UndoToastContent from "@/app/components/ui/toast/UndoToastContent";
 
 interface UseConfirmOptions {
@@ -67,32 +67,22 @@ export const useConfirm = () => {
                 try {
                     dispatch(playSound(sound));
 
-                    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+                    const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+                    await Promise.all([onConfirm(), delay(minDuration)]);
 
-                    const promise = Promise.all([
-                        onConfirm(),
-                        delay(minDuration)
-                    ]);
-
-                    const result = await promise;
-
-                    toast.success(
-                        undo ? (
+                    if (undo) {
+                        toastSuccess(
                             <UndoToastContent
                                 message={successMessage}
                                 onUndo={undo.onUndo}
                                 label={undo.label}
                             />
-                        ) : (
-                            successMessage
-                        ),
-                        {
-                            autoClose: 5000,
-                            closeOnClick: false,
-                        }
-                    );
+                        );
+                    } else {
+                        toastSuccess(successMessage);
+                    }
                 } catch (err) {
-                    toast.error("Erro ao executar a ação.");
+                    toastError("Erro ao executar a ação.");
                     throw err;
                 }
             },

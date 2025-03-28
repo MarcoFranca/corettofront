@@ -30,7 +30,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const [profileImage, setProfileImage] = useState<string>('');
     const [message, setMessage] = useState('');
     const isDesktop = useMediaQuery('(min-width: 768px)');
-    const routeLoading = useSelector((state: RootState) => state.ui.routeLoading);
 
 
     const user = useSelector((state: RootState) => state.auth?.user);
