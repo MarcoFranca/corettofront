@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Button, Table, Tooltip } from "antd";
 import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import {fetchLeads, deleteLead, updateLead, createLead} from "@/store/slices/leadsSlice";
@@ -35,23 +35,22 @@ const LeadTable: React.FC = () => {
         setFilteredLeads(leads);
     }, [leads]);
 
+    const prevEditModalOpen = useRef<boolean>(false);
     useEffect(() => {
-        if (isEditModalOpen) {
-            dispatch(playSound("openModal"));
+        if (prevEditModalOpen.current !== isEditModalOpen) {
+            dispatch(playSound(isEditModalOpen ? "openModal" : "closeModal"));
+            prevEditModalOpen.current = isEditModalOpen;
         }
     }, [isEditModalOpen, dispatch]);
 
+    const prevScheduleOpen = useRef<boolean>(false);
     useEffect(() => {
-        if (!isEditModalOpen) {
-            dispatch(playSound("closeModal"));
+        if (prevScheduleOpen.current !== showScheduleForm) {
+            dispatch(playSound(showScheduleForm ? "openModal" : "closeModal"));
+            prevScheduleOpen.current = showScheduleForm;
         }
-    }, [isEditModalOpen, dispatch]);
+    }, [showScheduleForm, dispatch]);
 
-    useEffect(() => {
-        if (!showScheduleForm) {
-            dispatch(playSound("closeModal"));
-        }
-    }, [showScheduleForm]);
 
 
 
@@ -88,13 +87,6 @@ const LeadTable: React.FC = () => {
         "nao_atendeu": "Não Atendeu",
         "marcar_reuniao": "Marcar Reunião"
     };
-
-    useEffect(() => {
-        if (showScheduleForm) {
-            dispatch(playSound("openModal"));
-        }
-    }, [showScheduleForm, dispatch]);
-
 
     const handleScheduleFormClose = () => {
         setShowScheduleForm(false);

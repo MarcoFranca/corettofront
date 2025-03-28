@@ -1,5 +1,5 @@
 'use client'
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { useDispatch } from 'react-redux';
 import { createLead } from '@/store/slices/leadsSlice';
 import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
@@ -17,6 +17,9 @@ import {useForm} from "react-hook-form";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import SelectProfissao from "@/app/components/ui/select/SelectProfissao/SelectProfissao";
 import SelectCliente from "@/app/components/ui/select/SelectCliente/SelectCliente";
+import {playSound} from "@/store/slices/soundSlice";
+import {toastError, toastSuccess} from "@/utils/toastWithSound";
+import {showToastWithSound} from "@/services/hooks/useToastMessageWithSound";
 
 const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const dispatch: AppDispatch = useDispatch();
@@ -30,7 +33,6 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
 
     // 📌 Estados de Indicação
     const [indicadoPorTipo, setIndicadoPorTipo] = useState<'cliente' | 'parceiro' | ''>('');
-    const [indicadoPorId, setIndicadoPorId] = useState<string | null>(null);
     const [parceirosDisponiveis, setParceirosDisponiveis] = useState<ProfissaoOption[]>([]);
     const [indicadosPorParceiros, setIndicadosPorParceiros] = useState<string[]>([]);
 
@@ -42,6 +44,24 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     // 📌 Estados para Modais e Erros
     const [isProfissaoModalOpen, setProfissaoModalOpen] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+
+    const prevIsOpen = useRef<boolean | null>(null);
+
+    useEffect(() => {
+        if (prevIsOpen.current === null) {
+            // Primeira renderização, apenas armazena o valor
+            prevIsOpen.current = isOpen;
+            return;
+        }
+
+        if (!prevIsOpen.current && isOpen) {
+            dispatch(playSound("openModal"));
+        } else if (prevIsOpen.current && !isOpen) {
+            dispatch(playSound("closeModal"));
+        }
+
+        prevIsOpen.current = isOpen;
+    }, [isOpen, dispatch]);
 
 
     // 📌 Carregar Dados no Modal
@@ -62,7 +82,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                 label: produto.nome,
             }));
         } catch (error) {
-            toast.error('😔 Erro ao carregar produtos de oportunidades.');
+            toastError('😔 Erro ao carregar produtos de oportunidades.');
             return [];
         }
     };
@@ -76,7 +96,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                 label: parceiro.nome,
             })));
         } catch (error) {
-            toast.error('😔 Erro ao carregar parceiros.');
+            toastError('😔 Erro ao carregar parceiros.');
         }
     };
 
@@ -88,13 +108,13 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                 label: profissao.nome,
             })));
         } catch (error) {
-            toast.error('😔 Erro ao carregar profissões.');
+            toastError('😔 Erro ao carregar profissões.');
         }
     };
 
     const handleAddOportunidade = () => {
         if (produtoSelecionado.length === 0) {
-            toast.error('⚠️ Selecione pelo menos um produto para adicionar.');
+            toastError('⚠️ Selecione pelo menos um produto para adicionar.');
             return;
         }
 
@@ -145,7 +165,6 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
         register,
         setValue,
         reset,
-        formState: { isValid, isSubmitting, errors } // ✅ Agora `errors` está aqui!
     } = methods;
 
     const handleFormSubmit = async (data: any) => {
@@ -188,7 +207,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
 
             // 🔥 Validação antes do envio
             if (!data.genero) {
-                setToastMessage({ type: "error", message: "⚠️ Por favor, selecione um gênero." });
+                showToastWithSound({ type: "error", message: "⚠️ Por favor, selecione um gênero." });
                 setIsSubmitting(false);
                 return;
             }
@@ -196,12 +215,12 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             await new Promise((resolve) => setTimeout(resolve, 2000)); // 🔥 Simula um delay de 2s
             await dispatch(createLead(leadData)).unwrap();
 
-            setToastMessage({ type: "success", message: "Lead cadastrado com sucesso! 🎉" });
+            showToastWithSound({ type: "success", message: "Lead cadastrado com sucesso! 🎉" });
             reset();
             onRequestClose();
         } catch (error: any) {
             console.error("⚠️ Erro ao cadastrar lead:", error);
-            setToastMessage({ type: "error", message: "⚠️ Erro ao cadastrar lead." });
+            showToastWithSound({ type: "error", message: "⚠️ Erro ao cadastrar lead." });
         } finally {
             setIsSubmitting(false);
         }
@@ -219,12 +238,12 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             });
 
             console.log("📌 Resposta da API:", response);
-            toast.success("Profissão cadastrada com sucesso!");
+            toastSuccess("Profissão cadastrada com sucesso!");
 
 
         } catch (error) {
             console.error("❌ Erro ao cadastrar profissão:", error);
-            toast.error("Erro ao cadastrar a profissão.");
+            toastError("Erro ao cadastrar a profissão.");
         }
     };
 

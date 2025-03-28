@@ -11,7 +11,6 @@ import CadastroLead from '../../../../../../../public/assets/pages/leads/cadastr
 import Image from 'next/image';
 import { useMediaQuery } from '@/services/hooks/hooks';
 import styles from './LeadBoard.module.css';
-import Spinner from "@/app/components/ui/loading/spinner/sppiner";
 import {
     Board,
     Container,
@@ -61,11 +60,6 @@ const LeadBoard: React.FC = () => {
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilter(e.target.value.toLowerCase());
     };
-
-    // Renderizações condicionais para estados
-    if (status === 'loading') {
-        return (<Spinner text={'Carregando leads...'}/>)
-    }
 
     if (!leadsFromStore || !Array.isArray(leadsFromStore)) {
         return <p>Carregando leads...</p>;

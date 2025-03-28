@@ -12,27 +12,37 @@ export const fetchLeads = createAsyncThunk<Lead[], { status?: string[] }>(
     'leads/fetchLeads',
     async ({ status }, { rejectWithValue }) => {
         try {
-
             let statusQuery = '';
             if (Array.isArray(status) && status.length > 0) {
                 statusQuery = `status__in=${status.map(encodeURIComponent).join(',')}`;
             }
 
-            const response = await api.get(`/clientes/?${statusQuery}`);
-            // Garantir que a resposta tem um array de leads
-            if (!response.data || typeof response.data !== 'object' || !Array.isArray(response.data.results)) {
-                console.warn("⚠️ Formato inesperado da resposta:", response.data);
-                return rejectWithValue("Formato de resposta inválido");
+            const allLeads: Lead[] = [];
+            let nextUrl: string | null = `/clientes/?${statusQuery}&limit=100`;
+
+            while (nextUrl) {
+                const response = await api.get(nextUrl);
+                const data: { results: Lead[]; next: string | null } = response.data;
+
+                if (!Array.isArray(data.results)) {
+                    return rejectWithValue("Formato de resposta inválido");
+                }
+
+                allLeads.push(...data.results);
+
+                nextUrl = data.next
+                    ? new URL(data.next).pathname + new URL(data.next).search
+                    : null;
             }
 
-            console.log('bilau', response.data.results);
-            return response.data.results; // Retorna os leads corretamente
+            return allLeads;
         } catch (error: any) {
             console.error("❌ Erro ao buscar leads:", error);
             return rejectWithValue(error.response?.data || "Erro desconhecido ao buscar leads");
         }
     }
 );
+
 
 
 export const createLead = createAsyncThunk<Lead, Partial<Lead>>(

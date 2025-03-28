@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { useDispatch } from 'react-redux';
 import { Draggable } from '@hello-pangea/dnd';
 import { AppDispatch } from '@/store';
@@ -19,6 +19,7 @@ import 'tippy.js/dist/tippy.css';
 import '@/app/(styles)/globals.css';
 import {FaWhatsapp} from "react-icons/fa";
 import {getPhoneMask} from "@/utils/maskUtils";
+import {playSound} from "@/store/slices/soundSlice";
 
 const statusColors: Record<StatusReuniao, string> = {
     'reuniao_marcada': 'green',
@@ -42,12 +43,33 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
     const [currentLead, setCurrentLead] = useState(lead);
+    const prevShowScheduleForm = useRef(false);
+    const prevShowEditForm = useRef(false);
 
     useEffect(() => {
         setCurrentLead(lead);
         console.log("Oportunidades no lead atual:", lead);
 
     }, [lead]);
+
+    useEffect(() => {
+        if (!prevShowEditForm.current && showEditForm) {
+            dispatch(playSound("openModal"));
+        } else if (prevShowEditForm.current && !showEditForm) {
+            dispatch(playSound("closeModal"));
+        }
+        prevShowEditForm.current = showEditForm;
+    }, [showEditForm, dispatch]);
+
+    useEffect(() => {
+        if (!prevShowScheduleForm.current && showScheduleForm) {
+            dispatch(playSound("openModal"));
+        } else if (prevShowScheduleForm.current && !showScheduleForm) {
+            dispatch(playSound("closeModal"));
+        }
+        prevShowScheduleForm.current = showScheduleForm;
+    }, [showScheduleForm, dispatch]);
+
 
     const handleDeleteConfirm = () => {
         setShowConfirmModal(false);
