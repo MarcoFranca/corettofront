@@ -133,19 +133,26 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
                                 )}
                             />
                         ) : mask ? (
-                            <InputMask
-                                mask={mask}
-                                maskPlaceholder={maskPlaceholder}
-                                {...register(name, { required })}
-                                onChange={handleChange}
-                                inputRef={register(name).ref} // ✅ Passa a ref diretamente
-                            >
-                                <Input
-                                    id={name}
-                                    required={required}
-                                    placeholder=" "
-                                />
-                            </InputMask>
+                            <Controller
+                                name={name}
+                                control={control}
+                                rules={{ required }}
+                                render={({ field }) => (
+                                    <InputMask
+                                        mask={mask}
+                                        maskPlaceholder={maskPlaceholder}
+                                        value={field.value || ""}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            setValue(name, value, { shouldValidate: true });
+                                            field.onChange(value);
+                                            if (onChange) onChange(e);
+                                        }}
+                                    >
+                                        <Input id={name} required={required} placeholder=" " />
+                                    </InputMask>
+                                )}
+                            />
 
                         ) : (
                             <Input

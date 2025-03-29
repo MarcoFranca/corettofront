@@ -103,10 +103,14 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     const fetchProfissoes = async () => {
         try {
             const response = await api.get('/profissoes/');
-            setProfissoesPrincipais(response.data.map((profissao: any) => ({
-                value: profissao.id,
-                label: profissao.nome,
-            })));
+            setProfissoesPrincipais(
+                response.data
+                    .filter((p: any) => p.nome && p.nome.toLowerCase() !== "nan") // 👈 filtro robusto
+                    .map((profissao: any) => ({
+                        value: profissao.id,
+                        label: profissao.nome,
+                    }))
+            );
         } catch (error) {
             toastError('😔 Erro ao carregar profissões.');
         }
@@ -147,6 +151,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             telefone: "",
             email: "",
             profissao_id: "",
+            indicado_por_cliente_id: null, // 👈 isso aqui resolve o problema
         },
     });
 
@@ -227,25 +232,39 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
     };
 
     const handleProfissaoSubmit = async (data: any) => {
-        console.log("📌 Dados antes do envio:", data);
-        console.log("📌 Categoria Pai Selecionada:"); // ✅ Verifica se a categoria pai está correta
-
         try {
+            const nomeProfissao = data.nome?.trim();
+
+            if (!nomeProfissao) {
+                toastError("⚠️ Nome da profissão é obrigatório.");
+                return;
+            }
+
+            // 🔐 Garante que "Outros" pode ser enviado normalmente
+            if (nomeProfissao.toLowerCase() === "outros") {
+                toastError("⚠️ A profissão 'Outros' já existe e é global.");
+                return;
+            }
+
             const response = await api.post("/profissoes/", {
-                nome: data.nome,
+                nome: nomeProfissao,
                 descricao: data.descricao,
-                categoria_pai: data.categoria_pai ? data.categoria_pai.value : null, // ✅ Agora passamos corretamente o valor do ID
+                categoria_pai: data.categoria_pai ? data.categoria_pai.value : null,
             });
 
-            console.log("📌 Resposta da API:", response);
             toastSuccess("Profissão cadastrada com sucesso!");
 
-
+            // Atualiza a lista e seleciona a nova
+            const nova = { value: response.data.id, label: response.data.nome };
+            setProfissoesPrincipais((prev) => [...prev, nova]);
+            setValue("profissao_id", nova.value);
+            setProfissaoModalOpen(false);
         } catch (error) {
             console.error("❌ Erro ao cadastrar profissão:", error);
             toastError("Erro ao cadastrar a profissão.");
         }
     };
+
 
 
     return (
@@ -285,7 +304,21 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                             />
                             Parceiro
                         </label>
+                        {indicadoPorTipo && (
+                            <button
+                                type="button"
+                                className={styles.resetIndicacao}
+                                onClick={() => {
+                                    setIndicadoPorTipo("");
+                                    setIndicadosPorParceiros([]);
+                                    setValue("indicado_por_cliente_id", null);
+                                }}
+                            >
+                                Cancelar Indicação
+                            </button>
+                        )}
                     </div>
+
 
                     <div className={styles.selectWrapper}>
                         {indicadoPorTipo === "cliente" ? (
@@ -317,21 +350,21 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                     </div>
                 )}
             </div>
-                {/*indicações*/}
+            {/*indicações*/}
 
-                <div className={styles.nameContainer}>
+            <div className={styles.nameContainer}>
 
-                    <FloatingMaskedInput
-                        label="Primeiro Nome"
-                        name="nome"
-                        type="text"
-                        register={register}
-                        setValue={setValue}
-                        control={methods.control}
-                        required
-                        errorMessage={fieldErrors.nome}
-                    />
-                    <FloatingMaskedInput
+                <FloatingMaskedInput
+                    label="Primeiro Nome"
+                    name="nome"
+                    type="text"
+                    register={register}
+                    setValue={setValue}
+                    control={methods.control}
+                    required
+                    errorMessage={fieldErrors.nome}
+                />
+                <FloatingMaskedInput
                         label="Sobre Nome"
                         name="sobrenome"
                         type="text"
@@ -352,8 +385,8 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                         register={register}
                         setValue={setValue}
                         control={methods.control}
-                        required
                         errorMessage={fieldErrors.telefone}
+                        required
                     />
                     <FloatingMaskedInput
                         label="Email"
@@ -453,11 +486,13 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                 >
                     <CadastrarProfissaoForm
                         onSuccess={(novaProfissao: Profissao) => {
-                            console.log("✅ Profissão cadastrada com sucesso!", novaProfissao);
-                            setProfissoesPrincipais((prev) => [
-                                ...prev,
-                                { value: novaProfissao.id, label: novaProfissao.nome },
-                            ]);
+                            const nova = { value: novaProfissao.id, label: novaProfissao.nome };
+
+                            setProfissoesPrincipais((prev) => [...prev, nova]);
+
+                            // 🪄 já seleciona automaticamente
+                            setValue("profissao_id", nova.value);
+
                             setProfissaoModalOpen(false);
                         }}
                         methods={profissaoMethods} // ✅ Passamos os métodos corretamente

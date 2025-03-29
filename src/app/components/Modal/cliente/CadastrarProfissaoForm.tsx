@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { UseFormReturn } from "react-hook-form";
 import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
-import Button from '@/app/components/ui/Button';
 import Select from 'react-select';
 import api from '@/app/api/axios';
 import { toast } from 'react-toastify';
 import styles from './styles.module.css';
 import { Profissao } from "@/types/interfaces";
+import { CATEGORIAS_MACRO } from '@/constants/categoriasMacro';
+import { SingleValue } from 'react-select';
+import SelectProfissao from "@/app/components/ui/select/SelectProfissao/SelectProfissao";
 
 interface CadastrarProfissaoFormProps {
-    onSuccess: (novaProfissao: Profissao) => void; // ✅ Agora `onSuccess` está sendo corretamente tipado
+    onSuccess: (novaProfissao: Profissao) => void;
     methods: UseFormReturn<any>;
 }
 
-const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ onSuccess, methods }) => {
-    const { register, watch, handleSubmit, setValue, control, formState: { errors } } = methods;
+const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ methods }) => {
+    const { register, watch, setValue, control, formState: { errors } } = methods;
 
     const [profissoesPrincipais, setProfissoesPrincipais] = useState<Profissao[]>([]);
-    const [categoriaPai, setCategoriaPai] = useState<Profissao | null>(null);
-
     const categoriaPaiSelecionada = watch("categoria_pai");
 
-    // 🔥 Buscar profissões principais ao montar o componente
     useEffect(() => {
         const fetchProfissoes = async () => {
             try {
@@ -35,9 +34,8 @@ const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ onSucce
         fetchProfissoes();
     }, []);
 
-
     return (
-        <div>
+        <div className={styles.form}>
             <FloatingMaskedInput
                 name="nome"
                 label="Nome da Profissão"
@@ -60,21 +58,35 @@ const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ onSucce
             />
 
             <Select
-                options={profissoesPrincipais.map((profissao) => ({
-                    value: profissao.id,
-                    label: profissao.nome,
-                }))}
-                value={categoriaPaiSelecionada}
-                onChange={(selectedOption) => {
-                    console.log("📌 Categoria pai selecionada:", selectedOption);
-                    setValue("categoria_pai", selectedOption || null, { shouldValidate: true });
+                options={CATEGORIAS_MACRO}
+                value={CATEGORIAS_MACRO.find(opt => opt.value === watch("categoria_macro")) || null}
+                onChange={(selectedOption: SingleValue<{ label: string; value: string }>) => {
+                    setValue("categoria_macro", selectedOption?.value || null, { shouldValidate: true });
                 }}
-                placeholder="Selecione uma categoria pai (opcional)"
+                placeholder="Selecione a categoria macro"
                 isClearable
-                isSearchable
                 className={styles.customSelectSpacing}
             />
 
+            <SelectProfissao
+                name="categoria_pai"
+                control={control}
+                placeholder="Selecione uma categoria pai (opcional)"
+                showLabel={false}
+                required={false}
+                errorMessage={
+                    typeof errors.categoria_pai?.message === "string"
+                        ? errors.categoria_pai.message
+                        : undefined
+                }
+                options={profissoesPrincipais
+                    .filter((p) => !p.categoria_pai) // 🔥 mostra só profissões principais
+                    .map((profissao) => ({
+                        value: profissao.id,
+                        label: profissao.nome,
+                    }))
+                }
+            />
         </div>
     );
 };
