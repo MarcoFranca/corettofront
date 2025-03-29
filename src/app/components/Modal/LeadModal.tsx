@@ -73,6 +73,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
         }
     }, [isOpen]);
 
+
     // 📌 Funções de Carregamento de Dados
     const fetchProdutosDisponiveis = async () => {
         try {
@@ -245,11 +246,13 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
                 toastError("⚠️ A profissão 'Outros' já existe e é global.");
                 return;
             }
+            console.log("🧪 Dados enviados:", data);
 
             const response = await api.post("/profissoes/", {
                 nome: nomeProfissao,
                 descricao: data.descricao,
-                categoria_pai: data.categoria_pai ? data.categoria_pai.value : null,
+                categoria_pai: data.categoria_pai || null,
+                categoria_macro: data.categoria_macro || null,
             });
 
             toastSuccess("Profissão cadastrada com sucesso!");

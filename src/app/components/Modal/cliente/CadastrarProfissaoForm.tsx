@@ -22,6 +22,13 @@ const CadastrarProfissaoForm: React.FC<CadastrarProfissaoFormProps> = ({ methods
     const categoriaPaiSelecionada = watch("categoria_pai");
 
     useEffect(() => {
+        register("categoria_macro");
+        register("descricao");
+        register("categoria_pai");
+    }, [register]);
+
+
+    useEffect(() => {
         const fetchProfissoes = async () => {
             try {
                 const response = await api.get('/profissoes?categoria_pai=');
