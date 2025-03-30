@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import StandardModal from "@/app/components/Modal/StandardModal";
 import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
-import { toast } from "react-toastify";
+import { playSound } from "@/store/slices/soundSlice";
+import { useAppDispatch } from "@/services/hooks/hooks";
 import { ContatoAdicional, EditClientModalProps } from "@/types/interfaces";
 import { removeMask } from "@/utils/maskUtils";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import {FaBuilding, FaMobileAlt, FaPhoneAlt, FaPlus, FaQuestion, FaTrash} from "react-icons/fa";
 import { IoPerson } from "react-icons/io5";
 import Index from "@/app/components/ui/Button";
 import {
@@ -14,9 +15,10 @@ import {
     RemoveButton,
     EmptyMessage,
     ContactSelect,
-    PhoneInput,
+    PhoneInput, TipoContainer, TipoButton,
 } from "./EditClientModal.Styles";
 import InputMask from "react-input-mask-next";
+import {showToastWithSound} from "@/services/hooks/useToastMessageWithSound";
 
 const EditClientModal: React.FC<EditClientModalProps> =
     ({
@@ -31,7 +33,7 @@ const EditClientModal: React.FC<EditClientModalProps> =
         defaultValues: initialData || {}, // ✅ Agora aceita qualquer campo dinamicamente
     });
 
-    const {
+        const {
         handleSubmit,
         register,
         setValue,
@@ -39,6 +41,7 @@ const EditClientModal: React.FC<EditClientModalProps> =
         control,
         formState: { isValid, isSubmitting }
     } = methods;
+        const dispatch = useAppDispatch();
 
 
     // ✅ Resetando os valores quando `initialData` mudar
@@ -58,18 +61,44 @@ const EditClientModal: React.FC<EditClientModalProps> =
     // ✅ Estado para os contatos adicionais
     const [contatosAdicionais, setContatosAdicionais] = useState<ContatoAdicional[]>(initialData?.contatos_adicionais || []);
 
-    const handleAddContato = () => {
-        setContatosAdicionais([...contatosAdicionais, { id: "", tipo: "Outro", valor: "" }]);
-    };
+        const TIPO_ICONS = {
+            celular: <FaMobileAlt />,
+            residencial: <FaPhoneAlt />,
+            comercial: <FaBuilding />,
+            outro: <FaQuestion />,
+        };
 
-    const handleRemoveContato = (index: number) => {
-        setContatosAdicionais(contatosAdicionais.filter((_, i) => i !== index));
-    };
+        const TIPO_LABELS = {
+            celular: "Celular",
+            residencial: "Residencial",
+            comercial: "Comercial",
+            outro: "Outro",
+        };
+
+
+        const handleAddContato = () => {
+            setContatosAdicionais([...contatosAdicionais, { id: "", tipo: "Outro", valor: "" }]);
+            dispatch(playSound("add")); // ou outro som como "addItem"
+        };
+
+        const handleRemoveContato = (index: number) => {
+            setContatosAdicionais(contatosAdicionais.filter((_, i) => i !== index));
+            dispatch(playSound("delete2")); // ou "delete"
+        };
+
 
         const handleContatoChange = (index: number, e: any) => {
             const cleanedValue = removeMask(e.target.value);
             const updatedContatos = [...contatosAdicionais];
             updatedContatos[index] = { ...updatedContatos[index], valor: cleanedValue };
+            const hasDuplicated = contatosAdicionais.some((contato, index, self) =>
+                self.findIndex(c => c.valor === contato.valor) !== index
+            );
+
+            if (hasDuplicated) {
+                showToastWithSound({ type: "error", message: "⚠️ Existem contatos duplicados." });
+                return;
+            }
             setContatosAdicionais(updatedContatos);
         };
 
@@ -95,10 +124,10 @@ const EditClientModal: React.FC<EditClientModalProps> =
                 })),
             });
 
-            toast.success("✅ Alterações salvas com sucesso!");
+            showToastWithSound({ type: "success", message: "✅ Alterações salvas com sucesso!" });
             onRequestClose();
         } catch (error) {
-            toast.error("❌ Erro ao salvar alterações. Tente novamente.");
+            showToastWithSound({ type: "error", message: "❌ Erro ao salvar alterações. Tente novamente." });
         }
     };
 
@@ -147,19 +176,25 @@ const EditClientModal: React.FC<EditClientModalProps> =
                 contatosAdicionais.map((contato, index) => (
                     <ContactRow key={index}>
                         <ContactSelect>
-                            <select
-                                value={contato.tipo}
-                                onChange={(e) => handleTipoChange(index, e)}
-                            >
-                                <option value="celular">Celular</option>
-                                <option value="residencial">Residencial</option>
-                                <option value="comercial">Comercial</option>
-                                <option value="outro">Outro</option>
-                            </select>
+                            <TipoContainer>
+                                {Object.entries(TIPO_LABELS).map(([key, label]) => (
+                                    <TipoButton
+                                        key={key}
+                                        type="button"
+                                        className={contato.tipo === key ? "selected" : ""}
+                                        onClick={() =>
+                                            handleTipoChange(index, { target: { value: key } } as React.ChangeEvent<HTMLSelectElement>)
+                                        }
+                                    >
+                                        {TIPO_ICONS[key as keyof typeof TIPO_ICONS]}
+                                        <span>{label}</span>
+                                    </TipoButton>
+                                ))}
+                            </TipoContainer>
                             <PhoneInput
                                 mask={contato.tipo !== "residencial" ? "(99) 99999-9999" : "(99) 9999-9999"}
                                 value={contato.valor}
-                                onChange={(e) => handleContatoChange(index, e.target.value)}
+                                onChange={(e) => handleContatoChange(index, e)}
                                 required
                             />
                             <RemoveButton

@@ -4,11 +4,11 @@ import StandardModal from "@/app/components/Modal/StandardModal";
 import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import SelectProfissao from "@/app/components/ui/select/SelectProfissao/SelectProfissao";
-import { toast } from "react-toastify";
 import api from "@/app/api/axios";
 import { EditPersonalInfoModalProps, genderOptions, Profissao } from "@/types/interfaces";
 import { ModalContainer, FormGroup } from "./EditPersonalInfoModal.styles";
 import {AiOutlineSave} from "react-icons/ai";
+import {showToastWithSound} from "@/services/hooks/useToastMessageWithSound";
 
 /**
  * Formata a data para o formato esperado pelo input (`yyyy-MM-dd`).
@@ -64,7 +64,7 @@ const EditPersonalInfoModal: React.FC<EditPersonalInfoModalProps> = ({ isOpen, o
 
                 setProfissoes(organizadas);
             } catch (error) {
-                toast.error("Erro ao carregar profissões.");
+                showToastWithSound({ type: "error", message: "❌ Erro ao carregar profissões!" });
                 console.error("Erro ao buscar profissões:", error);
             }
         };
@@ -76,7 +76,7 @@ const EditPersonalInfoModal: React.FC<EditPersonalInfoModalProps> = ({ isOpen, o
 
     const onSubmit = (data: any) => {
         if (!data.data_nascimento || !data.genero || !data.profissao_id) {
-            toast.error("⚠️ Preencha todos os campos obrigatórios.");
+            showToastWithSound({ type: "error", message: "⚠️ Preencha todos os campos obrigatórios." });
             return;
         }
 

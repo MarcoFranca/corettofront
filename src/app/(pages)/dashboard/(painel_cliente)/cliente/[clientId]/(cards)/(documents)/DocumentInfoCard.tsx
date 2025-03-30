@@ -22,6 +22,7 @@ import InputMask from "react-input-mask-next";
 import {
     DetailsContainer
 } from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(documents)/DocumentsFolder.styles";
+import {useModalSoundEffect} from "@/services/hooks/useModalSoundEffect";
 
 interface DocumentInfoCardProps {
     cliente: Cliente;
@@ -30,6 +31,7 @@ interface DocumentInfoCardProps {
 const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ cliente }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const error = useAppSelector((state: RootState) => state.clientes.error);
+    useModalSoundEffect(modalIsOpen);
 
     const openModal = () => setModalIsOpen(true);
     const closeModal = () => setModalIsOpen(false);

@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/services/hooks/hooks";
 import { updateCliente } from "@/store/slices/clientesSlice";
 import { ModalContainer, FormGroup } from "./EditDocumentsModal.styles";
 import { removeMask, getCpfMask, getIdentityMask } from "@/utils/maskUtils";
+import {useModalSound} from "@/services/hooks/useModalSound";
 
 interface EditDocumentsModalProps {
     isOpen: boolean;
@@ -15,8 +16,7 @@ interface EditDocumentsModalProps {
     cliente: Cliente;
 }
 
-const EditDocumentsModal: React.FC<EditDocumentsModalProps> =
-    ({
+const EditDocumentsModal: React.FC<EditDocumentsModalProps> = ({
          isOpen,
          onRequestClose,
          cliente,
@@ -30,7 +30,10 @@ const EditDocumentsModal: React.FC<EditDocumentsModalProps> =
             },
         });
 
-        const {
+    useModalSound(isOpen); // 👈 Toca som ao abrir/fechar
+
+
+    const {
             control,
             handleSubmit,
             setValue,
@@ -89,7 +92,6 @@ const EditDocumentsModal: React.FC<EditDocumentsModalProps> =
                             register={register} // ✅ Agora passamos `register`
                             placeholder="Digite o CPF"
                             mask={getCpfMask(methods.watch("cpf"))} // ✅ Calcula máscara dinamicamente
-                            required
                         />
                     </FormGroup>
 
@@ -103,7 +105,6 @@ const EditDocumentsModal: React.FC<EditDocumentsModalProps> =
                             register={register} // ✅ Agora passamos `register`
                             placeholder="Digite a Identidade"
                             mask={getIdentityMask(methods.watch("identidade"))} // ✅ Calcula máscara dinamicamente
-                            required
                         />
                     </FormGroup>
                 </ModalContainer>

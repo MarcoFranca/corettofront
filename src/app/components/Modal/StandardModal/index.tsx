@@ -5,6 +5,7 @@ import {FormProvider, UseFormReturn} from "react-hook-form";
 import Button from "@/app/components/ui/Button";
 import { IoSyncOutline } from "react-icons/io5";
 import { ModalContainer, Form, InputGroup, ModalActions, FullWidthButton } from "./StandardModal.styles";
+import {showToastWithSound} from "@/services/hooks/useToastMessageWithSound";
 
 interface StandardModalProps {
     isOpen: boolean;
@@ -44,9 +45,9 @@ const StandardModal: React.FC<StandardModalProps> =
         useEffect(() => {
             if (!disableToast && toastMessage) { // ✅ Só exibe se `disableToast` for `false`
                 if (toastMessage.type === "success") {
-                    toast.success(toastMessage.message);
+                    showToastWithSound({ type: "success", message: toastMessage.message });
                 } else if (toastMessage.type === "error") {
-                    toast.error(toastMessage.message);
+                    showToastWithSound({ type: "error", message: toastMessage.message });
                 }
             }
         }, [toastMessage, disableToast]); // ✅ Agora depende também de `disableToast`
@@ -68,12 +69,12 @@ const StandardModal: React.FC<StandardModalProps> =
                 await onSubmit(data);
 
                 if (!toastMessage) {
-                    toast.success(successMessage);
+                    showToastWithSound({ type: "success", message: successMessage });
                 }
                 onRequestClose();
             } catch (error) {
+                    showToastWithSound({ type: "error", message: errorMessage });
                 console.error("Erro ao enviar formulário:", error);
-                toast.error(errorMessage);
             }
         };
 

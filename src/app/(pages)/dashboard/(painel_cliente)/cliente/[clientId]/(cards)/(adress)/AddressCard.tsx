@@ -25,6 +25,7 @@ import {
 // Importando imagens
 import AddressImage from "@/../public/assets/pages/profile/Endereco.svg";
 import EditImage from "@/../public/assets/common/edit.svg";
+import {useModalSoundEffect} from "@/services/hooks/useModalSoundEffect";
 
 interface AddressCardProps {
     cliente: Cliente;
@@ -38,6 +39,8 @@ const AddressCard: React.FC<AddressCardProps> = ({ cliente }) => {
     const endereco = useAppSelector(
         (state: RootState) => state.clientes.clienteDetalhe?.relacionamentos?.endereco || cliente.endereco
     );
+
+    useModalSoundEffect(isModalOpen);
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);

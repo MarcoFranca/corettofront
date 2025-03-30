@@ -31,6 +31,7 @@ import {
     FaEdit,
     FaPlusCircle
 } from "react-icons/fa";
+import {useModalSoundEffect} from "@/services/hooks/useModalSoundEffect";
 
 interface ContactInfoCardProps {
     cliente: Cliente;
@@ -40,8 +41,10 @@ const ContactInfoCard: React.FC<ContactInfoCardProps> = ({ cliente }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const dispatch = useAppDispatch();
 
+        useModalSoundEffect(modalIsOpen);
     const openModal = () => {
         setModalIsOpen(true);
+        useModalSoundEffect(modalIsOpen);
     };
 
     const closeModal = () => {

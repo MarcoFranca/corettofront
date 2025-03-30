@@ -30,6 +30,7 @@ import Spinner from "@/app/components/ui/loading/spinner/sppiner";
 import { StatusType , STATUS_DETAILS } from '@/app/components/ui/Badge';
 import ClientTabs from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/ClientTabs";
 import StandardModal from "@/app/components/Modal/StandardModal";
+import {useModalSoundEffect} from "@/services/hooks/useModalSoundEffect";
 
 ChartJS.register(
     CategoryScale,
@@ -54,6 +55,7 @@ const ClientProfile: React.FC = () => {
     const [selectedStatus, setSelectedStatus] = useState<string>(''); // Inicialize com string vazia
 
     const openStatusModal = () => setIsStatusModalOpen(true);
+    useModalSoundEffect(isStatusModalOpen);
     const formMethods = useForm({
         defaultValues: {
             status: selectedStatus,

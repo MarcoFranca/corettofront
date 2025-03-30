@@ -18,6 +18,7 @@ import EditImage from '@/../public/assets/common/edit.svg';
 import Image from "next/image";
 import EditPersonalInfoModal from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(personalInfo)/EditPersonalInfoModal";
 import api from "@/app/api/axios";
+import {useModalSoundEffect} from "@/services/hooks/useModalSoundEffect";
 
 interface PersonalInfoCardProps {
     cliente: Cliente;
@@ -54,6 +55,7 @@ const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({ cliente }) => {
         return cliente.profissao.nome;
     };
 
+    useModalSoundEffect(modalIsOpen);
 
     const openModal = () => {
         setModalIsOpen(true);

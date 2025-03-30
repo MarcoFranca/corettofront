@@ -103,7 +103,6 @@ export const updateCliente = createAsyncThunk<
 
             const response = await api.patch(`/clientes/${id}/`, {
                 ...updatedCliente,
-                endereco: updatedCliente.endereco || {}, // 🔥 Garante que o campo `endereco` está presente
             }, {
                 headers: { 'Content-Type': 'application/json' },
             });

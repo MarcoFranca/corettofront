@@ -1,15 +1,9 @@
 // src/app/components/Modal/profile/EditClientModal.styles.ts
 import styled, { keyframes } from "styled-components";
 import InputMask from "react-input-mask-next";
-import {forwardRef} from "react";
-
 
 // 🔹 Estilização do Container do Modal
-export const ModalContainer = styled.div`
-    //display: flex;
-    //flex-direction: column;
-    //gap: 16px;
-`;
+export const ModalContainer = styled.div``;
 
 // 🔹 Estilização do Formulário
 export const Form = styled.form`
@@ -36,31 +30,49 @@ export const AdditionalContacts = styled.div`
 export const ContactRow = styled.div`
     display: flex;
     width: 100%;
+    flex-direction: column;
+    gap: 6px;
 `;
 
 export const ContactSelect = styled.div`
     display: flex;
+    align-items: center;
     width: 100%;
-    justify-content: space-between;
-    height: 33px;
+    height: auto;
     gap: 8px;
-    
-    select {
-        flex: 1;
-        height: 100%;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 0.9rem;
-        margin: 0;
-        cursor: pointer;        
+    flex-wrap: wrap;
+`;
+
+// 🔹 Container dos botões com ícones
+export const TipoContainer = styled.div`
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+`;
+
+export const TipoButton = styled.button`
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.selected {
+        background-color: #042a75;
+        color: white;
+        border-color: #042a75;
     }
 
-    input {
-        flex: 1;
-        padding: 8px;
-        font-size: 0.9rem;
+    svg {
+        font-size: 1rem;
     }
-`
+`;
+
 // 🔥 Animação de "tremer" ao clicar
 const shakeAnimation = keyframes`
     0% { transform: translateX(0); }
@@ -79,12 +91,12 @@ export const RemoveButton = styled.button`
     transition: transform 0.3s ease, color 0.3s ease;
 
     &:hover {
-        transform: scale(1.3) rotate(-10deg); /* 🔄 Aumenta e gira um pouco */
+        transform: scale(1.3) rotate(-10deg);
         color: #d32f2f;
     }
 
     &:active {
-        animation: ${shakeAnimation} 0.3s ease-in-out; /* 🎭 Tremer ao clicar */
+        animation: ${shakeAnimation} 0.3s ease-in-out;
     }
 `;
 
@@ -114,12 +126,11 @@ export const EmptyMessage = styled.p`
     margin-top: 10px;
 `;
 
-// Estilizamos o componente funcional ao invés de `InputMask` diretamente
 export const PhoneInput = styled(InputMask)`
     flex: 1;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 0.9rem;
+    min-width: 180px;
 `;
-
