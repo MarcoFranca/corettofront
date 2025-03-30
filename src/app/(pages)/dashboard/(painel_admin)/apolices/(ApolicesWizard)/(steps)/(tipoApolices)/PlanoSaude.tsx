@@ -50,8 +50,10 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, wa
         <>
             <SectionTitle>📋 Informações do Plano</SectionTitle>
             <PlanoSaudeGrid>
-                <Input control={control} setValue={setValue} register={register}
-                       name="detalhes.premio_pago" label="💎 Prêmio Pago (Valor do Plano)"
+                <Input control={control} setValue={setValue}
+                       register={register}
+                       name="detalhes.premio_pago"
+                       label="💎 Prêmio Pago (Valor do Plano)"
                        type="money" required />
 
                 <Input control={control} setValue={setValue} register={register}

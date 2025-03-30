@@ -110,7 +110,6 @@ export interface ApolicePlanoSaude extends BaseApolice {
     tipo_contratante: 'PF' | 'PJ';
     cpf_cnpj?: string;
     beneficiarios?: Beneficiario[]; // ✅ Agora é opcional
-
 }
 
 // ⚰️ Seguro de Vida
@@ -175,7 +174,16 @@ export interface ApoliceConsorcio extends BaseApolice {
     permitir_embutido_livre: boolean;
 }
 
+// 🏦 Previdência
+export interface ApolicePrevidencia extends BaseApolice {
+    nome_fundo: string;
+    fundo: string;
+    valor_acumulado: number;
+    regime_tributacao: string;
+    regime_contratacao: string;
+}
+
 
 // 🔄 Tipo Genérico para todas as Apólices Detalhadas
-export type ApoliceDetalhada = ApolicePlanoSaude | ApoliceSeguroVida | ApoliceConsorcio;
+export type ApoliceDetalhada = ApolicePlanoSaude | ApoliceSeguroVida | ApoliceConsorcio | ApolicePrevidencia;
 

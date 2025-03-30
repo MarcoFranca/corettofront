@@ -1,38 +1,83 @@
-import React from 'react';
-
-import {Controller} from "react-hook-form";
+import React from "react";
+import { Controller } from "react-hook-form";
 import {
-    FormGroup,
-    StyledInput
-} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/StepDadosPrincipais.styles";
-import {Label} from "recharts";
+    PrevidenciaGrid,
+    Input,
+    SelectStyled,
+    SectionTitle
+} from "./Previdencia.styles";
+
+const regimeTributacaoOptions = [
+    { value: "progressivo", label: "Progressivo" },
+    { value: "regressivo", label: "Regressivo" },
+];
+
+const regimeContratacaoOptions = [
+    { value: "pgbl", label: "PGBL" },
+    { value: "vgbl", label: "VGBL" },
+];
 
 interface PrevidenciaProps {
     control: any;
+    setValue: any;
+    register: any;
+    watch: any;
 }
 
-const Previdencia: React.FC<PrevidenciaProps> = ({ control }) => {
-    return (
-        <div>
-            <FormGroup>
-                <Label>Nome do Fundo:</Label>
-                <Controller
-                    name="detalhes.nomeFundo"
-                    control={control}
-                    render={({ field }) => <StyledInput {...field} placeholder="Nome do Fundo" />}
-                />
-            </FormGroup>
+const Previdencia: React.FC<PrevidenciaProps> = ({ control, setValue, register }) => {
 
-            <FormGroup>
-                <Label>Valor Acumulado:</Label>
-                <Controller
-                    name="detalhes.valorAcumulado"
+    return (
+        <>
+            <SectionTitle>🏦 Informações da Previdência</SectionTitle>
+            <PrevidenciaGrid>
+                <Input control={control} setValue={setValue}
+                       register={register}
+                       name="detalhes.premio_pago"
+                       label="💎 Prêmio Pago (Valor do Plano)"
+                       type="money" required />
+                <Input
                     control={control}
-                    render={({ field }) => <StyledInput {...field} type="number" placeholder="Valor Acumulado" />}
+                    setValue={setValue}
+                    register={register}
+                    name="detalhes.nome_fundo"
+                    label="📘 Nome do Fundo"
+                    required
                 />
-            </FormGroup>
-        </div>
+
+                <Input
+                    control={control}
+                    setValue={setValue}
+                    register={register}
+                    name="detalhes.fundo"
+                    label="🏛️ Fundo"
+                />
+
+                <Input
+                    control={control}
+                    setValue={setValue}
+                    register={register}
+                    name="detalhes.valor_acumulado"
+                    label="💰 Valor Acumulado"
+                    type="money"
+                />
+
+                <SelectStyled
+                    control={control}
+                    name="detalhes.regime_tributacao"
+                    label="📊 Regime de Tributação"
+                    options={regimeTributacaoOptions}
+                />
+
+                <SelectStyled
+                    control={control}
+                    name="detalhes.regime_contratacao"
+                    label="📝 Regime de Contratação"
+                    options={regimeContratacaoOptions}
+                />
+            </PrevidenciaGrid>
+        </>
     );
 };
+
 
 export default Previdencia;

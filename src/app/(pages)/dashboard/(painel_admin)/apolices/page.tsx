@@ -18,6 +18,7 @@ import {DrawerContainer} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(
 import api from "@/app/api/axios";
 import KpiCardsApolices from "@/app/(pages)/dashboard/(painel_admin)/apolices/(kpiApolices)/KpiCards";
 import RouteChangeLoader from "@/app/components/ui/loading/RouteChangeLoader";
+import {useModalSoundEffect} from "@/services/hooks/useModalSoundEffect";
 
 const ApolicesPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -82,6 +83,7 @@ const ApolicesPage: React.FC = () => {
         fetchStats();
     }, [tipoFiltro, statusFiltro]);
 
+    useModalSoundEffect(isWizardOpen);
 
     const handleWizardClose = () => {
         setIsWizardOpen(false);

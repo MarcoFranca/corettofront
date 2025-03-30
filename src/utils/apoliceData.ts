@@ -45,6 +45,14 @@ export const formattedDataByType = {
         beneficiarios: JSON.stringify(data.detalhes.beneficiarios || []),
     }),
 
+    "Previdência": (data: ApoliceFormData) => ({
+        nome_fundo: formatString(data.detalhes.nome_fundo),
+        fundo: formatString(data.detalhes.fundo),
+        valor_acumulado: cleanMoneyValue(data.detalhes.valor_acumulado),
+        regime_tributacao: formatString(data.detalhes.regime_tributacao),
+        regime_contratacao: formatString(data.detalhes.regime_contratacao),
+    }),
+
     "Consórcio": (data: ApoliceFormData) => ({
         contemplada: data.contemplada || false,
         grupo: formatString(data.detalhes.grupo),
@@ -67,6 +75,7 @@ export const formattedDataByType = {
         permitir_embutido_fixo: data.permitir_embutido_fixo ?? false,
         permitir_embutido_livre: data.permitir_embutido_livre ?? false,
     }),
+
     "Seguro de Vida": (data: ApoliceFormData) => ({
         premio_pago: cleanMoneyValue(data.detalhes.premio_pago),
         subcategoria: formatString(data.detalhes.subcategoria),
