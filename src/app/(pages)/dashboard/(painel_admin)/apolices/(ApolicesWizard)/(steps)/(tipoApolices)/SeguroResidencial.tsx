@@ -1,28 +1,51 @@
-import React from 'react';
+// 📂 src/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/SeguroResidencial.tsx
 
-import {Controller} from "react-hook-form";
+import React from "react";
 import {
-    FormGroup,
-    StyledInput
-} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/StepDadosPrincipais.styles";
-import {Label} from "recharts";
+    SeguroResidencialGrid,
+    Input,
+    SectionTitle,
+    TextArea
+} from "./SeguroResidencial.styles";
 
-interface SeguroResidencialProps {
-    control: any; // Percentual concluído (0-100)
+interface Props {
+    control: any;
+    setValue: any;
+    register: any;
+    watch: any;
 }
 
-const SeguroResidencial: React.FC<SeguroResidencialProps> = ({ control }) => {
+const SeguroResidencial: React.FC<Props> = ({ control, setValue, register }) => {
     return (
-        <div>
-            <FormGroup>
-                <Label>Cobertura Adicional:</Label>
-                <Controller
-                    name="detalhes.coberturaAdicional"
-                    control={control}
-                    render={({ field }) => <StyledInput {...field} placeholder="Coberturas Extras" />}
+        <>
+            <SectionTitle>🏠 Informações do Seguro Residencial</SectionTitle>
+            <SeguroResidencialGrid>
+                <Input control={control} setValue={setValue}
+                       register={register}
+                       name="detalhes.premio_pago"
+                       label="💎 Prêmio Pago (Valor do Plano)"
+                       type="money" required
                 />
-            </FormGroup>
-        </div>
+                <Input
+                    name="detalhes.capital_de_seguro"
+                    label="💰 Capital de Seguro"
+                    type="money"
+                    control={control}
+                    setValue={setValue}
+                    register={register}
+                    required
+                />
+
+                <TextArea
+                    name="detalhes.cobertura_adicional"
+                    label="🛡️ Cobertura Adicional"
+                    control={control}
+                    setValue={setValue}
+                    register={register}
+                    type="textarea"
+                />
+            </SeguroResidencialGrid>
+        </>
     );
 };
 

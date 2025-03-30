@@ -1,28 +1,41 @@
-import React from 'react';
+// 📂 src/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/Investimento.tsx
 
-import {Controller} from "react-hook-form";
+import React from "react";
 import {
-    FormGroup,
-    StyledInput
-} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/StepDadosPrincipais.styles";
-import {Label} from "recharts";
+    InvestimentoGrid,
+    Input,
+    SectionTitle
+} from "./Investimento.styles";
 
-interface InvestimentoProps {
-    control: any; // Percentual concluído (0-100)
+interface Props {
+    control: any;
+    setValue: any;
+    register: any;
+    watch: any;
 }
 
-const Investimento: React.FC<InvestimentoProps> = ({ control }) => {
+const Investimento: React.FC<Props> = ({ control, setValue, register }) => {
     return (
-        <div>
-            <FormGroup>
-                <Label>Valor Investido:</Label>
-                <Controller
-                    name="detalhes.valorInvestido"
-                    control={control}
-                    render={({ field }) => <StyledInput {...field} type="number" placeholder="Valor Investido" />}
+        <>
+            <SectionTitle>📈 Informações do Investimento</SectionTitle>
+            <InvestimentoGrid>
+                <Input control={control} setValue={setValue}
+                       register={register}
+                       name="detalhes.premio_pago"
+                       label="💎 Prêmio Pago (Valor do Plano)"
+                       type="money" required
                 />
-            </FormGroup>
-        </div>
+                <Input
+                    control={control}
+                    setValue={setValue}
+                    register={register}
+                    name="detalhes.valor_investido"
+                    label="💰 Valor Investido"
+                    type="money"
+                    required
+                />
+            </InvestimentoGrid>
+        </>
     );
 };
 

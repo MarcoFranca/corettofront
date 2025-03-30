@@ -100,4 +100,20 @@ export const formattedDataByType = {
         ),
         classe_ajuste: formatString(data.detalhes.classe_ajuste),
     }),
+
+    "Seguro Profissional": (data: ApoliceFormData) => ({
+        possui_franquia: !!data.detalhes.possui_franquia,
+        descricao_franquia: data.detalhes.descricao_franquia || null,
+        capital_de_seguro: cleanMoneyValue(data.detalhes.capital_de_seguro),
+    }),
+
+    "Seguro Residencial": (data: ApoliceFormData) => ({
+        capital_de_seguro: cleanMoneyValue(data.detalhes.capital_de_seguro),
+        cobertura_adicional: data.detalhes.cobertura_adicional || null,
+    }),
+
+    "Investimento": (data: ApoliceFormData) => ({
+        valor_investido: cleanMoneyValue(data.detalhes.valor_investido)
+    }),
+
 };
