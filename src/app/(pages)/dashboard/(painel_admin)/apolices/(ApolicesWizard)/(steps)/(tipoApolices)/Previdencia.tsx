@@ -1,5 +1,4 @@
 import React from "react";
-import { Controller } from "react-hook-form";
 import {
     PrevidenciaGrid,
     Input,
@@ -32,7 +31,7 @@ const Previdencia: React.FC<PrevidenciaProps> = ({ control, setValue, register }
             <PrevidenciaGrid>
                 <Input control={control} setValue={setValue}
                        register={register}
-                       name="detalhes.premio_pago"
+                       name="premio_pago"
                        label="💎 Prêmio Pago (Valor do Plano)"
                        type="money" required />
                 <Input

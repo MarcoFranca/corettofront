@@ -31,7 +31,7 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
                     control={control}
                     setValue={setValue}
                     register={register}
-                    name="detalhes.premio_pago"
+                    name="premio_pago"
                     label="💎 Prêmio Pago (Valor do Plano)"
                     type="money"
                     required
@@ -55,7 +55,7 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
 
                 <SelectCustom
                     control={control}
-                    name="detalhes.periodicidade_premio"
+                    name="detalhes.periodicidade_pagamento"
                     label="🗓️ Periodicidade do Prêmio"
                     options={[
                         { value: "mensal", label: "Mensal" },

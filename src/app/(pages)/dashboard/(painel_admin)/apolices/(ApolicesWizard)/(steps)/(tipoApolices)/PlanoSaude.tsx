@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Controller } from "react-hook-form";
+import {Controller, useFieldArray} from "react-hook-form";
 import {
     PlanoSaudeGrid,
     SectionTitle,
@@ -34,17 +34,15 @@ const parentescoOptions = [
 ];
 
 const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, watch }) => {
-    const [beneficiarios, setBeneficiarios] = useState([{ id: 0, nome: "", idade: "", parentesco: "" }]);
 
-    // Adicionar um novo beneficiário
-    const handleAddBeneficiario = () => {
-        setBeneficiarios([...beneficiarios, { id: Date.now(), nome: "", idade: "", parentesco: "" }]);
-    };
-
-    // Remover beneficiário
-    const handleRemoveBeneficiario = (id: number) => {
-        setBeneficiarios(beneficiarios.filter(beneficiario => beneficiario.id !== id));
-    };
+    const {
+        fields: beneficiarios,
+        append,
+        remove,
+    } = useFieldArray({
+        control,
+        name: "detalhes.beneficiarios",
+    });
 
     return (
         <>
@@ -52,7 +50,7 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, wa
             <PlanoSaudeGrid>
                 <Input control={control} setValue={setValue}
                        register={register}
-                       name="detalhes.premio_pago"
+                       name="premio_pago"
                        label="💎 Prêmio Pago (Valor do Plano)"
                        type="money" required />
 
@@ -102,10 +100,16 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, wa
             <OptionalSection>
                 <SectionTitle>👨‍👩‍👧 Beneficiários do Plano</SectionTitle>
 
-                {beneficiarios.map((beneficiario, index) => (
-                    <PlanoSaudeGrid key={beneficiario.id}>
-                        <Input control={control} setValue={setValue} register={register}
-                               name={`detalhes.beneficiarios[${index}].nome`} label="👤 Nome do Beneficiário" required />
+                {beneficiarios.map((item, index) => (
+                    <PlanoSaudeGrid key={item.id}>
+                        <Input
+                            control={control}
+                            setValue={setValue}
+                            register={register}
+                            name={`detalhes.beneficiarios.${index}.nome`}
+                            label="👤 Nome do Beneficiário"
+                            required
+                        />
 
                         <Input
                             name={`detalhes.beneficiarios.${index}.data_nascimento`}
@@ -117,18 +121,24 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, wa
                             required={false}
                         />
 
-                        <SelectCustom control={control} name={`detalhes.beneficiarios[${index}].parentesco`} label="🧬 Parentesco"
-                                      options={parentescoOptions} required />
+                        <SelectCustom
+                            control={control}
+                            name={`detalhes.beneficiarios.${index}.parentesco`}
+                            label="🧬 Parentesco"
+                            options={parentescoOptions}
+                            required
+                        />
 
-                        <Button danger type="primary" onClick={() => handleRemoveBeneficiario(beneficiario.id)}>
+                        <Button danger type="primary" onClick={() => remove(index)}>
                             <FaTrash /> Remover
                         </Button>
                     </PlanoSaudeGrid>
                 ))}
 
-                <Button type="dashed" onClick={handleAddBeneficiario} block>
+                <Button type="dashed" onClick={() => append({ nome: "", data_nascimento: "", parentesco: "" })} block>
                     <FaPlus /> Adicionar Beneficiário
                 </Button>
+
             </OptionalSection>
         </>
     );

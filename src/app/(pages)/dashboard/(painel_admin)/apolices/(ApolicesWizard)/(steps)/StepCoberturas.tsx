@@ -4,7 +4,7 @@ import React from "react";
 import { useFieldArray } from "react-hook-form";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
-    CoberturaGrid, CoberturaSection, RemoveButton, AddButton, Input
+    CoberturaGrid, CoberturaSection, RemoveButton, Input
 } from "./StepCoberturas.styles";
 import SelectCobertura from "@/app/components/ui/select/SelectCoberturas/SelectCoberturas";
 import {FaPlus} from "react-icons/fa";
@@ -84,7 +84,7 @@ const StepCoberturas: React.FC<StepCoberturasProps> = ({ control, setValue, regi
             ))}
 
             {/* Botão Moderno para Adicionar Cobertura */}
-            <Button type="dashed" onClick={() => addCobertura({ nome: "", subclasse: "", capital_segurado: 0 })} block>
+            <Button type="dashed" onClick={() => addCobertura({ nome: "", subclasse: "", capital_segurado: 0,  classe_ajuste: "", })} block>
                 <FaPlus /> Adicionar Cobertura
             </Button>
         </CoberturaSection>

@@ -1,6 +1,6 @@
 // utils/formatApoliceData.ts
 
-import { ApoliceFormData } from "@/types/ApolicesInterface";
+import {ApoliceDetalhada, ApoliceFormData} from "@/types/ApolicesInterface";
 
 // 🏦 Funções auxiliares para formatação de valores
 const formatUUID = (value: any) => (value && typeof value === "object" ? value.value : value || null);
@@ -21,13 +21,55 @@ export const formattedDataBase = (data: ApoliceFormData) => ({
     data_inicio: formatDate(data.data_inicio),
     data_vencimento: data.data_vencimento ? formatDate(data.data_vencimento) : null,
     data_revisao: data.data_revisao ? formatDate(data.data_revisao) : null,
-    premio_pago: cleanMoneyValue(data.detalhes.premio_pago),
+    premio_pago: cleanMoneyValue(data.premio_pago),
     periodicidade_pagamento: formatString(data.periodicidade_pagamento) || "mensal",
     forma_pagamento: formatString(data.detalhes.forma_pagamento) || "boleto",
     observacoes: formatString(data.observacoes),
     beneficiarios: data.detalhes.beneficiarios ? data.detalhes.beneficiarios : [],
     coberturas: data.detalhes.coberturas ? data.detalhes.coberturas : [],
 });
+
+// 🔄 Extrai somente os campos de "detalhes" com base no tipo de apólice
+export const extrairDetalhesFromApolice = (apolice: ApoliceDetalhada): Record<string, any> => {
+    if (!apolice || !apolice.tipo_produto) return {};
+
+    const camposPorTipo: Record<string, string[]> = {
+        "Plano de Saúde": [
+            "categoria", "acomodacao", "abrangencia", "valor_reembolso_consulta", "coparticipacao",
+            "tipo_contratante", "cpf_cnpj", "beneficiarios"
+        ],
+        "Previdência": [
+            "nome_fundo", "fundo", "valor_acumulado", "regime_tributacao", "regime_contratacao"
+        ],
+        "Consórcio": [
+            "contemplada", "grupo", "cota", "prazo", "indice_correcao", "furo", "objetivo", "estrategia",
+            "percentual_reducao_parcela", "tipo_lance", "detalhes_lance", "aporte", "valor_carta",
+            "parcelas_pagas", "historico_pagamentos", "forma_pagamento", "historico_reajustes", "permitir_lance_fixo",
+            "permitir_lance_livre", "permitir_embutido_fixo", "permitir_embutido_livre"
+        ],
+        "Seguro de Vida": [
+            "premio_pago", "periodicidade_pagamento", "classe_ajuste", "subcategoria", "beneficiarios", "coberturas"
+        ],
+        "Seguro Profissional": [
+            "possui_franquia", "descricao_franquia", "capital_de_seguro"
+        ],
+        "Seguro Residencial": [
+            "capital_de_seguro", "cobertura_adicional"
+        ],
+        "Investimento": [
+            "valor_investido"
+        ]
+    };
+
+    const campos = camposPorTipo[apolice.tipo_produto] ?? [];
+
+    return campos.reduce((acc, campo) => {
+        if (campo in apolice) {
+            acc[campo] = (apolice as any)[campo];
+        }
+        return acc;
+    }, {} as Record<string, any>);
+};
 
 // ✅ 🚀 Estruturas Específicas para Cada Tipo de Apólice
 export const formattedDataByType = {
@@ -68,6 +110,7 @@ export const formattedDataByType = {
         aporte: formatNumber(data.aporte),
         valor_carta: cleanMoneyValue(data.detalhes.valor_carta || 0),
         parcelas_pagas: formatNumber(data.parcelas_pagas),
+        forma_pagamento: formatString(data.detalhes.forma_pagamento),
         historico_pagamentos: data.historico_pagamentos ?? {},
         historico_reajustes: data.historico_reajustes ?? {},
         permitir_lance_fixo: data.permitir_lance_fixo ?? false,
@@ -77,7 +120,7 @@ export const formattedDataByType = {
     }),
 
     "Seguro de Vida": (data: ApoliceFormData) => ({
-        premio_pago: cleanMoneyValue(data.detalhes.premio_pago),
+        premio_pago: cleanMoneyValue(data.premio_pago),
         subcategoria: formatString(data.detalhes.subcategoria),
         periodicidade_pagamento: formatString(data.detalhes.periodicidade_premio) || "mensal",
         beneficiarios: JSON.stringify(

@@ -15,13 +15,12 @@ import {
 } from 'react-icons/md';
 import {FaTrash, FaWhatsapp} from 'react-icons/fa';
 
-import Link from 'next/link';
 import Pagination from '@/app/components/Pagination';
 import { Badge, STATUS_DETAILS } from '@/app/components/ui/Badge';
 import {
     Filters, Table, DeleteButton, Linked, FileInput, ButtonContain,
     TableContainer, TableRow, TableHeader, TableActions,
-    TableData, DetailsButton, ViewButton, SpanApolice, TippyContainer
+    TableData, ViewButton, SpanApolice, TippyContainer
 } from './ClientTable.styles';
 import api from "@/app/api/axios";
 import {toast} from "react-toastify";
@@ -31,6 +30,8 @@ import styles from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBo
 import Button from "@/app/components/ui/Button";
 import 'tippy.js/dist/tippy.css';
 import {STATUS_CHOICES} from "@/utils/statusOptions";
+import {toastSuccess} from "@/utils/toastWithSound";
+import {showToastWithSound} from "@/services/hooks/useToastMessageWithSound";
 
 
 const ClientesTable: React.FC = () => {
@@ -66,7 +67,7 @@ const ClientesTable: React.FC = () => {
 
     const handleDelete = (id: string) => {
         dispatch(deleteCliente(id));
-        toast.success("Cliente removido com sucesso!");
+        showToastWithSound({ type: "success", message: "🚀 Cliente removido com sucesso!" });
     };
 
     const handleDownloadTemplate = async () => {
@@ -81,9 +82,9 @@ const ClientesTable: React.FC = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
-            toast.success("Modelo de importação baixado!");
+            showToastWithSound({ type: "success", message: "🚀 Modelo de importação baixado!" });
         } catch (error) {
-            toast.error("Erro ao baixar modelo de importação.");
+            showToastWithSound({ type: "error", message: "❌ Erro ao baixar modelo de importação." });
         }
         setIsProcessing(false);
     };
@@ -105,9 +106,10 @@ const ClientesTable: React.FC = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            showToastWithSound({ type: "success", message: "Exportação concluída! 🎊🍾🎉" });
             toast.success("Exportação concluída!");
         } catch (error) {
-            toast.error("Erro ao exportar clientes.");
+            showToastWithSound({ type: "error", message: "❌ Erro ao exportar clientes." });
         }
         setIsProcessing(false);
     };
@@ -125,12 +127,24 @@ const ClientesTable: React.FC = () => {
         formData.append('file', file);
 
         setIsProcessing(true);
+        // 🔥 Mostra loading e guarda o ID do toast para atualização posterior
+        const toastId = toast.loading("Importando clientes...");
+
         try {
             await api.post('/clientes/importar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-            toast.success("Importação concluída!");
-            dispatch(fetchClientes());
+            toast.update(toastId, {
+                render: "Importação concluída com sucesso!",
+                type: "success",
+                isLoading: false,
+                autoClose: 3000,
+            });            dispatch(fetchClientes());
         } catch (error) {
-            toast.error("Erro ao importar clientes.");
+            toast.update(toastId, {
+                render: "Erro ao importar clientes.",
+                type: "error",
+                isLoading: false,
+                autoClose: 5000,
+            });
         }
         setIsProcessing(false);
     };

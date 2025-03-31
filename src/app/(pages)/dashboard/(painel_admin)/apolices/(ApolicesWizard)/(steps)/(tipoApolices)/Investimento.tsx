@@ -21,7 +21,7 @@ const Investimento: React.FC<Props> = ({ control, setValue, register }) => {
             <InvestimentoGrid>
                 <Input control={control} setValue={setValue}
                        register={register}
-                       name="detalhes.premio_pago"
+                       name="premio_pago"
                        label="💎 Prêmio Pago (Valor do Plano)"
                        type="money" required
                 />

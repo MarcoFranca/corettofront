@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // ✅ Importação do useRouter para navegação
 import { Apolice } from "@/types/interfaces";
-import { FaInfoCircle, FaTrash, FaFilePdf } from "react-icons/fa";
+import {FaInfoCircle, FaTrash, FaFilePdf, FaEdit} from "react-icons/fa";
 import {
     Table, TableHeader, TableRow, TableData, TableActions, DetailsButton, DeleteButton, ViewButton, StatusBadge, TableContainer
 } from "./ApoliceTable.styles";
@@ -12,7 +12,8 @@ import { message, Modal } from "antd"; // 🔥 Importamos `message` e `Modal` do
 
 interface ApoliceTableProps {
     apolices: Apolice[];
-    setApolices: (apolices: Apolice[]) => void; // ✅ Agora passamos `setApolices` para atualizar a lista
+    setApolices: (apolices: Apolice[]) => void;
+    onEdit: (apolice: Apolice) => void; // 👈 nova prop
 }
 
 // Função para definir a cor do status
@@ -38,7 +39,7 @@ const getStatusColor = (status: string) => {
     }
 };
 
-const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices }) => {
+const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices, onEdit }) => {
     const router = useRouter(); // ✅ Hook do Next.js para navegação
     const [administradoras, setAdministradoras] = useState<Record<string, string>>({});
 
@@ -58,6 +59,7 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices }) =>
 
         fetchAdministradoras();
     }, []);
+
 
     // 🗑️ Função para deletar apólice
     const handleDelete = async (apoliceId: string) => {
@@ -130,6 +132,10 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices }) =>
                                 {/* 🔍 Botão de detalhes */}
                                 <DetailsButton onClick={() => handleDetailsClick(apolice.id)}>
                                     <FaInfoCircle />
+                                </DetailsButton>
+
+                                <DetailsButton onClick={() => onEdit(apolice)}>
+                                    <FaEdit />
                                 </DetailsButton>
 
                                 {/* 🗑 Botão de deletar */}

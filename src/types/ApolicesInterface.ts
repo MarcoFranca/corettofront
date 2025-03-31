@@ -51,6 +51,7 @@ export interface ApoliceFormData {
 
 
 export interface ApoliceWizardProps {
+    apolice?: Partial<ApoliceFormData> & { id?: string } | ApoliceDetalhada;
     onClose: () => void;
 }
 

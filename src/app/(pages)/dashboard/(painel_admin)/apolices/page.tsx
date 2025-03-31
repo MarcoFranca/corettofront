@@ -19,6 +19,8 @@ import api from "@/app/api/axios";
 import KpiCardsApolices from "@/app/(pages)/dashboard/(painel_admin)/apolices/(kpiApolices)/KpiCards";
 import RouteChangeLoader from "@/app/components/ui/loading/RouteChangeLoader";
 import {useModalSoundEffect} from "@/services/hooks/useModalSoundEffect";
+import {message} from "antd";
+import {ApoliceDetalhada} from "@/types/ApolicesInterface";
 
 const ApolicesPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -28,6 +30,7 @@ const ApolicesPage: React.FC = () => {
     const [statusFiltro, setStatusFiltro] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [editingApolice, setEditingApolice] = useState<ApoliceDetalhada | undefined>(undefined);
 
     const fetchApolicesList = async () => {
 
@@ -87,7 +90,8 @@ const ApolicesPage: React.FC = () => {
 
     const handleWizardClose = () => {
         setIsWizardOpen(false);
-        fetchApolicesList();
+        setEditingApolice(undefined); // ✅ limpa edição
+        fetchApolicesList();          // ✅ atualiza lista
     }
 
     const [stats, setStats] = useState({
@@ -143,23 +147,40 @@ const ApolicesPage: React.FC = () => {
             <>
                 {loading && <p>🔄 Carregando apólices...</p>}
                 {error && <p style={{ color: 'red' }}>❌ {error}</p>}
-                <ApolicesTable apolices={apolices} setApolices={setApolices} />
+                <ApolicesTable
+                    apolices={apolices}
+                    setApolices={setApolices}
+                    onEdit={async (apolice) => {
+                        try {
+                            const response = await api.get(`/apolices/${apolice.id}/`);
+                            setEditingApolice(response.data); // agora é uma `ApoliceDetalhada`
+                            setIsWizardOpen(true);
+                        } catch (error) {
+                            console.error("Erro ao carregar apólice para edição", error);
+                            message.error("Erro ao carregar apólice.");
+                        }
+                    }}
+
+                />
             </>
 
                 {/*<ApolicesCharts stats={stats} /> /!* ✅ Gráficos analíticos *!/*/}
             {/* 🧩 Modal de Cadastro - Agora Drawer Tela Cheia */}
-            <DrawerContainer
-                title="Cadastro de Apólice"
-                placement="right"
-                closable={true}
-                onClose={handleWizardClose}
-                open={isWizardOpen}
-                width="100vw" // ✅ Tela inteira
-                height="100vh" // ✅ Ocupa toda a altura
+                <DrawerContainer
+                    title={editingApolice ? "Editar Apólice" : "Cadastro de Apólice"}
+                    placement="right"
+                    closable={true}
+                    onClose={handleWizardClose}
+                    open={isWizardOpen}
+                    width="100vw"
+                    height="100vh"
+                >
+                    <ApoliceWizard
+                        apolice={editingApolice} // 👈 passa a apólice para edição
+                        onClose={handleWizardClose}
+                    />
+                </DrawerContainer>
 
-            >
-                <ApoliceWizard onClose={handleWizardClose} />
-            </DrawerContainer>
             </ContentContainer>
         </ApolicesContainer>
     );

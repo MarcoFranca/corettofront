@@ -23,7 +23,7 @@ interface StepDetalhesApoliceProps {
     control: any;
     setValue: any;   // ✅ Adicionado
     register: any;   // ✅ Adicionado
-    whatch:any;
+    watch:any;
     tipoApolice: string;
 }
 
@@ -34,24 +34,24 @@ const StepDetalhesApolice: React.FC<StepDetalhesApoliceProps> =
          tipoApolice,
          setValue,
          register,
-        whatch
+        watch
      }) => {
 
         switch (tipoApolice) {
             case "Plano de Saúde":
-                return <PlanoSaude watch={whatch} register={register} setValue={setValue} control={control} />;
+                return <PlanoSaude watch={watch} register={register} setValue={setValue} control={control} />;
             case "Seguro de Vida":
-                return <SeguroVida control={control} setValue={setValue} watch={whatch} register={register} />;
+                return <SeguroVida control={control} setValue={setValue} watch={watch} register={register} />;
             case "Consórcio":
                 return <Consorcio control={control} setValue={setValue} register={register}/>;
             case "Previdência":
-                return <Previdencia control={control} setValue={setValue} register={register} watch={whatch}/>;
+                return <Previdencia control={control} setValue={setValue} register={register} watch={watch}/>;
             case "Investimento":
-                return <Investimento watch={whatch} control={control} setValue={setValue} register={register} />;
+                return <Investimento watch={watch} control={control} setValue={setValue} register={register} />;
             case "Seguro Residencial":
-                return <SeguroResidencial watch={whatch} control={control} setValue={setValue} register={register} />;
+                return <SeguroResidencial watch={watch} control={control} setValue={setValue} register={register} />;
             case "Seguro Profissional":
-                return <SeguroProfissional watch={whatch} control={control} setValue={setValue} register={register} />;
+                return <SeguroProfissional watch={watch} control={control} setValue={setValue} register={register} />;
             default:
                 return <p>Selecione um tipo de apólice</p>;
         }

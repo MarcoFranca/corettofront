@@ -26,7 +26,7 @@ const SeguroProfissional: React.FC<Props> = ({ control, setValue, register, watc
             <SeguroProfissionalGrid>
                 <Input control={control} setValue={setValue}
                        register={register}
-                       name="detalhes.premio_pago"
+                       name="premio_pago"
                        label="💎 Prêmio Pago (Valor do Plano)"
                        type="money" required
                 />

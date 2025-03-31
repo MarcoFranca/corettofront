@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useForm, UseFormSetValue, Path, PathValue } from "react-hook-form";
 import { message } from "antd";
 import StepDadosPrincipais from "./(steps)/StepDadosPrincipais";
@@ -17,11 +17,17 @@ import {
     CustomSteps,
 } from "./ApoliceWizard.styles";
 import api from "@/app/api/axios";
-import {ApoliceFormData, ApoliceWizardProps, tipoApoliceParaEndpoint} from "@/types/ApolicesInterface";
-import {cleanMoneyValue, formattedDataBase, formattedDataByType} from "@/utils/apoliceData";
+import {
+    ApoliceDetalhada,
+    ApoliceFormData,
+    ApoliceWizardProps,
+    tipoApoliceParaEndpoint
+} from "@/types/ApolicesInterface";
+import {cleanMoneyValue, extrairDetalhesFromApolice, formattedDataBase, formattedDataByType} from "@/utils/apoliceData";
+import {toastSuccess} from "@/utils/toastWithSound";
 
 
-const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
+const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
     const [step, setStep] = useState(0);
     const [loading, setLoading] = useState(false);
 
@@ -32,9 +38,9 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
         setValue,
         control,
         register,
-        formState: { errors } // ✅ Agora está dentro do componente!
+        formState: { errors },
     } = useForm<ApoliceFormData>({
-        mode: "onSubmit", // 🔥 Valida apenas no envio
+        mode: "onSubmit",
         defaultValues: {
             cliente: "",
             tipoApolice: "",
@@ -43,8 +49,71 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             arquivoApolice: null,
             data_vencimento: undefined,
             data_revisao: undefined,
+        },
+    });
+
+    useEffect(() => {
+        if (!apolice) return;
+        // ✅ Aqui você vê o que chega do backend
+        console.log("🛰️ Apólice recebida para edição:", apolice);
+
+        const isDetalhada = (apolice: any): apolice is ApoliceDetalhada => {
+            return typeof apolice.cliente_nome === "string" && typeof apolice.administradora_nome === "string";
+        };
+
+        // 🧠 CLIENTE
+        if (isDetalhada(apolice)) {
+            // ✅ Cliente como objeto para o Select
+            setValue("cliente", {
+                value: apolice.cliente,
+                label: `${apolice.cliente_nome || ""} ${apolice.cliente_sobre_nome || ""}`.trim(),
+            });
+
+            // 🏛 ADMINISTRADORA
+            setValue("administradora", {
+                value: apolice.administradora,
+                label: apolice.administradora_nome || "",
+            });
+        } else {
+            // Caso seja tipo simples (ex: vindo de cache ou formulário incompleto)
+            if (apolice.cliente) {
+                setValue("cliente", typeof apolice.cliente === "string" ? apolice.cliente : apolice.cliente);
+            }
+            if (apolice.administradora) {
+                setValue("administradora", typeof apolice.administradora === "string" ? apolice.administradora : apolice.administradora);
+            }
         }
-        });
+
+        setValue("parceiro", apolice.parceiro || null);
+        setValue("numero_apolice", apolice.numero_apolice);
+        setValue("status", apolice.status);
+        setValue("data_inicio", apolice.data_inicio ?? "");
+        setValue("data_vencimento", apolice.data_vencimento || null);
+        setValue("data_revisao", apolice.data_revisao || null);
+        setValue("premio_pago", apolice.premio_pago ?? 0);
+        setValue("periodicidade_pagamento", apolice.periodicidade_pagamento ?? "");
+        setValue("forma_pagamento", apolice.forma_pagamento ?? "");
+        setValue("observacoes", apolice.observacoes || "");
+        if ("tipo_produto" in apolice) {
+            setValue("tipoApolice", apolice.tipo_produto as string);
+        }
+
+        const detalhes = extrairDetalhesFromApolice(apolice as ApoliceDetalhada);
+        // ✅ Ajusta coberturas para garantir `nome_id`
+        if ("coberturas" in detalhes && Array.isArray(detalhes.coberturas)) {
+            detalhes.coberturas = detalhes.coberturas.map((cobertura: any) => ({
+                ...cobertura,
+                nome_id: cobertura?.nome?.id ?? "",
+            }));
+        }
+// ✅ Garante classe_ajuste como string (evita campo vazio quebrando o input)
+        if ("classe_ajuste" in apolice) {
+            detalhes.classe_ajuste = apolice.classe_ajuste ?? "";
+        }
+
+        setValue("detalhes", detalhes);
+    }, [apolice, setValue]);
+
 
     const tipoApolice = watch("tipoApolice");
 
@@ -58,6 +127,9 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
     };
 
     const onSubmit = async (data: ApoliceFormData) => {
+        const isEditing = !!apolice;
+
+        const endpoint = tipoApoliceParaEndpoint[data.tipoApolice as keyof typeof tipoApoliceParaEndpoint];
         setLoading(true);
 
         try {
@@ -86,6 +158,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
                         nome_id: cobertura.nome_id,
                         subclasse: cobertura.subclasse,
                         capital_segurado: cleanMoneyValue(cobertura.capital_segurado),  // ✅ Garante que capital_segurado seja número
+                        classe_ajuste: cobertura.classe_ajuste ?? "",  // ✅ Adicionado
                     }))
                     : [];
             }
@@ -96,7 +169,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
                 Array.isArray(data.detalhes.beneficiarios) &&
                 data.detalhes.beneficiarios.length > 0
             ) {
-                (formattedData as any).beneficiarios = JSON.stringify(data.detalhes.beneficiarios); // ✅ Convertido apenas para Plano de Saúde
+                (formattedData as any).beneficiarios = data.detalhes.beneficiarios; // ✅ Envia como array
             }
 
 
@@ -118,21 +191,34 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
             }
 
             // ✅ 1. Envia a apólice ao backend (com beneficiários inclusos)
-            const response = await api.post(tipoApoliceParaEndpoint[data.tipoApolice as keyof typeof formattedDataByType], formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
 
-            if (response.status !== 201) {
+            const response = isEditing
+                ? await api.patch(`${endpoint}${apolice?.id}/`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                })
+                : await api.post(endpoint, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+            if (![200, 201].includes(response.status)) {
                 throw new Error(`Erro ao cadastrar apólice: ${response.status}`);
             }
 
             console.log("✅ Apólice e Beneficiários cadastrados com sucesso!");
+            toastSuccess("✅ Apólice e Beneficiários cadastrados com sucesso!")
             message.success("Apólice cadastrada com sucesso!");
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error("🚨 Erro ao enviar apólice:", error);
-            message.error("Erro ao cadastrar apólice.");
-        } finally {
+
+            if (error.response?.data) {
+                console.error("💥 Erro detalhado do backend:", error.response.data);
+                message.error(`Erro: ${JSON.stringify(error.response.data)}`);
+            } else {
+                message.error("Erro ao cadastrar apólice.");
+            }
+        }
+        finally {
             setLoading(false);
         }
     };
@@ -163,7 +249,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
                 formState={{ errors }} // ✅ Agora os erros são passados corretamente
             />
         },
-        { title: "Detalhes", content: <StepDetalhesApolice whatch={watch} control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },
+        { title: "Detalhes", content: <StepDetalhesApolice watch={watch} control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },
     ];
 
     if (tipoApolice === "Seguro de Vida") {
@@ -177,12 +263,18 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
 
     steps.push({ title: "Resumo", content: <StepResumo watch={watch} /> });
 
+    useEffect(() => {
+        if (apolice) {
+            setStep(0); // 🔥 Garante que começa do passo 0 ao editar
+        }
+    }, [apolice]);
+
     return (
         <WizardFullContainer>
             <CustomSteps current={step} items={steps.map(({ title }) =>
                 ({ title }))} size="small" responsive={true} />
 
-            <StepContainer>{steps[step].content}</StepContainer>
+            <StepContainer>{steps[step]?.content ?? null}</StepContainer>
 
             <ButtonGroup>
                 {step > 0 && (
@@ -193,7 +285,9 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose }) => {
                 {step < steps.length - 1 ? (
                     <StyledButton onClick={handleNext}>Próximo</StyledButton>
                 ) : (
-                    <StyledButton onClick={handleSubmit(onSubmit)}>Finalizar</StyledButton>
+                    <StyledButton onClick={handleSubmit(onSubmit)}>
+                        {apolice ? "Salvar Alterações" : "Finalizar"}
+                    </StyledButton>
                 )}
             </ButtonGroup>
         </WizardFullContainer>
