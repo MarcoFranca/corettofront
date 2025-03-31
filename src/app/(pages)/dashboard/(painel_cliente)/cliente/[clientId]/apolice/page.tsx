@@ -74,7 +74,11 @@ const ApolicesPage: React.FC = () => {
             {loading && <LoadingMessage>🔄 Carregando apólices...</LoadingMessage>}
             {error && <ErrorMessage>❌ {error}</ErrorMessage>}
 
-            <ApolicesTable setApolices={setApolices} apolices={apolices} />
+            <ApolicesTable
+                setApolices={setApolices}
+                apolices={apolices}
+                onEdit={() => {}} // função vazia só pra satisfazer o tipo
+            />
         </Container>
     );
 };
