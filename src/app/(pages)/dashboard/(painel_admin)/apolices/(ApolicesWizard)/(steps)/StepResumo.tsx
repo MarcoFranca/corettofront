@@ -39,6 +39,11 @@ const StepResumo: React.FC<StepResumoProps> = ({ watch }) => {
                     <Descriptions.Item label="Número da Apólice">
                         {String(dadosPrincipais.numero_apolice ?? "Não informado")}
                     </Descriptions.Item>
+                    <Descriptions.Item label="Parceiro">
+                        {typeof dadosPrincipais.parceiro === "object" && dadosPrincipais.parceiro !== null
+                            ? dadosPrincipais.parceiro.label ?? "Não informado"
+                            : "Não informado"}
+                    </Descriptions.Item>
                     <Descriptions.Item label="Data de Início">
                         {String(dadosPrincipais.data_inicio ?? "Não informado")}
                     </Descriptions.Item>

@@ -3,7 +3,21 @@
 import {ApoliceDetalhada, ApoliceFormData} from "@/types/ApolicesInterface";
 
 // 🏦 Funções auxiliares para formatação de valores
-const formatUUID = (value: any) => (value && typeof value === "object" ? value.value : value || null);
+const formatUUID = (value: any) => {
+    if (!value) return null;
+
+    // Caso seja objeto com { value: uuid, label: nome }
+    if (typeof value === "object" && "value" in value) {
+        return value.value;
+    }
+
+    // Se já for string (uuid direto)
+    if (typeof value === "string" && value.length === 36) {
+        return value;
+    }
+
+    return null;
+};
 const formatNumber = (value: any) => (isNaN(Number(value)) ? null : Number(value));
 const formatString = (value: any) => (typeof value === "string" ? value.trim() : null);
 const formatDate = (date: string | null | undefined) =>
@@ -15,7 +29,11 @@ export const cleanMoneyValue = (value: string | number) =>
 export const formattedDataBase = (data: ApoliceFormData) => ({
     cliente: formatUUID(data.cliente),
     administradora: formatUUID(data.administradora),
-    parceiro: formatUUID(data.parceiro),
+    parceiro: data.parceiro
+        ? typeof data.parceiro === "object"
+            ? data.parceiro.value
+            : data.parceiro
+        : null,
     numero_apolice: formatString(data.numero_apolice),
     status: formatString(data.status) || "ativa",
     data_inicio: formatDate(data.data_inicio),

@@ -30,6 +30,7 @@ import {toastSuccess} from "@/utils/toastWithSound";
 const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
     const [step, setStep] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [parceirosDisponiveis, setParceirosDisponiveis] = useState<{ value: string; label: string }[]>([]);
 
     const {
         trigger,
@@ -52,9 +53,41 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
         },
     });
 
+
     useEffect(() => {
         if (!apolice) return;
         // ✅ Aqui você vê o que chega do backend
+        const loadParceiroSeNecessario = async (parceiroId: string) => {
+            // verifica se já existe localmente
+            const jaTemParceiro = parceirosDisponiveis.some(p => p.value === parceiroId);
+
+            if (!jaTemParceiro) {
+                try {
+                    const response = await api.get(`/parceiros/${parceiroId}/`);
+                    const parceiro = response.data;
+                    const parceiroOption = { value: parceiro.id, label: parceiro.nome };
+
+                    setParceirosDisponiveis(prev => [...prev, parceiroOption]);
+                    setValue("parceiro", parceiroOption);
+                } catch {
+                    setValue("parceiro", { value: parceiroId, label: "Parceiro (ID)" });
+                }
+            } else {
+                const parceiroExistente = parceirosDisponiveis.find(p => p.value === parceiroId);
+                setValue("parceiro", parceiroExistente ?? null);
+            }
+        };
+
+        if (apolice.parceiro) {
+            const parceiroId: string =
+                typeof apolice.parceiro === 'object' && 'id' in apolice.parceiro
+                    ? String(apolice.parceiro.id)
+                    : String(apolice.parceiro);
+
+            loadParceiroSeNecessario(parceiroId);
+        } else {
+            setValue("parceiro", null);
+        }
         console.log("🛰️ Apólice recebida para edição:", apolice);
 
         const isDetalhada = (apolice: any): apolice is ApoliceDetalhada => {
@@ -84,8 +117,51 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
             }
         }
 
-        setValue("parceiro", apolice.parceiro || null);
+        if (apolice.parceiro) {
+            if (
+                typeof apolice.parceiro === "object" &&
+                "id" in apolice.parceiro &&
+                "nome" in apolice.parceiro
+            ) {
+                const parceiroObj = apolice.parceiro as { id: string; nome: string };
+
+                setValue("parceiro", {
+                    value: parceiroObj.id,
+                    label: parceiroObj.nome,
+                });
+            } } else if (typeof apolice.parceiro === 'string') {
+            // Faz um fetch pro nome do parceiro
+            api.get(`/parceiros/${apolice.parceiro}/`)
+                .then((response: any) => {
+                    const parceiro = response.data;
+                const parceiroOption = {
+                    value: parceiro.id,
+                    label: parceiro.nome,
+                };
+
+                // ✅ Seta no formulário
+                setValue("parceiro", parceiroOption);
+
+                // ✅ Garante que está presente nas opções do Select
+                setParceirosDisponiveis((prev) => {
+                    const jaExiste = prev.some((p) => p.value === parceiroOption.value);
+                    return jaExiste ? prev : [...prev, parceiroOption];
+                });
+            })
+                .catch(() => {
+                    const parceiroId = typeof apolice.parceiro === "string" ? apolice.parceiro : "";
+                    setValue("parceiro", {
+                        value: parceiroId,
+                        label: "Parceiro (ID)",
+                    });
+                });
+        }
+        else {
+            setValue("parceiro", null);
+        }
+
         setValue("numero_apolice", apolice.numero_apolice);
+
         setValue("status", apolice.status);
         setValue("data_inicio", apolice.data_inicio ?? "");
         setValue("data_vencimento", apolice.data_vencimento || null);
@@ -190,6 +266,18 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
                 formData.append("arquivo", data.arquivoApolice);
             }
 
+            const parceiroId =
+                data.parceiro && typeof data.parceiro === "object" && "value" in data.parceiro
+                    ? (data.parceiro as { value: string }).value
+                    : data.parceiro ?? null;
+
+            formattedData.parceiro = parceiroId;
+
+            console.log("🟢 Parceiro sendo enviado:", formattedData.parceiro);
+            console.log("✅ Dados crus do formulário:", data);
+            console.log("🧾 Valor de parceiro:", data.parceiro);
+            console.log("📦 Formatado para envio:", formattedDataBase(data));
+
             // ✅ 1. Envia a apólice ao backend (com beneficiários inclusos)
 
             const response = isEditing
@@ -241,14 +329,18 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
 
     // 📌 **Configuração dinâmica dos steps**
     const steps = [
-        { title: "Dados Principais", content: <StepDadosPrincipais
-                control={control}
-                setValue={setTypedValue}
-                register={register}
-                watch={watch}  // 🔥 Agora passamos `watch` para o componente
-                formState={{ errors }} // ✅ Agora os erros são passados corretamente
-            />
-        },
+        { title: "Dados Principais", content: (
+                <StepDadosPrincipais
+                    control={control}
+                    setValue={setTypedValue}
+                    register={register}
+                    watch={watch}
+                    formState={{ errors }}
+                    parceirosDisponiveis={parceirosDisponiveis}
+                    setParceirosDisponiveis={setParceirosDisponiveis}
+                />
+            )},
+
         { title: "Detalhes", content: <StepDetalhesApolice watch={watch} control={control} setValue={setValue} register={register} tipoApolice={tipoApolice ?? ""} /> },
     ];
 

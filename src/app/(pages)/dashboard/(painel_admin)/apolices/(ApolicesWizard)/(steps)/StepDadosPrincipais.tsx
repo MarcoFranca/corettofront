@@ -7,18 +7,22 @@ import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 import { StepGrid, FormGroup } from "./StepDadosPrincipais.styles";
 import { UseFormSetValue, UseFormRegister } from "react-hook-form";
-import {loadAdministradoraOptions, loadParceiroOptions} from "@/app/components/ui/select/selectUtils";
-import { FaUser, FaBuilding, FaFileAlt, FaCalendarAlt, FaHandshake, FaHashtag } from "react-icons/fa";
+import {loadAdministradoraOptions} from "@/app/components/ui/select/selectUtils";
+import { FaUser, FaBuilding, FaFileAlt, FaCalendarAlt, FaHashtag } from "react-icons/fa";
 import api from "@/app/api/axios";
 import SelectAdministradora from "@/app/components/ui/select/SelectAdministradoras/SelectAdministradoras";
 import {ApoliceFormData} from "@/types/ApolicesInterface";
+import Select from "react-select";
+import {toastError} from "@/utils/toastWithSound";
 
 interface StepDadosPrincipaisProps {
     control: any;
-    setValue: UseFormSetValue<ApoliceFormData>; // ✅ Ajuste aqui para aceitar a tipagem correta
+    setValue: UseFormSetValue<ApoliceFormData>;
     register: UseFormRegister<ApoliceFormData>;
-    watch: (name: string) => any;  // 🔥 Adicionado `watch`
-    formState: { errors: any }; // ✅ Adicionado `formState` com `errors`
+    watch: (name: string) => any;
+    formState: { errors: any };
+    parceirosDisponiveis: { value: string; label: string }[]; // 👈
+    setParceirosDisponiveis: React.Dispatch<React.SetStateAction<{ value: string; label: string }[]>>; // 👈
 }
 
 
@@ -29,6 +33,8 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = (
         register,
         watch, // 🔥 Agora recebemos `watch`
         formState: { errors }, // ✅ Extraindo os erros corretamente
+        parceirosDisponiveis,  // 👈 usar das props diretamente
+        setParceirosDisponiveis,
     }) => {
 
     const [produtos, setProdutos] = useState<{ value: string; label: string }[]>([]);
@@ -49,7 +55,31 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = (
             }
         };
         fetchProdutos();
+        fetchParceiros()
     }, []);
+
+    const fetchParceiros = async () => {
+        try {
+            const response = await api.get('/parceiros/');
+            setParceirosDisponiveis(response.data.map((parceiro: any) => ({
+                value: parceiro.id,
+                label: parceiro.nome,
+            })));
+        } catch (error) {
+            toastError('😔 Erro ao carregar parceiros.');
+        }
+    };
+
+    useEffect(() => {
+        const parceiro = watch("parceiro");
+        if (parceiro?.value && parceiro?.label) {
+            setParceirosDisponiveis((prev) => {
+                const jaExiste = prev.some((p) => p.value === parceiro.value);
+                return jaExiste ? prev : [...prev, parceiro];
+            });
+        }
+    }, [watch("parceiro")]);
+
 
     // 🔥 Buscar administradoras sempre que um produto for selecionado
     useEffect(() => {
@@ -60,6 +90,7 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = (
         }
     }, [produtoSelecionado]);
 
+    type Option = { value: string; label: string };
 
 
     return (
@@ -78,13 +109,23 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = (
 
             {/* Parceiro (Indicação) */}
             <FormGroup>
-                <SelectCustom
-                    name="parceiro"
-                    label={<><FaHandshake /> Parceiro (Indicação)</>}
-                    control={control}
-                    isAsync={true}
-                    loadOptions={loadParceiroOptions}
-                />
+                <FormGroup>
+                    <FormGroup>
+                        <Select
+                            options={parceirosDisponiveis}
+                            value={
+                                parceirosDisponiveis.find(
+                                    (p) => p.value === (watch("parceiro")?.value || watch("parceiro"))
+                                ) || watch("parceiro")
+                            }
+                            onChange={(option) => {
+                                setValue("parceiro", option || null); // Armazena como objeto
+                            }}
+                            placeholder="Selecione um parceiro..."
+                        />
+                    </FormGroup>
+
+                </FormGroup>
             </FormGroup>
 
             {/* Tipo de Apólice */}

@@ -3,7 +3,7 @@ export interface ApoliceFormData {
     coberturas: { descricao: string; valor: number }[];
     detalhes: Record<string, any>;
     cliente: { value: string; label: string } | string | null;
-    parceiro?: string | null;
+    parceiro: ParceiroOption | string | null;
     tipoApolice: string | null;
     administradora: string | { value: string; label: string } | null;
     numero_apolice?: string;
@@ -49,6 +49,10 @@ export interface ApoliceFormData {
     arquivoApolice?: File | null;
 }
 
+interface ParceiroOption {
+    value: string;
+    label: string;
+}
 
 export interface ApoliceWizardProps {
     apolice?: Partial<ApoliceFormData> & { id?: string } | ApoliceDetalhada;
