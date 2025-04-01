@@ -56,6 +56,13 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
 
     useEffect(() => {
         if (!apolice) return;
+        console.log("primeiro passo",Number(apolice.premio_pago));
+        console.log("primeiro passo", apolice.premio_pago);
+        const premioNumber = apolice.premio_pago?Number(apolice.premio_pago): "";
+        const premioFormatadoNumber = apolice.premio_pago? cleanMoneyValue(premioNumber): "";
+        const premioFormatado = apolice.premio_pago? cleanMoneyValue(apolice.premio_pago): "";
+        console.log("🧪 Valor limpo para setValue:", premioFormatado);
+        console.log("🧪 Valor limpo para setValue number:", premioFormatadoNumber);
         // ✅ Aqui você vê o que chega do backend
         const loadParceiroSeNecessario = async (parceiroId: string) => {
             // verifica se já existe localmente
@@ -166,7 +173,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
         setValue("data_inicio", apolice.data_inicio ?? "");
         setValue("data_vencimento", apolice.data_vencimento || null);
         setValue("data_revisao", apolice.data_revisao || null);
-        setValue("premio_pago", apolice.premio_pago ?? 0);
+        setValue("premio_pago", Number(apolice.premio_pago) ?? 0);
         setValue("periodicidade_pagamento", apolice.periodicidade_pagamento ?? "");
         setValue("forma_pagamento", apolice.forma_pagamento ?? "");
         setValue("observacoes", apolice.observacoes || "");

@@ -47,7 +47,6 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
         const inputProps = register
             ? register(name, required ? { required: { value: true, message: "Campo obrigatório" } } : {})
             : {};
-        console.log(name)
 
         const formatDateToInput = (date: string | Date): string => {
             if (!date) return "";
@@ -80,7 +79,6 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
                 const cleanValue = cleanCurrency(value);
                 const numericValue = Number(cleanValue) / 100; // Converte para decimal
 
-                console.log("📌 Valor sem máscara (antes de setValue):", numericValue); // ✅ Certifique-se que é um número correto
 
                 // 🔥 Garante que o formulário armazena o valor correto sem máscara
                 setValue(name, numericValue, { shouldValidate: true });
@@ -92,7 +90,6 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
             else if (type === "number") {
                 // ✅ Garante que valores numéricos sejam enviados corretamente ao backend
                 const numericValue = Number(value);
-                console.log("📌 Convertendo para número:", numericValue);
                 setValue(name, numericValue, {shouldValidate: true});
                 if (fieldOnChange) fieldOnChange(numericValue);
 

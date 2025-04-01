@@ -153,6 +153,7 @@ const ApolicesPage: React.FC = () => {
                     onEdit={async (apolice) => {
                         try {
                             const response = await api.get(`/apolices/${apolice.id}/`);
+                            console.log("primeiro passo",response)
                             setEditingApolice(response.data); // agora é uma `ApoliceDetalhada`
                             setIsWizardOpen(true);
                         } catch (error) {

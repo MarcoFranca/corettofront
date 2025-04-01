@@ -22,8 +22,18 @@ const formatNumber = (value: any) => (isNaN(Number(value)) ? null : Number(value
 const formatString = (value: any) => (typeof value === "string" ? value.trim() : null);
 const formatDate = (date: string | null | undefined) =>
     date ? new Date(date).toISOString().split("T")[0] : null;
-export const cleanMoneyValue = (value: string | number) =>
-    typeof value === "string" ? Number(value.replace(/[^\d,]/g, "").replace(",", ".")) : value || null;
+
+export const cleanMoneyValue = (value: string | number | null | undefined): number | null => {
+    if (typeof value === "string") {
+        const cleaned = value.replace(/[^\d,.-]/g, "").replace(".", "").replace(",", ".");
+        const num = parseFloat(cleaned);
+        return isNaN(num) ? null : num;
+    }
+    if (typeof value === "number") {
+        return value; // aqui não converte, já está limpo
+    }
+    return null;
+};
 
 // ✅ 🚀 Estrutura Base (comum para todas as apólices)
 export const formattedDataBase = (data: ApoliceFormData) => ({

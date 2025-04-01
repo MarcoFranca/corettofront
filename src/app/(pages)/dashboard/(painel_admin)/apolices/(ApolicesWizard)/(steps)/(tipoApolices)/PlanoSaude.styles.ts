@@ -2,6 +2,7 @@
 import styled from "styled-components";
 import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
+import MoneyInput from "@/app/components/ui/input/MoneyInput";
 
 export const PlanoSaudeGrid = styled.div`
     display: grid;
@@ -13,6 +14,10 @@ export const PlanoSaudeGrid = styled.div`
 `;
 
 export const Input = styled(FloatingMaskedInput)`
+    margin-top: 15px;
+
+`
+export const MoneyInputStyled = styled(MoneyInput)`
     margin-top: 15px;
 
 `

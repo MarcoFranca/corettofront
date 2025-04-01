@@ -6,7 +6,7 @@ import {
     Input,
     OptionalSection,
     SwitchContainer,
-    SwitchLabel
+    SwitchLabel, MoneyInputStyled
 } from "./PlanoSaude.styles";
 import { Switch, Button } from "antd";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
@@ -48,11 +48,12 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, wa
         <>
             <SectionTitle>📋 Informações do Plano</SectionTitle>
             <PlanoSaudeGrid>
-                <Input control={control} setValue={setValue}
-                       register={register}
-                       name="premio_pago"
-                       label="💎 Prêmio Pago (Valor do Plano)"
-                       type="money" required />
+                <MoneyInputStyled
+                    control={control}
+                    setValue={setValue}
+                    name="premio_pago"
+                    label="💎 Prêmio Pago (Valor do Plano)"
+                    required />
 
                 <Input control={control} setValue={setValue} register={register}
                        name="detalhes.categoria" label="📁 Categoria do Plano"
