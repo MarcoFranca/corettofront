@@ -164,6 +164,16 @@ export interface ApolicePrevidencia extends BaseApolice {
     regime_contratacao: string;
 }
 
+export interface ApolicesAgrupadas {
+    plano_saude: ApolicePlanoSaude[];
+    seguro_vida: ApoliceSeguroVida[];
+    previdencia: ApolicePrevidencia[];
+    consorcio: ApoliceConsorcio[];
+    investimento: any[]; // se ainda for implementar depois
+    seguro_profissional: any[];
+    seguro_residencial: any[];
+}
+
 
 // 🔄 Tipo Genérico para todas as Apólices Detalhadas
 export type ApoliceDetalhada = ApolicePlanoSaude | ApoliceSeguroVida | ApoliceConsorcio | ApolicePrevidencia;

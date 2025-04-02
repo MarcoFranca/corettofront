@@ -1,10 +1,11 @@
 import React from "react";
 import { OverviewContainer, OverviewText } from "./ApolicesOverview.styles";
-import {ApoliceDetalhada} from "@/types/ApolicesInterface";
+import { ApolicesAgrupadas } from "@/types/ApolicesInterface"; // ou onde você colocou a interface
 
 interface ApolicesOverviewProps {
-    apolices: ApoliceDetalhada;
+    apolices: ApolicesAgrupadas;
 }
+
 
 const ApolicesOverview: React.FC<ApolicesOverviewProps> = ({ apolices }) => {
     const todasApolices = Object.values(apolices).flat();
