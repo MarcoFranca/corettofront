@@ -15,7 +15,7 @@ import {
     StatusBadge, ActionButtons
 } from "./ApoliceDetalhes.styles";
 import {
-    FaArrowLeft, FaFileDownload, FaUser, FaShieldAlt, FaMoneyBillWave, FaFileContract, FaListAlt
+    FaArrowLeft, FaFileDownload, FaUser, FaListAlt
 } from "react-icons/fa";
 import { ApoliceSeguroVida } from "@/types/ApolicesInterface";
 import { useRouter } from "next/navigation";
@@ -142,7 +142,7 @@ const SeguroVidaDetalhes: React.FC<SeguroVidaDetalhesProps> = ({ apolice }) => {
                                 <br />
                                 {cobertura.subclasse ? <><Label>Subclasse:</Label> <Value>{cobertura.subclasse}</Value>
                                 </> : <></> }
-                                <Label>Capital Segurado:</Label> <Value>{formatCurrency(cobertura.capital_segurado)}</Value>
+                                <Label>Capital Segurado:</Label> <Value>{formatCurrency(cobertura.capital_segurado_money)}</Value>
                             </BeneficiarioItem>
                         ))
                     ) : (

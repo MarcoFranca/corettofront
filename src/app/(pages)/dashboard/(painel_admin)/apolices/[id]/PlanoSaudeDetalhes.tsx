@@ -126,7 +126,7 @@ const PlanoSaudeDetalhes: React.FC<PlanoSaudeDetalhesProps> = ({ apolice }) => {
                         <Value>{apolice.abrangencia || "N/A"}</Value>
 
                         <Label><FaMoneyBillWave color={'#007bff'}  /> Valor Reembolso Consulta:</Label>
-                        <Value>{formatCurrency(apolice.valor_reembolso_consulta ?? 0)}</Value>
+                        <Value>{formatCurrency(apolice.valor_reembolso_consulta_money ?? 0)}</Value>
                     </div>
                 </SectionContent>
             </Section>

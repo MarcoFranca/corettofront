@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import {FaListAlt, FaMoneyBillWave, FaPercent, FaCalendar, FaArrowLeft} from "react-icons/fa";
+import { FaMoneyBillWave, FaCalendar, FaArrowLeft} from "react-icons/fa";
 import { formatCurrency } from "@/utils/maskUtils";
 import { formatDateBR } from "@/utils/format";
 import {
@@ -52,13 +52,13 @@ const ConsorcioDetalhes: React.FC<ConsorcioDetalhesProps> = ({ apolice }) => {
                 <h3>💰 Pagamentos e Saldo</h3>
                 <SectionContent>
                     <div>
-                        <Label>Valor Total:</Label> <Value>{formatCurrency(apolice.valor_total)}</Value>
+                        <Label>Valor Total:</Label> <Value>{formatCurrency(apolice.valor_total_money)}</Value>
                         <Label>Valor Parcela:</Label> <Value>{formatCurrency(apolice.premio_pago)}</Value>
                         <Label>Saldo Devedor:</Label> <Value>{formatCurrency(apolice.saldo_devedor)}</Value>
                     </div>
                     <div>
                         <Label>Parcelas Pagas:</Label> <Value>{apolice.parcelas_pagas}</Value>
-                        <Label>Parcela Reduzida:</Label> <Value>{apolice.parcela_reduzida ? "Sim" : "Não"}</Value>
+                        <Label>Parcela Reduzida:</Label> <Value>{apolice.parcela_reduzida_money ? "Sim" : "Não"}</Value>
                         <Label>Percentual de Redução:</Label> <Value>{apolice.percentual_reducao_parcela ?? "N/A"}%</Value>
                     </div>
                 </SectionContent>
@@ -88,9 +88,9 @@ const ConsorcioDetalhes: React.FC<ConsorcioDetalhesProps> = ({ apolice }) => {
                 <h3>⚡ Lances e Aportes</h3>
                 <SectionContent>
                     <div>
-                        <Label>Aporte:</Label> <Value>{formatCurrency(apolice.aporte ?? 0)}</Value>
-                        <Label>Valor Final da Carta:</Label> <Value>{formatCurrency(apolice.valor_final_carta ?? 0)}</Value>
-                        <Label>Valor da Carta:</Label> <Value>{formatCurrency(apolice.valor_carta)}</Value>
+                        <Label>Aporte:</Label> <Value>{formatCurrency(apolice.aporte_money ?? 0)}</Value>
+                        <Label>Valor Final da Carta:</Label> <Value>{formatCurrency(apolice.valor_final_carta_money ?? 0)}</Value>
+                        <Label>Valor da Carta:</Label> <Value>{formatCurrency(apolice.valor_carta_money)}</Value>
                     </div>
                     <div>
                         <Label>Permite Lance Fixo:</Label> <Value>{apolice.permitir_lance_fixo ? "Sim" : "Não"}</Value>
