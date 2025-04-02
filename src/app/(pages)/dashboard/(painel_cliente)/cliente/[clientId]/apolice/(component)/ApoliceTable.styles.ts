@@ -130,3 +130,10 @@ export const StatusBadge = styled.span<{ color: string }>`
     border-radius: 20px;
     text-transform: capitalize;
 `;
+
+export const ProdutoContainer = styled.div`
+    display: flex;
+    width: 100%;
+    background: #f0ad4e;
+    overflow: hidden;
+`

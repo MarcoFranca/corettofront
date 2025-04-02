@@ -31,6 +31,9 @@ import {
 } from "@/types/ApolicesInterface";
 import {useParams} from "next/navigation";
 import api from "@/app/api/axios";
+import {
+    ProdutoContainer
+} from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable.styles";
 
 const ClientTabs: React.FC<ClientTabsProps> = ({ cliente, financeData }) => {
     const { clientId } = useParams();
@@ -90,11 +93,14 @@ const ClientTabs: React.FC<ClientTabsProps> = ({ cliente, financeData }) => {
                 <HealthInfoCard cliente={cliente} />
             </TabPanel>
             <TabPanel>
-                <ApolicesTable
-                    setApolices={setApolices}
-                    apolices={apolices}
-                    onEdit={() => {}} // função vazia só pra satisfazer o tipo
-                />            </TabPanel>
+                <Card title="Produtos">
+                    <ApolicesTable
+                        setApolices={setApolices}
+                        apolices={apolices}
+                        onEdit={() => {}} // função vazia só pra satisfazer o tipo
+                    />
+                </Card>
+            </TabPanel>
             <TabPanel>
                 <Card title="Informações Financeiras">
                     <Bar data={financeData} />
