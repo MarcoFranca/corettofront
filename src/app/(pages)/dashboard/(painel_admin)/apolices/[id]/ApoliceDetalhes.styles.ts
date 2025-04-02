@@ -27,6 +27,29 @@ export const DetailsContainer = styled.div`
     overflow: auto;
 `;
 
+export const CoberturaCard = styled.div`
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+`;
+
+export const CoberturaContent = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 32px;
+`;
+
+export const CoberturaContentItem = styled.div`
+    width: 50%;
+`;
+
+
 // 🔹 Melhor distribuição dos cards
 export const Section = styled.div`
     display: flex;

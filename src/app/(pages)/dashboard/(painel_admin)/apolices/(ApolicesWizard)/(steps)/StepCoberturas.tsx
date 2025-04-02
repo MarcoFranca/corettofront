@@ -74,6 +74,15 @@ const StepCoberturas: React.FC<StepCoberturasProps> = ({ control, setValue, regi
                             required={false}
                         />
 
+                        <Input
+                            control={control}
+                            setValue={setValue}
+                            register={register}
+                            name={`detalhes.coberturas.${index}.data_expiracao`}
+                            label="📅 Data de Expiração"
+                            type="date"
+                        />
+
                         {/* Botão de Remover Cobertura */}
                         <RemoveButton
                             icon={<DeleteOutlined />}

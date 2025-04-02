@@ -33,8 +33,7 @@ export const RemoveButton = styled(Button)`
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 50px;
     border-radius: 50%;
     margin-left: 1rem;
 `;

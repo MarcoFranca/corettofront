@@ -264,6 +264,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
                         subclasse: cobertura.subclasse,
                         capital_segurado_money: cleanMoneyValue(cobertura.capital_segurado_money),  // ✅ Garante que capital_segurado seja número
                         classe_ajuste: cobertura.classe_ajuste ?? "",  // ✅ Adicionado
+                        data_expiracao: cobertura.data_expiracao ?? null,  // ✅ Aqui!
                     }))
                     : [];
             }

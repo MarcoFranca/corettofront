@@ -12,13 +12,21 @@ import {
     BeneficiarioList,
     BeneficiarioItem,
     DownloadButton,
-    StatusBadge, ActionButtons
+    StatusBadge, ActionButtons, CoberturaCard, CoberturaContent
 } from "./ApoliceDetalhes.styles";
 import {
-    FaArrowLeft, FaFileDownload, FaUser, FaListAlt
+    FaArrowLeft,
+    FaFileDownload,
+    FaUser,
+    FaShieldAlt,
+    FaCalendarAlt,
+    FaCoins,
+    FaFolderOpen
 } from "react-icons/fa";
+
 import { ApoliceSeguroVida } from "@/types/ApolicesInterface";
 import { useRouter } from "next/navigation";
+
 
 interface SeguroVidaDetalhesProps {
     apolice: ApoliceSeguroVida;
@@ -133,23 +141,42 @@ const SeguroVidaDetalhes: React.FC<SeguroVidaDetalhesProps> = ({ apolice }) => {
 
             {/* 🔹 Coberturas */}
             <Section>
-                <h3>📜 Coberturas</h3>
-                <BeneficiarioList>
-                    {apolice.coberturas?.length ? (
-                        apolice.coberturas.map((cobertura) => (
-                            <BeneficiarioItem key={cobertura.id}>
-                                <FaListAlt /> <strong>{cobertura.nome.nome}</strong>
-                                <br />
-                                {cobertura.subclasse ? <><Label>Subclasse:</Label> <Value>{cobertura.subclasse}</Value>
-                                </> : <></> }
-                                <Label>Capital Segurado:</Label> <Value>{formatCurrency(cobertura.capital_segurado_money)}</Value>
-                            </BeneficiarioItem>
-                        ))
-                    ) : (
-                        <p>❌ Nenhuma cobertura cadastrada.</p>
-                    )}
-                </BeneficiarioList>
+                <h3><FaShieldAlt /> Coberturas</h3>
+                {apolice.coberturas?.length ? (
+                    apolice.coberturas.map((cobertura) => (
+                        <CoberturaCard key={cobertura.id}>
+                            <div>
+                                <strong><FaShieldAlt /> {cobertura.nome.nome}</strong>
+                            </div>
+                            <CoberturaContent>
+
+                                {cobertura.subclasse && (
+                                    <div>
+                                        <FaFolderOpen style={{ marginRight: 6 }} />
+                                        <Label>Subclasse:</Label> <Value>{cobertura.subclasse}</Value>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <FaCoins style={{ marginRight: 6 }} />
+                                    <Label>Capital Segurado:</Label> <Value>{formatCurrency(cobertura.capital_segurado_money)}</Value>
+                                </div>
+
+                                {cobertura.data_expiracao && (
+                                    <div>
+                                        <FaCalendarAlt style={{ marginRight: 6 }} />
+                                        <Label>Data de Expiração:</Label> <Value>{formatDateBR(cobertura.data_expiracao)}</Value>
+                                    </div>
+                                )}
+                            </CoberturaContent>
+                        </CoberturaCard>
+                    ))
+                ) : (
+                    <p>❌ Nenhuma cobertura cadastrada.</p>
+                )}
             </Section>
+
+
 
             {/* 🔹 Arquivo da Apólice */}
             {apolice.arquivo && (

@@ -113,6 +113,7 @@ export interface ApoliceSeguroVida extends BaseApolice {
         };
         subclasse: string;
         capital_segurado_money: string;
+        data_expiracao?: string;
     }[]; // ✅ Adicionando coberturas ao seguro de vida
 }
 
