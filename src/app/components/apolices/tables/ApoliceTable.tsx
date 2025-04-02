@@ -102,7 +102,7 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices }) =>
                             <TableData>{administradoras[apolice.administradora] || "N/A"}</TableData>
                             <TableData>{apolice.data_inicio ? new Date(apolice.data_inicio).toLocaleDateString() : "N/A"}</TableData>
                             <TableData>{apolice.forma_pagamento || "N/A"}</TableData>
-                            <TableData>{apolice.premio_pago ? `R$ ${formatMoney(apolice.premio_pago)}` : "N/A"}</TableData>
+                            <TableData>{apolice.premio_pago_money ? `R$ ${formatMoney(apolice.premio_pago_money)}` : "N/A"}</TableData>
                             <TableData>
                                 <StatusBadge color={getStatusColor(apolice.status || "indefinido")}>
                                     {apolice.status ? apolice.status.charAt(0).toUpperCase() + apolice.status.slice(1) : "Indefinido"}

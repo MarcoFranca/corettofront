@@ -93,7 +93,7 @@ const ApolicesTable: React.FC<ApolicesTableProps> = ({ apolices, setApolices }) 
                                 {apolice.beneficiarios?.length || 0}
                             </TableDataContent>
                         </TableData>
-                        <TableData>{formatCurrency(apolice.premio_pago || 0)}</TableData>
+                        <TableData>{formatCurrency(apolice.premio_pago_money || 0)}</TableData>
                         <TableData title={formatDateBR(apolice.data_revisao ?? null)}>
                             <TableDataContent>
                                 {formatDateRelative(apolice.data_revisao || "N/A")}
