@@ -32,7 +32,7 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ cliente }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const error = useAppSelector((state: RootState) => state.clientes.error);
     useModalSoundEffect(modalIsOpen);
-
+console.log("cliente",cliente)
     const openModal = () => setModalIsOpen(true);
     const closeModal = () => setModalIsOpen(false);
 

@@ -70,6 +70,7 @@ const EditDocumentsModal: React.FC<EditDocumentsModalProps> = ({
         const payload = {
             cpf: removeMask(data.cpf), // 🔥 Enviamos o CPF sem máscara
             identidade: removeMask(data.identidade), // 🔥 Enviamos a Identidade sem máscara
+            tipo_identidade: data.tipo_identidade
         };
 
         try {
