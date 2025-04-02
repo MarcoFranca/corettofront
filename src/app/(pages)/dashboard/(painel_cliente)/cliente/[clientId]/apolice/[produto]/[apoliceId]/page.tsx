@@ -23,9 +23,20 @@ import {
     EditButton,
     DeleteButton
 } from './ApoliceDetalhes.styles';
+
+import {
+    ApolicePlanoSaude,
+    ApoliceSeguroVida,
+    ApolicePrevidencia,
+    ApoliceDetalhada,
+} from "@/types/ApolicesInterface";
+
+function isPlanoSaude(apolice: ApoliceDetalhada): apolice is ApolicePlanoSaude {
+    return apolice.tipo_produto === "Plano de Saúde";
+}
+
 import { formatMoney } from '@/utils/utils';
 import { FaEdit, FaTrash } from "react-icons/fa";
-import {Apolice} from "@/types/interfaces";
 import Link from "next/link";
 import ConfirmationModal from "@/app/components/Modal/confirm/ConfirmDeletModal";
 
@@ -40,7 +51,7 @@ const ApoliceDetalhes = () => {
     const apoliceId = Array.isArray(params.apoliceId) ? params.apoliceId[0] : params.apoliceId;
     const produtoTipo = Array.isArray(params.produto) ? params.produto[0] : params.produto;
 
-    const apoliceDetalhe = useAppSelector(selectApoliceDetalhe) as Apolice | null;
+    const apoliceDetalhe = useAppSelector(selectApoliceDetalhe) as ApoliceDetalhada | null;
     const status = useAppSelector(selectApolicesStatus);
     const error = useAppSelector(selectApolicesError);
 
@@ -80,12 +91,12 @@ const ApoliceDetalhes = () => {
                     <>
                         <StatusField>
                             <Label>Status da Apólice:</Label>
-                            {apoliceDetalhe.status_proposta ? <StatusVigente>Vigente</StatusVigente> :
-                                <StatusCancelada>Cancelada</StatusCancelada>}
+                            {apoliceDetalhe.status === 'ativa' ? <StatusVigente>Vigente</StatusVigente> : <StatusCancelada>Cancelada</StatusCancelada>}
+
                         </StatusField>
                         <GridContainer>
                             <Field><Label>Número da Apólice:</Label> {apoliceDetalhe.numero_apolice}</Field>
-                            <Field><Label>Seguradora:</Label> {apoliceDetalhe.seguradora}</Field>
+                            <Field><Label>Administradora:</Label> {apoliceDetalhe.administradora_nome || apoliceDetalhe.administradora}</Field>
                             <Field><Label>Início da Vigência:</Label> {apoliceDetalhe.data_inicio}</Field>
                             <Field><Label>Final da Vigência:</Label> {apoliceDetalhe.data_vencimento}</Field>
                             <Field>
@@ -139,30 +150,61 @@ const ApoliceDetalhes = () => {
 export default ApoliceDetalhes;
 
 // Função para renderizar campos específicos com base no tipo de apólice
-const renderSpecificFields = (apoliceDetalhe: Apolice) => {
-    switch (apoliceDetalhe.produto) {
-        case 'plano_saude':
-            return (
-                <>
-                    <Field><Label>Categoria:</Label> {apoliceDetalhe.categoria}</Field>
-                    <Field><Label>Acomodação:</Label> {apoliceDetalhe.acomodacao}</Field>
-                    <Field><Label>Abrangência:</Label> {apoliceDetalhe.abrangencia}</Field>
-                    <Field>
-                        <Label>Valor de Reembolso de Consulta:</Label>
-                        {formatMoney(parseFloat(apoliceDetalhe.valor_reembolso_consulta?.toString() || "0"))}
-                    </Field>
-                    <Field><Label>Coparticipação:</Label> {apoliceDetalhe.coparticipacao ? 'Sim' : 'Não'}</Field>
-                </>
-            );
-        case 'seguro_vida':
-            return (
-                <>
-                    <Field><Label>Subcategoria:</Label> {apoliceDetalhe.subcategoria}</Field>
-                    <Field><Label>Beneficiário:</Label> {apoliceDetalhe.beneficiario}</Field>
-                    <Field><Label>Capital Segurado:</Label> {formatMoney(parseFloat(apoliceDetalhe.capital_segurado))}</Field>
-                </>
-            );
-        default:
-            return null;
+const renderSpecificFields = (apoliceDetalhe: ApoliceDetalhada) => {
+    // 🔍 Plano de Saúde
+    if (isPlanoSaude(apoliceDetalhe)) {
+        return (
+            <>
+                <Field><Label>Categoria:</Label> {apoliceDetalhe.categoria}</Field>
+                <Field><Label>Acomodação:</Label> {apoliceDetalhe.acomodacao}</Field>
+                <Field><Label>Abrangência:</Label> {apoliceDetalhe.abrangencia}</Field>
+                <Field>
+                    <Label>Valor de Reembolso de Consulta:</Label>
+                    {formatMoney(parseFloat(apoliceDetalhe.valor_reembolso_consulta_money?.toString() || "0"))}
+                </Field>
+                <Field><Label>Coparticipação:</Label> {apoliceDetalhe.coparticipacao ? 'Sim' : 'Não'}</Field>
+            </>
+        );
     }
+
+    // ⚰️ Seguro de Vida
+    if ('subcategoria' in apoliceDetalhe && apoliceDetalhe.tipo_produto === 'Seguro de Vida') {
+        return (
+            <>
+                {apoliceDetalhe.subcategoria && (
+                    <Field><Label>Subcategoria:</Label> {apoliceDetalhe.subcategoria}</Field>
+                )}
+                {apoliceDetalhe.beneficiarios && apoliceDetalhe.beneficiarios.length > 0 && (
+                    <Field>
+                        <Label>Beneficiários:</Label>
+                        <ul>
+                            {apoliceDetalhe.beneficiarios.map((b, i) => (
+                                <li key={i}>{b.nome} - {b.percentual}%</li>
+                            ))}
+                        </ul>
+                    </Field>
+                )}
+                {apoliceDetalhe.capital_segurado_total && (
+                    <Field>
+                        <Label>Capital Segurado Total:</Label>
+                        {formatMoney(parseFloat(apoliceDetalhe.capital_segurado_total?.toString() || "0"))}
+                    </Field>
+                )}
+            </>
+        );
+    }
+
+    // 🏦 Previdência
+    if ('valor_acumulado_money' in apoliceDetalhe && apoliceDetalhe.tipo_produto === 'Previdência') {
+        return (
+            <>
+                <Field><Label>Fundo:</Label> {apoliceDetalhe.fundo}</Field>
+                <Field><Label>Valor Acumulado:</Label> {formatMoney(apoliceDetalhe.valor_acumulado_money)}</Field>
+                <Field><Label>Regime de Tributação:</Label> {apoliceDetalhe.regime_tributacao}</Field>
+                <Field><Label>Regime de Contratação:</Label> {apoliceDetalhe.regime_contratacao}</Field>
+            </>
+        );
+    }
+
+    return null;
 };

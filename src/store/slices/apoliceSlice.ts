@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
-import { Apolice } from '@/types/interfaces';
 import api from "@/app/api/axios";
+import {ApoliceDetalhada} from "@/types/ApolicesInterface";
 
 // 📌 Estado inicial
 interface ApolicesState {
-    apolices: Apolice[];
-    apoliceDetalhe: Apolice | null;
+    apolices: ApoliceDetalhada[];
+    apoliceDetalhe: ApoliceDetalhada | null;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
     isModalOpen: boolean;
@@ -21,7 +21,7 @@ const initialState: ApolicesState = {
 };
 
 // 📌 Buscar todas as apólices com filtros
-export const fetchApolices = createAsyncThunk<Apolice[], { tipo?: string; status?: string; cliente?: string }>(
+export const fetchApolices = createAsyncThunk<ApoliceDetalhada[], { tipo?: string; status?: string; cliente?: string }>(
     'apolices/fetchApolices',
     async ({ tipo, status, cliente }, { rejectWithValue }) => {
         try {
@@ -37,7 +37,7 @@ export const fetchApolices = createAsyncThunk<Apolice[], { tipo?: string; status
 );
 
 // 📌 Buscar detalhes de uma apólice específica
-export const fetchApoliceDetalhe = createAsyncThunk<Apolice, { produto: string; apoliceId: string }>(
+export const fetchApoliceDetalhe = createAsyncThunk<ApoliceDetalhada, { produto: string; apoliceId: string }>(
     'apolices/fetchApoliceDetalhe',
     async ({ produto, apoliceId }, { rejectWithValue }) => {
         try {
@@ -50,7 +50,7 @@ export const fetchApoliceDetalhe = createAsyncThunk<Apolice, { produto: string; 
 );
 
 // 📌 Criar uma nova apólice
-export const createApolice = createAsyncThunk<Apolice, { formData: FormData }>(
+export const createApolice = createAsyncThunk<ApoliceDetalhada, { formData: FormData }>(
     'apolices/createApolice',
     async ({ formData }, { rejectWithValue }) => {
         try {
@@ -66,7 +66,7 @@ export const createApolice = createAsyncThunk<Apolice, { formData: FormData }>(
 
 // 📌 Atualizar uma apólice
 export const updateApolice = createAsyncThunk<
-    Apolice,
+    ApoliceDetalhada,
     { apoliceId: string; formData: FormData; clientId?: string; endpoint?: string; produto?: string }
 >(
     'apolices/updateApolice',
