@@ -1,5 +1,11 @@
 // styles/ApoliceFiltro.styles.ts
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+const fadeMask = css`
+  mask-image: ${`linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)`};
+  -webkit-mask-image: ${`linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)`};
+`;
+
 
 export const FiltroContainer = styled.div`
     display: flex;
@@ -30,6 +36,7 @@ export const TipoPill = styled.button<TipoPillProps>`
     border-radius: 20px;
     border: none;
     cursor: pointer;
+    min-width: 120px;
     background-color: ${({ active, theme }) => active ? theme.colors.primary : theme.colors.gray.light};
     color: ${({ active }) => (active ? '#fff' : '#555')};
     font-weight: 500;
@@ -37,5 +44,30 @@ export const TipoPill = styled.button<TipoPillProps>`
 
     &:hover {
         background-color: ${({ theme, active }) => active ? theme.colors.primaryDark : theme.colors.gray.light};
+    }
+`;
+
+export const TipoPillContainer = styled.div`
+    position: relative;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 16px;
+    scroll-behavior: smooth;
+
+    ${fadeMask};
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        padding: 8px;
+        mask-image: ${`linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)`};
+        -webkit-mask-image: ${`linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)`};
     }
 `;

@@ -54,17 +54,12 @@ const SeguroVidaDetalhes: React.FC<SeguroVidaDetalhesProps> = ({ apolice }) => {
 
                         <Label>Cliente:</Label>
                         <Value>{`${apolice.cliente_nome} ${apolice.cliente_sobre_nome}` || "N/A"}</Value>
-
-                        <Label>Administradora:</Label>
-                        <Value>{apolice.administradora_nome || "N/A"}</Value>
                     </div>
                     <div>
-                        <Label>Tipo Contratante:</Label>
-                        <Value>{apolice.tipo_contratante === "PF" ? "Pessoa Física" : "Pessoa Jurídica"}</Value>
-
-                        <Label>CPF/CNPJ:</Label>
-                        <Value>{apolice.cpf_cnpj || "N/A"}</Value>
-
+                        <Label>Administradora:</Label>
+                        <Value>
+                            {apolice.administradora_nome || "N/A"}
+                        </Value>
                         <Label>Status:</Label>
                         <StatusBadge color={apolice.status === "ativa" ? "#28a745" : "#dc3545"}>
                             {apolice.status.charAt(0).toUpperCase() + apolice.status.slice(1)}

@@ -93,9 +93,9 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices, onEd
                 <TableRow>
                     <TableHeader>Número</TableHeader>
                     <TableHeader>Produto</TableHeader>
+                    <TableHeader>Nome</TableHeader>
                     <TableHeader>Administradora</TableHeader>
-                    <TableHeader>Data Início</TableHeader>
-                    <TableHeader>Forma Pagamento</TableHeader>
+                    <TableHeader>Pagamento</TableHeader>
                     <TableHeader>Valor</TableHeader>
                     <TableHeader>Status</TableHeader>
                     <TableHeader>Ações</TableHeader>
@@ -107,8 +107,8 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices, onEd
                         <TableRow key={apolice.id}>
                             <TableData>{apolice.numero_apolice || "N/A"}</TableData>
                             <TableData>{apolice.tipo_produto || "N/A"}</TableData>
+                            <TableData>{apolice.cliente_nome + apolice.cliente_sobre_nome || "N/A"}</TableData>
                             <TableData>{administradoras[apolice.administradora] || "N/A"}</TableData>
-                            <TableData>{apolice.data_inicio ? new Date(apolice.data_inicio).toLocaleDateString() : "N/A"}</TableData>
                             <TableData>{apolice.forma_pagamento || "N/A"}</TableData>
                             <TableData>{apolice.premio_pago_money ? `R$ ${formatMoney(apolice.premio_pago_money)}` : "N/A"}</TableData>
                             <TableData>

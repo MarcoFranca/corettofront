@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import {
     FiltroContainer,
     TipoPill,
-    FiltroSelect,
+    FiltroSelect, TipoPillContainer,
 } from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceFilter.styles";
 
 interface ApoliceFiltroProps {
@@ -31,7 +31,6 @@ const tiposApolice = [
 const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
                                                          tipoFiltro, setTipoFiltro,
                                                          statusFiltro, setStatusFiltro,
-                                                         visaoGeral, setVisaoGeral,
                                                      }) => {
     const router = useRouter();
 
@@ -41,6 +40,7 @@ const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
 
     return (
         <FiltroContainer>
+            <TipoPillContainer>
             {tiposApolice.map(({ tipo, label }) => (
                 <TipoPill
                     key={tipo}
@@ -50,6 +50,7 @@ const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
                     {label}
                 </TipoPill>
             ))}
+            </TipoPillContainer>
 
             <FiltroSelect value={statusFiltro} onChange={(e) => setStatusFiltro(e.target.value)}>
                 <option value="">Todos os Status</option>
