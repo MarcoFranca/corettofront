@@ -1,47 +1,28 @@
-// 📂 src/components/ApolicesWizard/steps/StepDadosPrincipais.styles.ts
 import styled from "styled-components";
-import { Input, Select } from "antd";
 
+export const StepSection = styled.div`
+    margin-bottom: 2rem;
+`;
 
-export const StepGrid = styled.div`
+export const SectionTitle = styled.h3`
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #4a4a4a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+`;
+
+export const InputGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(2, 1fr); // ✅ Duas colunas
-    gap: 1.5rem;
-
-    @media (max-width: 768px) {
-        grid-template-columns: 1fr;
-    }
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
 `;
 
 export const FormGroup = styled.div`
-    position: relative;
-    width: 100%;
-    align-items: center;
-    gap: 0.5rem;
-
-    label {
-        font-weight: 600;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-`;
-
-
-export const Label = styled.label`
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-`;
-
-export const StyledInput = styled(Input)`
-    height: 40px;
-    border-radius: 6px;
-`;
-
-export const StyledSelect = styled(Select)`
-    width: 100%;
-    height: 40px;
-    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
 `;
