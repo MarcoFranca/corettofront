@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Apolice } from "@/types/interfaces";
 import { FaInfoCircle, FaTrash, FaFilePdf } from "react-icons/fa";
 import {
     Table, TableHeader, TableRow, TableData, TableActions, DetailsButton, DeleteButton, ViewButton, StatusBadge, TableContainer
 } from "./ApoliceTable.styles";
 import api from "@/app/api/axios";
 import {formatMoney} from "@/utils/maskUtils"; // 🔥 Importando API para buscar administradoras
-import { message, Modal } from "antd"; // 🔥 Importamos `message` e `Modal` do Ant Design
+import { message, Modal } from "antd";
+import {ApoliceDetalhada} from "@/types/ApolicesInterface"; // 🔥 Importamos `message` e `Modal` do Ant Design
 
 
 interface ApoliceTableProps {
-    apolices: Apolice[];
-    setApolices: (apolices: Apolice[]) => void; // ✅ Agora passamos `setApolices` para atualizar a lista
+    apolices: ApoliceDetalhada[];
+    setApolices: (apolices: ApoliceDetalhada[]) => void; // ✅ Agora passamos `setApolices` para atualizar a lista
 }
 
 // Função para definir a cor do status
