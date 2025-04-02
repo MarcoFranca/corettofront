@@ -1,9 +1,9 @@
 import React from "react";
-import { Apolices } from "@/types/interfaces";
 import { OverviewContainer, OverviewText } from "./ApolicesOverview.styles";
+import {ApoliceDetalhada} from "@/types/ApolicesInterface";
 
 interface ApolicesOverviewProps {
-    apolices: Apolices;
+    apolices: ApoliceDetalhada;
 }
 
 const ApolicesOverview: React.FC<ApolicesOverviewProps> = ({ apolices }) => {
