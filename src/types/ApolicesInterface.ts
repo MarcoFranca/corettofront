@@ -69,7 +69,6 @@ export interface BaseApolice {
     data_vencimento?: string;
     vitalicia?: boolean;
     data_revisao?: string;
-    premio_pago: number;
     premio_pago_money: number;
     premio_pago_money_currency: string;
     periodicidade_pagamento: string;

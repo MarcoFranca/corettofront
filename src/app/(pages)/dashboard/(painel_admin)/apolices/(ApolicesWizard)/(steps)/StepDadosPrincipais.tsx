@@ -158,6 +158,25 @@ const StepDadosPrincipais: React.FC<StepDadosPrincipaisProps> = (
                     Selecione um Parceiro</p>}
             </FormGroup>
 
+            <FormGroup>
+                <SelectCustom
+                    control={control}
+                    name="status"
+                    label="📌 Status da Apólice"
+                    options={[
+                        { value: "ativa", label: "Ativa" },
+                        { value: "atrasada", label: "Atrasada" },
+                        { value: "saldado", label: "Saldado" },
+                        { value: "cancelada", label: "Cancelada" },
+                        { value: "falecimento", label: "Falecimento" },
+                        { value: "inadimplente", label: "Inadimplente" },
+                        { value: "doenca", label: "Doença" },
+                        { value: "resgate", label: "Resgate" },
+                    ]}
+                    required
+                />
+            </FormGroup>
+
             {/* Administradora */}
             <FormGroup>
                 <SelectAdministradora

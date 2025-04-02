@@ -18,3 +18,28 @@ export const STATUS_CHOICES = STATUS_OPTIONS.reduce((acc, status) => {
         };
     return acc;
 }, {} as Record<string, { label: string; color: string; description: string }>);
+
+
+export const pagamentoOptions = [
+    { value: "cartao", label: "Cartão" },
+    { value: "debito_conta", label: "Débito em Conta" },
+    { value: "boleto", label: "Boleto" },
+    { value: "pix", label: "Pix" },
+    { value: "outros", label: "Outros" },
+]
+
+export const parentescoOptions = [
+    { value: "Titular", label: "Titular" },
+    { value: "Conjuge", label: "Cônjuge" },
+    { value: "Filho", label: "Filho" },
+    { value: "Enteado", label: "Enteado" },
+    { value: "Pai/Mãe", label: "Pai/Mãe" },
+    { value: "Outro", label: "Outro" },
+];
+
+// 🟡 Opções
+export const indiceCorrecaoOptions = [
+    { value: "INCC", label: "INCC" },
+    { value: "IPCA", label: "IPCA" },
+    { value: "INCC-IPCA", label: "INCC ou IPCA" },
+];

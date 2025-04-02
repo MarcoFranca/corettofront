@@ -53,7 +53,7 @@ const ConsorcioDetalhes: React.FC<ConsorcioDetalhesProps> = ({ apolice }) => {
                 <SectionContent>
                     <div>
                         <Label>Valor Total:</Label> <Value>{formatCurrency(apolice.valor_total_money)}</Value>
-                        <Label>Valor Parcela:</Label> <Value>{formatCurrency(apolice.premio_pago)}</Value>
+                        <Label>Valor Parcela:</Label> <Value>{formatCurrency(apolice.premio_pago_money)}</Value>
                         <Label>Saldo Devedor:</Label> <Value>{formatCurrency(apolice.saldo_devedor)}</Value>
                     </div>
                     <div>

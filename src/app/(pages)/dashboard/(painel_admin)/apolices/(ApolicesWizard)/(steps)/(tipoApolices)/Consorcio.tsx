@@ -13,6 +13,7 @@ import {Controller} from "react-hook-form";
 import {
     MoneyInputStyled
 } from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
+import {indiceCorrecaoOptions, pagamentoOptions} from "@/utils/statusOptions";
 
 interface ConsorcioProps {
     control: any;
@@ -25,21 +26,6 @@ interface MoneyInputHook {
     displayValue: string;
     handleChange: (rawValue: string) => void;
 }
-
-// 🟡 Opções
-const indiceCorrecaoOptions = [
-    { value: "INCC", label: "INCC" },
-    { value: "IPCA", label: "IPCA" },
-    { value: "INCC-IPCA", label: "INCC ou IPCA" },
-];
-
-const pagamentoOptions = [
-    { value: "cartao", label: "Cartão" },
-    { value: "debito_conta", label: "Débito em Conta" },
-    { value: "boleto", label: "Boleto" },
-    { value: "pix", label: "Pix" },
-    { value: "outros", label: "Outros" },
-];
 
 const useMoneyInput = (setValue: any, fieldName: string): MoneyInputHook => {
     const [displayValue, setDisplayValue] = useState("");
@@ -123,7 +109,7 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
 
                     <SelectCustom
                         control={control}
-                        name="detalhes.forma_pagamento"
+                        name="forma_pagamento"
                         label="💰 Forma de Pagamento"
                         options={pagamentoOptions}
                         required

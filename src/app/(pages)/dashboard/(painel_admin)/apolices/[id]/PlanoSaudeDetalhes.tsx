@@ -102,7 +102,7 @@ const PlanoSaudeDetalhes: React.FC<PlanoSaudeDetalhesProps> = ({ apolice }) => {
                         <Value>{apolice.periodicidade_pagamento || "N/A"}</Value>
 
                         <Label><FaMoneyBillWave color={'#007bff'}  /> Valor Mensal:</Label>
-                        <Value>{formatCurrency(apolice.premio_pago)}</Value>
+                        <Value>{formatCurrency(apolice.premio_pago_money)}</Value>
                     </div>
                 </SectionContent>
             </Section>

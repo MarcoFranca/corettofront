@@ -95,7 +95,7 @@ const SeguroVidaDetalhes: React.FC<SeguroVidaDetalhesProps> = ({ apolice }) => {
                         <Value>{apolice.periodicidade_pagamento || "N/A"}</Value>
 
                         <Label>Prêmio Pago:</Label>
-                        <Value>{formatCurrency(apolice.premio_pago)}</Value>
+                        <Value>{formatCurrency(apolice.premio_pago_money)}</Value>
                     </div>
                 </SectionContent>
             </Section>

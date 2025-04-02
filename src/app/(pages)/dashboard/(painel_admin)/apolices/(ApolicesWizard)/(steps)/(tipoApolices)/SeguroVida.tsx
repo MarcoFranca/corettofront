@@ -10,6 +10,7 @@ import {
 } from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/SeguroVida.styles";
 import {FaPlus} from "react-icons/fa";
 import {Button} from "antd";
+import {pagamentoOptions, parentescoOptions} from "@/utils/statusOptions";
 
 interface SeguroVidaProps {
     control: any;
@@ -17,15 +18,6 @@ interface SeguroVidaProps {
     watch: any;
     register: any;
 }
-
-const parentescoOptions = [
-    { value: "Titular", label: "Titular" },
-    { value: "Conjuge", label: "Cônjuge" },
-    { value: "Filho", label: "Filho" },
-    { value: "Enteado", label: "Enteado" },
-    { value: "Pai/Mãe", label: "Pai/Mãe" },
-    { value: "Outro", label: "Outro" },
-];
 
 const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) => {
     const { fields: beneficiarios, append: addBeneficiario, remove: removeBeneficiario } = useFieldArray({
@@ -58,6 +50,14 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
                     register={register}
                     name="detalhes.classe_ajuste"
                     label="⚖️ Classe de Ajuste"
+                />
+
+                <SelectCustom
+                    control={control}
+                    name="forma_pagamento"
+                    label="💰 Forma de Pagamento"
+                    options={pagamentoOptions}
+                    required
                 />
 
                 <SelectCustom
@@ -126,7 +126,7 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
                         </VidaGrid>
                     </div>
                 ))}
-            {/* ✅ Botão Moderno para Adicionar Beneficiário */}
+                {/* ✅ Botão Moderno para Adicionar Beneficiário */}
                 <Button type="dashed" onClick={() => addBeneficiario({ nome: "", data_nascimento: "", percentual: 0 })} block>
                     <FaPlus /> Adicionar Beneficiário
                 </Button>
