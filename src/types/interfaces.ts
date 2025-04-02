@@ -292,6 +292,7 @@ export interface Cliente {
     email: string;
     cpf?: string;
     identidade?: string;
+    tipo_identidade?:string;
     data_nascimento?: string;
     genero?: string;
     profissao?: Profissao;

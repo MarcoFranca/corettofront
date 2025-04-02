@@ -66,13 +66,14 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ cliente }) => {
                     ) : "Não informado"}</p>
 
                     <p>🆔 <strong>Identidade:</strong> {cliente.identidade ? (
-                        <InputMask
-                            mask={getIdentityMask(cliente.identidade)}
-                            value={cliente.identidade}
-                            readOnly
-                            className={"maskInput"}
-
-                        />
+                        <div>
+                            <InputMask
+                                mask={getIdentityMask(cliente.tipo_identidade)}
+                                value={cliente.identidade}
+                                readOnly
+                                className="maskInput"
+                            />
+                        </div>
                     ) : "Não informado"}</p>
                 </DetailsContainer>
             ) : (

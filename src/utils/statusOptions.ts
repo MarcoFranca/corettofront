@@ -43,3 +43,20 @@ export const indiceCorrecaoOptions = [
     { value: "IPCA", label: "IPCA" },
     { value: "INCC-IPCA", label: "INCC ou IPCA" },
 ];
+
+export const identidadeOptions = [
+    { value: "RG - SP", label: "RG - SP" },
+    { value: "RG - RJ", label: "RG - RJ" },
+    { value: "RG - MG", label: "RG - MG" },
+    { value: "RG - PR", label: "RG - PR" },
+    { value: "RG - Outros", label: "RG - Outros" },
+    { value: "RIC", label: "Registro de Identidade (RIC)" },
+    { value: "CNH", label: "CNH" },
+    { value: "CRM", label: "CRM" },
+    { value: "CRO", label: "CRO" },
+    { value: "IFP", label: "IFP" },
+    { value: "SSP", label: "SSP" },
+    { value: "Outro", label: "Outro" },
+];
+
+

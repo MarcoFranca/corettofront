@@ -35,8 +35,34 @@ export const getCpfMask = (cpf: string): string => {
  * @param identidade - Número da identidade sem máscara.
  * @returns A máscara correta para a Identidade.
  */
-export const getIdentityMask = (identidade: string): string => {
-    return "99.999.999-*";
+
+export const getIdentityMask = (tipoIdentidade?: string): string => {
+    switch (tipoIdentidade) {
+        case "RG - SP":
+            return "99.999.999-9"; // 9 dígitos com dígito verificador
+        case "RG - RJ":
+            return "99.999.999-9"; // 8 a 9 dígitos com verificador
+        case "RG - MG":
+            return "99.999.99-9"; // idem
+        case "RG - PR":
+            return "99.999.999"; // 8 dígitos sem verificador
+        case "RG - Outros":
+            return "99.999.999-9"; // formato genérico
+        case "RIC":
+            return "9999999999-9"; // 10+1 dígitos (novo RG nacional)
+        case "CNH":
+            return "99999999999"; // 11 dígitos
+        case "CRM":
+        case "CRO":
+            return "999999"; // 6 dígitos comuns
+        case "SSP":
+        case "IFP":
+            return "99.999.999-9"; // mesmo formato que RG
+        case "Outro":
+            return ""; // sem máscara
+        default:
+            return ""; // fallback
+    }
 };
 
 /**
