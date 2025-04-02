@@ -56,11 +56,11 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
 
     useEffect(() => {
         if (!apolice) return;
-        console.log("primeiro passo",Number(apolice.premio_pago));
-        console.log("primeiro passo", apolice.premio_pago);
-        const premioNumber = apolice.premio_pago?Number(apolice.premio_pago): "";
-        const premioFormatadoNumber = apolice.premio_pago? cleanMoneyValue(premioNumber): "";
-        const premioFormatado = apolice.premio_pago? cleanMoneyValue(apolice.premio_pago): "";
+        console.log("primeiro passo",Number(apolice.premio_pago_money));
+        console.log("primeiro passo", apolice.premio_pago_money);
+        const premioNumber = apolice.premio_pago_money?Number(apolice.premio_pago_money): "";
+        const premioFormatadoNumber = apolice.premio_pago_money? cleanMoneyValue(premioNumber): "";
+        const premioFormatado = apolice.premio_pago_money? cleanMoneyValue(apolice.premio_pago_money): "";
         console.log("🧪 Valor limpo para setValue:", premioFormatado);
         console.log("🧪 Valor limpo para setValue number:", premioFormatadoNumber);
         // ✅ Aqui você vê o que chega do backend
@@ -141,20 +141,20 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
             api.get(`/parceiros/${apolice.parceiro}/`)
                 .then((response: any) => {
                     const parceiro = response.data;
-                const parceiroOption = {
-                    value: parceiro.id,
-                    label: parceiro.nome,
-                };
+                    const parceiroOption = {
+                        value: parceiro.id,
+                        label: parceiro.nome,
+                    };
 
-                // ✅ Seta no formulário
-                setValue("parceiro", parceiroOption);
+                    // ✅ Seta no formulário
+                    setValue("parceiro", parceiroOption);
 
-                // ✅ Garante que está presente nas opções do Select
-                setParceirosDisponiveis((prev) => {
-                    const jaExiste = prev.some((p) => p.value === parceiroOption.value);
-                    return jaExiste ? prev : [...prev, parceiroOption];
-                });
-            })
+                    // ✅ Garante que está presente nas opções do Select
+                    setParceirosDisponiveis((prev) => {
+                        const jaExiste = prev.some((p) => p.value === parceiroOption.value);
+                        return jaExiste ? prev : [...prev, parceiroOption];
+                    });
+                })
                 .catch(() => {
                     const parceiroId = typeof apolice.parceiro === "string" ? apolice.parceiro : "";
                     setValue("parceiro", {
@@ -173,7 +173,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
         setValue("data_inicio", apolice.data_inicio ?? "");
         setValue("data_vencimento", apolice.data_vencimento || null);
         setValue("data_revisao", apolice.data_revisao || null);
-        setValue("premio_pago", Number(apolice.premio_pago) ?? 0);
+        setValue("premio_pago_money", Number(apolice.premio_pago_money) ?? 0);
         setValue("periodicidade_pagamento", apolice.periodicidade_pagamento ?? "");
         setValue("forma_pagamento", apolice.forma_pagamento ?? "");
         setValue("observacoes", apolice.observacoes || "");
@@ -182,13 +182,34 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
         }
 
         const detalhes = extrairDetalhesFromApolice(apolice as ApoliceDetalhada);
+        console.log('coberturas',detalhes.coberturas)
         // ✅ Ajusta coberturas para garantir `nome_id`
         if ("coberturas" in detalhes && Array.isArray(detalhes.coberturas)) {
             detalhes.coberturas = detalhes.coberturas.map((cobertura: any) => ({
                 ...cobertura,
                 nome_id: cobertura?.nome?.id ?? "",
+                capital_segurado_money: Number(cobertura.capital_segurado_money)
             }));
         }
+
+        if (detalhes.valor_reembolso_consulta_money) {
+            detalhes.valor_reembolso_consulta_money = Number(detalhes.valor_reembolso_consulta_money);
+        }
+        if (detalhes.valor_carta_money) {
+            detalhes.valor_carta_money = Number(detalhes.valor_carta_money);
+        }
+
+        if (detalhes.valor_investido_money) {
+            detalhes.valor_investido_money = Number(detalhes.valor_investido_money);
+        }
+        if (detalhes.valor_acumulado_money) {
+            detalhes.valor_acumulado_money = Number(detalhes.valor_acumulado_money);
+        }
+        if (detalhes.capital_de_seguro_money) {
+            detalhes.capital_de_seguro_money = Number(detalhes.capital_de_seguro_money);
+        }
+
+
 // ✅ Garante classe_ajuste como string (evita campo vazio quebrando o input)
         if ("classe_ajuste" in apolice) {
             detalhes.classe_ajuste = apolice.classe_ajuste ?? "";
@@ -233,6 +254,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
                         nome: beneficiario.nome,
                         data_nascimento: beneficiario.data_nascimento,
                         percentual: Number(beneficiario.percentual),  // ✅ Garante que percentual seja número
+                        parentesco: beneficiario.parentesco, // ✅ 🔥 ESSA LINHA AQUI!
                     }))
                     : [];
 
@@ -240,7 +262,7 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
                     ? data.detalhes.coberturas.map(cobertura => ({
                         nome_id: cobertura.nome_id,
                         subclasse: cobertura.subclasse,
-                        capital_segurado: cleanMoneyValue(cobertura.capital_segurado),  // ✅ Garante que capital_segurado seja número
+                        capital_segurado_money: cleanMoneyValue(cobertura.capital_segurado_money),  // ✅ Garante que capital_segurado seja número
                         classe_ajuste: cobertura.classe_ajuste ?? "",  // ✅ Adicionado
                     }))
                     : [];

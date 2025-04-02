@@ -3,6 +3,8 @@ import FloatingMaskedInput from "@/app/components/ui/input/FloatingMaskedInput";
 
 export const SeguroProfissionalGrid = styled.div`
     display: grid;
+    justify-items: center;
+    align-items: center;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1rem;
     padding: 1rem;
@@ -23,6 +25,8 @@ export const SectionTitle = styled.h3`
 export const SwitchContainer = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: center;
+    height: 100%;
     gap: 0.5rem;
     margin-top: 10px;
 `;

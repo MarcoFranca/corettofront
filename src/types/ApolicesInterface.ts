@@ -13,37 +13,11 @@ export interface ApoliceFormData {
     data_vencimento?: string | null;
     data_revisao?: string | null;
 
-    premio_pago: number;
+    premio_pago_money: number;
+    premio_pago_money_currency: string;
     periodicidade_pagamento: string;
     forma_pagamento: string;
     observacoes?: string | null;
-
-    // Campos exclusivos de Consórcio
-    contemplada?: boolean;
-    grupo?: string;
-    cota?: string;
-    prazo?: number;
-    indice_correcao?: string;
-    furo?: number | null;
-    objetivo?: string;
-    estrategia?: string;
-    parcela_reduzida?: boolean;
-    percentual_reducao_parcela?: number | null;
-    data_ultimo_lance?: string | null;
-    tipo_lance?: string;
-    detalhes_lance?: string;
-    aporte?: number | null;
-    valor_final_carta?: number | null;
-    valor_carta?: number;
-    parcelas_pagas?: number;
-    historico_pagamentos?: Record<string, any>;
-    historico_reajustes?: Record<string, any>;
-    lance_fixo_opcoes?: number[];
-
-    permitir_lance_fixo?: boolean;
-    permitir_lance_livre?: boolean;
-    permitir_embutido_fixo?: boolean;
-    permitir_embutido_livre?: boolean;
 
     // Arquivo da apólice
     arquivoApolice?: File | null;
@@ -96,6 +70,8 @@ export interface BaseApolice {
     vitalicia?: boolean;
     data_revisao?: string;
     premio_pago: number;
+    premio_pago_money: number;
+    premio_pago_money_currency: string;
     periodicidade_pagamento: string;
     forma_pagamento: string;
     regra_comissao?: string;
@@ -110,7 +86,7 @@ export interface ApolicePlanoSaude extends BaseApolice {
     categoria: string;
     acomodacao: string;
     abrangencia: string;
-    valor_reembolso_consulta?: number;
+    valor_reembolso_consulta_money?: number;
     coparticipacao: boolean;
     tipo_contratante: 'PF' | 'PJ';
     cpf_cnpj?: string;
@@ -136,15 +112,15 @@ export interface ApoliceSeguroVida extends BaseApolice {
             show: boolean;
         };
         subclasse: string;
-        capital_segurado: string;
+        capital_segurado_money: string;
     }[]; // ✅ Adicionando coberturas ao seguro de vida
 }
 
 // 🏦 Consórcio
 export interface ApoliceConsorcio extends BaseApolice {
     categoria: string;
-    valor_total: number;
-    valor_parcela: number;
+    valor_total_money: number;
+    valor_parcela_money: number;
     tipo_consorcio: string;
     data_termino: string;
     tipo_contratante: 'PF' | 'PJ';
@@ -161,14 +137,14 @@ export interface ApoliceConsorcio extends BaseApolice {
     furo?: number;
     objetivo: string;
     estrategia?: string;
-    parcela_reduzida: boolean;
+    parcela_reduzida_money: boolean;
     percentual_reducao_parcela?: number;
     data_ultimo_lance?: string;
     tipo_lance?: string;
     detalhes_lance?: string;
-    aporte?: number;
-    valor_final_carta?: number;
-    valor_carta: number;
+    aporte_money?: number;
+    valor_final_carta_money?: number;
+    valor_carta_money: number;
     parcelas_pagas: number;
     historico_pagamentos?: Record<string, any>;
     historico_reajustes?: Record<string, any>;
@@ -183,7 +159,7 @@ export interface ApoliceConsorcio extends BaseApolice {
 export interface ApolicePrevidencia extends BaseApolice {
     nome_fundo: string;
     fundo: string;
-    valor_acumulado: number;
+    valor_acumulado_money: number;
     regime_tributacao: string;
     regime_contratacao: string;
 }

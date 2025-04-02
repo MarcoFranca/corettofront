@@ -9,6 +9,9 @@ import {
 } from "./SeguroProfissional.styles";
 import { Controller } from "react-hook-form";
 import { Switch } from "antd";
+import {
+    MoneyInputStyled
+} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
 
 interface Props {
     control: any;
@@ -24,21 +27,20 @@ const SeguroProfissional: React.FC<Props> = ({ control, setValue, register, watc
         <>
             <SectionTitle>📋 Informações do Seguro Profissional</SectionTitle>
             <SeguroProfissionalGrid>
-                <Input control={control} setValue={setValue}
-                       register={register}
-                       name="premio_pago"
-                       label="💎 Prêmio Pago (Valor do Plano)"
-                       type="money" required
+                <MoneyInputStyled
+                    control={control}
+                    setValue={setValue}
+                    name="premio_pago_money"
+                    label="💎 Prêmio Pago "
+                    required
                 />
 
-                <Input
-                    name="detalhes.capital_de_seguro"
-                    label="💰 Capital de Seguro"
-                    type="money"
-                    required
+                <MoneyInputStyled
                     control={control}
-                    register={register}
                     setValue={setValue}
+                    name="detalhes.capital_de_seguro_money"
+                    label="💰 Capital de Seguro"
+                    required
                 />
 
                 <SwitchContainer>

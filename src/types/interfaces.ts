@@ -1,4 +1,5 @@
 import React, { RefObject } from "react";
+import {ApoliceDetalhada} from "@/types/ApolicesInterface";
 
 // ** Lead Interfaces **
 export type StatusReuniao =
@@ -300,7 +301,7 @@ export interface Cliente {
     status: "lead" | "ativo" | "negociacao" | "nova_negociacao" | "inativo" | "recusado" | "reativacao_pendente" | "cancelado";
     pipeline_stage?: string;
     idade?: string;
-    apolices: Apolices;
+    apolices?: ApoliceDetalhada[];
     apolices_detalhes?: ApolicesDetalhes;
     total_apolices?: number;
     reunioes?: Reuniao[];
@@ -361,18 +362,6 @@ export const genderOptions = [
     { value: 'F', label: 'Feminino' },
 ];
 
-// interface ApolicesOverviewProps {
-//     apolices: Apolices | Apolice[];
-// }
-//
-// interface Beneficiario {
-//     id: string;
-//     nome: string;
-//     data_nascimento: string;
-//     parentesco: string;
-// }
-
-
 export interface Stats {
     total_apolices: number;
     valor_total: number;
@@ -380,58 +369,58 @@ export interface Stats {
     revisoes_este_mes: number;
 }
 
-// ** Apólice Interfaces **
-export interface Apolice {
-    administradora: string;
-    id: string;
-    capital_segurado: string;
-
-    beneficiario: string;
-    subcategoria: string;
-    status_proposta: string;
-    numero_apolice: number;
-    produto: string;
-    seguradora: string;
-    data_inicio: string;
-    data_vencimento: string;
-    premio_pago?: string | number;
-    nome_fundo: string;
-    valor_investido: string;
-    valor_carta?: string | number;
-    valor_acumulado?: string | number;
-    tipo_produto:string;
-    fundo: string;
-    franquia: string;
-    capitalSegurado?: string | number;
-    periodicidade_pagamento: string;
-    observacoes: string;
-    arquivo: string;
-    categoria: string;
-    acomodacao: string;
-    abrangencia: string;
-    valor_reembolso_consulta?: string | number;
-    forma_pagamento?: string;  // ✅ Opcional
-    valor?: number;            // ✅ Opcional
-    status?: string;           // ✅ Opcional
-    coparticipacao: boolean;
-    regime_contratacao?: string;
-    regime_tributacao?: string;
-    tipo?:string;
-    cliente: string;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface Apolices {
-    plano_saude: Apolice[];
-    seguro_vida: Apolice[];
-    previdencia: Apolice[];
-    consorcio: Apolice[];
-    investimento: Apolice[];
-    seguro_profissional: Apolice[];
-    seguro_residencial: Apolice[];
-    [key: string]: Apolice[];
-}
+// // ** Apólice Interfaces **
+// export interface Apolice {
+//     administradora: string;
+//     id: string;
+//     capital_segurado: string;
+//
+//     beneficiario: string;
+//     subcategoria: string;
+//     status_proposta: string;
+//     numero_apolice: number;
+//     produto: string;
+//     seguradora: string;
+//     data_inicio: string;
+//     data_vencimento: string;
+//     premio_pago?: string | number;
+//     nome_fundo: string;
+//     valor_investido: string;
+//     valor_carta?: string | number;
+//     valor_acumulado?: string | number;
+//     tipo_produto:string;
+//     fundo: string;
+//     franquia: string;
+//     capitalSegurado?: string | number;
+//     periodicidade_pagamento: string;
+//     observacoes: string;
+//     arquivo: string;
+//     categoria: string;
+//     acomodacao: string;
+//     abrangencia: string;
+//     valor_reembolso_consulta?: string | number;
+//     forma_pagamento?: string;  // ✅ Opcional
+//     valor?: number;            // ✅ Opcional
+//     status?: string;           // ✅ Opcional
+//     coparticipacao: boolean;
+//     regime_contratacao?: string;
+//     regime_tributacao?: string;
+//     tipo?:string;
+//     cliente: string;
+//     created_at: string;
+//     updated_at: string;
+// }
+//
+// export interface Apolices {
+//     plano_saude: Apolice[];
+//     seguro_vida: Apolice[];
+//     previdencia: Apolice[];
+//     consorcio: Apolice[];
+//     investimento: Apolice[];
+//     seguro_profissional: Apolice[];
+//     seguro_residencial: Apolice[];
+//     [key: string]: Apolice[];
+// }
 
 export interface ApoliceDetalhesSegmento {
     total_apolices: number;

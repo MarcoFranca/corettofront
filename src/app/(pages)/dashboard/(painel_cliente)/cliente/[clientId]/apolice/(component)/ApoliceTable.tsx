@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // ✅ Importação do useRouter para navegação
-import { Apolice } from "@/types/interfaces";
 import {FaInfoCircle, FaTrash, FaFilePdf, FaEdit} from "react-icons/fa";
 import {
     Table, TableHeader, TableRow, TableData, TableActions, DetailsButton, DeleteButton, ViewButton, StatusBadge, TableContainer
@@ -8,12 +7,12 @@ import {
 import api from "@/app/api/axios";
 import {formatMoney} from "@/utils/maskUtils"; // 🔥 Importando API para buscar administradoras
 import { message, Modal } from "antd"; // 🔥 Importamos `message` e `Modal` do Ant Design
-
+import { ApoliceDetalhada } from "@/types/ApolicesInterface"; // ou onde estiver
 
 interface ApoliceTableProps {
-    apolices: Apolice[];
-    setApolices: (apolices: Apolice[]) => void;
-    onEdit: (apolice: Apolice) => void; // 👈 nova prop
+    apolices: ApoliceDetalhada[];
+    setApolices: (apolices: ApoliceDetalhada[]) => void;
+    onEdit: (apolice: ApoliceDetalhada) => void;
 }
 
 // Função para definir a cor do status
@@ -111,7 +110,7 @@ const ApoliceTable: React.FC<ApoliceTableProps> = ({ apolices, setApolices, onEd
                             <TableData>{administradoras[apolice.administradora] || "N/A"}</TableData>
                             <TableData>{apolice.data_inicio ? new Date(apolice.data_inicio).toLocaleDateString() : "N/A"}</TableData>
                             <TableData>{apolice.forma_pagamento || "N/A"}</TableData>
-                            <TableData>{apolice.premio_pago ? `R$ ${formatMoney(apolice.premio_pago)}` : "N/A"}</TableData>
+                            <TableData>{apolice.premio_pago_money ? `R$ ${formatMoney(apolice.premio_pago_money)}` : "N/A"}</TableData>
                             <TableData>
                                 <StatusBadge color={getStatusColor(apolice.status || "indefinido")}>
                                     {apolice.status ? apolice.status.charAt(0).toUpperCase() + apolice.status.slice(1) : "Indefinido"}

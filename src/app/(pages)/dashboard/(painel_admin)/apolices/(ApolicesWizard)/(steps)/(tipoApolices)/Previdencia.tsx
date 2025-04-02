@@ -5,6 +5,9 @@ import {
     SelectStyled,
     SectionTitle
 } from "./Previdencia.styles";
+import {
+    MoneyInputStyled
+} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
 
 const regimeTributacaoOptions = [
     { value: "progressivo", label: "Progressivo" },
@@ -29,11 +32,13 @@ const Previdencia: React.FC<PrevidenciaProps> = ({ control, setValue, register }
         <>
             <SectionTitle>🏦 Informações da Previdência</SectionTitle>
             <PrevidenciaGrid>
-                <Input control={control} setValue={setValue}
-                       register={register}
-                       name="premio_pago"
-                       label="💎 Prêmio Pago (Valor do Plano)"
-                       type="money" required />
+                <MoneyInputStyled
+                    control={control}
+                    setValue={setValue}
+                    name="premio_pago_money"
+                    label="💎 Prêmio Pago "
+                    required
+                />
                 <Input
                     control={control}
                     setValue={setValue}
@@ -50,14 +55,12 @@ const Previdencia: React.FC<PrevidenciaProps> = ({ control, setValue, register }
                     name="detalhes.fundo"
                     label="🏛️ Fundo"
                 />
-
-                <Input
+                <MoneyInputStyled
                     control={control}
                     setValue={setValue}
-                    register={register}
-                    name="detalhes.valor_acumulado"
+                    name="detalhes.valor_acumulado_money"
                     label="💰 Valor Acumulado"
-                    type="money"
+                    required
                 />
 
                 <SelectStyled

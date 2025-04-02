@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {Controller, useFieldArray} from "react-hook-form";
 import {
     PlanoSaudeGrid,
@@ -33,7 +33,7 @@ const parentescoOptions = [
     { value: "Outro", label: "Outro" },
 ];
 
-const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, watch }) => {
+const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register }) => {
 
     const {
         fields: beneficiarios,
@@ -51,7 +51,7 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, wa
                 <MoneyInputStyled
                     control={control}
                     setValue={setValue}
-                    name="premio_pago"
+                    name="premio_pago_money"
                     label="💎 Prêmio Pago (Valor do Plano)"
                     required />
 
@@ -81,9 +81,13 @@ const PlanoSaude: React.FC<PlanoSaudeProps> = ({ control, setValue, register, wa
             <OptionalSection>
                 <SectionTitle>⚙️ Configurações Opcionais</SectionTitle>
                 <PlanoSaudeGrid>
-                    <Input control={control} setValue={setValue} register={register}
-                           name="detalhes.valor_reembolso_consulta" label="💰 Reembolso Consulta (R$)"
-                           type="money" />
+                    <MoneyInputStyled
+                        control={control}
+                        setValue={setValue}
+                        name="detalhes.valor_reembolso_consulta_money"
+                        label="💰 Reembolso Consulta (R$)"
+                        required
+                    />
 
                     <SwitchContainer>
                         <Controller name="detalhes.coparticipacao" control={control}

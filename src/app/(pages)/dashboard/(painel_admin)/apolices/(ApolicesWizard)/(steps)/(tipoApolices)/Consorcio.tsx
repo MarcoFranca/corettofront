@@ -10,6 +10,9 @@ import {CheckboxGroup} from "@/app/components/Modal/agenda/CreateEventModal.styl
 import CheckboxOptions
     from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/CheckboxOptions";
 import {Controller} from "react-hook-form";
+import {
+    MoneyInputStyled
+} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
 
 interface ConsorcioProps {
     control: any;
@@ -110,15 +113,14 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
 
                 <ConsorcioGrid>
                     {/* 💳 Forma de Pagamento */}
-                    <Input
+                    <MoneyInputStyled
                         control={control}
                         setValue={setValue}
-                        register={register}
-                        name="premio_pago"
-                        label="💎 Prêmio Pago"
-                        type="money"
+                        name="premio_pago_money"
+                        label="💎 Prêmio Pago "
                         required
                     />
+
                     <SelectCustom
                         control={control}
                         name="detalhes.forma_pagamento"
@@ -126,16 +128,14 @@ const Consorcio: React.FC<ConsorcioProps> = ({ control, setValue, register }) =>
                         options={pagamentoOptions}
                         required
                     />
-
-                    <Input
+                    <MoneyInputStyled
                         control={control}
                         setValue={setValue}
-                        register={register}
-                        name="detalhes.valor_carta"
+                        name="detalhes.valor_carta_money"
                         label="💳 Valor da Carta"
-                        type="money"
                         required
                     />
+
                 </ConsorcioGrid>
             </PaymentSection>
 

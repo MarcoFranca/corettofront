@@ -2,13 +2,16 @@
 
 import React from "react";
 import { useFieldArray } from "react-hook-form";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import {
     CoberturaGrid, CoberturaSection, RemoveButton, Input
 } from "./StepCoberturas.styles";
 import SelectCobertura from "@/app/components/ui/select/SelectCoberturas/SelectCoberturas";
 import {FaPlus} from "react-icons/fa";
 import {Button} from "antd";
+import {
+    MoneyInputStyled
+} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
 
 interface StepCoberturasProps {
     control: any;
@@ -50,17 +53,15 @@ const StepCoberturas: React.FC<StepCoberturasProps> = ({ control, setValue, regi
                             register={register}
                             name={`detalhes.coberturas.${index}.subclasse`}
                             label="📂 Subclasse"
-
                         />
 
                         {/* Capital Segurado */}
-                        <Input
+
+                        <MoneyInputStyled
                             control={control}
                             setValue={setValue}
-                            register={register}
-                            name={`detalhes.coberturas.${index}.capital_segurado`}
+                            name={`detalhes.coberturas.${index}.capital_segurado_money`}
                             label="💰 Capital Segurado"
-                            type="money"
                             required
                         />
 

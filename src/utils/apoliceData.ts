@@ -49,7 +49,7 @@ export const formattedDataBase = (data: ApoliceFormData) => ({
     data_inicio: formatDate(data.data_inicio),
     data_vencimento: data.data_vencimento ? formatDate(data.data_vencimento) : null,
     data_revisao: data.data_revisao ? formatDate(data.data_revisao) : null,
-    premio_pago: cleanMoneyValue(data.premio_pago),
+    premio_pago_money: cleanMoneyValue(data.premio_pago_money),
     periodicidade_pagamento: formatString(data.periodicidade_pagamento) || "mensal",
     forma_pagamento: formatString(data.detalhes.forma_pagamento) || "boleto",
     observacoes: formatString(data.observacoes),
@@ -63,29 +63,29 @@ export const extrairDetalhesFromApolice = (apolice: ApoliceDetalhada): Record<st
 
     const camposPorTipo: Record<string, string[]> = {
         "Plano de Saúde": [
-            "categoria", "acomodacao", "abrangencia", "valor_reembolso_consulta", "coparticipacao",
+            "categoria", "acomodacao", "abrangencia", "valor_reembolso_consulta_money", "coparticipacao",
             "tipo_contratante", "cpf_cnpj", "beneficiarios"
         ],
         "Previdência": [
-            "nome_fundo", "fundo", "valor_acumulado", "regime_tributacao", "regime_contratacao"
+            "nome_fundo", "fundo", "valor_acumulado_money", "regime_tributacao", "regime_contratacao"
         ],
         "Consórcio": [
             "contemplada", "grupo", "cota", "prazo", "indice_correcao", "furo", "objetivo", "estrategia",
-            "percentual_reducao_parcela", "tipo_lance", "detalhes_lance", "aporte", "valor_carta",
+            "percentual_reducao_parcela", "tipo_lance", "detalhes_lance", "aporte", "valor_carta_money",
             "parcelas_pagas", "historico_pagamentos", "forma_pagamento", "historico_reajustes", "permitir_lance_fixo",
             "permitir_lance_livre", "permitir_embutido_fixo", "permitir_embutido_livre"
         ],
         "Seguro de Vida": [
-            "premio_pago", "periodicidade_pagamento", "classe_ajuste", "subcategoria", "beneficiarios", "coberturas"
+            "periodicidade_pagamento", "classe_ajuste", "subcategoria", "beneficiarios", "coberturas"
         ],
         "Seguro Profissional": [
-            "possui_franquia", "descricao_franquia", "capital_de_seguro"
+            "possui_franquia", "descricao_franquia", "capital_de_seguro_money"
         ],
         "Seguro Residencial": [
-            "capital_de_seguro", "cobertura_adicional"
+            "capital_de_seguro_money", "cobertura_adicional"
         ],
         "Investimento": [
-            "valor_investido"
+            "valor_investido_money"
         ]
     };
 
@@ -106,7 +106,7 @@ export const formattedDataByType = {
         categoria: formatString(data.detalhes.categoria),
         acomodacao: formatString(data.detalhes.acomodacao),
         abrangencia: formatString(data.detalhes.abrangencia),
-        valor_reembolso_consulta: cleanMoneyValue(data.detalhes.valor_reembolso_consulta),
+        valor_reembolso_consulta_money: cleanMoneyValue(data.detalhes.valor_reembolso_consulta_money),
         coparticipacao: !!data.detalhes.coparticipacao,
         tipo_contratante: formatString(data.detalhes.tipo_contratante),
         cpf_cnpj: formatString(data.detalhes.cpf_cnpj),
@@ -118,13 +118,13 @@ export const formattedDataByType = {
     "Previdência": (data: ApoliceFormData) => ({
         nome_fundo: formatString(data.detalhes.nome_fundo),
         fundo: formatString(data.detalhes.fundo),
-        valor_acumulado: cleanMoneyValue(data.detalhes.valor_acumulado),
+        valor_acumulado_money: cleanMoneyValue(data.detalhes.valor_acumulado_money),
         regime_tributacao: formatString(data.detalhes.regime_tributacao),
         regime_contratacao: formatString(data.detalhes.regime_contratacao),
     }),
 
     "Consórcio": (data: ApoliceFormData) => ({
-        contemplada: data.contemplada || false,
+        contemplada: data.detalhes.contemplada || false,
         grupo: formatString(data.detalhes.grupo),
         cota: formatString(data.detalhes.cota),
         prazo: formatNumber(data.detalhes.prazo) || 0,
@@ -133,22 +133,22 @@ export const formattedDataByType = {
         objetivo: formatString(data.detalhes.objetivo),
         estrategia: formatString(data.detalhes.estrategia),
         percentual_reducao_parcela: formatNumber(data.detalhes.percentual_reducao_parcela),
-        tipo_lance: formatString(data.tipo_lance),
-        detalhes_lance: formatString(data.detalhes_lance),
-        aporte: formatNumber(data.aporte),
-        valor_carta: cleanMoneyValue(data.detalhes.valor_carta || 0),
-        parcelas_pagas: formatNumber(data.parcelas_pagas),
+        tipo_lance: formatString(data.detalhes.tipo_lance),
+        detalhes_lance: formatString(data.detalhes.detalhes_lance),
+        aporte_money: formatNumber(data.detalhes.aporte_money),
+        valor_carta_money: cleanMoneyValue(data.detalhes.valor_carta_money || 0),
+        parcelas_pagas: formatNumber(data.detalhes.parcelas_pagas),
         forma_pagamento: formatString(data.detalhes.forma_pagamento),
-        historico_pagamentos: data.historico_pagamentos ?? {},
-        historico_reajustes: data.historico_reajustes ?? {},
-        permitir_lance_fixo: data.permitir_lance_fixo ?? false,
-        permitir_lance_livre: data.permitir_lance_livre ?? false,
-        permitir_embutido_fixo: data.permitir_embutido_fixo ?? false,
-        permitir_embutido_livre: data.permitir_embutido_livre ?? false,
+        historico_pagamentos: data.detalhes.historico_pagamentos ?? {},
+        historico_reajustes: data.detalhes.historico_reajustes ?? {},
+        permitir_lance_fixo: data.detalhes.permitir_lance_fixo ?? false,
+        permitir_lance_livre: data.detalhes.permitir_lance_livre ?? false,
+        permitir_embutido_fixo: data.detalhes.permitir_embutido_fixo ?? false,
+        permitir_embutido_livre: data.detalhes.permitir_embutido_livre ?? false,
     }),
 
     "Seguro de Vida": (data: ApoliceFormData) => ({
-        premio_pago: cleanMoneyValue(data.premio_pago),
+        premio_pago_money: cleanMoneyValue(data.premio_pago_money),
         subcategoria: formatString(data.detalhes.subcategoria),
         periodicidade_pagamento: formatString(data.detalhes.periodicidade_premio) || "mensal",
         beneficiarios: JSON.stringify(
@@ -156,6 +156,7 @@ export const formattedDataByType = {
                 (beneficiario, index) => ({
                     nome: beneficiario?.nome || "",
                     data_nascimento: beneficiario?.data_nascimento || "",
+                    parentesco: beneficiario?.parentesco || "",
                     percentual: formatNumber(data.detalhes.beneficiarios?.[index]?.percentual) || 0,  // ✅ Agora buscamos no índice correto
                 })
             )
@@ -165,7 +166,7 @@ export const formattedDataByType = {
                 (cobertura, index) => ({
                     nome_id: cobertura?.nome_id || "",  // ✅ Garante que `nome_id` seja string válida
                     subclasse: cobertura?.subclasse || "",
-                    capital_segurado: cleanMoneyValue(data.detalhes.coberturas?.[index]?.capital_segurado) || 0,  // ✅ Garante que `capital_segurado` seja numérico
+                    capital_segurado_money: cleanMoneyValue(data.detalhes.coberturas?.[index]?.capital_segurado_money) || 0,  // ✅ Garante que `capital_segurado` seja numérico
                 })
             )
         ),
@@ -175,16 +176,16 @@ export const formattedDataByType = {
     "Seguro Profissional": (data: ApoliceFormData) => ({
         possui_franquia: !!data.detalhes.possui_franquia,
         descricao_franquia: data.detalhes.descricao_franquia || null,
-        capital_de_seguro: cleanMoneyValue(data.detalhes.capital_de_seguro),
+        capital_de_seguro_money: cleanMoneyValue(data.detalhes.capital_de_seguro_money),
     }),
 
     "Seguro Residencial": (data: ApoliceFormData) => ({
-        capital_de_seguro: cleanMoneyValue(data.detalhes.capital_de_seguro),
+        capital_de_seguro_money: cleanMoneyValue(data.detalhes.capital_de_seguro_money),
         cobertura_adicional: data.detalhes.cobertura_adicional || null,
     }),
 
     "Investimento": (data: ApoliceFormData) => ({
-        valor_investido: cleanMoneyValue(data.detalhes.valor_investido)
+        valor_investido_money: cleanMoneyValue(data.detalhes.valor_investido_money)
     }),
 
 };

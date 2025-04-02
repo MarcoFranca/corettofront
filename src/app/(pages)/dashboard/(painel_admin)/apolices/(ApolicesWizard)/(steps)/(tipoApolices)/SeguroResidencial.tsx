@@ -3,10 +3,12 @@
 import React from "react";
 import {
     SeguroResidencialGrid,
-    Input,
     SectionTitle,
     TextArea
 } from "./SeguroResidencial.styles";
+import {
+    MoneyInputStyled
+} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
 
 interface Props {
     control: any;
@@ -20,19 +22,18 @@ const SeguroResidencial: React.FC<Props> = ({ control, setValue, register }) => 
         <>
             <SectionTitle>🏠 Informações do Seguro Residencial</SectionTitle>
             <SeguroResidencialGrid>
-                <Input control={control} setValue={setValue}
-                       register={register}
-                       name="premio_pago"
-                       label="💎 Prêmio Pago (Valor do Plano)"
-                       type="money" required
-                />
-                <Input
-                    name="detalhes.capital_de_seguro"
-                    label="💰 Capital de Seguro"
-                    type="money"
+                <MoneyInputStyled
                     control={control}
                     setValue={setValue}
-                    register={register}
+                    name="premio_pago_money"
+                    label="💎 Prêmio Pago "
+                    required
+                />
+                <MoneyInputStyled
+                    control={control}
+                    setValue={setValue}
+                    name="detalhes.capital_de_seguro_money"
+                    label="💰 Capital de Seguro"
                     required
                 />
 

@@ -2,7 +2,7 @@ import React from "react";
 import { useFieldArray } from "react-hook-form";
 import { DeleteOutlined } from "@ant-design/icons"; // ✅ Importando Ícones do Ant Design
 import {
-    Input
+    Input, MoneyInputStyled
 } from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import {
@@ -18,6 +18,15 @@ interface SeguroVidaProps {
     register: any;
 }
 
+const parentescoOptions = [
+    { value: "Titular", label: "Titular" },
+    { value: "Conjuge", label: "Cônjuge" },
+    { value: "Filho", label: "Filho" },
+    { value: "Enteado", label: "Enteado" },
+    { value: "Pai/Mãe", label: "Pai/Mãe" },
+    { value: "Outro", label: "Outro" },
+];
+
 const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) => {
     const { fields: beneficiarios, append: addBeneficiario, remove: removeBeneficiario } = useFieldArray({
         control,
@@ -27,13 +36,11 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
     return (
         <>
             <VidaGrid>
-                <Input
+                <MoneyInputStyled
                     control={control}
                     setValue={setValue}
-                    register={register}
-                    name="premio_pago"
-                    label="💎 Prêmio Pago (Valor do Plano)"
-                    type="money"
+                    name="premio_pago_money"
+                    label="💎 Prêmio Pago"
                     required
                 />
 
@@ -87,6 +94,14 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
                                 setValue={setValue}
                                 register={register}
                                 required={false}
+                            />
+
+                            <SelectCustom
+                                control={control}
+                                name={`detalhes.beneficiarios.${index}.parentesco`}
+                                label="🧬 Parentesco"
+                                options={parentescoOptions}
+                                required
                             />
 
                             <Input

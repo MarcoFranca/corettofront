@@ -188,27 +188,42 @@ const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
                             <Controller
                                 name={name}
                                 control={control}
-                                render={({ field: { onChange, onBlur, value, ref } }) => (
-                                    <Input
-                                        id={name}
-                                        type={type === "money" ? "text" : type}
-                                        placeholder={placeholder || ""}
-                                        required={required}
-                                        value={
-                                            type === "money"
-                                                ? formatCurrency(value || 0) // 🔥 Exibe formatado, mas mantém o valor puro no form
-                                                : value || ""
-                                        }
-                                        onChange={(e) => {
-                                            const numericValue = Number(cleanCurrency(e.target.value)) / 100;
-                                            console.log("📌 Salvando no formulário sem máscara:", numericValue);
-                                            onChange(numericValue); // 🔥 Armazena apenas número no form
-                                            setValue(name, numericValue, { shouldValidate: true });
-                                        }}
-                                        onBlur={onBlur}
-                                        ref={ref}
-                                    />
-                                )}
+                                render={({ field: { onChange, onBlur, value, ref } }) => {
+                                    const formattedValue =
+                                        type === "money" && value !== undefined && value !== null
+                                            ? currency(value, {
+                                                symbol: "R$ ",
+                                                separator: ".",
+                                                decimal: ",",
+                                                precision: 2,
+                                            }).format()
+                                            : value ?? "";
+
+                                    return (
+                                        <Input
+                                            id={name}
+                                            type={type === "money" ? "text" : type}
+                                            placeholder={placeholder || ""}
+                                            required={required}
+                                            value={formattedValue}
+                                            onChange={(e) => {
+                                                if (type === "money") {
+                                                    const raw = e.target.value.replace(/[^\d]/g, "");
+                                                    const numericValue = Number(raw) / 100;
+                                                    setValue(name, numericValue, { shouldValidate: true });
+                                                    onChange(numericValue);
+                                                } else {
+                                                    setValue(name, e.target.value, { shouldValidate: true });
+                                                    onChange(e.target.value);
+                                                }
+
+                                                if (onChange) onChange(e);
+                                            }}
+                                            onBlur={onBlur}
+                                            ref={ref}
+                                        />
+                                    );
+                                }}
                             />
                         )}
                     </StaticLabelWrapper>

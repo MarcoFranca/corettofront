@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useAppDispatch } from "@/services/hooks/hooks";
 import { fetchApolices } from "@/store/slices/apoliceSlice";
-import { Apolice } from "@/types/interfaces";
 import ApoliceWizard from "./(ApolicesWizard)/ApolicesWizard";
 const ApolicesTable = dynamic(() =>
     import('@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable'),
@@ -24,7 +23,7 @@ import {ApoliceDetalhada} from "@/types/ApolicesInterface";
 
 const ApolicesPage: React.FC = () => {
     const dispatch = useAppDispatch();
-    const [apolices, setApolices] = useState<Apolice[]>([]);
+    const [apolices, setApolices] = useState<ApoliceDetalhada[]>([]);
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [tipoFiltro, setTipoFiltro] = useState<string>('');
     const [statusFiltro, setStatusFiltro] = useState<string>('');

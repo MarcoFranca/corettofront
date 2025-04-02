@@ -3,9 +3,11 @@
 import React from "react";
 import {
     InvestimentoGrid,
-    Input,
     SectionTitle
 } from "./Investimento.styles";
+import {
+    MoneyInputStyled
+} from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/PlanoSaude.styles";
 
 interface Props {
     control: any;
@@ -14,26 +16,26 @@ interface Props {
     watch: any;
 }
 
-const Investimento: React.FC<Props> = ({ control, setValue, register }) => {
+const Investimento: React.FC<Props> = ({ control, setValue }) => {
     return (
         <>
             <SectionTitle>📈 Informações do Investimento</SectionTitle>
             <InvestimentoGrid>
-                <Input control={control} setValue={setValue}
-                       register={register}
-                       name="premio_pago"
-                       label="💎 Prêmio Pago (Valor do Plano)"
-                       type="money" required
-                />
-                <Input
+                <MoneyInputStyled
                     control={control}
                     setValue={setValue}
-                    register={register}
-                    name="detalhes.valor_investido"
-                    label="💰 Valor Investido"
-                    type="money"
+                    name="premio_pago_money"
+                    label="💎 Prêmio Pago "
                     required
                 />
+                <MoneyInputStyled
+                    control={control}
+                    setValue={setValue}
+                    name="detalhes.valor_investido_money"
+                    label="💰 Valor Investido"
+                    required
+                />
+
             </InvestimentoGrid>
         </>
     );
