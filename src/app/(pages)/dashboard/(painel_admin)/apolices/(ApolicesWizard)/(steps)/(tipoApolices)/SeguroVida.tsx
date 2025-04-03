@@ -62,7 +62,7 @@ const SeguroVida: React.FC<SeguroVidaProps> = ({ control, setValue, register }) 
 
                 <SelectCustom
                     control={control}
-                    name="detalhes.periodicidade_pagamento"
+                    name="periodicidade_pagamento"
                     label="🗓️ Periodicidade do Prêmio"
                     options={[
                         { value: "mensal", label: "Mensal" },

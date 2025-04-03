@@ -56,6 +56,9 @@ const StepResumo: React.FC<StepResumoProps> = ({ watch }) => {
                     <Descriptions.Item label="Premio Pago">
                         {dadosPrincipais.premio_pago_money ? String(dadosPrincipais.premio_pago_money) : "Indeterminado"}
                     </Descriptions.Item>
+                    <Descriptions.Item label="Periodicidade do pagamento">
+                        {dadosPrincipais.periodicidade_pagamento ? String(dadosPrincipais.periodicidade_pagamento) : "Indeterminado"}
+                    </Descriptions.Item>
                 </Descriptions>
             </ResumoCard>
 

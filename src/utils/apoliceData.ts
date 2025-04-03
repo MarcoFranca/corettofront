@@ -149,7 +149,6 @@ export const formattedDataByType = {
     "Seguro de Vida": (data: ApoliceFormData) => ({
         premio_pago_money: cleanMoneyValue(data.premio_pago_money),
         subcategoria: formatString(data.detalhes.subcategoria),
-        periodicidade_pagamento: formatString(data.detalhes.periodicidade_premio) || "mensal",
         beneficiarios: JSON.stringify(
             (Array.isArray(data.detalhes.beneficiarios) ? data.detalhes.beneficiarios : []).map(
                 (beneficiario, index) => ({
