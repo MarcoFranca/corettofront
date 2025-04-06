@@ -8,7 +8,7 @@ import styles from './ScheduleMeetingForm.module.css';
 import {clearMessages, linkGoogleAccount} from "@/store/slices/googleIntegrationSlice";
 import {useGoogleLogin} from "@react-oauth/google";
 
-const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, entityName, onClose }) => {
+const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, entityName, entityType, onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
     const googleAuthRedirectUrl = useSelector((state: RootState) => state.agenda.googleAuthRedirectUrl);
 
@@ -19,6 +19,7 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
     const [addToGoogleCalendar, setAddToGoogleCalendar] = useState(false);
     const [addToGoogleMeet, setAddToGoogleMeet] = useState(false);
     const [addToZoom, setAddToZoom] = useState(false);
+
 
     useEffect(() => {
         if (googleAuthRedirectUrl) {
@@ -50,7 +51,9 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
         const startDateTime = new Date(`${date}T${startTime}`).toISOString();
         const endDateTime = new Date(`${date}T${endTime}`).toISOString();
 
-        const dynamicTitle = `Reunião com ${entityName}`;
+        const dynamicTitle = entityType === 'negociacao'
+            ? `Reunião da Negociação: ${entityName}`
+            : `Reunião com ${entityName}`;
 
         const newAgendaItem: Partial<AgendaItem> = {
             title: dynamicTitle,
@@ -64,6 +67,8 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
             add_to_google_calendar: addToGoogleCalendar,
             add_to_google_meet: addToGoogleMeet,
             add_to_zoom: addToZoom,
+            ...(entityType === 'cliente' || entityType === 'lead' ? { cliente: entityId } : {}),
+            ...(entityType === 'negociacao' ? { negociacao: entityId } : {}),
         };
 
         try {

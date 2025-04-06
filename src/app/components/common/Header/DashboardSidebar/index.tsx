@@ -12,6 +12,7 @@ import DefaultUserImage from "../../../../../../public/assets/common/user.svg";
 import LogoImage from "../../../../../../public/assets/logoIcons/Logo_transparente_clara_horizontal.svg";
 import { usePrefetchNavigation } from "@/services/hooks/usePrefetchNavigation";
 import {setRouteLoading} from "@/store/slices/uiSlice";
+import {FaCommentsDollar} from "react-icons/fa";
 
 // Dynamic import dos ícones
 const FaHome = dynamic(() => import("react-icons/fa").then(mod => mod.FaHome));
@@ -75,7 +76,9 @@ const DashboardSidebar = ({ profileImage }: { profileImage: string | null }) => 
                     <Icon><FaHome /></Icon> Dashboard
                 </NavItem>
                 <NavItem onClick={() => navigateTo("/dashboard/lead")} className={isActive("/dashboard/lead") ? "active" : ""}>
-                    <Icon><FaUserFriends /></Icon> Leads
+                    <Icon><FaCommentsDollar /></Icon> Negociações
+
+
                 </NavItem>
                 <NavItem onClick={() => navigateTo("/dashboard/carteira")} className={isActive("/dashboard/carteira") ? "active" : ""}>
                     <Icon><FaWallet /></Icon> Carteira

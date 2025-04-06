@@ -2,7 +2,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
-import leadsReducer from './slices/leadsSlice';
 import meetingReducer from './slices/meetingSlice';
 import agendaReducer from './slices/agendaSlice';
 import clientesReducer from './slices/clientesSlice';
@@ -12,11 +11,11 @@ import googleIntegrationReducer from './slices/googleIntegrationSlice';
 import parceirosReducer from './slices/parceirosSlice';
 import uiReducer from './slices/uiSlice'
 import soundReducer from './slices/soundSlice';
+import negociacaoReducer from './slices/negociacoesSlice'
 
 const rootReducer = combineReducers({
     auth: authReducer,
     clientes: clientesReducer,
-    leads: leadsReducer,
     meetings: meetingReducer,
     agenda: agendaReducer,
     apolices: apoliceReducer,
@@ -25,6 +24,7 @@ const rootReducer = combineReducers({
     parceiros: parceirosReducer,
     ui: uiReducer,
     sound: soundReducer,
+    negociacao: negociacaoReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

@@ -27,10 +27,10 @@ const LeadPage = () => {
             <ToggleContainer>
                 <LeadButton src={CadastroLead} alt="Cadastro" onClick={openModal} />
 
-                <ToggleButton active={viewMode === "kanban"} onClick={() => setViewMode("kanban")}>
+                <ToggleButton  $active={viewMode === "kanban"} onClick={() => setViewMode("kanban")}>
                     Kanban
                 </ToggleButton>
-                <ToggleButton active={viewMode === "tabela"} onClick={() => setViewMode("tabela")}>
+                <ToggleButton $active={viewMode === "tabela"} onClick={() => setViewMode("tabela")}>
                     Tabela
                 </ToggleButton>
             </ToggleContainer>

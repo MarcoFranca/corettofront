@@ -8,7 +8,6 @@ import {RootState} from "@/store";
 import {logout, setTokenFromLocalStorage, setUserFromLocalStorage} from "@/store/slices/authSlice";
 import api from "@/app/api/axios";
 import {useMediaQuery} from "@/services/hooks/hooks";
-import Spinner from "@/app/components/ui/loading/spinner/sppiner";
 import MenuMobile from "@/app/components/common/Header/DashboardMobile/MenuMobile";
 
 interface DashboardLayoutProps {

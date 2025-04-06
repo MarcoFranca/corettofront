@@ -48,6 +48,49 @@ export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
     }
 );
 
+export const fetchTodosClientesFiltrados = createAsyncThunk<Cliente[], { status?: string[] }>(
+    'clientes/fetchTodosClientesFiltrados',
+    async ({ status }, { rejectWithValue }) => {
+        try {
+            let statusQuery = '';
+            if (Array.isArray(status) && status.length > 0) {
+                statusQuery = `status__in=${status.map(encodeURIComponent).join(',')}`;
+            }
+
+            const allClientes: Cliente[] = [];
+            let nextUrl: string | null = `/clientes/?${statusQuery}&limit=100`;
+
+            while (nextUrl) {
+                const response = await api.get(nextUrl);
+                const data: { results: Cliente[]; next: string | null } = response.data;
+
+                if (!Array.isArray(data.results)) {
+                    return rejectWithValue("Formato de resposta inválido");
+                }
+
+                allClientes.push(...data.results);
+
+                nextUrl = data.next
+                    ? new URL(data.next).pathname + new URL(data.next).search
+                    : null;
+            }
+
+            return allClientes;
+        } catch (error: any) {
+            console.error("❌ Erro ao buscar todos os clientes filtrados:", error);
+            return rejectWithValue(error.response?.data || "Erro desconhecido ao buscar clientes");
+        }
+    }
+);
+
+export const fetchClienteById = createAsyncThunk(
+    'clientes/fetchById',
+    async (id: string) => {
+        const response = await api.get(`/clientes/${id}/`);
+        return response.data;
+    }
+);
+
 export const updateClienteToActive = createAsyncThunk<Cliente, { id: string; updatedCliente: Partial<Cliente> }>(
     'clientes/updateClienteToActive',
     async ({ id, updatedCliente }, { dispatch }) => {
@@ -85,11 +128,13 @@ export const updateClienteStatus = createAsyncThunk<
 );
 
 
-export const createCliente = createAsyncThunk<Cliente, Cliente>('clientes/createCliente', async (novoCliente, { dispatch }) => {
-    const response = await api.post('/clientes/', novoCliente);
-    dispatch(fetchClientes());
-    return response.data;
-});
+export const createCliente = createAsyncThunk<Cliente,  Partial<Cliente>>(
+    'clientes/createCliente',
+    async (novoCliente, { dispatch }) => {
+        const response = await api.post('/clientes/', novoCliente);
+        dispatch(fetchClientes());
+        return response.data;
+    });
 
 export const updateCliente = createAsyncThunk<
     Cliente,
@@ -173,6 +218,26 @@ const clientesSlice = createSlice({
                 state.status = 'succeeded';
                 state.clientes = action.payload.results; // Usa 'results' da resposta paginada
                 state.totalClientes = action.payload.count; // Guarda o número total de clientes
+            })
+            .addCase(fetchTodosClientesFiltrados.fulfilled, (state, action) => {
+                console.log("✅ Todos os clientes recebidos:", action.payload);
+                state.clientes = action.payload;
+                state.totalClientes = action.payload.length;
+                state.status = 'succeeded';
+            })
+            .addCase(fetchTodosClientesFiltrados.rejected, (state, action) => {
+                console.error("❌ Erro ao buscar todos os clientes filtrados:", action.error.message);
+                state.status = 'failed';
+                state.error = action.error.message || "Erro ao buscar todos os clientes filtrados";
+            })
+            .addCase(fetchClienteById.fulfilled, (state, action) => {
+                const updated = action.payload;
+                const index = state.clientes.findIndex(c => c.id === updated.id);
+                if (index !== -1) {
+                    state.clientes[index] = updated;
+                } else {
+                    state.clientes.push(updated);
+                }
             })
             .addCase(fetchClientes.rejected, (state, action) => {
                 state.status = 'failed';

@@ -24,6 +24,7 @@ export interface IndicadoPor {
 
 export interface Relacionamentos {
     contatos_adicionais?: ContatoAdicional[];
+    negociacoes?: NegociacaoCliente[];
     parceiros?: any[];
     reunioes?: any[];
     oportunidades?: Oportunidade[];
@@ -31,31 +32,6 @@ export interface Relacionamentos {
     endereco?: any;
 }
 
-export interface Lead {
-    id: string;
-    nome: string;
-    sobre_nome?: string;
-    oportunidades?: Oportunidade[];
-    contato?: string;
-    telefone: string;
-    indicacao?:string;
-    indicado_por?: IndicadoPor;
-    indicado_por_detalhes?: IndicadoPor;
-    email: string;
-    endereco?: string;
-    status: string;
-    relacionamentos?: Relacionamentos; // Adicionar relacionamentos aqui
-    status_reuniao: StatusReuniao;
-    genero?: "M" | "F";
-    profissao_id?: string | null;
-    observacoes?: string;
-    parceiros?:string;
-    pipeline_stage?: string;
-    created_at: string;
-    updated_at: string;
-    indicado_por_cliente_id?: string; // <- Adicione esta linha se não existir
-    indicado_por_parceiros_ids?: string[]; // <- Adicione esta linha se não exist
-}
 
 export interface Profissao {
     id: string;
@@ -73,13 +49,13 @@ export interface Column {
 }
 
 export interface Data {
-    leads: { [key: string]: Lead };
+    leads: { [key: string]: Cliente };
     columns: { [key: string]: Column };
     columnOrder: string[];
 }
 
 export interface LeadProps {
-    lead: Lead;
+    lead: Cliente;
     index: number;
     handleLeadClick: (leadId: string) => void;
     handleLeadDragStart: (leadId: string) => void;  // Deve aceitar um argumento
@@ -88,7 +64,7 @@ export interface LeadProps {
 }
 
 export interface LeadsState {
-    leads: Lead[];
+    leads: Cliente[];
     status: "idle" | "loading" | "succeeded" | "failed";
     error: string | null;
 }
@@ -117,7 +93,7 @@ export interface AgendaItem {
 export interface ScheduleMeetingFormProps {
     entityId: string;
     entityName: string;
-    entityType: 'lead' | 'cliente';
+    entityType: 'lead' | 'cliente' | 'negociacao';
     onClose: () => void;
 }
 
@@ -283,6 +259,43 @@ export interface VidaFinanceira {
     projetos_futuros?:string;
 }
 
+export interface NegociacaoCliente {
+    id: string;
+    titulo: string;
+    status: string;
+    interesse: string;
+    encerrada: boolean;
+    observacoes: string[];
+    reunioes: { start_time: string }[];
+}
+
+// export interface Lead {
+//     id: string;
+//     nome: string;
+//     sobre_nome?: string;
+//     oportunidades?: Oportunidade[];
+//     contato?: string;
+//     telefone: string;
+//     indicacao?:string;
+//     indicado_por?: IndicadoPor;
+//     indicado_por_detalhes?: IndicadoPor;
+//     email: string;
+//     endereco?: string;
+//     status: string;
+//     relacionamentos?: Relacionamentos; // Adicionar relacionamentos aqui
+//     status_reuniao: StatusReuniao;
+//     negociacoes?: NegociacaoCliente[];
+//     genero?: "M" | "F";
+//     profissao_id?: string | null;
+//     observacoes?: string;
+//     parceiros?:string;
+//     pipeline_stage?: string;
+//     created_at: string;
+//     updated_at: string;
+//     indicado_por_cliente_id?: string; // <- Adicione esta linha se não existir
+//     indicado_por_parceiros_ids?: string[]; // <- Adicione esta linha se não exist
+// }
+
 export interface Cliente {
     id: string;
     user: string;
@@ -296,10 +309,13 @@ export interface Cliente {
     data_nascimento?: string;
     genero?: string;
     profissao?: Profissao;
+    profissao_id?: string | null;
     oportunidades?: Oportunidade[];
     observacoes?: string;
     status_reuniao?: string;
     status: "lead" | "ativo" | "negociacao" | "nova_negociacao" | "inativo" | "recusado" | "reativacao_pendente" | "cancelado";
+    negociacoes?: NegociacaoCliente[];
+    possui_apolice_ativa?: boolean;
     pipeline_stage?: string;
     idade?: string;
     apolices?: ApoliceDetalhada[];
@@ -311,10 +327,12 @@ export interface Cliente {
     conjuge?: Conjuge;
     contatos_adicionais?: ContatoAdicional[];
     estado_civil?: string;
-    created_at?: string;
-    updated_at?: string;
     endereco?: Endereco;
     relacionamentos?: Relacionamentos; // ✅ Garantindo o tipo correto
+    indicado_por_cliente_id?: string; // <- Adicione esta linha se não existir
+    indicado_por_parceiros_ids?: string[]; // <- Adicione esta linha se não exist
+    created_at?: string;
+    updated_at?: string;
 }
 
 
@@ -370,59 +388,6 @@ export interface Stats {
     revisoes_este_mes: number;
 }
 
-// // ** Apólice Interfaces **
-// export interface Apolice {
-//     administradora: string;
-//     id: string;
-//     capital_segurado: string;
-//
-//     beneficiario: string;
-//     subcategoria: string;
-//     status_proposta: string;
-//     numero_apolice: number;
-//     produto: string;
-//     seguradora: string;
-//     data_inicio: string;
-//     data_vencimento: string;
-//     premio_pago?: string | number;
-//     nome_fundo: string;
-//     valor_investido: string;
-//     valor_carta?: string | number;
-//     valor_acumulado?: string | number;
-//     tipo_produto:string;
-//     fundo: string;
-//     franquia: string;
-//     capitalSegurado?: string | number;
-//     periodicidade_pagamento: string;
-//     observacoes: string;
-//     arquivo: string;
-//     categoria: string;
-//     acomodacao: string;
-//     abrangencia: string;
-//     valor_reembolso_consulta?: string | number;
-//     forma_pagamento?: string;  // ✅ Opcional
-//     valor?: number;            // ✅ Opcional
-//     status?: string;           // ✅ Opcional
-//     coparticipacao: boolean;
-//     regime_contratacao?: string;
-//     regime_tributacao?: string;
-//     tipo?:string;
-//     cliente: string;
-//     created_at: string;
-//     updated_at: string;
-// }
-//
-// export interface Apolices {
-//     plano_saude: Apolice[];
-//     seguro_vida: Apolice[];
-//     previdencia: Apolice[];
-//     consorcio: Apolice[];
-//     investimento: Apolice[];
-//     seguro_profissional: Apolice[];
-//     seguro_residencial: Apolice[];
-//     [key: string]: Apolice[];
-// }
-
 export interface ApoliceDetalhesSegmento {
     total_apolices: number;
     total_valor: number;
@@ -471,7 +436,7 @@ export interface Plano {
 
 export interface ColumnProps {
     column: Column; // Use o tipo 'Column' já definido
-    leads: { [key: string]: Lead }; // Mapeia os IDs de lead para os objetos Lead
+    leads: { [key: string]: Cliente }; // Mapeia os IDs de lead para os objetos Lead
     index: number; // Índice da coluna
     handleLeadClick: (leadId: string) => void; // Função de clique
     handleLeadDragStart: () => void; // Função de início de arraste

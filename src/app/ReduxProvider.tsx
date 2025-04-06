@@ -30,12 +30,12 @@ const ReduxProvider: React.FC<ReduxProviderProps> = ({ children }) => {
     }, []);
 
     if (!persistor) {
-        return Loading()
+        return <Loading />;
     }
 
     return (
         <Provider store={store}>
-            <PersistGate persistor={persistor} loading={Loading()}>
+            <PersistGate persistor={persistor} loading={<Loading />}>
                 {children}
             </PersistGate>
         </Provider>

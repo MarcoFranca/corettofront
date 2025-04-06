@@ -20,7 +20,7 @@ export const ToggleContainer = styled.div`
 
 
 
-export const ToggleButton = styled.button<{ active: boolean }>`
+export const ToggleButton = styled.button<{ $active: boolean }>`
     padding: 10px 20px;
     border: none;
     border-radius: 6px;
@@ -29,13 +29,13 @@ export const ToggleButton = styled.button<{ active: boolean }>`
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    background-color: ${({ active }) => (active ? "#007bff" : "#f0f0f0")};
-    color: ${({ active }) => (active ? "#fff" : "#333")};
-    box-shadow: ${({ active }) =>
-    active ? "0 4px 8px rgba(0, 123, 255, 0.2)" : "none"};
+    background-color: ${({ $active }) => ($active ? "#007bff" : "#f0f0f0")};
+    color: ${({ $active }) => ($active ? "#fff" : "#333")};
+    box-shadow: ${({ $active }) =>
+            $active ? "0 4px 8px rgba(0, 123, 255, 0.2)" : "none"};
 
     &:hover {
-        background-color: ${({ active }) => (active ? "#0056b3" : "#e0e0e0")};
+        background-color: ${({ $active }) => ($active ? "#0056b3" : "#e0e0e0")};
     }
 `;
 

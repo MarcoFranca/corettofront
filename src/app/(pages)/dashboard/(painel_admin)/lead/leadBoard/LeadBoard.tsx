@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
-import { fetchLeads } from '@/store/slices/leadsSlice';
+import { fetchTodosClientesFiltrados} from '@/store/slices/clientesSlice';
 import { initializeData, handleDragEnd } from './leadBoardUtils';
 import Column from './Column';
 import LeadModal from '@/app/components/Modal/LeadModal';
@@ -20,8 +20,8 @@ import {
 
 const LeadBoard: React.FC = () => {
     const dispatch = useAppDispatch();
-    const leadsFromStore = useAppSelector((state) => state.leads.leads);
-    const status = useAppSelector((state) => state.leads.status);
+    const leadsFromStore = useAppSelector((state) => state.clientes.clientes);
+    const status = useAppSelector((state) => state.clientes.status);
     const [data, setData] = useState(() => initializeData(leadsFromStore || []));
     const [filter, setFilter] = useState('all'); // Filtro selecionado
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -31,7 +31,8 @@ const LeadBoard: React.FC = () => {
 
     // Sempre busca os leads do backend ao montar o componente
     useEffect(() => {
-        dispatch(fetchLeads({ status: ['lead', 'negociacao', 'nova_negociacao'] }));
+       const teste = dispatch(fetchTodosClientesFiltrados({ status: ["lead", "negociacao", "nova_negociacao"] }));
+       console.log("leads carregados",teste)
     }, [dispatch]);
 
 

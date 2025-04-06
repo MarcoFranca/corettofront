@@ -1,7 +1,7 @@
 'use client'
 import React, {useState, useEffect, useRef} from 'react';
 import { useDispatch } from 'react-redux';
-import { createLead } from '@/store/slices/leadsSlice';
+import { createCliente } from '@/store/slices/clientesSlice';
 import FloatingMaskedInput from '@/app/components/ui/input/FloatingMaskedInput';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
@@ -9,7 +9,7 @@ import api from '@/app/api/axios';
 import styles from './LeadModal.module.css';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { AppDispatch } from '@/store';
-import {Lead, LeadModalProps, ProdutoOption, ProfissaoOption} from '@/types/interfaces';
+import {Cliente, LeadModalProps, ProdutoOption, ProfissaoOption} from '@/types/interfaces';
 import CadastrarProfissaoForm from '@/app/components/Modal/cliente/CadastrarProfissaoForm';
 import { Profissao } from '@/types/interfaces';
 import StandardModal from "@/app/components/Modal/StandardModal";
@@ -191,7 +191,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             );
 
             // 🔥 Preparando dados para envio
-            const leadData: Partial<Lead> = {
+            const leadData: Partial<Cliente> = {
                 nome: data.nome,
                 sobre_nome: data.sobrenome || undefined,
                 genero: data.genero,
@@ -219,7 +219,7 @@ const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onRequestClose }) => {
             }
 
             await new Promise((resolve) => setTimeout(resolve, 2000)); // 🔥 Simula um delay de 2s
-            await dispatch(createLead(leadData)).unwrap();
+            await dispatch(createCliente(leadData)).unwrap();
 
             showToastWithSound({ type: "success", message: "Lead cadastrado com sucesso! 🎉" });
             reset();
