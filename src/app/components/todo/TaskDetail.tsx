@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { fetchAgendaItems } from '@/store/slices/agendaSlice';
 import { RootState } from '@/store';
 import styles from './TaskDetail.module.css';
+import {Meeting} from "@/types/AgendaInterfaces";
 
 const TaskDetail: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -23,7 +24,7 @@ const TaskDetail: React.FC = () => {
     }, [dispatch, agendaItems.length]);
 
     // Filtra o item da agenda pelo ID e garante que seja do tipo 'task'
-    const task = agendaItems.find((item) => item.id === tarefasId && item.type === 'task');
+    const task = agendaItems.find((item: Meeting) => item.id === tarefasId && item.type === 'task');
 
     if (loading) {
         return <div>Carregando...</div>;

@@ -66,3 +66,27 @@ export interface ScheduleMeetingFormProps {
     entityType: 'lead' | 'cliente' | 'negociacao';
     onClose: () => void;
 }
+
+// ** Task Interfaces **
+export type Urgency = "Low" | "Medium" | "High" | "Critical";
+
+export interface Task {
+    id: string;
+    title: string;
+    description?: string;
+    due_date?: string;
+    urgency?: Urgency;
+    cliente?: string | null;
+    add_to_google_calendar?: boolean;
+    add_to_google_meet?: boolean;
+    add_to_zoom?: boolean;
+    created_at?: string;
+    updated_at?: string;
+    completed: boolean;
+}
+
+export interface TasksState {
+    tasks: Task[];
+    status: "idle" | "loading" | "succeeded" | "failed";
+    error: string | null;
+}

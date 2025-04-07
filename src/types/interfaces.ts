@@ -91,30 +91,6 @@ export interface OptionType {
     label: string;
 }
 
-// ** Task Interfaces **
-export type Urgency = "Low" | "Medium" | "High" | "Critical";
-
-export interface Task {
-    id: string;
-    title: string;
-    description?: string;
-    due_date?: string;
-    urgency?: Urgency;
-    cliente?: string | null;
-    add_to_google_calendar?: boolean;
-    add_to_google_meet?: boolean;
-    add_to_zoom?: boolean;
-    created_at?: string;
-    updated_at?: string;
-    completed: boolean;
-}
-
-export interface TasksState {
-    tasks: Task[];
-    status: "idle" | "loading" | "succeeded" | "failed";
-    error: string | null;
-}
-
 // ** Cliente Interfaces **
 export interface ContatoAdicional {
     id: string;  // O ID pode ser opcional ao cadastrar um novo contato

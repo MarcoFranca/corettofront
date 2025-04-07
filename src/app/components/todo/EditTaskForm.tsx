@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
-import { AgendaItem, Urgency } from '@/types/interfaces';
+import { Meeting, Urgency } from '@/types/AgendaInterfaces';
 import { updateAgendaItem } from '@/store/slices/agendaSlice';
 import styles from './EditTaskForm.module.css';
 
 interface EditTaskFormProps {
-    task: AgendaItem;
+    task: Meeting;
     onClose: () => void;
 }
 
