@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Spin, Tag, Select, Modal } from 'antd';
 import {Cliente, NegociacaoCliente} from '@/types/interfaces';
-import NovaNegociacaoModal from '../NovaNegociacaoModal';
+import NovaNegociacaoModal from './modal/NovaNegociacaoModal';
 import { closeNegotiation } from "@/store/slices/negociacoesSlice";
 import { useAppDispatch } from "@/services/hooks/hooks";
 
@@ -25,6 +25,8 @@ import {
 } from 'react-icons/bs';
 import {fetchClienteById, updateClienteStatus} from "@/store/slices/clientesSlice";
 import {toastError, toastSuccess} from "@/utils/toastWithSound";
+import NegociacaoReunioesTab
+    from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoReunioesTab";
 
 interface NegotiationWizardModalProps {
     isOpen: boolean;
@@ -196,9 +198,17 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                                 key: 'reunioes',
                                 label: <span><BsCalendar /> Reuniões</span>,
                                 children: (
-                                    <Section>
-                                        <p>📅 Aqui vai a lista de reuniões dessa negociação.</p>
-                                    </Section>
+                                    <NegociacaoReunioesTab
+                                        negociacao={negociacaoAtiva}
+                                        cliente={cliente}
+                                        onReuniaoAtualizada={async () => {
+                                            const clienteAtualizado = await dispatch(fetchClienteById(cliente.id)).unwrap();
+                                            const novaNegociacao = clienteAtualizado.relacionamentos?.negociacoes.find(
+                                                (n: NegociacaoCliente) => n.id === negociacaoAtiva?.id
+                                            );
+                                            if (novaNegociacao) setNegociacaoAtiva(novaNegociacao);
+                                        }}
+                                    />
                                 ),
                             },
                             {

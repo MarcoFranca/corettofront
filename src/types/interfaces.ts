@@ -1,5 +1,6 @@
 import React, { RefObject } from "react";
 import {ApoliceDetalhada} from "@/types/ApolicesInterface";
+import {Reuniao} from "@/types/AgendaInterfaces";
 
 // ** Lead Interfaces **
 export type StatusReuniao =
@@ -69,34 +70,6 @@ export interface LeadsState {
     error: string | null;
 }
 
-// ** Agenda Interfaces **
-export interface AgendaItem {
-    id: string;
-    title: string;
-    description?: string;
-    start_time: string;
-    end_time: string;
-    due_date?: string;
-    cliente?: string | null;
-    urgency?: 'Low' | 'Medium' | 'High' | 'Critical';
-    type: 'task' | 'meeting';
-    completed?: boolean; // Propriedade opcional adicionada
-    add_to_google_calendar?: boolean;
-    add_to_google_meet?: boolean;
-    add_to_zoom?: boolean;
-    google_meet_link?: string;
-    zoom_meeting_link?: string;
-    created_at?: string;
-    updated_at?: string;
-}
-
-export interface ScheduleMeetingFormProps {
-    entityId: string;
-    entityName: string;
-    entityType: 'lead' | 'cliente' | 'negociacao';
-    onClose: () => void;
-}
-
 export interface LeadModalProps {
     isOpen: boolean;
     onRequestClose: () => void;
@@ -115,47 +88,6 @@ export interface ProdutoOption {
 export interface OptionType {
     value: string;
     label: string;
-}
-
-
-export interface AgendaState {
-    items: AgendaItem[];
-    status: "idle" | "loading" | "succeeded" | "failed";
-    error: string | null;
-    googleAuthRedirectUrl: string | null; // Adicione esta propriedade
-}
-
-// ** Meeting Interfaces **
-export interface Meeting {
-    id: string;
-    title: string;
-    description?: string;
-    due_date?: string;
-    start_time: string;
-    end_time: string;
-    cliente?: string | null;
-    urgency?: "Low" | "Medium" | "High" | "Critical";
-    add_to_google_calendar?: boolean;
-    add_to_google_meet?: boolean;
-    add_to_zoom?: boolean;
-    google_meet_link?: string;
-    zoom_meeting_link?: string;
-    created_at?: string;
-    updated_at?: string;
-}
-
-export interface MeetingsState {
-    meetings: Meeting[];
-    status: "idle" | "loading" | "succeeded" | "failed";
-    error: string | null;
-}
-
-export interface Reuniao {
-    dataReuniaoAgendada: string;
-    horarioInicio: string;
-    horarioFim: string;
-    assunto: string;
-    local: string;
 }
 
 // ** Task Interfaces **
@@ -269,33 +201,6 @@ export interface NegociacaoCliente {
     reunioes: { start_time: string }[];
 }
 
-// export interface Lead {
-//     id: string;
-//     nome: string;
-//     sobre_nome?: string;
-//     oportunidades?: Oportunidade[];
-//     contato?: string;
-//     telefone: string;
-//     indicacao?:string;
-//     indicado_por?: IndicadoPor;
-//     indicado_por_detalhes?: IndicadoPor;
-//     email: string;
-//     endereco?: string;
-//     status: string;
-//     relacionamentos?: Relacionamentos; // Adicionar relacionamentos aqui
-//     status_reuniao: StatusReuniao;
-//     negociacoes?: NegociacaoCliente[];
-//     genero?: "M" | "F";
-//     profissao_id?: string | null;
-//     observacoes?: string;
-//     parceiros?:string;
-//     pipeline_stage?: string;
-//     created_at: string;
-//     updated_at: string;
-//     indicado_por_cliente_id?: string; // <- Adicione esta linha se não existir
-//     indicado_por_parceiros_ids?: string[]; // <- Adicione esta linha se não exist
-// }
-
 export interface Cliente {
     id: string;
     user: string;
@@ -329,6 +234,7 @@ export interface Cliente {
     estado_civil?: string;
     endereco?: Endereco;
     relacionamentos?: Relacionamentos; // ✅ Garantindo o tipo correto
+    indicado_por_detalhes?: IndicadoPor;
     indicado_por_cliente_id?: string; // <- Adicione esta linha se não existir
     indicado_por_parceiros_ids?: string[]; // <- Adicione esta linha se não exist
     created_at?: string;

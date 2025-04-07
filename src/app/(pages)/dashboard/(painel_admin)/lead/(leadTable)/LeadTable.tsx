@@ -25,7 +25,7 @@ import NegociacoesModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadT
 import { ColumnsType } from "antd/es/table";
 import {BsLightning} from "react-icons/bs";
 import NegotiationWizardModal
-    from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegotiationWizardModal";
+    from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/NegotiationWizardModal";
 
 
 

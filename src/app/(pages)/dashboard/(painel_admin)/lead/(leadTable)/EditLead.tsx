@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Select, Input, Radio } from "antd";
 import { RadioChangeEvent } from "antd/es/radio";
-import { Lead, StatusReuniao } from "@/types/interfaces";
+import { Cliente, StatusReuniao } from "@/types/interfaces";
 import api from "@/app/api/axios";
 import { useAppDispatch } from "@/services/hooks/hooks";
-import { updateLead } from "@/store/slices/leadsSlice";
+import { updateCliente } from "@/store/slices/clientesSlice";
 import SelectCliente from "@/app/components/ui/select/SelectCliente/SelectCliente";
 import { useForm, Controller } from "react-hook-form";
 import {playSound} from "@/store/slices/soundSlice";
@@ -14,31 +14,31 @@ import {playSound} from "@/store/slices/soundSlice";
 interface EditLeadModalProps {
     isOpen: boolean;
     onClose: () => void;
-    lead: Lead | null;
+    cliente: Cliente | null;
 }
 
-const EditLeadModal: React.FC<EditLeadModalProps> = ({ isOpen, onClose, lead }) => {
+const EditLeadModal: React.FC<EditLeadModalProps> = ({ isOpen, onClose, cliente }) => {
     const dispatch = useAppDispatch();
     const [indicacaoTipo, setIndicacaoTipo] = useState<"cliente" | "parceiro" | "">("");
     const [clientes, setClientes] = useState<{ value: string; label: string }[]>([]);
     const [parceiros, setParceiros] = useState<{ value: string; label: string }[]>([]);
-    const [editedLead, setEditedLead] = useState<Lead | null>(lead);
+    const [editedLead, setEditedLead] = useState<Cliente | null>(cliente);
 
     useEffect(() => {
-        if (isOpen && lead) {
+        if (isOpen && cliente) {
             dispatch(playSound("openModal"));
             setEditedLead({
-                ...lead,
-                indicado_por_cliente_id: lead.indicado_por_detalhes?.tipo === "cliente"
-                    ? lead.indicado_por_detalhes.id  // Apenas o ID, sem objeto { value, label }
+                ...cliente,
+                indicado_por_cliente_id: cliente.indicado_por_detalhes?.tipo === "cliente"
+                    ? cliente.indicado_por_detalhes.id  // Apenas o ID, sem objeto { value, label }
                     : undefined
             });
 
-            setIndicacaoTipo(lead.indicado_por_detalhes?.tipo || "");
+            setIndicacaoTipo(cliente.indicado_por_detalhes?.tipo || "");
             fetchClientes();
             fetchParceiros();
         }
-    }, [isOpen, lead]);
+    }, [isOpen, cliente]);
 
     const fetchClientes = async () => {
         try {
@@ -73,7 +73,7 @@ const EditLeadModal: React.FC<EditLeadModalProps> = ({ isOpen, onClose, lead }) 
             console.log("📌 Tipo de indicação:", indicacaoTipo);
             console.log("📌 indicado_por_cliente_id:", editedLead.indicado_por_cliente_id);
 
-            const updatedLead: Partial<Lead> = {
+            const updatedCliente: Partial<Cliente> = {
                 pipeline_stage: editedLead.pipeline_stage,
                 observacoes: editedLead.observacoes,
                 status_reuniao: editedLead.status_reuniao as StatusReuniao,
@@ -85,9 +85,9 @@ const EditLeadModal: React.FC<EditLeadModalProps> = ({ isOpen, onClose, lead }) 
                     : {}),
             };
 
-            console.log("📤 Dados enviados ao backend:", updatedLead);
+            console.log("📤 Dados enviados ao backend:", updatedCliente);
 
-            dispatch(updateLead({ id: editedLead.id, updatedLead }));
+            dispatch(updateCliente({ id: editedLead.id, updatedCliente }));
             onClose();
         }
     };
@@ -165,7 +165,7 @@ const EditLeadModal: React.FC<EditLeadModalProps> = ({ isOpen, onClose, lead }) 
                     {/* Status da Reunião */}
                     <label>Status Reunião</label>
                     <Select
-                        value={editedLead?.status_reuniao}
+                        value={editedLead?.status_reuniao as StatusReuniao ?? "marcar_reuniao"}
                         onChange={(value: StatusReuniao) =>
                             setEditedLead(prev => prev ? ({ ...prev, status_reuniao: value }) : prev)
                         }
@@ -178,6 +178,7 @@ const EditLeadModal: React.FC<EditLeadModalProps> = ({ isOpen, onClose, lead }) 
                         ]}
                         style={{ marginBottom: 10, width: "100%" }}
                     />
+
 
                     {/* Observações */}
                     <label>Observações</label>

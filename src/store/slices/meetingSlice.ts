@@ -18,8 +18,20 @@ export const fetchMeetings = createAsyncThunk<Meeting[]>('meetings/fetchMeetings
 // Fetch meetings for a specific client
 export const fetchClientMeetings = createAsyncThunk<Meeting[], string>('meetings/fetchClientMeetings', async (clientId) => {
     const response = await api.get(`/agenda/?cliente=${clientId}`); // Atualizado para o endpoint correto
+    console.log('Reunião', response.data);
     return response.data;
 });
+
+// store/slices/meetingSlice.ts
+export const fetchMeetingsByNegociacao = createAsyncThunk(
+    'meetings/fetchByNegociacao',
+    async (negociacaoId: string) => {
+        const response = await api.get(`/agenda/?negociacao=${negociacaoId}`);
+        console.log('Reunião', response.data);
+        return response.data; // ou adapte pra transformar os dados, se necessário
+    }
+);
+
 
 export const createMeeting = createAsyncThunk<Meeting, Partial<Meeting>>(
     'meetings/createMeeting',
@@ -82,6 +94,14 @@ const meetingSlice = createSlice({
             .addCase(fetchMeetings.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message || null;
+            })
+            .addCase(fetchClientMeetings.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.meetings = action.payload; // <--- é aqui que os dados "vão"
+            })
+            .addCase(fetchMeetingsByNegociacao.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.meetings = action.payload; // <--- é aqui que os dados "vão"
             })
             .addCase(createMeeting.fulfilled, (state, action) => {
                 const exists = state.meetings.some(meeting => meeting.id === action.payload.id);

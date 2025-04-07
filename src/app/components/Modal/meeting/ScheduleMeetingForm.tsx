@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 import { createAgendaItem } from '@/store/slices/agendaSlice';
-import {AgendaItem, ScheduleMeetingFormProps} from '@/types/interfaces';
 import { toast } from 'react-toastify';
 import styles from './ScheduleMeetingForm.module.css';
 import {clearMessages, linkGoogleAccount} from "@/store/slices/googleIntegrationSlice";
 import {useGoogleLogin} from "@react-oauth/google";
+import {Meeting, ScheduleMeetingFormProps} from "@/types/AgendaInterfaces";
 
 const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, entityName, entityType, onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -55,7 +55,7 @@ const ScheduleMeetingForm: React.FC<ScheduleMeetingFormProps> = ({ entityId, ent
             ? `Reunião da Negociação: ${entityName}`
             : `Reunião com ${entityName}`;
 
-        const newAgendaItem: Partial<AgendaItem> = {
+        const newAgendaItem: Partial<Meeting> = {
             title: dynamicTitle,
             cliente: entityId,
             description,
