@@ -2,20 +2,20 @@
 "use client";
 
 import { useRef } from "react";
-import { Lead } from "@/types/interfaces";
+import { Cliente } from "@/types/interfaces";
 
 export const useLeadBackup = () => {
-    const backups = useRef<Record<string, Lead>>({});
+    const backups = useRef<Record<string, Cliente>>({});
 
-    const saveBackup = (id: string, data: Lead) => {
+    const saveBackup = (id: string, data: Cliente) => {
         backups.current[id] = data;
     };
 
-    const getBackup = (id: string): Lead | undefined => {
+    const getBackup = (id: string): Cliente | undefined => {
         return backups.current[id];
     };
 
-    const restoreBackup = (id: string, restoreFn: (lead: Lead) => void) => {
+    const restoreBackup = (id: string, restoreFn: (lead: Cliente) => void) => {
         const data = getBackup(id);
         if (data) {
             restoreFn(data);
