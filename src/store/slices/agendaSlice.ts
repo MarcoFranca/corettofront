@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/app/api/axios';
-import { AgendaState, AgendaItem } from '@/types/interfaces';
+import {AgendaState, Meeting} from '@/types/AgendaInterfaces';
 import moment from 'moment-timezone';
 
 const timeZone = 'America/Sao_Paulo';
@@ -39,7 +39,7 @@ export const fetchAgendaItems = createAsyncThunk('agenda/fetchAgendaItems', asyn
 });
 
 // Criar um item na agenda
-export const createAgendaItem = createAsyncThunk<AgendaItem, Partial<AgendaItem>>(
+export const createAgendaItem = createAsyncThunk<Meeting, Partial<Meeting>>(
     'agenda/createAgendaItem',
     async (newItem, { dispatch, rejectWithValue }) => {
         try {
@@ -81,7 +81,7 @@ export const createAgendaItem = createAsyncThunk<AgendaItem, Partial<AgendaItem>
 );
 
 // Atualizar um item da agenda
-export const updateAgendaItem = createAsyncThunk<AgendaItem, { id: string; updatedItem: Partial<AgendaItem> }>(
+export const updateAgendaItem = createAsyncThunk<Meeting, { id: string; updatedItem: Partial<Meeting> }>(
     'agenda/updateAgendaItem',
     async ({ id, updatedItem }) => {
         const response = await api.patch(`/agenda/${id}/`, updatedItem);

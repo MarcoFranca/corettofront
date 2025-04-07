@@ -85,8 +85,18 @@ export interface Task {
     completed: boolean;
 }
 
+type AgendaItem = Meeting | Task;
+
+
 export interface TasksState {
     tasks: Task[];
     status: "idle" | "loading" | "succeeded" | "failed";
     error: string | null;
+}
+
+export interface AgendaState {
+    items: AgendaItem[];
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    error: string | null;
+    googleAuthRedirectUrl: string | null;
 }
