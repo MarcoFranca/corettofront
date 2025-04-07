@@ -3,18 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import StandardModal from '@/app/components/Modal/StandardModal';
-import { AgendaItem } from '@/types/interfaces'; // Use o modelo unificado
+import { Meeting } from '@/types/AgendaInterfaces'; // Use o modelo unificado
 import styles from './MeetingModal.module.css';
 
 interface MeetingModalProps {
     isOpen: boolean;
     onRequestClose: () => void;
-    onSubmit: (data: Partial<AgendaItem>) => void; // Use AgendaItem
-    initialData?: Partial<AgendaItem> | null; // Use AgendaItem
+    onSubmit: (data: Partial<Meeting>) => void; // Use AgendaItem
+    initialData?: Partial<Meeting> | null; // Use AgendaItem
 }
 
 const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onRequestClose, onSubmit, initialData }) => {
-    const [data, setData] = useState<Partial<AgendaItem>>(initialData || { type: 'meeting' });
+    const [data, setData] = useState<Partial<Meeting>>(initialData || { type: 'meeting' });
 
     useEffect(() => {
         setData(initialData || { type: 'meeting' });
