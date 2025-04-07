@@ -1,11 +1,37 @@
 import { DropResult } from '@hello-pangea/dnd';
 import { Dispatch } from '@reduxjs/toolkit';
-import { updateLeadStatus } from '@/store/slices/leadsSlice';
-import { Data, Lead } from "@/types/interfaces";
+import {updateCliente} from '@/store/slices/clientesSlice';
+import {Data, IndicadoPor, Column} from "@/types/interfaces";
 
-export const initializeData = (leadsFromStore: any[] = []): Data => {
+interface LeadSimplificado {
+    id: string;
+    nome: string;
+    sobre_nome: string;
+    status: string;
+    status_reuniao?: string;
+    pipeline_stage?: string;
+    email: string;
+    telefone: string;
+    endereco?: any;
+    contato?: string;
+    observacoes?: string;
+    oportunidades?: any[];
+    parceiros?: any[];
+    indicado_por_detalhes?: IndicadoPor;
+    created_at?: string;
+    updated_at?: string;
+}
 
-    const leads: { [key: string]: Lead } = {};
+interface KanbanData {
+    leads: { [key: string]: LeadSimplificado };
+    columns: { [key: string]: Column };
+    columnOrder: string[];
+}
+
+
+export const initializeData = (leadsFromStore: any[] = []): KanbanData => {
+
+    const leads: { [key: string]: LeadSimplificado } = {};
     const columns: { [key: string]: { id: string, title: string, leadIds: string[] } } = {
         'column-1': { id: 'column-1', title: 'LEADS DE ENTRADA', leadIds: [] },
         'column-2': { id: 'column-2', title: 'NEGOCIANDO', leadIds: [] },
@@ -150,7 +176,13 @@ export const handleDragEnd = (
         console.log(`🚀 Atualizando lead ID ${draggableId}: pipeline_stage=${newPipelineStage}, status=${newStatus}`);
 
         try {
-            dispatch(updateLeadStatus({ id: draggableId, status: newStatus, pipeline_stage: newPipelineStage }));
+            dispatch(updateCliente({
+                id: draggableId,
+                updatedCliente: {
+                    status: newStatus,
+                    pipeline_stage: newPipelineStage
+                }
+            }));
 
             // ✅ Remove manualmente da lista ao confirmar sucesso
             setData((prevData) => {

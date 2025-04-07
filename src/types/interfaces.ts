@@ -1,6 +1,7 @@
 import React, { RefObject } from "react";
 import {ApoliceDetalhada} from "@/types/ApolicesInterface";
 import {Reuniao} from "@/types/AgendaInterfaces";
+import {Parceiro} from "@/store/slices/parceirosSlice";
 
 // ** Lead Interfaces **
 export type StatusReuniao =
@@ -239,9 +240,11 @@ export interface Cliente {
     vida_financeira?: VidaFinanceira;
     filhos: Filho[];
     conjuge?: Conjuge;
+    contato?:string;
     contatos_adicionais?: ContatoAdicional[];
     estado_civil?: string;
     endereco?: Endereco;
+    parceiros?: Parceiro;
     relacionamentos?: Relacionamentos; // ✅ Garantindo o tipo correto
     indicado_por_detalhes?: IndicadoPor;
     indicado_por_cliente_id?: string; // <- Adicione esta linha se não existir
