@@ -238,7 +238,7 @@ export interface Cliente {
     total_apolices?: number;
     reunioes?: Reuniao[];
     vida_financeira?: VidaFinanceira;
-    filhos: Filho[];
+    filhos?: Filho[];
     conjuge?: Conjuge;
     contato?:string;
     contatos_adicionais?: ContatoAdicional[];

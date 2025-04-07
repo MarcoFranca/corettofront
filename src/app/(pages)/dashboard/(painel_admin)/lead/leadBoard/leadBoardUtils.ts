@@ -1,37 +1,11 @@
 import { DropResult } from '@hello-pangea/dnd';
 import { Dispatch } from '@reduxjs/toolkit';
 import {updateCliente} from '@/store/slices/clientesSlice';
-import {Data, IndicadoPor, Column} from "@/types/interfaces";
+import { Data, Cliente } from "@/types/interfaces";
 
-interface LeadSimplificado {
-    id: string;
-    nome: string;
-    sobre_nome: string;
-    status: string;
-    status_reuniao?: string;
-    pipeline_stage?: string;
-    email: string;
-    telefone: string;
-    endereco?: any;
-    contato?: string;
-    observacoes?: string;
-    oportunidades?: any[];
-    parceiros?: any[];
-    indicado_por_detalhes?: IndicadoPor;
-    created_at?: string;
-    updated_at?: string;
-}
+export const initializeData = (leadsFromStore: any[] = []): Data => {
 
-interface KanbanData {
-    leads: { [key: string]: LeadSimplificado };
-    columns: { [key: string]: Column };
-    columnOrder: string[];
-}
-
-
-export const initializeData = (leadsFromStore: any[] = []): KanbanData => {
-
-    const leads: { [key: string]: LeadSimplificado } = {};
+    const leads: { [key: string]: Cliente } = {};
     const columns: { [key: string]: { id: string, title: string, leadIds: string[] } } = {
         'column-1': { id: 'column-1', title: 'LEADS DE ENTRADA', leadIds: [] },
         'column-2': { id: 'column-2', title: 'NEGOCIANDO', leadIds: [] },
@@ -53,6 +27,7 @@ export const initializeData = (leadsFromStore: any[] = []): KanbanData => {
 
         leads[lead.id.toString()] = {
             id: lead.id.toString(),
+            user: lead.user || 'system',
             status: lead.status || '',
             nome: lead.nome || '',
             sobre_nome: lead.sobre_nome || '',
