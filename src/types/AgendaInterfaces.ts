@@ -77,6 +77,8 @@ export interface Task {
     due_date?: string;
     urgency?: Urgency;
     cliente?: string | null;
+    start_time?: string;
+    end_time?: string;
     add_to_google_calendar?: boolean;
     add_to_google_meet?: boolean;
     add_to_zoom?: boolean;
@@ -99,4 +101,8 @@ export interface AgendaState {
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
     googleAuthRedirectUrl: string | null;
+}
+
+export function isTask(item: any): item is Task {
+    return item?.type === 'task' && 'due_date' in item && 'urgency' in item;
 }

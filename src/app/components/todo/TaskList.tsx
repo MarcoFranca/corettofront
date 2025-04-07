@@ -13,7 +13,7 @@ import moment from 'moment-timezone';
 import PlusImage from '@/../public/assets/common/plus.svg';
 import DeleteImage from '@/../public/assets/common/delete.svg';
 import DetailsImage from '@/../public/assets/common/detalhes.svg';
-import {Meeting} from "@/types/AgendaInterfaces";
+import {isTask, Task} from "@/types/AgendaInterfaces";
 import AscendingIcon from '@/../public/assets/common/sort2.svg';
 import DescendingIcon from '@/../public/assets/common/sort3.svg';
 
@@ -25,7 +25,6 @@ const TaskList: React.FC = () => {
     const router = useRouter();
     const agendaItems = useSelector((state: RootState) => state.agenda.items);
 
-    const tasks = agendaItems.filter((item: Meeting) => item.type === 'task');
 
     const [sortCriteria, setSortCriteria] = useState<'due_date' | 'urgency'>('due_date');
     const [order, setOrder] = useState<'asc' | 'desc'>('asc'); // Adiciona o estado para o tipo de ordenação
@@ -50,7 +49,7 @@ const TaskList: React.FC = () => {
         }
     };
 
-    const sortTasks = (tasks: Meeting[]) => {
+    const sortTasks = (tasks: Task[]) => {
         return [...tasks].sort((a, b) => {
             let comparison = 0;
 
@@ -81,7 +80,7 @@ const TaskList: React.FC = () => {
     };
 
 
-    const filterTasks = (tasks: Meeting[]) => {
+    const filterTasks = (tasks: Task[]) => {
         switch (filter) {
             case 'completed':
                 return tasks.filter((task) => task.completed);
@@ -97,7 +96,8 @@ const TaskList: React.FC = () => {
         return moment.tz(dateString, timeZone).format('DD/MM/YYYY');
     };
 
-    const filteredAndSortedTasks = sortTasks(filterTasks(tasks));
+    const onlyTasks = agendaItems.filter(isTask);
+    const filteredAndSortedTasks = sortTasks(filterTasks(onlyTasks));
 
     return (
         <div className={styles.container}>
