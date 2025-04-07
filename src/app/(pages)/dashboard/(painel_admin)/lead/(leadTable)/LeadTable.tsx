@@ -316,7 +316,7 @@ const LeadTable: React.FC = () => {
                     <EditLeadModal
                         isOpen={isEditModalOpen}
                         onClose={() => setIsEditModalOpen(false)}
-                        lead={selectedLead}
+                        cliente={selectedLead}
                     />
                 )}
 
