@@ -3,22 +3,24 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
 import api from '@/app/api/axios';
 import styles from './EditLeadForm.module.css';
-import { Lead, StatusReuniao } from "@/types/interfaces";
-import { updateLead } from '@/store/slices/leadsSlice';
+import { Cliente, StatusReuniao } from "@/types/interfaces";
+import { updateCliente } from '@/store/slices/clientesSlice';
 import axios from "axios";
 
 interface EditLeadFormProps {
-    lead: Lead;
+    cliente: Cliente;
     onClose: () => void;
-    onUpdate: (updatedLead: Lead) => void; // Callback para informar sobre a atualização
+    onUpdate: (updateCliente: Cliente) => void; // Callback para informar sobre a atualização
 }
 
-const EditLeadForm: React.FC<EditLeadFormProps> = ({ lead, onClose, onUpdate }) => {
+const EditLeadForm: React.FC<EditLeadFormProps> = ({ cliente, onClose, onUpdate }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const [nome, setNome] = useState(lead.nome);
-    const [email, setEmail] = useState(lead.email);
-    const [telefone, setTelefone] = useState(lead.telefone);
-    const [statusReuniao, setStatusReuniao] = useState<StatusReuniao>(lead.status_reuniao);
+    const [nome, setNome] = useState(cliente.nome);
+    const [email, setEmail] = useState(cliente.email);
+    const [telefone, setTelefone] = useState(cliente.telefone);
+    const [statusReuniao, setStatusReuniao] = useState<StatusReuniao>(
+        cliente.status_reuniao as StatusReuniao ?? 'marcar_reuniao'
+    );
 
     const handleUpdateLead = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,8 +32,8 @@ const EditLeadForm: React.FC<EditLeadFormProps> = ({ lead, onClose, onUpdate }) 
         };
         console.log('Enviando dados:', updatedLead);
         try {
-            const response = await api.patch(`/clientes/${lead.id}/`, updatedLead);
-            dispatch(updateLead({ id: lead.id, updatedLead })); // Atualiza o lead no store
+            const response = await api.patch(`/clientes/${cliente.id}/`, updatedLead);
+            dispatch(updateCliente({ id: cliente.id, updatedCliente: updatedLead }));
             console.log('Lead atualizado com sucesso:', response.data);
             onUpdate(response.data); // Chama o callback com o lead atualizado
             onClose();
