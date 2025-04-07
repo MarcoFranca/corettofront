@@ -32,6 +32,10 @@ const ClientMeetings: React.FC<{ clientId: string; clientName: string }> = ({ cl
         setCurrentAgendaItem(null);
     };
 
+    function isMeeting(item: any): item is Meeting {
+        return item?.type === 'meeting' && item?.start_time !== undefined && item?.end_time !== undefined;
+    }
+
     const handleSaveMeeting = async (agendaItem: Partial<Meeting>) => {
         if (agendaItem.id) {
             await dispatch(updateAgendaItem({ id: agendaItem.id, updatedItem: agendaItem }));
@@ -71,8 +75,8 @@ const ClientMeetings: React.FC<{ clientId: string; clientName: string }> = ({ cl
                 </thead>
                 <tbody>
                 {agendaItems
-                    .filter((item: Meeting) => item.cliente === clientId && item.type === 'meeting')
-                    .map((item: Meeting) => (
+                    .filter((item): item is Meeting => isMeeting(item) && item.cliente === clientId)
+                    .map((item) => (
                         <tr key={item.id}>
                             <td>{moment(item.start_time).format('DD/MM/YYYY')}</td>
                             <td>{`${moment(item.start_time).format('HH:mm')} - ${moment(item.end_time).format('HH:mm')}`}</td>
@@ -83,7 +87,6 @@ const ClientMeetings: React.FC<{ clientId: string; clientName: string }> = ({ cl
                             </td>
                         </tr>
                     ))}
-
                 </tbody>
             </table>
             <MeetingModal
