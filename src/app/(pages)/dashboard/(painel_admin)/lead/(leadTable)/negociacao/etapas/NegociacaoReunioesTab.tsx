@@ -2,9 +2,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Tag, Tooltip } from 'antd';
+import { Button, Table, Tag } from 'antd';
 import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
-import {fetchClientMeetings, fetchMeetingsByNegociacao} from '@/store/slices/meetingSlice';
+import { fetchMeetingsByNegociacao} from '@/store/slices/meetingSlice';
 import { Cliente, NegociacaoCliente} from '@/types/interfaces';
 import { BsPlusCircle } from 'react-icons/bs';
 import { Container, TopBar } from './NegociacaoReunioesTab.styles';
@@ -15,16 +15,6 @@ interface Props {
     cliente: Cliente;
     negociacao: NegociacaoCliente;
     onReuniaoAtualizada: () => Promise<void>; // ✅ ADICIONE ESTA LINHA
-}
-
-function ScheduleMeetingModal(props: {
-    cliente: Cliente,
-    onClose: () => void,
-    visible: boolean,
-    negociacao: NegociacaoCliente,
-    meeting: Meeting | null
-}) {
-    return null;
 }
 
 const NegociacaoReunioesTab: React.FC<Props> = ({ cliente, negociacao, onReuniaoAtualizada }) => {

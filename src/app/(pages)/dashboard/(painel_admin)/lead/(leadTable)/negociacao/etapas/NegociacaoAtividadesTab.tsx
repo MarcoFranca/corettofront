@@ -17,6 +17,7 @@ interface Props {
 const NegociacaoAtividadesTab: React.FC<Props> = ({ negociacao }) => {
     const [atividades, setAtividades] = useState<AtividadeNegociacao[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [atividadeSelecionada, setAtividadeSelecionada] = useState<AtividadeNegociacao | null>(null);
 
     useEffect(() => {
         api.get(`/atividades-negociacao/?negociacao=${negociacao.id}`)
@@ -25,10 +26,23 @@ const NegociacaoAtividadesTab: React.FC<Props> = ({ negociacao }) => {
     }, [negociacao.id]);
 
     const columns = [
-        { title: 'Data', dataIndex: 'data', render: (data: string) => new Date(data).toLocaleString("pt-BR") },
         { title: 'Título', dataIndex: 'titulo' },
         { title: 'Status', dataIndex: 'status', render: (status: string) => <Tag>{status}</Tag> },
+        { title: 'Data', dataIndex: 'data', render: (data: string) => new Date(data).toLocaleString("pt-BR") },
         { title: 'Observações', dataIndex: 'observacoes', render: (obs: string) => obs || "Nenhuma" },
+        {
+            title: 'Ações',
+            key: 'actions',
+            render: (_: unknown, atividade: AtividadeNegociacao) => (
+                <Button size="small" onClick={() => {
+                    setAtividadeSelecionada(atividade);
+                    setModalVisible(true);
+                }}>
+                    Editar
+                </Button>
+            )
+        }
+
     ];
 
     return (
@@ -47,7 +61,25 @@ const NegociacaoAtividadesTab: React.FC<Props> = ({ negociacao }) => {
                 onClose={() => setModalVisible(false)}
                 onSaved={(novaAtividade) => setAtividades(prev => [novaAtividade, ...prev])}
             />
+            <NovaAtividadeModal
+                visible={modalVisible}
+                negociacao={negociacao}
+                onClose={() => {
+                    setModalVisible(false);
+                    setAtividadeSelecionada(null); // limpar seleção
+                }}
+                onSaved={(nova) => {
+                    setAtividades((prev) =>
+                        atividadeSelecionada
+                            ? prev.map((a) => (a.id === nova.id ? nova : a))
+                            : [nova, ...prev]
+                    );
+                }}
+                atividade={atividadeSelecionada}
+            />
+
         </Container>
+
     );
 };
 

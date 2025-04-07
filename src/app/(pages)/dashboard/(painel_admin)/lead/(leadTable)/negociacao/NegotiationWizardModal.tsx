@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Spin, Tag, Select, Modal } from 'antd';
+import { Button, Spin, Select, Modal } from 'antd';
 import {Cliente, NegociacaoCliente} from '@/types/interfaces';
 import NovaNegociacaoModal from './modal/NovaNegociacaoModal';
 import { closeNegotiation } from "@/store/slices/negociacoesSlice";
@@ -14,14 +14,13 @@ import {
     HeaderActions,
     Section,
     StyledTabs,
-    StyledButton
 } from './NegotiationWizardModal.styles';
 import {
     BsCalendar,
     BsClipboardCheck,
     BsPencil,
     BsChatDots,
-    BsXCircle
+
 } from 'react-icons/bs';
 import {fetchClienteById, updateClienteStatus} from "@/store/slices/clientesSlice";
 import {toastError, toastSuccess} from "@/utils/toastWithSound";
@@ -31,6 +30,8 @@ import NegociacaoAtividadesTab
     from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoAtividadesTab";
 import NegociacaoObservacoesTab
     from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoObservacoesTab";
+import NegociacaoResumoTab
+    from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoResumoTab";
 
 interface NegotiationWizardModalProps {
     isOpen: boolean;
@@ -173,32 +174,12 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                                 key: 'resumo',
                                 label: <span><BsClipboardCheck /> Resumo</span>,
                                 children: (
-                                    <Section>
-                                        <h3>📄 Detalhes da Negociação</h3>
-                                        <p><strong>Título:</strong> {negociacaoAtiva.titulo}</p>
-                                        <p><strong>Status:</strong> <Tag>{statusLabels[negociacaoAtiva.status] || negociacaoAtiva.status}</Tag></p>
-                                        <p><strong>Interesse:</strong> <Tag color={
-                                            negociacaoAtiva.interesse === 'quente'
-                                                ? 'red'
-                                                : negociacaoAtiva.interesse === 'morno'
-                                                    ? 'orange'
-                                                    : 'blue'
-                                        }>
-                                            {negociacaoAtiva.interesse}
-                                        </Tag></p>
-                                        <p><strong>Observações:</strong> {negociacaoAtiva.observacoes || "Nenhuma"}</p>
-
-                                        {!negociacaoAtiva.encerrada && (
-                                            <StyledButton
-                                                icon={<BsXCircle />}
-                                                type="primary"
-                                                danger
-                                                onClick={() => setModalEncerrar(true)}
-                                            >
-                                                Encerrar Negociação
-                                            </StyledButton>
-                                        )}
-                                    </Section>
+                                    <NegociacaoResumoTab
+                                        cliente={cliente}
+                                        negociacao={negociacaoAtiva}
+                                        statusLabels={statusLabels}
+                                        onEncerrarClick={() => setModalEncerrar(true)}
+                                    />
                                 ),
                             },
                             {
@@ -219,20 +200,20 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                                 ),
                             },
                             {
-                                key: 'observacoes',
-                                label: <span><BsChatDots /> Observações</span>,
+                                key: 'atividades',
+                                label: <span><BsPencil /> Atividades</span>,
                                 children: (
-                                    <NegociacaoObservacoesTab
+                                    <NegociacaoAtividadesTab
                                         cliente={cliente}
                                         negociacao={negociacaoAtiva}
                                     />
                                 ),
                             },
                             {
-                                key: 'atividades',
-                                label: <span><BsPencil /> Atividades</span>,
+                                key: 'observacoes',
+                                label: <span><BsChatDots /> Observações</span>,
                                 children: (
-                                    <NegociacaoAtividadesTab
+                                    <NegociacaoObservacoesTab
                                         cliente={cliente}
                                         negociacao={negociacaoAtiva}
                                     />
