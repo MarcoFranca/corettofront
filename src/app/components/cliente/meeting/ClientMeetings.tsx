@@ -6,7 +6,7 @@ import { fetchAgendaItems, createAgendaItem, updateAgendaItem, deleteAgendaItem 
 import { RootState } from '@/store';
 import MeetingModal from '@/app/components/Modal/meeting/MeetingModal';
 import styles from './ClientMeetings.module.css';
-import { AgendaItem } from '@/types/interfaces';
+import { Meeting } from '@/types/AgendaInterfaces';
 import ScheduleMeetingForm from '@/app/components/Modal/meeting/ScheduleMeetingForm';
 import moment from 'moment';
 
@@ -16,13 +16,13 @@ const ClientMeetings: React.FC<{ clientId: string; clientName: string }> = ({ cl
     const status = useAppSelector((state: RootState) => state.agenda?.status || 'idle');
     const error = useAppSelector((state: RootState) => state.agenda?.error || null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [currentAgendaItem, setCurrentAgendaItem] = useState<Partial<AgendaItem> | null>(null);
+    const [currentAgendaItem, setCurrentAgendaItem] = useState<Partial<Meeting> | null>(null);
 
     useEffect(() => {
         dispatch(fetchAgendaItems());
     }, [dispatch, clientId]);
 
-    const handleOpenModal = (agendaItem: Partial<AgendaItem> | null = null) => {
+    const handleOpenModal = (agendaItem: Partial<Meeting> | null = null) => {
         setCurrentAgendaItem(agendaItem);
         setModalIsOpen(true);
     };
@@ -32,7 +32,7 @@ const ClientMeetings: React.FC<{ clientId: string; clientName: string }> = ({ cl
         setCurrentAgendaItem(null);
     };
 
-    const handleSaveMeeting = async (agendaItem: Partial<AgendaItem>) => {
+    const handleSaveMeeting = async (agendaItem: Partial<Meeting>) => {
         if (agendaItem.id) {
             await dispatch(updateAgendaItem({ id: agendaItem.id, updatedItem: agendaItem }));
         } else {
@@ -71,8 +71,8 @@ const ClientMeetings: React.FC<{ clientId: string; clientName: string }> = ({ cl
                 </thead>
                 <tbody>
                 {agendaItems
-                    .filter((item) => item.cliente === clientId && item.type === 'meeting')
-                    .map((item) => (
+                    .filter((item: Meeting) => item.cliente === clientId && item.type === 'meeting')
+                    .map((item: Meeting) => (
                         <tr key={item.id}>
                             <td>{moment(item.start_time).format('DD/MM/YYYY')}</td>
                             <td>{`${moment(item.start_time).format('HH:mm')} - ${moment(item.end_time).format('HH:mm')}`}</td>
@@ -83,6 +83,7 @@ const ClientMeetings: React.FC<{ clientId: string; clientName: string }> = ({ cl
                             </td>
                         </tr>
                     ))}
+
                 </tbody>
             </table>
             <MeetingModal
