@@ -3,14 +3,14 @@ import React, {useEffect, useRef, useState} from 'react';
 import { useDispatch } from 'react-redux';
 import { Draggable } from '@hello-pangea/dnd';
 import { AppDispatch } from '@/store';
-import { deleteLead } from '@/store/slices/leadsSlice';
+import { deleteCliente } from '@/store/slices/clientesSlice';
 import styles from './LeadBoard.module.css';
 import Image from 'next/image';
 import UserImage from '../../../../../../../public/assets/common/user.png';
 import DeleteImage from '../../../../../../../public/assets/common/delete.svg';
 import AgendaImage from '../../../../../../../public/assets/pages/agenda/agenda.svg';
 import EditImage from '../../../../../../../public/assets/common/edit.svg';
-import { LeadProps, Lead, StatusReuniao } from "@/types/interfaces";
+import { LeadProps, Cliente, StatusReuniao } from "@/types/interfaces";
 import ScheduleMeetingForm from '@/app/components/Modal/meeting/ScheduleMeetingForm';
 import EditLeadForm from '@/app/components/leads/EditLeadForm';
 import Tippy from '@tippyjs/react';
@@ -73,7 +73,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
 
     const handleDeleteConfirm = () => {
         setShowConfirmModal(false);
-        dispatch(deleteLead(lead.id));
+        dispatch(deleteCliente(lead.id));
     };
 
     const handleDeleteClick = (e: React.MouseEvent) => {
@@ -99,7 +99,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
         setShowEditForm(false);
     };
 
-    const handleUpdateLead = (updatedLead: Lead) => {
+    const handleUpdateLead = (updatedLead: Cliente) => {
         setCurrentLead(updatedLead);
     };
 
@@ -223,9 +223,10 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
                                         <Image className={styles.userImage} src={UserImage} alt="user" priority/>
                                         <div className={styles.leadContentText}>
                                             <p>{currentLead.nome}</p>
-                                            <h2 style={{color: statusColors[currentLead.status_reuniao]}}>
-                                                {statusLabels[currentLead.status_reuniao]}
+                                            <h2 style={{color: statusColors[currentLead.status_reuniao as StatusReuniao] || 'gray'}}>
+                                                {statusLabels[currentLead.status_reuniao as StatusReuniao] || 'Sem status'}
                                             </h2>
+
                                         </div>
                                     </div>
                                     <div className={styles.actions}>

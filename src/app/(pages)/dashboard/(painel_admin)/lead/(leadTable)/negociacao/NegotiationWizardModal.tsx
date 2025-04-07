@@ -27,6 +27,10 @@ import {fetchClienteById, updateClienteStatus} from "@/store/slices/clientesSlic
 import {toastError, toastSuccess} from "@/utils/toastWithSound";
 import NegociacaoReunioesTab
     from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoReunioesTab";
+import NegociacaoAtividadesTab
+    from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoAtividadesTab";
+import NegociacaoObservacoesTab
+    from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoObservacoesTab";
 
 interface NegotiationWizardModalProps {
     isOpen: boolean;
@@ -75,8 +79,6 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
             : isPerdeu
                 ? 'recusada'
                 : 'cliente_desistiu';
-
-        const novoStatusCliente = isPositiva ? 'ativo' : 'recusado';
 
         try {
             const payloadNegociacao = {
@@ -215,18 +217,20 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                                 key: 'observacoes',
                                 label: <span><BsChatDots /> Observações</span>,
                                 children: (
-                                    <Section>
-                                        <p>📝 Aqui será exibida a linha do tempo de observações.</p>
-                                    </Section>
+                                    <NegociacaoObservacoesTab
+                                        cliente={cliente}
+                                        negociacao={negociacaoAtiva}
+                                    />
                                 ),
                             },
                             {
                                 key: 'atividades',
                                 label: <span><BsPencil /> Atividades</span>,
                                 children: (
-                                    <Section>
-                                        <p>📌 Aqui vão as atividades da negociação.</p>
-                                    </Section>
+                                    <NegociacaoAtividadesTab
+                                        cliente={cliente}
+                                        negociacao={negociacaoAtiva}
+                                    />
                                 ),
                             },
                         ]}

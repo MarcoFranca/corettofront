@@ -201,6 +201,15 @@ export interface NegociacaoCliente {
     reunioes: { start_time: string }[];
 }
 
+export interface AtividadeNegociacao {
+    id: string;
+    titulo: string;
+    status: string;
+    observacoes?: string;
+    data: string;
+}
+
+
 export interface Cliente {
     id: string;
     user: string;
