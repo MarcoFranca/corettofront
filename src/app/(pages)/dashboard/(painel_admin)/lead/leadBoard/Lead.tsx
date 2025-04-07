@@ -280,7 +280,7 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
             )}
             {showEditForm && (
                 <EditLeadForm
-                    lead={currentLead}
+                    cliente={currentLead}
                     onClose={handleEditFormClose}
                     onUpdate={handleUpdateLead}
                 />
