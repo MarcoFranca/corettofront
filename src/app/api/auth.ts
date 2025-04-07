@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Lead } from "@/types/interfaces";
+import { Cliente } from "@/types/interfaces";
 
 export const logout = () => {
     localStorage.removeItem('accessToken');
@@ -76,7 +76,7 @@ class axiosInstance {
         }
     }
 
-    static async post(url: string, data: Lead, config?: { headers: { Authorization: string } }) {
+    static async post(url: string, data: Cliente, config?: { headers: { Authorization: string } }) {
         try {
             const response = await instance.post(url, data, config);
             return response.data;
