@@ -58,14 +58,19 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
 
     useEffect(() => {
         if (cliente && isOpen) {
-            setLoading(true);
             const todasNegociacoes = cliente.relacionamentos?.negociacoes || [];
-            const ultima = todasNegociacoes[todasNegociacoes.length - 1] || null;
             setNegociacoes(todasNegociacoes);
-            setNegociacaoAtiva(ultima);
+
+            if (todasNegociacoes.length > 0) {
+                setNegociacaoAtiva(todasNegociacoes[todasNegociacoes.length - 1]);
+            } else {
+                setNegociacaoAtiva(null); // 🔥 garante que a UI ainda seja renderizada
+            }
+
             setLoading(false);
         }
     }, [cliente, isOpen]);
+
 
     const handleEncerrar = async () => {
         if (!negociacaoAtiva || !motivoEncerramento) return;
@@ -256,6 +261,14 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                             ]}
                         />
                     </Modal>
+
+                </>
+            ) : (
+                <Section>
+                    <h3>⚠️ Negociação ativa não encontrada</h3>
+                    <p>Não conseguimos localizar uma negociação ativa.</p>
+                </Section>
+            )}
                     <NovaNegociacaoModal
                         visible={showNovaNegociacaoModal}
                         onClose={() => setShowNovaNegociacaoModal(false)}
@@ -273,11 +286,6 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                             }
                         }}
                     />
-
-                </>
-            ) : (
-                <p>Nenhuma negociação encontrada.</p>
-            )}
         </Container>
     );
 };
