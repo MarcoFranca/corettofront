@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/app/api/axios';
-import { Meeting, MeetingsState } from '@/types/interfaces';
+import { Meeting, MeetingsState } from '@/types/AgendaInterfaces';
 
 
 const initialState: MeetingsState = {
