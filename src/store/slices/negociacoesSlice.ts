@@ -27,6 +27,26 @@ const fetchNegociacoes = createAsyncThunk<NegociacaoCliente[], string>(
     }
 );
 
+// Criar nova Atividade
+export const createAtividade = createAsyncThunk(
+    'negociacoes/createAtividade',
+    async (data: {
+        cliente: string;
+        negociacao: string;
+        descricao: string;
+        observacao?: string;
+        tipo?: 'reuniao' | 'ligacao' | 'whatsapp' | 'email';
+        data?: string;
+    }, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/atividades/', data);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || 'Erro ao criar atividade');
+        }
+    }
+);
+
 // Criar nova negociação
 const createNegociacao = createAsyncThunk<NegociacaoCliente, Partial<NegociacaoCliente>>(
     'negociacoes/createNegociacao',

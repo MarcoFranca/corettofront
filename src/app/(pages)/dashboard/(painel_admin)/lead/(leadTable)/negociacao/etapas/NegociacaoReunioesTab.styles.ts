@@ -16,3 +16,8 @@ export const TopBar = styled.div`
     margin: 0;
   }
 `;
+
+export const Buttons = styled.div`
+display: flex;
+    gap: 1rem;
+`

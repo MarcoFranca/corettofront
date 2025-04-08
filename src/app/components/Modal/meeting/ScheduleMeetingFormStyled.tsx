@@ -1,182 +1,143 @@
-// components/negociacao/ScheduleMeetingFormStyled.tsx
+// components/negociacao/ScheduleMeetingDrawer.tsx
 'use client';
 
 import React, { useState } from 'react';
-import { useAppDispatch } from '@/services/hooks/hooks';
-import { createAgendaItem, updateAgendaItem } from '@/store/slices/agendaSlice';
-import { Cliente, NegociacaoCliente } from '@/types/interfaces';
-import { toast } from 'react-toastify';
-import { useGoogleLogin } from '@react-oauth/google';
-import { clearMessages, linkGoogleAccount } from '@/store/slices/googleIntegrationSlice';
 import {
-    ModalContainer,
-    ModalContent,
-    FieldLabel,
+    Drawer,
+    Form,
     Input,
-    Textarea,
-    CheckboxContainer,
-    ButtonGroup,
-    PrimaryButton,
-    CancelButton
-} from './ScheduleMeetingFormStyled.styles';
-import {Select} from "antd";
-import {Meeting} from "@/types/AgendaInterfaces";
+    DatePicker,
+    TimePicker,
+    Checkbox,
+    Button,
+    Spin,
+    message
+} from 'antd';
+import { useAppDispatch } from '@/services/hooks/hooks';
+import { createAgendaItem } from '@/store/slices/agendaSlice';
+import { Cliente, NegociacaoCliente } from '@/types/interfaces';
+import { Meeting } from '@/types/AgendaInterfaces';
+import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
+import { createAtividade } from '@/store/slices/negociacoesSlice';
 
 interface Props {
+    open: boolean;
+    onClose: () => void;
     cliente: Cliente;
     negociacao: NegociacaoCliente;
-    meeting?: Meeting | null;
-    onClose: () => void;
+    modelo?: Partial<Meeting>;
     onSaved: () => void;
 }
-const STATUS_REUNIAO_AGENDA = [
-    ['agendada', 'Agendada'],
-    ['confirmada', 'Confirmada'],
-    ['remarcada', 'Remarcada'],
-    ['cancelada', 'Cancelada'],
-    ['no_show', 'Não compareceu'],
-    ['realizada', 'Realizada com sucesso'],
-];
 
-
-const ScheduleMeetingFormStyled: React.FC<Props> = ({ cliente, negociacao, meeting, onClose, onSaved }) => {
+const ScheduleMeetingDrawer: React.FC<Props> = ({ open, onClose, cliente, negociacao, modelo = {}, onSaved }) => {
+    const [form] = Form.useForm();
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(false);
 
-    const [description, setDescription] = useState(meeting?.description || '');
-    const [date, setDate] = useState(meeting?.start_time ? new Date(meeting.start_time).toISOString().split('T')[0] : '');
-    const [startTime, setStartTime] = useState(meeting?.start_time ? new Date(meeting.start_time).toTimeString().slice(0, 5) : '');
-    const [endTime, setEndTime] = useState(meeting?.end_time ? new Date(meeting.end_time).toTimeString().slice(0, 5) : '');
-    const [googleCalendar, setGoogleCalendar] = useState(meeting?.add_to_google_calendar || false);
-    const [googleMeet, setGoogleMeet] = useState(meeting?.add_to_google_meet || false);
-    const [zoom, setZoom] = useState(meeting?.add_to_zoom || false);
-    const [statusReuniao, setStatusReuniao] = useState(meeting?.status_reuniao || 'agendada');
-    const [motivoCancelamento, setMotivoCancelamento] = useState(meeting?.motivo_cancelamento || '');
-    const [showMotivo, setShowMotivo] = useState(meeting?.status_reuniao === 'cancelada');
-
-    const loginWithGoogle = useGoogleLogin({
-        flow: 'auth-code',
-        onSuccess: (codeResponse) => {
-            dispatch(linkGoogleAccount(codeResponse.code));
-            toast.success('Conta Google vinculada com sucesso!');
-        },
-        onError: () => {
-            dispatch(clearMessages());
-            toast.error('Erro ao tentar reautorizar a conta Google.');
-        },
-    });
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!date || !startTime || !endTime) {
-            toast.warning('Preencha data e horários corretamente.');
-            return;
-        }
-
-        const start = new Date(`${date}T${startTime}`).toISOString();
-        const end = new Date(`${date}T${endTime}`).toISOString();
+    const handleSubmit = async (values: any) => {
+        setLoading(true);
+        const start = dayjs(`${values.date.format('YYYY-MM-DD')}T${values.startTime.format('HH:mm')}`).toISOString();
+        const end = dayjs(`${values.date.format('YYYY-MM-DD')}T${values.endTime.format('HH:mm')}`).toISOString();
 
         const payload: Partial<Meeting> = {
-            title: `Reunião: ${negociacao.titulo}`,
+            title: values.title,
+            description: values.description,
             cliente: cliente.id,
             negociacao: negociacao.id,
-            description,
             start_time: start,
             end_time: end,
-            add_to_google_calendar: googleCalendar,
-            add_to_google_meet: googleMeet,
-            add_to_zoom: zoom,
-            status_reuniao: statusReuniao,
-            motivo_cancelamento: motivoCancelamento,
+            add_to_google_calendar: values.add_to_google_calendar,
+            add_to_google_meet: values.add_to_google_meet,
+            type: 'meeting',
+            status_reuniao: 'agendada',
         };
 
-
         try {
-            if (meeting?.id) {
-                await dispatch(updateAgendaItem({ id: meeting.id, updatedItem: payload })).unwrap();
-                toast.success('Reunião atualizada!');
-            } else {
-                await dispatch(createAgendaItem(payload)).unwrap();
-                toast.success('Reunião agendada!');
-            }
+            await dispatch(createAgendaItem(payload)).unwrap();
 
+            // cria atividade relacionada
+            await dispatch(createAtividade({
+                cliente: cliente.id,
+                negociacao: negociacao.id,
+                descricao: `📅 Reunião agendada: ${values.title}`,
+                observacao: values.description,
+                tipo: 'reuniao',
+                data: start,
+            }));
+
+            toast.success('Reunião criada com sucesso!');
             onSaved();
             onClose();
-        } catch (error: any) {
-            if (error.code === 'google_auth_required') {
-                toast.warning('Conta Google expirada, reautorizando...');
-                loginWithGoogle();
-            } else {
-                toast.error(error.message || 'Erro ao salvar reunião.');
-            }
+        } catch (err) {
+            message.error('Erro ao salvar a reunião');
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <ModalContainer>
-            <ModalContent>
-                <h3>{meeting ? 'Editar Reunião' : 'Nova Reunião'}</h3>
-                <form onSubmit={handleSubmit}>
-                    <FieldLabel>Data:</FieldLabel>
-                    <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+        <Drawer
+            title="Nova Reunião"
+            width={480}
+            onClose={onClose}
+            open={open}
+            destroyOnClose
+            extra={<Button onClick={onClose}>Cancelar</Button>}
+        >
+            <Spin spinning={loading} tip="Salvando...">
+                <Form
+                    layout="vertical"
+                    form={form}
+                    onFinish={handleSubmit}
+                    initialValues={{
+                        title: modelo.title || '',
+                        description: modelo.description || '',
+                        date: modelo.start_time ? dayjs(modelo.start_time) : null,
+                        startTime: modelo.start_time ? dayjs(modelo.start_time) : null,
+                        endTime: modelo.end_time ? dayjs(modelo.end_time) : null,
+                        add_to_google_calendar: modelo.add_to_google_calendar || false,
+                        add_to_google_meet: modelo.add_to_google_meet || false,
+                    }}
+                >
+                    <Form.Item name="title" label="Título" rules={[{ required: true, message: 'Informe um título' }]}>
+                        <Input />
+                    </Form.Item>
 
-                    <FieldLabel>Hora Início:</FieldLabel>
-                    <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} required />
+                    <Form.Item name="description" label="Descrição">
+                        <Input.TextArea rows={3} />
+                    </Form.Item>
 
-                    <FieldLabel>Hora Fim:</FieldLabel>
-                    <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
+                    <Form.Item name="date" label="Data" rules={[{ required: true }]}>
+                        <DatePicker format="DD/MM/YYYY" style={{ width: '100%' }} />
+                    </Form.Item>
 
-                    <FieldLabel>Descrição:</FieldLabel>
-                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} />
-                    <FieldLabel>Status da Reunião:</FieldLabel>
-                    <Select
-                        value={statusReuniao}
-                        style={{ width: '100%', marginBottom: '1rem' }}
-                        onChange={(value) => {
-                            setStatusReuniao(value);
-                            setShowMotivo(value === 'cancelada');
-                        }}
-                    >
-                        {STATUS_REUNIAO_AGENDA.map(([value, label]) => (
-                            <Select.Option key={value} value={value}>
-                                {label}
-                            </Select.Option>
-                        ))}
-                    </Select>
+                    <Form.Item name="startTime" label="Hora Início" rules={[{ required: true }]}>
+                        <TimePicker format="HH:mm" style={{ width: '100%' }} />
+                    </Form.Item>
 
-                    {showMotivo && (
-                        <>
-                            <FieldLabel>Motivo do Cancelamento:</FieldLabel>
-                            <Textarea
-                                placeholder="Descreva o motivo do cancelamento"
-                                value={motivoCancelamento}
-                                onChange={(e) => setMotivoCancelamento(e.target.value)}
-                            />
-                        </>
-                    )}
-                    <CheckboxContainer>
-                        <label>
-                            <input type="checkbox" checked={googleCalendar} onChange={(e) => setGoogleCalendar(e.target.checked)} />
-                            Google Calendar
-                        </label>
-                        <label>
-                            <input type="checkbox" checked={googleMeet} onChange={(e) => setGoogleMeet(e.target.checked)} />
-                            Google Meet
-                        </label>
-                        <label>
-                            <input type="checkbox" checked={zoom} onChange={(e) => setZoom(e.target.checked)} />
-                            Zoom
-                        </label>
-                    </CheckboxContainer>
+                    <Form.Item name="endTime" label="Hora Fim" rules={[{ required: true }]}>
+                        <TimePicker format="HH:mm" style={{ width: '100%' }} />
+                    </Form.Item>
 
-                    <ButtonGroup>
-                        <PrimaryButton type="submit">{meeting ? 'Salvar' : 'Agendar'}</PrimaryButton>
-                        <CancelButton type="button" onClick={onClose}>Cancelar</CancelButton>
-                    </ButtonGroup>
-                </form>
-            </ModalContent>
-        </ModalContainer>
+                    <Form.Item name="add_to_google_calendar" valuePropName="checked">
+                        <Checkbox>Adicionar ao Google Calendar</Checkbox>
+                    </Form.Item>
+
+                    <Form.Item name="add_to_google_meet" valuePropName="checked">
+                        <Checkbox>Adicionar link do Google Meet</Checkbox>
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit" block>
+                            Agendar Reunião
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Spin>
+        </Drawer>
     );
 };
 
-export default ScheduleMeetingFormStyled;
+export default ScheduleMeetingDrawer;

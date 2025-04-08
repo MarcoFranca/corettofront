@@ -41,7 +41,8 @@ export interface Meeting {
     zoom_meeting_link?: string;
     status_reuniao?:string;
     motivo_cancelamento?:string;
-    negociacao?: string | { id: string }; // 👈 aqui o pulo do gato
+    historico_remarcacoes?: string;
+    negociacao?: string | { id: string };
     created_at?: string;
     updated_at?: string;
 }

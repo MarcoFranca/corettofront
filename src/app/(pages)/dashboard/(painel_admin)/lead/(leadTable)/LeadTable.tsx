@@ -330,7 +330,7 @@ const LeadTable: React.FC = () => {
                 <Drawer
                     title={`Negociação com ${selectedLead?.nome}`}
                     placement="right"
-                    width={720}
+                    width={900}
                     onClose={() => setShowNegotiationWizard(false)}
                     open={showNegotiationWizard}
                     destroyOnClose
