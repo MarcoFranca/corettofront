@@ -1,11 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Table, Button, Input, Tag, Drawer } from "antd";
+import { Table, Button, Input, Drawer } from "antd";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import { fetchParceiros } from "@/store/slices/parceirosSlice";
 import { FaPlus, FaEye } from "react-icons/fa";
 import ParceiroWizard from "@/app/components/forms/parceiros/ParceiroWizard";
+import {Container} from "@/app/(pages)/dashboard/(painel_admin)/parceiros/Parceiros.styles";
 
 interface Cliente {
     id: string;
@@ -71,7 +72,7 @@ const ParceirosPage: React.FC = () => {
     ];
 
     return (
-        <div>
+        <Container>
             <h2>Parceiros</h2>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                 <Input
@@ -90,7 +91,7 @@ const ParceirosPage: React.FC = () => {
             <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} width="40vw">
                 <ParceiroWizard onClose={handleCloseDrawer} />
             </Drawer>
-        </div>
+        </Container>
     );
 };
 

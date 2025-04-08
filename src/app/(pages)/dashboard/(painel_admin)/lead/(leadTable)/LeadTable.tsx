@@ -26,6 +26,7 @@ import { ColumnsType } from "antd/es/table";
 import {BsLightning} from "react-icons/bs";
 import NegotiationWizardModal
     from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/NegotiationWizardModal";
+import IndicadoresNegociacoes from "@/app/components/strategy/IndicadoresNegociacoes";
 
 
 
@@ -296,6 +297,10 @@ const LeadTable: React.FC = () => {
         <>
             <TableContainer>
                 <h2>📋 Gestão Completa de Leads</h2>
+
+                {/* 🔥 Indicadores Estratégicos */}
+                <IndicadoresNegociacoes />
+
                 <Table
                     dataSource={filteredLeads}
                     columns={columns}
