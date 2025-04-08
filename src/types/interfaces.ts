@@ -175,6 +175,7 @@ export interface NegociacaoCliente {
     interesse: string;
     encerrada: boolean;
     observacoes: string[];
+    sugestao_interesse: string;
     reunioes: { start_time: string }[];
 }
 
