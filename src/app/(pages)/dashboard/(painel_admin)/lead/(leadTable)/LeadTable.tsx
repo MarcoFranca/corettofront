@@ -74,6 +74,20 @@ const LeadTable: React.FC = () => {
         }
     }, [showScheduleForm, dispatch]);
 
+    const [tableHeight, setTableHeight] = useState(430);
+
+    useEffect(() => {
+        const updateHeight = () => {
+            const headerOffset = 430; // ajuste conforme seu layout (header, cards, margens)
+            const alturaDisponivel = window.innerHeight - headerOffset;
+            setTableHeight(alturaDisponivel);
+        };
+
+        updateHeight(); // inicial
+        window.addEventListener("resize", updateHeight);
+
+        return () => window.removeEventListener("resize", updateHeight);
+    }, []);
 
 
 
@@ -309,32 +323,7 @@ const LeadTable: React.FC = () => {
                     : "Sem indicação"
             ),
         },
-        // {
-        //     title: "Ações",
-        //     key: "actions",
-        //     render: (_: unknown, record: Cliente) => (
-        //         <div style={{ display: "flex", gap: 10 }}>
-        //             <Tooltip title="Editar">
-        //                 <Button icon={<FaEdit />} onClick={() => { setSelectedLead(record); setIsEditModalOpen(true); }}/>
-        //             </Tooltip>
-        //             <Tooltip title="Negociação">
-        //                 <Button
-        //                     icon={<BsLightning />}
-        //                     onClick={() => {
-        //                         setSelectedLead(record);
-        //                         setShowNegotiationWizard(true); // novo estado!
-        //                     }}
-        //                 />
-        //             </Tooltip>
-        //             {/*<Tooltip title="Criar Reunião">*/}
-        //             {/*    <Button icon={<FaCalendarAlt />} onClick={() => { setSelectedLead(record); setShowScheduleForm(true); }} />*/}
-        //             {/*</Tooltip>*/}
-        //             <Tooltip title="Excluir">
-        //                 <Button icon={<FaTrash />} danger onClick={() => handleDelete(record.id)} />
-        //             </Tooltip>
-        //         </div>
-        //     ),
-        // },
+
     ];
 
     return (
@@ -345,15 +334,16 @@ const LeadTable: React.FC = () => {
 
                 {/* 🔥 Indicadores Estratégicos */}
                 <IndicadoresNegociacoes />
+                {tableHeight > 100 && (
 
                 <Table
                     dataSource={filteredLeads}
                     columns={columns}
                     rowKey={(record) => record.id}
                     pagination={{ pageSize: 10 }}
-                    scroll={{ x: 'max-content', y: 480 }} // ⬅️ isso resolve o scroll lateral!
+                    scroll={{ x: 'max-content', y: tableHeight || 430 }} // ⬅️ isso resolve o scroll lateral!
                 />
-
+                )}
                 {selectedLead && showScheduleForm && (
                     <ScheduleMeetingForm
                         entityId={selectedLead.id}
