@@ -132,7 +132,7 @@ export const createCliente = createAsyncThunk<Cliente,  Partial<Cliente>>(
     'clientes/createCliente',
     async (novoCliente, { dispatch }) => {
         const response = await api.post('/clientes/', novoCliente);
-        dispatch(fetchClientes());
+        dispatch(fetchTodosClientesFiltrados({ status: ["lead", "negociacao", "nova_negociacao"] }));
         return response.data;
     });
 
@@ -154,7 +154,7 @@ export const updateCliente = createAsyncThunk<
 
             console.log("✅ Cliente atualizado com sucesso:", response.data);
 
-            dispatch(fetchClientes());
+            dispatch(fetchTodosClientesFiltrados({ status: ["lead", "negociacao", "nova_negociacao"] }));
             dispatch(fetchClienteDetalhe(id));
 
             return response.data;
@@ -180,7 +180,7 @@ export const updateClienteSaude = createAsyncThunk<
 
 export const deleteCliente = createAsyncThunk<string, string>('clientes/deleteCliente', async (id, { dispatch }) => {
     await api.delete(`/clientes/${id}/`);
-    dispatch(fetchClientes());
+    dispatch(fetchTodosClientesFiltrados({ status: ["lead", "negociacao", "nova_negociacao"] }));
     return id;
 });
 

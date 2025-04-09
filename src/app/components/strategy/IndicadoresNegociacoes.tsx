@@ -34,32 +34,36 @@ const IndicadoresNegociacoes: React.FC = () => {
     if (loading || !dados) return <Skeleton active paragraph={{ rows: 6 }} />;
 
     return (
-        <div style={{ marginBottom: 24 }}>
-            <Row gutter={16}>
-                <Col span={6}>
+        <div style={{
+            marginBottom: 16,
+            justifyContent: 'center',
+            width: 'auto', display: 'flex'}}>
+            <Row gutter={16} style={{
+                display: "flex",
+                width:'100%',
+                alignItems: 'center',
+                justifyContent: 'space-between'}}>
+                <Col span={4}>
                     <Card>
                         <Statistic title="⏳ Tempo Médio até 1º Contato" value={dados.tempo_medio_primeiro_contato} />
                     </Card>
                 </Col>
-                <Col span={6}>
+                <Col span={5}>
                     <Card>
                         <Statistic title="📞 Média Interações até Fechamento" value={dados.media_interacoes_para_fechamento} />
                     </Card>
                 </Col>
-                <Col span={6}>
+                <Col span={4}>
                     <Card>
                         <Statistic title="❌ Taxa Cancelamento" value={dados.reunioes.taxa_cancelamento} />
                     </Card>
                 </Col>
-                <Col span={6}>
+                <Col span={3}>
                     <Card>
                         <Statistic title="♻️ Taxa Remarcação" value={dados.reunioes.taxa_remarcacao} />
                     </Card>
                 </Col>
-            </Row>
-
-            <Row gutter={16} style={{ marginTop: 16 }}>
-                <Col span={24}>
+                <Col span={7}>
                     <Card title="🌡️ Temperatura Atual das Negociações">
                         <div style={{ display: 'flex', gap: 16 }}>
                             {Object.entries(dados.sugestao_temperatura_atual).map(([nivel, quantidade]) => (
@@ -74,6 +78,9 @@ const IndicadoresNegociacoes: React.FC = () => {
                         </div>
                     </Card>
                 </Col>
+            </Row>
+
+            <Row gutter={16} style={{ marginTop: 16 }}>
             </Row>
         </div>
     );

@@ -11,9 +11,9 @@ import {
     fetchTodosClientesFiltrados
 } from "@/store/slices/clientesSlice";
 import {Cliente, NegociacaoCliente} from "@/types/interfaces";
-import { TableContainer } from "./LeadTable.styles";
+import {ContainerCanva} from "./LeadTable.styles";
 import { getWhatsAppLink } from "@/utils/functions";
-import { FaCalendarAlt, FaEdit, FaTrash, FaWhatsapp } from "react-icons/fa";
+import { FaEdit, FaTrash, FaWhatsapp } from "react-icons/fa";
 import { formatPhoneNumber } from "@/utils/maskUtils";
 import { Key } from 'react';
 import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
@@ -49,11 +49,14 @@ const LeadTable: React.FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        const apenasLeads = clientes.filter((cliente: Cliente) =>
-            ["lead", "negociacao", "nova_negociacao"].includes(cliente.status)
-        );
-        setFilteredLeads(apenasLeads);
+        if (Array.isArray(clientes) && clientes.length > 0) {
+            const apenasLeads = clientes.filter((cliente: Cliente) =>
+                ["lead", "negociacao", "nova_negociacao"].includes(cliente.status)
+            );
+            setFilteredLeads(apenasLeads);
+        }
     }, [clientes]);
+
 
     const prevEditModalOpen = useRef<boolean>(false);
     useEffect(() => {
@@ -126,8 +129,47 @@ const LeadTable: React.FC = () => {
 
 
     const columns : ColumnsType<Cliente> = [
-        { title: "Nome", dataIndex: "nome", key: "nome" },
-        { title: "E-mail", dataIndex: "email", key: "email" },
+        {
+            title: "⋮",
+            key: "actions",
+            fixed: "left",
+            render: (_: unknown, record: Cliente) => (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <Tooltip title="Editar">
+                        <Button icon={<FaEdit />} size="small" onClick={() => {
+                            setSelectedLead(record);
+                            setIsEditModalOpen(true);
+                        }} />
+                    </Tooltip>
+                    <Tooltip title="Negociação">
+                        <Button icon={<BsLightning />} size="small" onClick={() => {
+                            setSelectedLead(record);
+                            setShowNegotiationWizard(true);
+                        }} />
+                    </Tooltip>
+                    <Tooltip title="Excluir">
+                        <Button icon={<FaTrash />} danger size="small" onClick={() => handleDelete(record.id)} />
+                    </Tooltip>
+                </div>
+            ),
+        },
+
+        {
+            title: "Nome Completo",
+            key: "nome_completo",
+            width: 200,
+            ellipsis: true,
+            render: (_: any, record: Cliente) => (
+                <Tooltip title={`${record.nome} ${record.sobre_nome}`}>
+                    <span>{`${record.nome} ${record.sobre_nome}`}</span>
+                </Tooltip>
+            ),
+        },
+        {
+            title: "E-mail",
+            dataIndex: "email",
+            responsive: ['md'],
+            key: "email" },
         {
             title: "Telefone",
             dataIndex: "telefone",
@@ -142,6 +184,7 @@ const LeadTable: React.FC = () => {
             title: "Próxima Reunião",
             dataIndex: "proxima_reuniao",
             key: "proxima_reuniao",
+            responsive: ['md'],
             render: (data: string | null) =>
                 data ? new Date(data).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "Nenhuma agendada",
         },
@@ -209,7 +252,7 @@ const LeadTable: React.FC = () => {
                 return hasAtiva ? (
                     <Tag color="blue">Ativa</Tag>
                 ) : (
-                    <Tag color="gray">Sem negociação ativa</Tag>
+                    <Tag color="gray">Sem negociação</Tag>
                 );
             }
         },
@@ -217,6 +260,7 @@ const LeadTable: React.FC = () => {
             title: "Apólice Ativa?",
             dataIndex: "possui_apolice_ativa",
             key: "possui_apolice_ativa",
+            width: 130, // ⬅️ isso ajuda a dar respiro
             filters: [
                 { text: "Sim", value: "true" },
                 { text: "Não", value: "false" }
@@ -265,37 +309,38 @@ const LeadTable: React.FC = () => {
                     : "Sem indicação"
             ),
         },
-        {
-            title: "Ações",
-            key: "actions",
-            render: (_: unknown, record: Cliente) => (
-                <div style={{ display: "flex", gap: 10 }}>
-                    <Tooltip title="Editar">
-                        <Button icon={<FaEdit />} onClick={() => { setSelectedLead(record); setIsEditModalOpen(true); }}/>
-                    </Tooltip>
-                    <Tooltip title="Negociação">
-                        <Button
-                            icon={<BsLightning />}
-                            onClick={() => {
-                                setSelectedLead(record);
-                                setShowNegotiationWizard(true); // novo estado!
-                            }}
-                        />
-                    </Tooltip>
-                    <Tooltip title="Criar Reunião">
-                        <Button icon={<FaCalendarAlt />} onClick={() => { setSelectedLead(record); setShowScheduleForm(true); }} />
-                    </Tooltip>
-                    <Tooltip title="Excluir">
-                        <Button icon={<FaTrash />} danger onClick={() => handleDelete(record.id)} />
-                    </Tooltip>
-                </div>
-            ),
-        },
+        // {
+        //     title: "Ações",
+        //     key: "actions",
+        //     render: (_: unknown, record: Cliente) => (
+        //         <div style={{ display: "flex", gap: 10 }}>
+        //             <Tooltip title="Editar">
+        //                 <Button icon={<FaEdit />} onClick={() => { setSelectedLead(record); setIsEditModalOpen(true); }}/>
+        //             </Tooltip>
+        //             <Tooltip title="Negociação">
+        //                 <Button
+        //                     icon={<BsLightning />}
+        //                     onClick={() => {
+        //                         setSelectedLead(record);
+        //                         setShowNegotiationWizard(true); // novo estado!
+        //                     }}
+        //                 />
+        //             </Tooltip>
+        //             {/*<Tooltip title="Criar Reunião">*/}
+        //             {/*    <Button icon={<FaCalendarAlt />} onClick={() => { setSelectedLead(record); setShowScheduleForm(true); }} />*/}
+        //             {/*</Tooltip>*/}
+        //             <Tooltip title="Excluir">
+        //                 <Button icon={<FaTrash />} danger onClick={() => handleDelete(record.id)} />
+        //             </Tooltip>
+        //         </div>
+        //     ),
+        // },
     ];
 
     return (
         <>
-            <TableContainer>
+            <ContainerCanva>
+
                 <h2>📋 Gestão Completa de Leads</h2>
 
                 {/* 🔥 Indicadores Estratégicos */}
@@ -306,6 +351,7 @@ const LeadTable: React.FC = () => {
                     columns={columns}
                     rowKey={(record) => record.id}
                     pagination={{ pageSize: 10 }}
+                    scroll={{ x: 'max-content', y: 480 }} // ⬅️ isso resolve o scroll lateral!
                 />
 
                 {selectedLead && showScheduleForm && (
@@ -325,7 +371,7 @@ const LeadTable: React.FC = () => {
                     />
                 )}
 
-            </TableContainer>
+            </ContainerCanva>
             <NegociacoesModal
                 visible={negociacoesModalVisible}
                 onClose={() => setNegociacoesModalVisible(false)}
