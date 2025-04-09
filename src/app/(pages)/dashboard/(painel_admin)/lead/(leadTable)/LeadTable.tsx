@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Drawer, Table, Tag, Tooltip} from "antd";
+import {Button, Drawer, Dropdown, MenuProps, Table, Tag, Tooltip} from "antd";
 import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import {
     fetchClientes,
@@ -13,7 +13,7 @@ import {
 import {Cliente, NegociacaoCliente} from "@/types/interfaces";
 import {ContainerCanva} from "./LeadTable.styles";
 import { getWhatsAppLink } from "@/utils/functions";
-import { FaEdit, FaTrash, FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { formatPhoneNumber } from "@/utils/maskUtils";
 import { Key } from 'react';
 import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
@@ -23,7 +23,7 @@ import { useLeadBackup } from "@/services/hooks/useLeadBackup";
 import {playSound} from "@/store/slices/soundSlice";
 import NegociacoesModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/NegociacoesModal"; // caminho correto dependendo de onde criou
 import { ColumnsType } from "antd/es/table";
-import {BsLightning} from "react-icons/bs";
+import {BsThreeDotsVertical} from "react-icons/bs";
 import NegotiationWizardModal
     from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/NegotiationWizardModal";
 import IndicadoresNegociacoes from "@/app/components/strategy/IndicadoresNegociacoes";
@@ -144,30 +144,43 @@ const LeadTable: React.FC = () => {
 
     const columns : ColumnsType<Cliente> = [
         {
-            title: "⋮",
+            title: "Ações",
             key: "actions",
-            fixed: "left",
-            render: (_: unknown, record: Cliente) => (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    <Tooltip title="Editar">
-                        <Button icon={<FaEdit />} size="small" onClick={() => {
+            fixed: "right",
+            width: 70,
+            render: (_: unknown, record: Cliente) => {
+                const items: MenuProps['items'] = [
+                    {
+                        key: 'edit',
+                        label: '✏️ Editar',
+                        onClick: () => {
                             setSelectedLead(record);
                             setIsEditModalOpen(true);
-                        }} />
-                    </Tooltip>
-                    <Tooltip title="Negociação">
-                        <Button icon={<BsLightning />} size="small" onClick={() => {
+                        }
+                    },
+                    {
+                        key: 'negociar',
+                        label: '⚡ Negociação',
+                        onClick: () => {
                             setSelectedLead(record);
                             setShowNegotiationWizard(true);
-                        }} />
-                    </Tooltip>
-                    <Tooltip title="Excluir">
-                        <Button icon={<FaTrash />} danger size="small" onClick={() => handleDelete(record.id)} />
-                    </Tooltip>
-                </div>
-            ),
-        },
+                        }
+                    },
+                    {
+                        key: 'delete',
+                        label: '🗑️ Excluir',
+                        danger: true,
+                        onClick: () => handleDelete(record.id),
+                    }
+                ];
 
+                return (
+                    <Dropdown menu={{ items }} trigger={["hover"]}>
+                        <Button icon={<BsThreeDotsVertical />} />
+                    </Dropdown>
+                );
+            }
+        },
         {
             title: "Nome Completo",
             key: "nome_completo",
@@ -182,8 +195,10 @@ const LeadTable: React.FC = () => {
         {
             title: "E-mail",
             dataIndex: "email",
+            key: "email",
             responsive: ['md'],
-            key: "email" },
+            render: (email: string | null) => email ? email : <i style={{ color: "#999" }}>Sem e-mail</i>
+        },
         {
             title: "Telefone",
             dataIndex: "telefone",
