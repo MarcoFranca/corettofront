@@ -12,6 +12,7 @@ import parceirosReducer from './slices/parceirosSlice';
 import uiReducer from './slices/uiSlice'
 import soundReducer from './slices/soundSlice';
 import negociacaoReducer from './slices/negociacoesSlice'
+import todoReducer from './slices/todoSlice';
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
     ui: uiReducer,
     sound: soundReducer,
     negociacao: negociacaoReducer,
+    todo: todoReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
