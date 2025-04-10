@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import {deleteTarefa, fetchTarefas, updateTarefa} from '@/store/slices/todoSlice';
 import TodoDrawer from './TodoDrawer';
 import { format, isSameDay, isThisMonth, isThisWeek} from 'date-fns';
+import styles from './styles.module.css';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -139,11 +140,18 @@ const TodoList: React.FC = () => {
             title: 'Título',
             dataIndex: 'title',
             key: 'title',
-            render: (text: string, record: any) => (
-                <Tooltip title={record.description|| 'Sem descrição'}>
-                    <span style={{ textDecoration: record.completed ? 'line-through' : 'none' }}>{text}</span>
-                </Tooltip>
-            ),
+            render: (text: string, record: any) => {
+                const atrasada = record.end_time && new Date(record.end_time) < new Date() && !record.completed;
+                return (
+                    <Tooltip title={record.description || 'Sem descrição'}>
+        <span style={{ textDecoration: record.completed ? 'line-through' : 'none' }}>
+          {record.completed ? '✔ ' : ''}
+            {atrasada ? '🔥 ' : ''}
+            {text}
+        </span>
+                    </Tooltip>
+                );
+            },
         },
         {
             title: 'Urgência',
@@ -299,6 +307,14 @@ const TodoList: React.FC = () => {
                 rowKey="id"
                 loading={status === 'loading'}
                 pagination={{ pageSize: 10 }}
+                rowClassName={(record: any) => {
+                    const now = new Date();
+                    const end = record.end_time ? new Date(record.end_time) : null;
+
+                    if (record.completed) return styles['tarefa-concluida'];
+                    if (end && end < now && !record.completed) return styles['tarefa-atrasada'];
+                    return '';
+                }}
             />
 
             <TodoDrawer

@@ -6,3 +6,12 @@
     width: 100vw;
 }
 
+.tarefa-concluida {
+    background-color: #f5f5f5 !important;
+    opacity: 0.7;
+    text-decoration: line-through;
+}
+
+.tarefa-atrasada {
+    background-color: #fff0f0 !important;
+}
