@@ -8,6 +8,8 @@ import {deleteTarefa, fetchTarefas, updateTarefa} from '@/store/slices/todoSlice
 import TodoDrawer from './TodoDrawer';
 import { format, isSameDay, isThisMonth, isThisWeek} from 'date-fns';
 import styles from './styles.module.css';
+import { DatePicker } from 'antd';
+const { RangePicker } = DatePicker;
 
 const { Search } = Input;
 const { Option } = Select;
@@ -26,6 +28,8 @@ const TodoList: React.FC = () => {
         mostrarConcluidas: boolean;
         repeticao: RepeticaoFiltro;
         periodo: PeriodoFiltro;
+        dataInicio: Date | null;
+        dataFim: Date | null;
     }>({
         cliente: null,
         urgencia: null,
@@ -33,6 +37,9 @@ const TodoList: React.FC = () => {
         mostrarConcluidas: false,
         repeticao: null,
         periodo: null,
+        dataInicio: null,
+        dataFim: null,
+
     });
 
 
@@ -74,6 +81,8 @@ const TodoList: React.FC = () => {
                     mostrarConcluidas: parsed.mostrarConcluidas ?? false,
                     repeticao: parsed.repeticao || null,
                     periodo: parsed.periodo || null,
+                    dataInicio: parsed.dataInicio || null,
+                    dataFim: parsed.dataFim || null,
                 });
             }
         } catch (e) {
@@ -115,6 +124,13 @@ const TodoList: React.FC = () => {
                 filtros.repeticao === 'unica' ? !ehRecorrente :
                     true;
 
+        const atendeDataPersonalizada =
+            (!filtros.dataInicio && !filtros.dataFim) ||
+            (
+                (!filtros.dataInicio || (t.end_time && new Date(t.end_time) >= filtros.dataInicio)) &&
+                (!filtros.dataFim || (t.end_time && new Date(t.end_time) <= filtros.dataFim))
+            );
+
         const visivelPorConclusao = filtros.mostrarConcluidas || !t.completed;
 
         const end = t.end_time ? new Date(t.end_time) : null;
@@ -128,6 +144,7 @@ const TodoList: React.FC = () => {
             atendeRepeticao &&
             visivelPorConclusao &&
             atendePeriodo &&
+            atendeDataPersonalizada && // ✅ novo filtro
             t.title.toLowerCase().includes(filtros.busca.toLowerCase()) &&
             (!filtros.cliente || t.cliente === filtros.cliente.value) &&
             (!filtros.urgencia || t.urgency === filtros.urgencia)
@@ -255,7 +272,7 @@ const TodoList: React.FC = () => {
                 </Select>
 
                 <Select
-                    placeholder="Filtrar por período"
+                    placeholder="🖊️ Filtrar por período"
                     value={filtros.periodo}
                     onChange={(val) => setFiltros((prev) => ({ ...prev, periodo: val }))}
                     style={{ width: 120 }}
@@ -265,7 +282,18 @@ const TodoList: React.FC = () => {
                     <Option value="semana">Esta semana</Option>
                     <Option value="mes">Este mês</Option>
                 </Select>
-
+                <RangePicker
+                    style={{ width: 280 }}
+                    onChange={(dates) => {
+                        const [start, end] = dates || [];
+                        setFiltros((prev) => ({
+                            ...prev,
+                            dataInicio: start ? start.toDate() : null,
+                            dataFim: end ? end.toDate() : null,
+                        }));
+                    }}
+                    placeholder={['Data início', 'Data fim']}
+                />
 
                 <div style={{ width: 250 }}>
                     <Select

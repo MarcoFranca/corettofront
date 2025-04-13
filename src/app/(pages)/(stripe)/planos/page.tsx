@@ -1,88 +1,122 @@
-'use client'
-import api from '@/app/api/axios';  // Supondo que api é o axios configurado para a sua API
-import { useSelector, useDispatch } from 'react-redux';
-import { useEffect, useState } from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
+import api from '@/app/api/axios';
 import { useRouter } from 'next/navigation';
-import { setTokenFromLocalStorage, setUserFromLocalStorage } from '@/store/slices/authSlice';
-import {AuthState, Plano} from "@/types/interfaces";  // Importe o tipo RootState
+import { Plano } from '@/types/interfaces';
+import PlanCard from "@/app/(pages)/(stripe)/planos/PlanCard";
+import {FaBolt, FaShieldAlt, FaUserCheck} from "react-icons/fa";
+
+import {
+    PageWrapper,
+    Title,
+    CardContainer,
+    DifferentialItem,
+    DifferentialsSection,
+    Subtitle,
+    FooterInfo,
+    Logo,
+    TopBar,
+    BackButton, TopBarContant, TopBartext, TopBarContainer
+} from "@/app/(pages)/(stripe)/planos/Planos.styles";
+import LogoIcon from '../../../../../public/assets/logoIcons/Icone_logo.svg'
 
 export default function PlansPage() {
     const [plans, setPlans] = useState<Plano[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const router = useRouter();
-    const dispatch = useDispatch();
-
-    // Defina o tipo do estado corretamente
-    const { token } = useSelector((state: { auth: AuthState }) => state.auth);
-    const isAuthenticated = !!token?.access;
-
-    useEffect(() => {
-        // Carregar o token e o usuário do localStorage
-        dispatch(setTokenFromLocalStorage());
-        dispatch(setUserFromLocalStorage());
-    }, [dispatch]);
 
     useEffect(() => {
         const fetchPlans = async () => {
             try {
                 const response = await api.get('/pagamentos/planos/');
                 setPlans(response.data);
-                setLoading(false);
-            } catch (error) {
-                setError('Erro ao carregar planos. Tente novamente mais tarde.');
+            } catch {
+                setError('Erro ao carregar planos.');
+            } finally {
                 setLoading(false);
             }
         };
+
         fetchPlans();
     }, []);
 
     const handleSelectPlan = async (price_id: string, plano_id: string) => {
-        if (!isAuthenticated) {
-            router.push('/login');
-            return;
-        }
-
         try {
             const response = await api.post('/pagamentos/create-checkout-session/', {
                 price_id,
                 plano_id,
             });
-
-            if (response.data && response.data.checkout_url) {
-                // Redirecionar para o URL gerado pelo Stripe
-                router.push(response.data.checkout_url);
-            } else {
-                setError('Erro ao iniciar o checkout. Tente novamente mais tarde.');
-            }
-        } catch (error) {
-            setError('Erro ao processar o pagamento. Tente novamente mais tarde.');
+            router.push(response.data.checkout_url);
+        } catch {
+            setError('Erro ao redirecionar para o checkout.');
         }
     };
 
     return (
-        <div>
-            <h1>Escolha seu Plano</h1>
+        <PageWrapper>
+            <TopBar>
+                <TopBarContainer>
+                    <BackButton onClick={() => router.push('/dashboard')}>
+                        ← Voltar ao sistema
+                    </BackButton>
+                    <TopBarContant>
+                        <Logo src={LogoIcon} alt="CorretorLab" priority />
+                        <TopBartext>
+                            <strong style={{ fontSize: '1rem', color: '#042a75' }}>CorretorLab</strong>
+                            <small style={{ fontSize: '0.85rem', color: '#666' }}>
+                                CRM especializado para corretores de seguros
+                            </small>
+                        </TopBartext>
+                    </TopBarContant>
+                </TopBarContainer>
+            </TopBar>
+            <Title>Escolha o Plano Ideal</Title>
+            <Subtitle>
+                Uma única assinatura para transformar sua corretora. Simplifique sua rotina, aumente sua produtividade
+                e ofereça uma experiência premium aos seus clientes.
+            </Subtitle>
             {loading ? (
-                <p>Carregando planos...</p>
+                <p>Carregando...</p>
             ) : error ? (
                 <p>{error}</p>
             ) : (
-                <div>
+                <CardContainer>
                     {plans.map((plan) => (
-                        <div key={plan.id}>
-                            <h2>{plan.nome}</h2>
-                            <p>{plan.descricao}</p>
-                            <p>Preço: R$ {plan.preco}</p>
-                            <button
-                                onClick={() => handleSelectPlan(plan.stripe_price_id, plan.id)}
-                            >
-                                Escolher Plano
-                            </button>
-                        </div>
+                        <PlanCard
+                            key={plan.id}
+                            nome={plan.nome}
+                            descricao={plan.descricao}
+                            preco={Number(plan.preco).toFixed(2).replace('.', ',')}
+                            beneficios={[
+                                'CRM focado em seguros',
+                                'Gestão de leads e apólices',
+                                'Integração com Google Agenda',
+                                'Acesso ao portal de pagamento',
+                            ]}
+                            onSelect={() => handleSelectPlan(plan.stripe_price_id, plan.id)}
+                            destaque={plan.nome.toLowerCase().includes('mensal')}
+                        />
                     ))}
-                </div>
+                </CardContainer>
             )}
-        </div>
+            <DifferentialsSection>
+                <DifferentialItem>
+                    <FaUserCheck size={28} />
+                    <p>Desenvolvido para corretores</p>
+                </DifferentialItem>
+                <DifferentialItem>
+                    <FaBolt size={28} />
+                    <p>Ativação imediata</p>
+                </DifferentialItem>
+                <DifferentialItem>
+                    <FaShieldAlt size={28} />
+                    <p>Segurança de nível bancário</p>
+                </DifferentialItem>
+            </DifferentialsSection>
+            <FooterInfo>
+                Dúvidas? <a href="mailto:suporte@corretorlab.com">Fale com nosso suporte</a>
+            </FooterInfo>
+        </PageWrapper>
     );
 }

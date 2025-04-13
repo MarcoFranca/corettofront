@@ -14,8 +14,7 @@ import {
     ConsorcioContainer, TableChart,
     TableChartTable
 } from "@/app/(pages)/dashboard/(painel_admin)/apolices/consorcio/ApolicesPage.styles";
-import {CardsContainer} from "@/app/components/users/PERFIL/profiles.styled";
-import {Title} from "chart.js";
+import {CardsContainer} from "@/app/(pages)/dashboard/(painel_admin)/perfil/(components)/PERFIL/profiles.styled";
 
 interface Stats {
     total_apolices: number;

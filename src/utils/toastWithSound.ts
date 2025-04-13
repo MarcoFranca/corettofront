@@ -13,3 +13,8 @@ export const toastError = (message: string | ReactNode, options?: ToastOptions) 
     store.dispatch(playSound("error"));
     toast.error(message, options);
 };
+
+export const toastWarning = (message: string | ReactNode, options?: ToastOptions) => {
+    store.dispatch(playSound("error"));
+    toast.warning(message, options);
+};

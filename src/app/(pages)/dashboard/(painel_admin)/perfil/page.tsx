@@ -1,6 +1,6 @@
 'use client';
 
-import ProfilePage from "@/app/components/users/PERFIL/page";
+import ProfilePage from "@/app/(pages)/dashboard/(painel_admin)/perfil/(components)/PERFIL/page";
 
 const PerfilPage = () => {
 

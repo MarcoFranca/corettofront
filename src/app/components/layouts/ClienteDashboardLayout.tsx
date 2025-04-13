@@ -80,7 +80,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
                 setPlanoAtivo(isPlanoAtivo);
 
-                if (!isPlanoAtivo) {
+                const isAlreadyInPerfil = pathname?.includes('/dashboard/perfil');
+
+                if (!isPlanoAtivo && !isAlreadyInPerfil) {
                     setMessage('Seu plano está inativo. Por favor, escolha um plano para continuar.');
                     router.push('/dashboard/perfil/');
                 }
@@ -93,7 +95,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         }
 
         fetchProfileAndPlanStatus();
-    }, [router]);
+    }, [pathname]); // 🔥 Adicionamos o pathname aqui
+
 
     useEffect(() => {
         if (!loading && (!user || !token?.access)) {

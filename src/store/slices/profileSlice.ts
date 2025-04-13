@@ -8,8 +8,9 @@ interface ProfileState {
             last_name: string;
             username: string;
         };
-        foto?: string | File; // Ajustado para aceitar ambos os tipos.
+        foto?: string | File;
         assinatura_status: string;
+        email_confirmado?: boolean;
         plano?: {
             nome: string;
             descricao: string;

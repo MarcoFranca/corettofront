@@ -9,7 +9,7 @@ import LogoImag from "../../../../../public/assets/logoIcons/Logo_transparente_e
 import Image from "next/image";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import {toast} from "react-toastify"; // Ícones de olho
+import {toastError, toastSuccess, toastWarning} from "@/utils/toastWithSound"; // Ícones de olho
 
 export default function RegisterForm() {
     const [username, setUsername] = useState('');
@@ -17,7 +17,6 @@ export default function RegisterForm() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
     const dispatch = useDispatch();
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
@@ -26,76 +25,56 @@ export default function RegisterForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setMessage('');
 
         if (password !== confirmPassword) {
-            toast.warning('⚠️ As senhas não coincidem.');
+            toastWarning('⚠️ As senhas não coincidem.');
             setLoading(false);
             return;
         }
 
         if (username.length < 3) {
-            toast.warning('⚠️ O nome de usuário deve ter pelo menos 3 caracteres.');
+            toastWarning('⚠️ O nome de usuário deve ter pelo menos 3 caracteres.');
             setLoading(false);
             return;
         }
 
-
         try {
-            await api.post('/create_user/', { username, email, password });
-
-            const tokenData = new URLSearchParams();
-            tokenData.append('grant_type', 'password');
-            tokenData.append('username', username);
-            tokenData.append('password', password);
-            tokenData.append('client_id', process.env.NEXT_PUBLIC_CLIENT_ID || '');
-            tokenData.append('client_secret', process.env.NEXT_PUBLIC_CLIENT_SECRET || '');
-
-            const { data } = await api.post('/o/token/', tokenData, {
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            });
-
-            dispatch(setToken({ access: data.access_token, refresh: data.refresh_token }));
-
-            const userDetails = await api.get('/user_detail/', {
-                headers: { Authorization: `Bearer ${data.access_token}` },
-            });
-
-            dispatch(setUser({
-                id: userDetails.data.id,
+            const response = await api.post('/create_user/', {
                 username,
                 email,
-                profileImage: userDetails.data.profileImage || '',
-            }));
+                password,
+            });
 
-            toast.success('🥳 Usuário cadastrado e autenticado com sucesso! 🎉🎊')
+            const {
+                access_token,
+                refresh_token,
+                user,
+            } = response.data;
 
-            const price_id = process.env.NEXT_PUBLIC_PRICE_ID || '';
-            const plano_id = process.env.NEXT_PUBLIC_PLANO_ID || '';
-            await handleCheckout(price_id, plano_id);
+            // Salva os tokens temporários
+            sessionStorage.setItem('accessToken', access_token);
+            sessionStorage.setItem('refreshToken', refresh_token);
+
+            // Opcional: se quiser salvar user temporário no Redux
+            dispatch(setToken({ access: access_token, refresh: refresh_token }));
+            dispatch(setUser(user));
+
+            toastSuccess('📩 Cadastro realizado! Enviamos um link de confirmação para seu e-mail.');
+            router.push('/aguardando-confirmacao');
         } catch (error: any) {
-            console.error('Erro ao cadastrar ou autenticar usuário:', error);
-
-            if (error.response && error.response.data) {
-                // 🎯 Mapeia erros específicos vindos do backend
+            if (error.response?.data) {
                 const errors = error.response.data;
-
-                if (errors.username) {
-                    toast.error(`❌ ${errors.username}`);
-                }
-                if (errors.email) {
-                    toast.error(`❌ ${errors.email}`);
-                }
-                if (errors.password) {
-                    toast.error(` ${errors.password}`);
-                }
+                if (errors.username) toastError(`❌ ${errors.username}`);
+                if (errors.email) toastError(`❌ ${errors.email}`);
+                if (errors.password) toastError(`❌ ${errors.password}`);
             } else {
-                toast.error('🚨 Erro ao cadastrar usuário. Verifique os dados e tente novamente.');
+                toastError('🚨 Erro ao cadastrar usuário. Verifique os dados e tente novamente.');
             }
         } finally {
             setLoading(false);
         }
     };
+
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -103,27 +82,6 @@ export default function RegisterForm() {
 
     const toggleConfirmPasswordVisibility = () => {
         setShowConfirmPassword(!showConfirmPassword);
-    };
-
-    const handleCheckout = async (price_id: string, plano_id: string) => {
-        console.log('price_id:', price_id, 'plano_id:', plano_id);
-        try {
-            const response = await api.post('/pagamentos/create-checkout-session/', {
-                price_id,
-                plano_id,
-            });
-
-            if (response.data && response.data.checkout_url) {
-                router.push(response.data.checkout_url);
-            } else {
-                setMessage('Erro ao redirecionar para o pagamento. Tente novamente mais tarde.');
-                toast.error('🚨 Erro ao redirecionar para o pagamento. Tente novamente mais tarde. 🚨')
-            }
-        } catch (error) {
-            console.error('Erro ao iniciar o checkout:', error);
-            setMessage('Erro ao redirecionar para o pagamento.');
-            toast.error('🚨 Erro ao redirecionar para o pagamento. 🚨')
-        }
     };
 
     return (
