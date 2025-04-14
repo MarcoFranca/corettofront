@@ -60,6 +60,7 @@ export default function RegisterForm() {
             const { access_token, refresh_token, user } = response.data;
             sessionStorage.setItem('accessToken', access_token);
             sessionStorage.setItem('refreshToken', refresh_token);
+            sessionStorage.setItem('userEmail', email);
 
             dispatch(setToken({ access: access_token, refresh: refresh_token }));
             dispatch(setUser(user));

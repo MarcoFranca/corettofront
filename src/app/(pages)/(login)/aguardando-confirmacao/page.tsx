@@ -1,55 +1,63 @@
 'use client';
-import styled, { keyframes } from 'styled-components';
-import Image from 'next/image';
-import { FaRegEnvelopeOpen } from 'react-icons/fa';
-import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
-
-const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f9fafc;
-    padding: 2rem;
-    text-align: center;
-`;
-
-const Title = styled.h1`
-    font-size: 2.2rem;
-    color: #042a75;
-    margin: 1.5rem 0 1rem;
-`;
-
-const Message = styled.p`
-  font-size: 1.2rem;
-  color: #333;
-  max-width: 480px;
-`;
-
-const pulse = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
-`;
-
-const EnvelopeIcon = styled(FaRegEnvelopeOpen)`
-  font-size: 3rem;
-  color: #33cccc;
-  animation: ${pulse} 2s infinite;
-  margin-bottom: 1rem;
-`;
+import { useEffect, useState } from 'react';
+import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escuro_horizontal.svg';
+import {
+    Title,
+    Logo,
+    Card,
+    ResendLink,
+    EnvelopeIcon,
+    Message,
+    Container,
+} from "@/app/(pages)/(login)/aguardando-confirmacao/AguardandoConfirmacao.styled";
+import api from "@/app/api/axios";
+import { toast } from 'react-toastify';
+import {Spinner} from "@/app/(pages)/(login)/login/LoginForm.styled";
 
 export default function AguardandoConfirmacao() {
+    const [email, setEmail] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const storedEmail = sessionStorage.getItem('userEmail');
+        if (storedEmail) {
+            setEmail(storedEmail);
+        }
+    }, []);
+
+    const handleResend = async () => {
+        if (!email) {
+            toast.error('❌ Não foi possível recuperar seu e-mail. Faça login novamente.');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await api.post('/reenviar-confirmacao/', { email });
+
+            toast.success(response.data.message || '📨 Novo e-mail de confirmação enviado!');
+        } catch (error: any) {
+            const msg = error?.response?.data?.error || error?.response?.data?.message || 'Erro ao reenviar o e-mail.';
+            toast.error(`🚨 ${msg}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <Container>
-            <Image src={LogoImag} alt="Logo CorretorLab" width={150} height={150} />
-            <EnvelopeIcon />
-            <Title>Quase lá! 🚀</Title>
-            <Message>
-                Enviamos um link de confirmação para <strong>seu e-mail</strong>. <br />
-                Por favor, verifique sua caixa de entrada e clique no link para ativar sua conta.
-            </Message>
+            <Card>
+                <Logo src={LogoImag} alt="Logo CorretorLab" width={150} height={150} priority />
+                <EnvelopeIcon />
+                <Title>Quase lá! 🚀</Title>
+                <Message>
+                    Enviamos um link de confirmação para <strong>{email ?? 'seu e-mail'}</strong>.<br />
+                    Verifique sua caixa de entrada e clique no link para ativar sua conta.
+                </Message>
+                <ResendLink onClick={handleResend} disabled={loading}>
+                    {loading ? <>Reenviando... <Spinner /></> : 'Reenviar e-mail de confirmação'}
+                </ResendLink>
+            </Card>
         </Container>
     );
 }
