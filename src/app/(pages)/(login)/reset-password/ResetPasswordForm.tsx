@@ -1,48 +1,72 @@
-'use client'
-import React, {useState} from "react";
+'use client';
+
+import { useState } from "react";
 import api from "@/app/api/axios";
-import styles from "@/app/(pages)/(login)/reset-password/styles.module.css";
+import {
+    FormWrapper,
+    StyledForm,
+    StyledImage,
+    StyledTitle,
+    StyledParagraph,
+    StyledInput,
+    StyledButton,
+    Message,
+    StyledLink,
+    BackToLogin, Spinner
+} from "./ResetPassword.styled";
+
 import CadeadoImage from "../../../../../public/assets/common/cadeado.png";
-import Image from "next/image";
-import Link from "next/link";
+
 
 export default function ResetPasswordForm() {
-
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true); // <--- Adiciona aqui
         try {
-            const response = await api.post('/password_reset/', { email });
-
-            setMessage('Se um usuário com esse e-mail existir, um link de redefinição de senha será enviado.');
+            await api.post('/password_reset/', { email });
+            setMessage('📩 Se um usuário com esse e-mail existir, um link de redefinição de senha será enviado.');
         } catch (error) {
-            setMessage('Erro ao solicitar redefinição de senha. Tente novamente.');
+            setMessage('🚨 Erro ao solicitar redefinição de senha. Tente novamente.');
             console.error('Erro ao solicitar redefinição de senha:', error);
+        } finally {
+            setLoading(false); // <--- Finaliza aqui
         }
     };
 
-    return(
-        <div className={styles.container_form}>
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <Image src={CadeadoImage} alt={'Cadeado'} className={styles.image}/>
-                <h1>Problemas para entrar?</h1>
-                <p>Insira o seu email e enviaremos um link para você voltar a acessar a sua conta.</p>
-                <input
+
+    return (
+        <FormWrapper>
+            <StyledForm onSubmit={handleSubmit}>
+                <StyledImage src={CadeadoImage} alt="Cadeado" priority />
+                <StyledTitle>Problemas para entrar?</StyledTitle>
+                <StyledParagraph>
+                    Insira o seu e-mail e enviaremos um link para você voltar a acessar sua conta.
+                </StyledParagraph>
+                <StyledInput
                     type="email"
-                    placeholder="Email"
+                    placeholder="Seu e-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={styles.input}
                     required
                 />
-                <button type="submit" className={styles.button}>Enviar Link para login</button>
-                <p>ou</p>
-                <Link href={'/register'}>Criar nova conta</Link>
-                {message && <p className={styles.message}>{message}</p>}
-            </form>
-               <Link className={styles.login} href={'/login'}> Voltar ao Login</Link>
-        </div>
-    )
+                <StyledButton type="submit" disabled={loading}>
+                    {loading ? (
+                        <>
+                            Enviando... <Spinner />
+                        </>
+                    ) : (
+                        'Enviar link de acesso'
+                    )}
+                </StyledButton>
+                <StyledParagraph style={{ marginBottom: "0.5rem" }}>ou</StyledParagraph>
+                <StyledLink href="/register">Criar nova conta</StyledLink>
+                {message && <Message>{message}</Message>}
+            <BackToLogin href="/login">← Voltar ao Login</BackToLogin>
+            </StyledForm>
+        </FormWrapper>
+    );
 }

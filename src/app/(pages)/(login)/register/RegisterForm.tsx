@@ -1,15 +1,27 @@
-'use client'
-import React, { useState } from "react";
+// src/app/(pages)/(login)/register/RegisterForm.tsx
+'use client';
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/app/api/axios";
 import { useDispatch } from 'react-redux';
 import { setUser, setToken } from '@/store/slices/authSlice';
-import styles from './styles.module.css';
-import LogoImag from "../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg";
-import Image from "next/image";
-import Link from "next/link";
+import {
+    FormWrapper,
+    StyledForm,
+    StyledLogo,
+    StyledInput,
+    InputWrapper,
+    TogglePasswordIcon,
+    StyledButton,
+    Spinner,
+    WelcomeText,
+    SwitchText,
+} from './RegisterForm.styled';
+import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import {toastError, toastSuccess, toastWarning} from "@/utils/toastWithSound"; // Ícones de olho
+import Link from "next/link";
+import { toastError, toastSuccess, toastWarning } from "@/utils/toastWithSound";
 
 export default function RegisterForm() {
     const [username, setUsername] = useState('');
@@ -17,10 +29,10 @@ export default function RegisterForm() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const dispatch = useDispatch();
-    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const router = useRouter();
+    const dispatch = useDispatch();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,17 +57,10 @@ export default function RegisterForm() {
                 password,
             });
 
-            const {
-                access_token,
-                refresh_token,
-                user,
-            } = response.data;
-
-            // Salva os tokens temporários
+            const { access_token, refresh_token, user } = response.data;
             sessionStorage.setItem('accessToken', access_token);
             sessionStorage.setItem('refreshToken', refresh_token);
 
-            // Opcional: se quiser salvar user temporário no Redux
             dispatch(setToken({ access: access_token, refresh: refresh_token }));
             dispatch(setUser(user));
 
@@ -75,84 +80,63 @@ export default function RegisterForm() {
         }
     };
 
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
-    const toggleConfirmPasswordVisibility = () => {
-        setShowConfirmPassword(!showConfirmPassword);
-    };
-
     return (
-        <div className={styles.container_form}>
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <Image src={LogoImag} alt={'logotipo'} className={styles.image}/>
-                <p>Cadastre-se e descubra o poder do CRM especializado para corretores.</p>
+        <FormWrapper>
+            <StyledForm onSubmit={handleSubmit}>
+                <StyledLogo src={LogoImag} alt="Logo CorretorLab" priority />
+                <WelcomeText>
+                    🚀 Crie sua conta e descubra o poder de um CRM feito para corretores!
+                </WelcomeText>
 
-                <input
+                <StyledInput
                     type="email"
-                    placeholder="Email"
+                    placeholder="Seu e-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={styles.input}
                     required
-                    autoComplete="off"
                 />
-
-                <input
+                <StyledInput
                     type="text"
-                    placeholder="Nome de Usuário (sem espaços)"
+                    placeholder="Nome de usuário (sem espaços)"
                     value={username}
                     onChange={(e) => setUsername(e.target.value.replace(/\s/g, ''))}
-                    className={styles.input}
                     required
-                    autoComplete="off"
                 />
-                {username.includes(" ") && (
-                    <p className={styles.errorMessage}>❌ Não use espaços no nome de usuário.</p>
-                )}
 
-                {/* Campo de Senha */}
-                <div className={styles.inputWrapper}>
-                    <input
-                        type={showPassword ? "text" : "password"}
+                <InputWrapper>
+                    <StyledInput
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Senha"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className={styles.input}
                         required
-                        autoComplete="new-password"
                     />
-                    <span className={styles.eyeIcon} onClick={togglePasswordVisibility}>
+                    <TogglePasswordIcon onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </span>
-                </div>
+                    </TogglePasswordIcon>
+                </InputWrapper>
 
-                {/* Campo de Confirmação de Senha */}
-                <div className={styles.inputWrapper}>
-                    <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirme a Senha"
+                <InputWrapper>
+                    <StyledInput
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Confirme a senha"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={styles.input}
                         required
-                        autoComplete="new-password"
                     />
-                    <span className={styles.eyeIcon} onClick={toggleConfirmPasswordVisibility}>
+                    <TogglePasswordIcon onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                         {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                    </span>
-                </div>
+                    </TogglePasswordIcon>
+                </InputWrapper>
 
-                <button type="submit" className={styles.button} disabled={loading}>
-                    {loading ? 'Processando...' : 'Cadastre-se'}
-                    {loading && <div className={styles.spinner}></div>}
-                </button>
-            </form>
-            <div className={styles.conecte}>
-                <p>Tem uma conta? <Link href={'/login'}>Conecte-se</Link></p>
-            </div>
-        </div>
+                <StyledButton type="submit" disabled={loading}>
+                    {loading ? <>Cadastrando... <Spinner /></> : 'Cadastre-se'}
+                </StyledButton>
+
+                <SwitchText>
+                    Já tem uma conta? <Link href="/login">Conecte-se</Link>
+                </SwitchText>
+            </StyledForm>
+        </FormWrapper>
     );
 }

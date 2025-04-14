@@ -1,20 +1,31 @@
-    'use client';
-
-import React, { useState } from 'react';
+'use client';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import api from '@/app/api/axios';
 import { setUser, setToken } from '@/store/slices/authSlice';
-import styles from './styles.module.css';
-import Link from "next/link";
-import Image from "next/image";
+import {
+    FormWrapper,
+    StyledLogo,
+    StyledInput,
+    PasswordWrapper,
+    TogglePasswordIcon,
+    StyledButton,
+    Spinner,
+    Message,
+    LineContainer,
+    Line,
+    ForgotPassword,
+    RegisterBox, Form,
+} from './LoginForm.styled';
 import LogoImag from '../../../../../public/assets/logoIcons/Logo_transparente_escura_vertical.svg';
-    import {toast} from "react-toastify";
-    import {FaEye, FaEyeSlash} from "react-icons/fa";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 const LoginForm = () => {
-    const [username, setUsernameState] = useState('');
-    const [password, setPasswordState] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -29,8 +40,8 @@ const LoginForm = () => {
         try {
             const response = await api.post('/login/', { username, password });
             const { access_token: access, refresh_token: refresh } = response.data;
-
             dispatch(setToken({ access, refresh }));
+
             const userResponse = await api.get('/user_detail/', {
                 headers: { Authorization: `Bearer ${access}` },
             });
@@ -39,85 +50,75 @@ const LoginForm = () => {
             localStorage.setItem('accessToken', access);
             localStorage.setItem('refreshToken', refresh);
             localStorage.setItem('user', JSON.stringify(userResponse.data));
-            toast.success('🎉 Login realizado com sucesso! Redirecionando...');
+
+            toast.success('🎉 Login realizado com sucesso!');
             router.push('/dashboard/');
-        } catch (error) {
-            console.error('Erro ao fazer login:', error);
-            if (error instanceof Error) {
-                toast.error(`🚨 ${error.message}`);
-            } else if (typeof error === "object" && error !== null && "response" in error) {
-                const axiosError = error as any; // 👈 Type assertion
-                if (axiosError.response && axiosError.response.data) {
-                    toast.error(`🚨 ${Object.values(axiosError.response.data).join(' ')}`);
-                } else {
-                    toast.error('Erro ao fazer login. Verifique suas credenciais.');
-                }
-            } else {
-                toast.error('Erro inesperado ao fazer login.');
-            }
+        } catch (error: any) {
+            console.error(error);
+            const message = error?.response?.data
+                ? Object.values(error.response.data).join(' ')
+                : 'Erro ao fazer login.';
+            toast.error(`🚨 ${message}`);
         } finally {
             setLoading(false);
         }
     };
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
     return (
-        <div className={styles.container_form}>
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <Image src={LogoImag} alt={'logotipo'} className={styles.image} priority/>
-                <input
+        <FormWrapper>
+            <Form onSubmit={handleSubmit} style={{width: '100%'}}>
+                <StyledLogo src={LogoImag} alt="Logo CorretorLab" priority/>
+                <p style={{marginBottom: '1.5rem', color: '#333', fontSize: '14px', textAlign: 'center'}}>
+                    🔐 <strong>Bem-vindo de volta!</strong><br/>
+                    Acesse sua conta para continuar usando o CorretorLab.
+                </p>
+
+                <StyledInput
                     type="text"
                     placeholder="Nome de Usuário"
                     value={username}
-                    onChange={(e) => setUsernameState(e.target.value)}
-                    className={styles.input}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
-                    autoComplete="off"
                 />
-                {username.includes(" ") && (
-                    toast.error('❌ Não use espaços no nome de usuário.')
-                )}
-                {/* Campo Senha + Ícone de Exibição */}
-                <div className={styles.passwordWrapper}>
-                    <input
-                        type={showPassword ? "text" : "password"}
+
+                <PasswordWrapper>
+                    <StyledInput
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Senha"
                         value={password}
-                        onChange={(e) => setPasswordState(e.target.value)}
-                        className={styles.input}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
-                        autoComplete="current-password"
                     />
-                    <span className={styles.eyeIcon} onClick={togglePasswordVisibility}>
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </span>
-                </div>
+                    <TogglePasswordIcon onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <FaEyeSlash/> : <FaEye/>}
+                    </TogglePasswordIcon>
+                </PasswordWrapper>
 
-                <button type="submit" className={styles.button} disabled={loading}>
-                    {loading ? 'Processando...' : 'Entrar'}
-                    {loading && <div className={styles.spinner}></div>}
-                </button>
-                {message && <p className={styles.message}>{message}</p>}
-                <div className={styles.lineContainer}>
-                    <div className={styles.line} />
-                    <p>ou</p>
-                    <div className={styles.line} />
-                </div>
-                    {/*<div className={styles.social_login}>*/}
-                    {/*    <button onClick={() => handleGoogleLogin()} className={styles.googleButton}>*/}
-                    {/*        <Image src={GoogleImag} alt={'google Icon'} className={styles.social_image}/>*/}
-                    {/*        Entrar com Google*/}
-                    {/*    </button>*/}
-                    {/*</div>*/}
-                <Link href={'/reset-password'} className={styles.sword}>Esqueceu a senha?</Link>
-            </form>
-            <div className={styles.cadastre}>
-                <p>Não tem conta?<Link href={'/register'}> Cadastre-se</Link></p>
-            </div>
-        </div>
+                <StyledButton type="submit" disabled={loading}>
+                    {loading ? (
+                        <>
+                            Entrando... <Spinner/>
+                        </>
+                    ) : (
+                        'Entrar'
+                    )}
+                </StyledButton>
+
+                {message && <Message>{message}</Message>}
+
+                <LineContainer>
+                    <Line/> <span>ou</span> <Line/>
+                </LineContainer>
+
+                <ForgotPassword as={Link} href="/reset-password">
+                    Esqueceu a senha?
+                </ForgotPassword>
+
+                <RegisterBox>
+                    Não tem conta? <Link href="/register">Cadastre-se</Link>
+                </RegisterBox>
+            </Form>
+        </FormWrapper>
     );
 };
 

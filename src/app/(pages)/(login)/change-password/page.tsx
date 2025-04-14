@@ -1,12 +1,19 @@
-// src/app/pages/change-password/page.tsx
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/app/api/axios';
-import styles from './styles.module.css';
+import {
+    PageWrapper,
+    FormCard,
+    Title,
+    StyledForm,
+    StyledInput,
+    StyledButton,
+    Message
+} from './ChangePassword.styled';
 
-const ChangePasswordPage = () => {
+export default function ChangePasswordPage() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -14,14 +21,15 @@ const ChangePasswordPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) {
-                setMessage('Você precisa estar logado para alterar a senha.');
-                return;
-            }
 
-            const response = await api.post('/change_password/', {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            setMessage('Você precisa estar logado para alterar a senha.');
+            return;
+        }
+
+        try {
+            await api.post('/change_password/', {
                 old_password: currentPassword,
                 new_password: newPassword,
             }, {
@@ -30,39 +38,37 @@ const ChangePasswordPage = () => {
                 }
             });
 
-            setMessage('Senha alterada com sucesso!');
-            router.push('/dashboard');
+            setMessage('✅ Senha alterada com sucesso!');
+            setTimeout(() => router.push('/dashboard'), 2000);
         } catch (error) {
-            setMessage('Erro ao alterar senha. Verifique suas credenciais e tente novamente.');
+            setMessage('🚨 Erro ao alterar senha. Verifique suas credenciais.');
             console.error('Erro ao alterar senha:', error);
         }
     };
 
     return (
-        <div className={styles.container}>
-            <h1>Alterar Senha</h1>
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <input
-                    type="password"
-                    placeholder="Senha Atual"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className={styles.input}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Nova Senha"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className={styles.input}
-                    required
-                />
-                <button type="submit" className={styles.button}>Alterar Senha</button>
-            </form>
-            {message && <p className={styles.message}>{message}</p>}
-        </div>
+        <PageWrapper>
+            <FormCard>
+                <Title>Alterar Senha</Title>
+                <StyledForm onSubmit={handleSubmit}>
+                    <StyledInput
+                        type="password"
+                        placeholder="Senha atual"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        required
+                    />
+                    <StyledInput
+                        type="password"
+                        placeholder="Nova senha"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                    />
+                    <StyledButton type="submit">Alterar Senha</StyledButton>
+                    {message && <Message>{message}</Message>}
+                </StyledForm>
+            </FormCard>
+        </PageWrapper>
     );
-};
-
-export default ChangePasswordPage;
+}

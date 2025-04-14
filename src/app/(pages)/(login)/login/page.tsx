@@ -1,11 +1,15 @@
-import styles from './styles.module.css';
+// LoginPage.tsx
+"use client";
+
 import LoginForm from "@/app/(pages)/(login)/login/LoginForm";
+import { PageWrapper } from "./Login.styled";
 
-export default function  LoginPage () {
+export default function LoginPage() {
     return (
-        <div className={styles.container}>
+        <PageWrapper>
             <LoginForm />
-        </div>
+        </PageWrapper>
     );
-};
 
+    // Estilo premium aplicado no styled-component "PageWrapper" no arquivo Login.styled.ts
+}
