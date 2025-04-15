@@ -141,6 +141,46 @@ const LeadTable: React.FC = () => {
         }
     };
 
+    const parceirosUnicos = Array.from(
+        new Set(
+            clientes
+                .map((c) => c.indicado_por_detalhes)
+                .filter(
+                    (i): i is NonNullable<Cliente["indicado_por_detalhes"]> =>
+                        !!i && i.tipo === "parceiro" && typeof i.nome === "string"
+                )
+                .map((i) => i.nome)
+        )
+    ).map((nome) => ({
+        text: `Parceiro: ${nome}`,
+        value: `parceiro:${nome}`,
+    }));
+
+    const clientesIndicadores = Array.from(
+        new Set(
+            clientes
+                .map((c) => c.indicado_por_detalhes)
+                .filter(
+                    (i): i is NonNullable<Cliente["indicado_por_detalhes"]> =>
+                        !!i && i.tipo === "cliente" && typeof i.nome === "string"
+                )
+                .map((i) => i.nome)
+        )
+    ).map((nome) => ({
+        text: `Cliente: ${nome}`,
+        value: `cliente:${nome}`,
+    }));
+
+
+
+
+    const filtrosFixos = [
+        { text: "Sem Indicação", value: "sem_indicacao" },
+        { text: "Indicado por Parceiro", value: "tipo:parceiro" },
+        { text: "Indicado por Cliente", value: "tipo:cliente" },
+    ];
+
+    const filtroIndicacao = [...filtrosFixos, ...parceirosUnicos, ...clientesIndicadores];
 
     const columns : ColumnsType<Cliente> = [
         {
@@ -326,7 +366,20 @@ const LeadTable: React.FC = () => {
             title: "Indicação",
             dataIndex: "indicado_por_detalhes",
             key: "indicado_por_detalhes",
-            render: (indicado_por_detalhes: any) => (
+            filters: filtroIndicacao,
+            onFilter: (value, record) => {
+                const indicacao = record.indicado_por_detalhes;
+
+                if (value === "sem_indicacao") return !indicacao;
+                if (value === "tipo:parceiro") return indicacao?.tipo === "parceiro";
+                if (value === "tipo:cliente") return indicacao?.tipo === "cliente";
+
+                if (!indicacao || typeof value !== "string") return false;
+
+                const [tipo, nome] = value.split(":");
+                return indicacao.tipo === tipo && indicacao.nome === nome;
+            },
+            render: (indicado_por_detalhes: any) =>
                 indicado_por_detalhes
                     ? indicado_por_detalhes.tipo === "cliente"
                         ? <Tooltip title={indicado_por_detalhes.nome}>
@@ -335,9 +388,9 @@ const LeadTable: React.FC = () => {
                         : <Tooltip title={indicado_por_detalhes.nome}>
                             <strong>Parceiro:</strong> {indicado_por_detalhes.nome}
                         </Tooltip>
-                    : "Sem indicação"
-            ),
-        },
+                    : "Sem indicação",
+        }
+
 
     ];
 
