@@ -233,13 +233,6 @@ const LeadTable: React.FC = () => {
             ),
         },
         {
-            title: "E-mail",
-            dataIndex: "email",
-            key: "email",
-            responsive: ['md'],
-            render: (email: string | null) => email ? email : <i style={{ color: "#999" }}>Sem e-mail</i>
-        },
-        {
             title: "Telefone",
             dataIndex: "telefone",
             key: "telefone",
@@ -303,28 +296,28 @@ const LeadTable: React.FC = () => {
             ],
             onFilter: (value: boolean | Key, record: Cliente) => record.pipeline_stage === value,
         },
-        {
-            title: "Negociação Ativa?",
-            key: "negociacao_ativa",
-            filters: [
-                { text: "Sim", value: "sim" },
-                { text: "Não", value: "nao" }
-            ],
-            onFilter: (value: boolean | Key, record: Cliente): boolean => {
-                const negociacoes = record.relacionamentos?.negociacoes || [];
-                const hasAtiva = negociacoes.some((n) => !n.encerrada);
-                return value === "sim" ? hasAtiva : !hasAtiva;
-            },
-            render: (_: any, record: Cliente) => {
-                const negociacoes = record.relacionamentos?.negociacoes || [];
-                const hasAtiva = negociacoes.some((n) => !n.encerrada);
-                return hasAtiva ? (
-                    <Tag color="blue">Ativa</Tag>
-                ) : (
-                    <Tag color="gray">Sem negociação</Tag>
-                );
-            }
-        },
+        // {
+        //     title: "Negociação Ativa?",
+        //     key: "negociacao_ativa",
+        //     filters: [
+        //         { text: "Sim", value: "sim" },
+        //         { text: "Não", value: "nao" }
+        //     ],
+        //     onFilter: (value: boolean | Key, record: Cliente): boolean => {
+        //         const negociacoes = record.relacionamentos?.negociacoes || [];
+        //         const hasAtiva = negociacoes.some((n) => !n.encerrada);
+        //         return value === "sim" ? hasAtiva : !hasAtiva;
+        //     },
+        //     render: (_: any, record: Cliente) => {
+        //         const negociacoes = record.relacionamentos?.negociacoes || [];
+        //         const hasAtiva = negociacoes.some((n) => !n.encerrada);
+        //         return hasAtiva ? (
+        //             <Tag color="blue">Ativa</Tag>
+        //         ) : (
+        //             <Tag color="gray">Sem negociação</Tag>
+        //         );
+        //     }
+        // },
         {
             title: "Apólice Ativa?",
             dataIndex: "possui_apolice_ativa",
