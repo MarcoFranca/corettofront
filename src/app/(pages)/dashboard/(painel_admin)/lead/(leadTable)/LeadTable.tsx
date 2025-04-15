@@ -27,6 +27,7 @@ import {BsThreeDotsVertical} from "react-icons/bs";
 import NegotiationWizardModal
     from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/NegotiationWizardModal";
 import IndicadoresNegociacoes from "@/app/components/strategy/IndicadoresNegociacoes";
+import ClientePerfilDrawer from "@/app/components/cliente/ClientePerfilDrawer"; // ajuste o caminho se necessário
 
 
 
@@ -40,6 +41,7 @@ const LeadTable: React.FC = () => {
     const [negociacoesModalVisible, setNegociacoesModalVisible] = useState(false);
     const [negociacoesSelecionadas, setNegociacoesSelecionadas] = useState<NegociacaoCliente[]>([]);
     const [showNegotiationWizard, setShowNegotiationWizard] = useState(false);
+    const [showClienteDrawer, setShowClienteDrawer] = useState(false);
 
     const { confirm } = useConfirm();
     const { saveBackup, getBackup } = useLeadBackup();
@@ -171,6 +173,9 @@ const LeadTable: React.FC = () => {
         value: `cliente:${nome}`,
     }));
 
+    useEffect(() => {
+        if (showClienteDrawer) dispatch(playSound("openModal"));
+    }, [showClienteDrawer, dispatch]);
 
 
 
@@ -228,9 +233,18 @@ const LeadTable: React.FC = () => {
             ellipsis: true,
             render: (_: any, record: Cliente) => (
                 <Tooltip title={`${record.nome} ${record.sobre_nome}`}>
-                    <span>{`${record.nome} ${record.sobre_nome}`}</span>
+    <span
+        style={{ cursor: "pointer", color: "#1677ff", fontWeight: 500 }}
+        onClick={() => {
+            setSelectedLead(record);
+            setShowClienteDrawer(true);
+        }}
+    >
+      {`${record.nome} ${record.sobre_nome}`}
+    </span>
                 </Tooltip>
             ),
+
         },
         {
             title: "Telefone",
@@ -397,13 +411,13 @@ const LeadTable: React.FC = () => {
                 <IndicadoresNegociacoes />
                 {tableHeight > 100 && (
 
-                <Table
-                    dataSource={filteredLeads}
-                    columns={columns}
-                    rowKey={(record) => record.id}
-                    pagination={{ pageSize: 10 }}
-                    scroll={{ x: 'max-content', y: tableHeight || 430 }} // ⬅️ isso resolve o scroll lateral!
-                />
+                    <Table
+                        dataSource={filteredLeads}
+                        columns={columns}
+                        rowKey={(record) => record.id}
+                        pagination={{ pageSize: 10 }}
+                        scroll={{ x: 'max-content', y: tableHeight || 430 }} // ⬅️ isso resolve o scroll lateral!
+                    />
                 )}
                 {selectedLead && showScheduleForm && (
                     <ScheduleMeetingForm
@@ -445,6 +459,14 @@ const LeadTable: React.FC = () => {
 
                 </Drawer>
             )}
+            {selectedLead && (
+                <ClientePerfilDrawer
+                    cliente={selectedLead}
+                    open={showClienteDrawer}
+                    onClose={() => setShowClienteDrawer(false)}
+                />
+            )}
+
 
         </>
 
