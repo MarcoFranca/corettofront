@@ -26,9 +26,13 @@ const NegociacaoTarefasTab: React.FC<Props> = ({ cliente, negociacao }) => {
 
     const carregarTarefas = () => {
         api.get(`/agenda/?negociacao=${negociacao.id}`)
-            .then(res => setTarefas(res.data))
+            .then(res => {
+                const apenasTarefas = res.data.filter((item: any) => item.entry_type === 'task');
+                setTarefas(apenasTarefas);
+            })
             .catch(() => toastError("Erro ao carregar tarefas da negociação."));
     };
+
 
     useEffect(() => {
         carregarTarefas();
