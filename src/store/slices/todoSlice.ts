@@ -8,14 +8,18 @@ export interface Tarefa {
     id: string;
     title: string;
     description?: string;
-    end_time?: string; // ✅ Aqui
-    due_date?: string;
-    urgency?: 'Low' | 'Medium' | 'High' | 'Critical';
     cliente?: string | null;
+    cliente_label?: string;
+    negociacao?: string;
+    negociacao_titulo?: string;
+    urgency?: 'Low' | 'Medium' | 'High' | 'Critical';
     completed: boolean;
     repeat?: 'none' | 'daily' | 'weekly' | 'monthly';
     repeat_count?: number;
     repeat_forever?: boolean;
+    start_time?: string;
+    end_time?: string;
+    due_date?: string;
     add_to_google_calendar: boolean;
     created_at: string;
     updated_at: string;
@@ -33,10 +37,17 @@ const initialState: TodoState = {
     error: null,
 };
 
-export const fetchTarefas = createAsyncThunk('todo/fetchTarefas', async () => {
-    const response = await api.get('/agenda/?entry_type=task');
-    return response.data;
-});
+export const fetchTarefas = createAsyncThunk(
+    'tarefas/fetchTarefas',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/agenda/');
+            return response.data;  // resposta já com cliente_label e negociacao_titulo
+        } catch (err: any) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
 
 export const createTarefa = createAsyncThunk('todo/createTarefa', async (nova: Partial<Tarefa>, { dispatch }) => {
     const response = await api.post('/agenda/', {

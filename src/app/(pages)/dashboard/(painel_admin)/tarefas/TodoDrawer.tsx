@@ -33,6 +33,7 @@ interface Props {
     onClose: () => void;
     tarefa?: any;
     modoEdicao?: boolean;
+    onCreated?: (novaTarefa: any) => void;
 }
 
 const TodoDrawer: React.FC<Props> = ({ open, onClose, tarefa, modoEdicao }) => {
@@ -97,6 +98,7 @@ const TodoDrawer: React.FC<Props> = ({ open, onClose, tarefa, modoEdicao }) => {
                 due_date: data.due_date?.toISOString(),
                 urgency: data.urgency,
                 cliente: data.cliente?.value,
+                negociacao: tarefa?.negociacao,
                 add_to_google_calendar: data.add_to_google_calendar,
                 start_time,
                 end_time,

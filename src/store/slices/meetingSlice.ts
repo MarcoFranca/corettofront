@@ -26,11 +26,11 @@ export const fetchClientMeetings = createAsyncThunk<Meeting[], string>('meetings
 export const fetchMeetingsByNegociacao = createAsyncThunk(
     'meetings/fetchByNegociacao',
     async (negociacaoId: string) => {
-        const response = await api.get(`/agenda/?negociacao=${negociacaoId}`);
-        console.log('Reunião', response.data);
-        return response.data; // ou adapte pra transformar os dados, se necessário
+        const response = await api.get(`/agenda/?negociacao=${negociacaoId}&entry_type=meeting`);
+        return response.data;
     }
 );
+
 
 
 export const createMeeting = createAsyncThunk<Meeting, Partial<Meeting>>(

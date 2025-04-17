@@ -7,10 +7,10 @@ import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
 import { fetchMeetingsByNegociacao} from '@/store/slices/meetingSlice';
 import { Cliente, NegociacaoCliente} from '@/types/interfaces';
 import { BsPlusCircle } from 'react-icons/bs';
-import {Buttons, Container, TopBar} from './NegociacaoReunioesTab.styles';
+import {Buttons, Container, TableContainer, TopBar} from './NegociacaoReunioesTab.styles';
 import {Meeting} from "@/types/AgendaInterfaces";
 import {
-    DownOutlined
+    HistoryOutlined, ThunderboltOutlined
 } from "@ant-design/icons";
 import {toastError, toastSuccess} from "@/utils/toastWithSound";
 import api from "@/app/api/axios";
@@ -34,6 +34,10 @@ const NegociacaoReunioesTab: React.FC<Props> = ({ cliente, negociacao, onReuniao
     const [novaData, setNovaData] = useState<string | null>(null);
     const [reuniaoSelecionada, setReuniaoSelecionada] = useState<Meeting | null>(null);
     const [filtroStatus, setFiltroStatus] = useState<string | null>(null);
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 5,
+    });
 
     const allMeetings = useAppSelector(state => state.meetings.meetings);
     const reunioes = allMeetings.filter((m: Meeting) => {
@@ -97,71 +101,9 @@ const NegociacaoReunioesTab: React.FC<Props> = ({ cliente, negociacao, onReuniao
 
     const columns = [
         {
-            title: 'Data',
-            dataIndex: 'start_time',
-            key: 'start_time',
-            render: (start: string) => new Date(start).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
-        },
-        {
-            title: 'Situação',
-            key: 'alerta',
-            render: (_: unknown, record: Meeting) => {
-                const passou = new Date(record.start_time) < new Date();
-                if (passou && record.status_reuniao === 'agendada') {
-                    return <Tag color="gold">Revisar status</Tag>;
-                }
-                return null;
-            },
-        },
-        {
-            title: 'Descrição',
-            dataIndex: 'description',
-            key: 'description',
-        },
-        {
-            title: 'Status',
-            dataIndex: 'status_reuniao',
-            key: 'status_reuniao',
-            render: (status: string) => {
-                const data = statusMap[status];
-                return (
-                    <Tag color={data?.color || 'default'} icon={data?.icon}>
-                        {data?.label || status}
-                    </Tag>
-                );
-            }
-        },
-        {
-            title: 'Histórico',
-            key: 'historico',
-            render: (_: unknown, record: Meeting) => (
-                <Button
-                    type="link"
-                    onClick={() => {
-                        Modal.info({
-                            title: 'Histórico de Remarcações',
-                            content: (
-                                record.historico_remarcacoes ? (
-                                    <Timeline>
-                                        {record.historico_remarcacoes.split('\n').map((item, index) => (
-                                            <Timeline.Item key={index}>{item}</Timeline.Item>
-                                        ))}
-                                    </Timeline>
-                                ) : (
-                                    <p>Sem histórico registrado.</p>
-                                )
-                            ),
-                        });
-                    }}
-                >
-                    Ver Histórico
-                </Button>
-
-            ),
-        },
-        {
             title: 'Ações',
             key: 'actions',
+            width: 70,
             render: (_: unknown, record: Meeting) => {
                 const items: MenuProps['items'] = [
                     { label: 'Confirmar', key: 'confirmada' },
@@ -210,13 +152,91 @@ const NegociacaoReunioesTab: React.FC<Props> = ({ cliente, negociacao, onReuniao
 
                 return (
                     <Dropdown menu={{ items, onClick: handleMenuClick }}>
-                        <Button>
-                            Ações <DownOutlined />
-                        </Button>
+                        <Button shape="circle" icon={<ThunderboltOutlined />} />
+
                     </Dropdown>
                 );
             },
         },
+
+        {
+            title: 'Título',
+            dataIndex: 'title',
+            key: 'title',
+            width: 100,
+            ellipsis: true,
+            render: (text: string) => text || <i style={{ color: '#aaa' }}>Sem título</i>,
+        },
+
+        {
+            title: 'Descrição',
+            dataIndex: 'description',
+            key: 'description',
+            width: 120,
+            ellipsis: true,
+        },
+
+        {
+            title: 'Situação',
+            key: 'alerta',
+            width: 110,
+            render: (_: unknown, record: Meeting) => {
+                const passou = new Date(record.start_time) < new Date();
+                if (passou && record.status_reuniao === 'agendada') {
+                    return <Tag color="gold">Revisar status</Tag>;
+                }
+                return null;
+            },
+        },
+
+        {
+            title: 'Status',
+            dataIndex: 'status_reuniao',
+            key: 'status_reuniao',
+            width: 110,
+            render: (status: string) => {
+                const data = statusMap[status];
+                return (
+                    <Tag color={data?.color || 'default'} icon={data?.icon}>
+                        {data?.label || status}
+                    </Tag>
+                );
+            }
+        },
+        {
+            title: 'Data',
+            dataIndex: 'start_time',
+            key: 'start_time',
+            width: 120,
+            render: (start: string) => new Date(start).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
+        },
+        {
+            title: '',
+            key: 'historico',
+            width: 50,
+            render: (_: unknown, record: Meeting) => (
+                <Button
+                    type="link"
+                    icon={<HistoryOutlined />}
+                    onClick={() => {
+                        Modal.info({
+                            title: 'Histórico de Remarcações',
+                            content: (
+                                record.historico_remarcacoes ? (
+                                    <Timeline>
+                                        {record.historico_remarcacoes.split('\n').map((item, index) => (
+                                            <Timeline.Item key={index}>{item}</Timeline.Item>
+                                        ))}
+                                    </Timeline>
+                                ) : (
+                                    <p>Sem histórico registrado.</p>
+                                )
+                            ),
+                        });
+                    }}
+                />
+            ),
+        }
     ]
 
     return (
@@ -225,59 +245,67 @@ const NegociacaoReunioesTab: React.FC<Props> = ({ cliente, negociacao, onReuniao
                 <h3>📅 Reuniões Vinculadas</h3>
                 <Buttons>
 
-                <Select
-                    allowClear
-                    placeholder="Filtrar por status"
-                    value={filtroStatus}
-                    onChange={setFiltroStatus}
-                    options={Object.entries(statusMap).map(([value, { label }]) => ({
-                        value,
-                        label,
-                    }))}
-                    style={{ width: 200, marginLeft: 'auto' }}
-                />
+                    <Select
+                        allowClear
+                        placeholder="Filtrar por status"
+                        value={filtroStatus}
+                        onChange={setFiltroStatus}
+                        options={Object.entries(statusMap).map(([value, { label }]) => ({
+                            value,
+                            label,
+                        }))}
+                        style={{ width: 200, marginLeft: 'auto' }}
+                    />
 
-                <Dropdown.Button
-                    type="primary"
-                    icon={<BsPlusCircle />}
-                    menu={{
-                        items: [
-                            { label: '📊 Apresentação de Proposta',
-                                key: 'apresentacao',
-                                onClick: () => criarReuniaoComModelo('apresentacao', cliente, negociacao, setEditingMeeting, setModalVisible),
-                            },
-                            { label: '🔍 Revisão de Apólice',
-                                key: 'revisao',
-                                onClick: () => criarReuniaoComModelo('revisao', cliente, negociacao, setEditingMeeting, setModalVisible),
-                            },
-                            { label: '🖋️ Reunião Presencial',
-                                key: 'presencial',
-                                onClick: () => criarReuniaoComModelo('presencial', cliente, negociacao, setEditingMeeting, setModalVisible),
-                            },
-                            { label: '🤝 Fechamento de Negócio',
-                                key: 'fechamento',
-                                onClick: () => criarReuniaoComModelo('fechamento', cliente, negociacao, setEditingMeeting, setModalVisible),
-                            },
-                        ],
-                    }}
+                    <Dropdown.Button
+                        type="primary"
+                        icon={<BsPlusCircle />}
+                        menu={{
+                            items: [
+                                { label: '📊 Apresentação de Proposta',
+                                    key: 'apresentacao',
+                                    onClick: () => criarReuniaoComModelo('apresentacao', cliente, negociacao, setEditingMeeting, setModalVisible),
+                                },
+                                { label: '🔍 Revisão de Apólice',
+                                    key: 'revisao',
+                                    onClick: () => criarReuniaoComModelo('revisao', cliente, negociacao, setEditingMeeting, setModalVisible),
+                                },
+                                { label: '🖋️ Reunião Presencial',
+                                    key: 'presencial',
+                                    onClick: () => criarReuniaoComModelo('presencial', cliente, negociacao, setEditingMeeting, setModalVisible),
+                                },
+                                { label: '🤝 Fechamento de Negócio',
+                                    key: 'fechamento',
+                                    onClick: () => criarReuniaoComModelo('fechamento', cliente, negociacao, setEditingMeeting, setModalVisible),
+                                },
+                            ],
+                        }}
 
-                    onClick={() => {
-                        setEditingMeeting(null);
-                        setModalVisible(true);
-                    }}
-                >
-                    Nova Reunião
-                </Dropdown.Button>
+                        onClick={() => {
+                            setEditingMeeting(null);
+                            setModalVisible(true);
+                        }}
+                    >
+                        Nova Reunião
+                    </Dropdown.Button>
                 </Buttons>
 
             </TopBar>
+            <TableContainer>
+                <Table
+                    columns={columns}
+                    dataSource={reunioesFiltradas}
+                    rowKey={(r) => r.id}
+                    scroll={{ y: 400 }} // 👈 define a altura do scroll aqui (em px)
+                    pagination={{
+                        ...pagination,
+                        showSizeChanger: true,
+                        pageSizeOptions: ['5', '10', '20', '50'],
+                        onChange: (page, pageSize) => setPagination({ current: page, pageSize }),
+                    }}
+                />
 
-            <Table
-                columns={columns}
-                dataSource={reunioesFiltradas}
-                rowKey={(r) => r.id}
-                pagination={false}
-            />
+            </TableContainer>
             <Modal
                 title="Remarcar Reunião"
                 open={remarcarModalVisible}

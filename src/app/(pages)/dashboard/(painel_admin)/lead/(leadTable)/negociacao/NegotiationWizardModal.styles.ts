@@ -2,9 +2,11 @@ import styled from 'styled-components';
 import { Tabs, Button } from 'antd';
 
 export const Container = styled.div`
+    display: flex;
+    flex-direction: column;
     padding: 2rem;
     background-color: #fff;
-    min-height: 100%;
+    height: 100%;
 `;
 
 export const Header = styled.div`
@@ -17,6 +19,7 @@ export const Header = styled.div`
 `;
 
 export const HeaderInfo = styled.div`
+    height: 100%;
     h2 {
         margin: 0;
         font-size: 1.8rem;
@@ -24,7 +27,7 @@ export const HeaderInfo = styled.div`
     }
 
     p {
-        margin: 0.2rem 0 0;
+        margin: 0.8rem 0 0;
         font-size: 1rem;
         color: #666;
     }
@@ -34,6 +37,7 @@ export const HeaderActions = styled.div`
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-bottom: 25px;
 
     .ant-select {
         min-width: 220px;

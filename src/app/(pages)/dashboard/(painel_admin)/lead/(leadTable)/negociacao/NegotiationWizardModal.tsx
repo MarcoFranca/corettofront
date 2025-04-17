@@ -32,6 +32,11 @@ import NegociacaoObservacoesTab
     from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoObservacoesTab";
 import NegociacaoResumoTab
     from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoResumoTab";
+import NegociacaoTarefasTab
+    from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoTarefasTab";
+import {fetchMeetingsByNegociacao} from "@/store/slices/meetingSlice";
+import NegociacaoDadosTab
+    from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/NegociacaoDadosTab";
 
 interface NegotiationWizardModalProps {
     isOpen: boolean;
@@ -134,6 +139,7 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
         }
     };
 
+
     if (!isOpen) return null;
 
     return (
@@ -190,12 +196,22 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                                         negociacao={negociacaoAtiva}
                                         cliente={cliente}
                                         onReuniaoAtualizada={async () => {
-                                            const clienteAtualizado = await dispatch(fetchClienteById(cliente.id)).unwrap();
-                                            const novaNegociacao = clienteAtualizado.relacionamentos?.negociacoes.find(
-                                                (n: NegociacaoCliente) => n.id === negociacaoAtiva?.id
-                                            );
-                                            if (novaNegociacao) setNegociacaoAtiva(novaNegociacao);
+                                            if (negociacaoAtiva?.id) {
+                                                await dispatch(fetchMeetingsByNegociacao(negociacaoAtiva.id));
+                                            }
                                         }}
+                                    />
+                                ),
+                            },
+                            // Dentro do NegotiationWizardModal.tsx
+
+                            {
+                                key: 'tarefas',
+                                label: <span><BsClipboardCheck /> Tarefas</span>,
+                                children: (
+                                    <NegociacaoTarefasTab
+                                        cliente={cliente}
+                                        negociacao={negociacaoAtiva}
                                     />
                                 ),
                             },
@@ -217,6 +233,13 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                                         cliente={cliente}
                                         negociacao={negociacaoAtiva}
                                     />
+                                ),
+                            },
+                            {
+                                key: 'dados',
+                                label: <span>👤 Dados Principais</span>,
+                                children: (
+                                    <NegociacaoDadosTab cliente={cliente} negociacao={negociacaoAtiva} />
                                 ),
                             },
                         ]}

@@ -1,14 +1,15 @@
 // components/TodoList.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
-import {Table, Button, Space, Tooltip, Tag, Input, Select, Switch, Modal} from 'antd';
-import {PlusOutlined, EditOutlined, CheckOutlined, DeleteOutlined} from '@ant-design/icons';
+import { Table, Button, Space, Tooltip, Tag, Input, Select, Switch, Modal } from 'antd';
+import { PlusOutlined, EditOutlined, CheckOutlined, DeleteOutlined, LinkOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
-import {deleteTarefa, fetchTarefas, updateTarefa} from '@/store/slices/todoSlice';
+import {deleteTarefa, fetchTarefas, Tarefa, updateTarefa} from '@/store/slices/todoSlice';
 import TodoDrawer from './TodoDrawer';
-import { format, isSameDay, isThisMonth, isThisWeek} from 'date-fns';
-import styles from './styles.module.css';
+import { format} from 'date-fns';
 import { DatePicker } from 'antd';
+import dayjs from "dayjs";
+import styles from './styles.module.css';
 const { RangePicker } = DatePicker;
 
 const { Search } = Input;
@@ -18,35 +19,52 @@ const TodoList: React.FC = () => {
     const dispatch = useAppDispatch();
     const { tarefas, status } = useAppSelector((state) => state.todo);
 
-    type RepeticaoFiltro = 'recorrente' | 'unica' | null;
-    type PeriodoFiltro = 'hoje' | 'semana' | 'mes' | '' | null;
+    function carregarFiltrosSalvos() {
+        try {
+            const salvos = JSON.parse(localStorage.getItem('filtrosTarefas') || '{}');
+            return {
+                cliente: salvos.cliente ?? '',
+                negociacao: salvos.negociacao ?? '',
+                urgencia: salvos.urgencia ?? '',
+                busca: salvos.busca ?? '',
+                mostrarConcluidas: !!salvos.mostrarConcluidas,
+                mostrarAtrasadas: !!salvos.mostrarAtrasadas,
+                dataInicio: salvos.dataInicio ? new Date(salvos.dataInicio) : null,
+                dataFim: salvos.dataFim ? new Date(salvos.dataFim) : null,
+            };
+        } catch (e) {
+            console.warn("Erro ao carregar filtros do localStorage:", e);
+            return {
+                cliente: '',
+                negociacao: '',
+                urgencia: '',
+                busca: '',
+                mostrarConcluidas: false,
+                mostrarAtrasadas: false,
+                dataInicio: null,
+                dataFim: null,
+            };
+        }
+    }
 
-    const [filtros, setFiltros] = useState<{
-        cliente: { value: string; label: string } | null;
-        urgencia: string | null;
-        busca: string;
-        mostrarConcluidas: boolean;
-        repeticao: RepeticaoFiltro;
-        periodo: PeriodoFiltro;
-        dataInicio: Date | null;
-        dataFim: Date | null;
-    }>({
-        cliente: null,
-        urgencia: null,
-        busca: '',
-        mostrarConcluidas: false,
-        repeticao: null,
-        periodo: null,
-        dataInicio: null,
-        dataFim: null,
+    const [filtros, setFiltros] = useState(carregarFiltrosSalvos());
 
-    });
+
+
+    useEffect(() => {
+        const filtrosParaSalvar = {
+            ...filtros,
+            dataInicio: filtros.dataInicio?.toISOString() ?? null,
+            dataFim: filtros.dataFim?.toISOString() ?? null,
+        };
+        localStorage.setItem('filtrosTarefas', JSON.stringify(filtrosParaSalvar));
+    }, [filtros]);
+
 
 
     const [drawerAberto, setDrawerAberto] = useState(false);
     const [modoEdicao, setModoEdicao] = useState(false);
     const [tarefaSelecionada, setTarefaSelecionada] = useState<any>(null);
-
 
     useEffect(() => {
         dispatch(fetchTarefas());
@@ -67,39 +85,6 @@ const TodoList: React.FC = () => {
         }
     };
 
-    const [inicializado, setInicializado] = useState(false);
-
-    useEffect(() => {
-        try {
-            const savedFilters = localStorage.getItem('filtrosTarefas');
-            if (savedFilters) {
-                const parsed = JSON.parse(savedFilters);
-                setFiltros({
-                    cliente: parsed.cliente || null,
-                    urgencia: parsed.urgencia || null,
-                    busca: parsed.busca || '',
-                    mostrarConcluidas: parsed.mostrarConcluidas ?? false,
-                    repeticao: parsed.repeticao || null,
-                    periodo: parsed.periodo || null,
-                    dataInicio: parsed.dataInicio || null,
-                    dataFim: parsed.dataFim || null,
-                });
-            }
-        } catch (e) {
-            console.warn("Erro ao restaurar filtros:", e);
-        } finally {
-            setInicializado(true);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (inicializado) {
-            localStorage.setItem('filtrosTarefas', JSON.stringify(filtros));
-        }
-    }, [filtros, inicializado]);
-
-
-
     const abrirNovaTarefa = () => {
         setTarefaSelecionada(null);
         setModoEdicao(false);
@@ -112,121 +97,92 @@ const TodoList: React.FC = () => {
         setDrawerAberto(true);
     };
 
-    const marcarConcluida = (tarefa: any) => {
-        dispatch(updateTarefa({ id: tarefa.id, dados: { completed: true } }));
+    const toggleConclusao = (tarefa: Tarefa) => {
+        dispatch(updateTarefa({ id: tarefa.id, dados: { completed: !tarefa.completed } }));
     };
 
 
-    const tarefasFiltradas = tarefas.filter((t) => {
-        const ehRecorrente = t.repeat && t.repeat !== 'none';
-        const atendeRepeticao =
-            filtros.repeticao === 'recorrente' ? ehRecorrente :
-                filtros.repeticao === 'unica' ? !ehRecorrente :
-                    true;
+    const tarefasFiltradas = tarefas.filter((t: Tarefa) => {
+        const atendeCliente = !filtros.cliente || (t.cliente_label?.toLowerCase().includes(filtros.cliente.toLowerCase()));
+        const atendeNegociacao = !filtros.negociacao || (t.negociacao_titulo?.toLowerCase().includes(filtros.negociacao.toLowerCase()));
+        const atendeUrgencia = !filtros.urgencia || t.urgency === filtros.urgencia;
+        const atendeBusca = t.title.toLowerCase().includes(filtros.busca.toLowerCase());
+        const atendeConcluidas = filtros.mostrarConcluidas || !t.completed;
+        const atendeAtrasadas = !filtros.mostrarAtrasadas || (t.end_time && new Date(t.end_time) < new Date() && !t.completed);
 
         const atendeDataPersonalizada =
-            (!filtros.dataInicio && !filtros.dataFim) ||
-            (
-                (!filtros.dataInicio || (t.end_time && new Date(t.end_time) >= filtros.dataInicio)) &&
-                (!filtros.dataFim || (t.end_time && new Date(t.end_time) <= filtros.dataFim))
-            );
+            (!filtros.dataInicio || (t.end_time && new Date(t.end_time) >= filtros.dataInicio)) &&
+            (!filtros.dataFim || (t.end_time && new Date(t.end_time) <= filtros.dataFim));
 
-        const visivelPorConclusao = filtros.mostrarConcluidas || !t.completed;
-
-        const end = t.end_time ? new Date(t.end_time) : null;
-        const atendePeriodo =
-            !filtros.periodo ||
-            (filtros.periodo === 'hoje' && end && isSameDay(end, new Date())) ||
-            (filtros.periodo === 'semana' && end && isThisWeek(end, { weekStartsOn: 1 })) ||
-            (filtros.periodo === 'mes' && end && isThisMonth(end));
-
-        return (
-            atendeRepeticao &&
-            visivelPorConclusao &&
-            atendePeriodo &&
-            atendeDataPersonalizada && // ✅ novo filtro
-            t.title.toLowerCase().includes(filtros.busca.toLowerCase()) &&
-            (!filtros.cliente || t.cliente === filtros.cliente.value) &&
-            (!filtros.urgencia || t.urgency === filtros.urgencia)
-        );
+        return atendeCliente && atendeNegociacao && atendeUrgencia && atendeBusca && atendeConcluidas && atendeAtrasadas && atendeDataPersonalizada;
     });
-
 
     const colunas = [
         {
             title: 'Título',
             dataIndex: 'title',
-            key: 'title',
-            render: (text: string, record: any) => {
-                const atrasada = record.end_time && new Date(record.end_time) < new Date() && !record.completed;
+            render: (text: string, record: Tarefa) => {
+                const icones = [];
+
+                if (record.negociacao_titulo) icones.push("📌");
+                if (record.completed) icones.push("✅");
+                if (!record.completed && record.end_time && new Date(record.end_time) < new Date()) icones.push("⏰");
+
                 return (
                     <Tooltip title={record.description || 'Sem descrição'}>
-        <span style={{ textDecoration: record.completed ? 'line-through' : 'none' }}>
-          {record.completed ? '✔ ' : ''}
-            {atrasada ? '🔥 ' : ''}
-            {text}
-        </span>
+            <span style={{ textDecoration: record.completed ? 'none' : 'none' }}>
+                {icones.join(' ')} {text}
+            </span>
                     </Tooltip>
                 );
             },
         },
         {
+            title: 'Cliente',
+            dataIndex: 'cliente_label',
+            render: (cliente: string) => cliente || "—",
+        },
+        {
+            title: 'Negociação',
+            dataIndex: 'negociacao_titulo',
+            render: (neg: string, record: any) => neg ? (
+                <Space>
+                    {neg}
+                    <Tooltip title="Abrir negociação">
+                        <Button size="small" icon={<LinkOutlined />} onClick={() => window.open(`/dashboard/negociacao/${record.negociacao}`, '_blank')} />
+                    </Tooltip>
+                </Space>
+            ) : '—',
+        },
+        {
             title: 'Urgência',
             dataIndex: 'urgency',
-            key: 'urgency',
-            render: (urg: string) => {
-                const cores: Record<string, string> = {
-                    Low: 'green',
-                    Medium: 'gold',
-                    High: 'orange',
-                    Critical: 'red',
-                };
-                return <Tag color={cores[urg]}>{urg}</Tag>;
-            },
+            render: (urg: string) => (
+                <Tag color={{ Low: 'green', Medium: 'gold', High: 'orange', Critical: 'red' }[urg]}>
+                    {urg}
+                </Tag>
+            ),
         },
         {
             title: 'Data Final',
             dataIndex: 'end_time',
-            key: 'end_time',
-            render: (data: string) =>
-                data
-                    ? format(new Date(data), 'dd/MM/yyyy HH:mm')
-                    : <i style={{ color: '#aaa' }}>Sem data para concluir</i>,
+            render: (data: string) => data ? format(new Date(data), 'dd/MM/yyyy HH:mm') : "—",
         },
         {
-            title: 'Concluída',
+            title: 'Status',
             dataIndex: 'completed',
-            key: 'completed',
-            render: (c: boolean) => (c ? <Tag color="blue">Sim</Tag> : <Tag color="gray">Não</Tag>),
-        },
-        {
-            title: "Repetição",
-            key: "repeat_display",
-            render: (_: any, record: any) => {
-                if (record.repeat === 'none') return <Tag>Única</Tag>;
-
-                const labels: Record<string, string> = {
-                    daily: "🔁 Diário",
-                    weekly: "📆 Semanal",
-                    monthly: "🗓️ Mensal",
-                };
-
-                return (
-                    <Space>
-                        <Tag color="purple">{labels[record.repeat]}</Tag>
-                        {record.repeat_forever
-                            ? <Tag color="blue">♾️</Tag>
-                            : record.repeat_count
-                                ? <Tag>{record.repeat_count}x</Tag>
-                                : null}
-                    </Space>
-                );
+            render: (c: boolean, record: Tarefa) => {
+                const isLate = record.end_time && new Date(record.end_time) < new Date() && !record.completed;
+                return c
+                    ? <Tag icon={<CheckOutlined />} color="green">Concluída</Tag>
+                    : isLate
+                        ? <Tag color="red">🔴 Atrasada</Tag>
+                        : <Tag color="orange">Pendente</Tag>;
             }
         },
         {
             title: 'Ações',
-            key: 'acoes',
-            render: (_: any, record: any) => (
+            render: (_: any, record: Tarefa) => (
                 <Space>
                     <Tooltip title="Editar">
                         <Button icon={<EditOutlined />} onClick={() => editarTarefa(record)} />
@@ -234,11 +190,13 @@ const TodoList: React.FC = () => {
                     <Tooltip title="Cancelar">
                         <Button danger icon={<DeleteOutlined />} onClick={() => confirmarCancelamento(record)} />
                     </Tooltip>
-                    {!record.completed && (
-                        <Tooltip title="Concluir">
-                            <Button icon={<CheckOutlined />} onClick={() => marcarConcluida(record)} />
-                        </Tooltip>
-                    )}
+                    <Tooltip title={record.completed ? "Desfazer Conclusão" : "Concluir"}>
+                        <Button
+                            icon={<CheckOutlined />}
+                            onClick={() => toggleConclusao(record)}
+                            type={record.completed ? "default" : "primary"}
+                        />
+                    </Tooltip>
                 </Space>
             ),
         },
@@ -246,112 +204,44 @@ const TodoList: React.FC = () => {
 
     return (
         <div style={{ padding: 24 }}>
-            <h2 style={{ marginBottom: 16 }}>📝 Lista de Tarefas</h2>
+            <h2>📝 Lista de Tarefas</h2>
 
             <Space style={{ marginBottom: 16, flexWrap: 'wrap' }}>
-                <Search
-                    placeholder="Buscar por título..."
-                    value={filtros.busca}
-                    onChange={(e) => setFiltros((prev) => ({ ...prev, busca: e.target.value }))}
-                    style={{ width: 250 }}
-                />
-
-                <Select
-                    placeholder="Filtrar por urgência"
-                    value={filtros.urgencia || ''}
-                    onChange={(v) =>
-                        setFiltros((prev) => ({ ...prev, urgencia: v === '' ? null : v }))
-                    }
-                    style={{ width: 100 }}
-                >
-                    <Option value="">Todos</Option>
-                    <Option value="Low">Baixa</Option>
-                    <Option value="Medium">Média</Option>
-                    <Option value="High">Alta</Option>
-                    <Option value="Critical">Crítica</Option>
-                </Select>
-
-                <Select
-                    placeholder="🖊️ Filtrar por período"
-                    value={filtros.periodo}
-                    onChange={(val) => setFiltros((prev) => ({ ...prev, periodo: val }))}
-                    style={{ width: 120 }}
-                >
-                    <Option value="">Todos</Option>
-                    <Option value="hoje">Hoje</Option>
-                    <Option value="semana">Esta semana</Option>
-                    <Option value="mes">Este mês</Option>
+                <Search placeholder="Buscar título..." onChange={e => setFiltros(f => ({ ...f, busca: e.target.value }))} style={{ width: 200 }} />
+                <Input placeholder="Filtrar por cliente" onChange={e => setFiltros(f => ({ ...f, cliente: e.target.value }))} style={{ width: 180 }} />
+                <Input placeholder="Filtrar por negociação" onChange={e => setFiltros(f => ({ ...f, negociacao: e.target.value }))} style={{ width: 180 }} />
+                <Select placeholder="Urgência" allowClear onChange={v => setFiltros(f => ({ ...f, urgencia: v }))} style={{ width: 120 }}>
+                    {['Low', 'Medium', 'High', 'Critical'].map(u => <Option key={u}>{u}</Option>)}
                 </Select>
                 <RangePicker
-                    style={{ width: 280 }}
+                    ranges={{
+                        'Hoje': [dayjs(), dayjs()],
+                        'Últimos 7 dias': [dayjs().subtract(7, 'day'), dayjs()],
+                        'Últimos 30 dias': [dayjs().subtract(30, 'day'), dayjs()],
+                        'Este mês': [dayjs().startOf('month'), dayjs().endOf('month')],
+                    }}
                     onChange={(dates) => {
-                        const [start, end] = dates || [];
-                        setFiltros((prev) => ({
-                            ...prev,
-                            dataInicio: start ? start.toDate() : null,
-                            dataFim: end ? end.toDate() : null,
+                        setFiltros(f => ({
+                            ...f,
+                            dataInicio: dates?.[0]?.toDate() || null,
+                            dataFim: dates?.[1]?.toDate() || null,
                         }));
                     }}
-                    placeholder={['Data início', 'Data fim']}
                 />
-
-                <div style={{ width: 250 }}>
-                    <Select
-                        placeholder="Filtrar por repetição"
-                        value={filtros.repeticao || ''}
-                        style={{ width: 140 }}
-                        onChange={(v) =>
-                            setFiltros((prev) => ({
-                                ...prev,
-                                repeticao: (v as 'recorrente' | 'unica' | null) || null,
-                            }))
-                        }
-                        allowClear
-                    >
-                        <Option value="">Todas</Option>
-                        <Option value="recorrente">🔁 Recorrentes</Option>
-                        <Option value="unica">📌 Não recorrentes</Option>
-                    </Select>
-
-
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Switch
-                        checked={filtros.mostrarConcluidas}
-                        onChange={(checked) => setFiltros((prev) => ({ ...prev, mostrarConcluidas: checked }))}
-                    />
-                    <span style={{ marginLeft: 8 }}>Mostrar concluídas</span>
-                </div>
-
-                <Button icon={<PlusOutlined />} type="primary" onClick={abrirNovaTarefa}>
-                    Nova Tarefa
-                </Button>
+                <Switch checked={filtros.mostrarConcluidas} onChange={c => setFiltros(f => ({ ...f, mostrarConcluidas: c }))} /> Mostrar concluídas
+                <Switch checked={filtros.mostrarAtrasadas} onChange={c => setFiltros(f => ({ ...f, mostrarAtrasadas: c }))} /> Atrasadas
+                <Button icon={<PlusOutlined />} type="primary" onClick={abrirNovaTarefa}>Nova Tarefa</Button>
             </Space>
 
             <Table
-                dataSource={tarefasFiltradas}
-                columns={colunas}
-                rowKey="id"
-                loading={status === 'loading'}
-                pagination={{ pageSize: 10 }}
-                rowClassName={(record: any) => {
-                    const now = new Date();
-                    const end = record.end_time ? new Date(record.end_time) : null;
-
+                rowClassName={(record) => {
+                    const isAtrasada = record.end_time && new Date(record.end_time) < new Date() && !record.completed;
                     if (record.completed) return styles['tarefa-concluida'];
-                    if (end && end < now && !record.completed) return styles['tarefa-atrasada'];
+                    if (isAtrasada) return styles['tarefa-atrasada'];
                     return '';
                 }}
-            />
-
-            <TodoDrawer
-                key={tarefaSelecionada?.id || 'nova'}
-                open={drawerAberto}
-                onClose={() => setDrawerAberto(false)}
-                modoEdicao={modoEdicao}
-                tarefa={tarefaSelecionada}
-            />
+                dataSource={tarefasFiltradas} columns={colunas} rowKey="id" loading={status === 'loading'} pagination={{ pageSize: 10 }} />
+            <TodoDrawer open={drawerAberto} onClose={() => setDrawerAberto(false)} modoEdicao={modoEdicao} tarefa={tarefaSelecionada} />
         </div>
     );
 };
