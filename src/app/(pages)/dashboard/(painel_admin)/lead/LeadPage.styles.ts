@@ -2,15 +2,18 @@ import styled from "styled-components";
 import Image from "next/image";
 
 
+export const Contairer = styled.div`
+position: relative;    
+`
 export const ToggleContainer = styled.div`
     display: flex;
-    position: fixed;
+    position: absolute;
     top: 0;
     justify-content: center;
     background: ${({ theme }) => theme.colors.background};
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
-    width: 90%;
+    width: 100%;
     padding: 16px;
     align-items: center;
     margin-bottom: 16px;

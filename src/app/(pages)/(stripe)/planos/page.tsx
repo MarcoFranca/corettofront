@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import api from '@/app/api/axios';
-import { useRouter } from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import { Plano } from '@/types/interfaces';
 import PlanCard from "@/app/(pages)/(stripe)/planos/PlanCard";
 import {FaBolt, FaShieldAlt, FaUserCheck} from "react-icons/fa";
@@ -19,12 +19,22 @@ import {
     BackButton, TopBarContant, TopBartext, TopBarContainer
 } from "@/app/(pages)/(stripe)/planos/Planos.styles";
 import LogoIcon from '../../../../../public/assets/logoIcons/Icone_logo.svg'
+import {toastWarning} from "@/utils/toastWithSound";
 
 export default function PlansPage() {
     const [plans, setPlans] = useState<Plano[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const router = useRouter();
+
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const cancelado = searchParams.get('cancelado');
+        if (cancelado === 'true') {
+            toastWarning('❌ Checkout cancelado. Nenhuma cobrança foi feita.');
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         const fetchPlans = async () => {

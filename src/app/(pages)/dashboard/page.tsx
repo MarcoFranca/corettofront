@@ -10,6 +10,7 @@ import { Button } from 'antd';
 import StrategicChartstegic from "@/app/(pages)/dashboard/(dash)/StrategicChartstegic";
 import StrategicCharts from "@/app/(pages)/dashboard/(dash)/StrategicCharts";
 import ProgressBars from "@/app/(pages)/dashboard/(dash)/ProgressBars";
+import TrialProgress from "@/app/components/openai/TrialProgress";
 
 type Stats = {
     clientes: {
@@ -75,6 +76,7 @@ const DashboardPage = () => {
                 <ButtonLink href="/dashboard/relatorio-negociacoes">
                     <Button type="primary">📈 Ver Relatório Estratégico Completo</Button>
                 </ButtonLink>
+                <TrialProgress/>
             </HeaderBar>
             <KpiCards stats={stats} />
             <ProgressBars

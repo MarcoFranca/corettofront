@@ -56,13 +56,11 @@ export default function ConfirmEmailPage({ params }: { params: { uidb64: string;
 
                 const assinaturaStatus = response.data.assinatura_status;
                 const accessToken = localStorage.getItem('accessToken');
-                const price_id = process.env.NEXT_PUBLIC_PRICE_ID || '';
-                const plano_id = process.env.NEXT_PUBLIC_PLANO_ID || '';
 
                 if (assinaturaStatus === 'active' || assinaturaStatus === 'trialing') {
                     localStorage.removeItem('accessToken');
                     localStorage.removeItem('refreshToken');
-                    router.push('/dashboard'); // ou onde quiser levar quem já tem plano
+                    router.push('/dashboard');
                     return;
                 }
 
@@ -72,21 +70,16 @@ export default function ConfirmEmailPage({ params }: { params: { uidb64: string;
                     return;
                 }
 
-                const checkout = await api.post(
-                    '/pagamentos/create-checkout-session/',
-                    { price_id, plano_id },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                );
+                if (assinaturaStatus === 'active') {
+                    router.push('/dashboard');
+                    return;
+                }
 
-                if (checkout.data?.checkout_url) {
-                    localStorage.removeItem('accessToken');
-                    localStorage.removeItem('refreshToken');
-                    router.push(checkout.data.checkout_url);
-                } else {
+                if (assinaturaStatus === 'trialing') {
+                    router.push('/planos'); // o usuário escolhe o plano
+                    return;
+                }
+                else {
                     toastError('🚨 Erro ao redirecionar para o checkout.');
                     router.push('/erro-checkout');
                 }
