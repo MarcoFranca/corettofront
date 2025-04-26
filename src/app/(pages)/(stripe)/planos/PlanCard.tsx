@@ -20,7 +20,7 @@ interface PlanCardProps {
     destaque?: boolean;
     modoTroca?: boolean;
     ocultarBotao?: boolean;
-    tipoAcao?: 'plano-atual' | 'upgrade' | 'downgrade' | 'cancelar-downgrade';
+    tipoAcao?: 'plano-atual' | 'upgrade' | 'downgrade' | 'cancelar-downgrade' | 'escolher-plano';
 }
 
 

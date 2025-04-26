@@ -7,6 +7,7 @@ interface ProfileState {
             first_name: string;
             last_name: string;
             username: string;
+            email: string;
         };
         foto?: string | File;
         assinatura_status: string;
@@ -17,6 +18,7 @@ interface ProfileState {
             preco: string;
             limite_subusuarios: number;
         } | null;
+        current_period_end: string | null;
     } | null;
     subUserData: { id: string; role: string; username: string } | null;
     subUsers: any[];
@@ -56,8 +58,11 @@ const profileSlice = createSlice({
         updateProfile: (state, action: PayloadAction<Partial<ProfileState['data']>>) => {
             if (state.data) {
                 state.data = { ...state.data, ...action.payload };
+            } else {
+                state.data = action.payload as ProfileState['data']; // 🔥 Se era null, cria o profile completo
             }
-        },
+        }
+
     },
     extraReducers: (builder) => {
         builder

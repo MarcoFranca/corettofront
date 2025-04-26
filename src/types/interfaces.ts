@@ -310,6 +310,19 @@ export interface User {
     email: string;
 }
 
+export interface Profile {
+    user: {
+        first_name: string;
+        last_name: string;
+        username: string;
+    };
+    foto?: string | File;
+    assinatura_status: 'active' | 'trialing' | 'inactive';
+    email_confirmado: boolean;
+    plano: Plano | null;
+    current_period_end: string | null;
+}
+
 export interface AuthState {
     user: User | null;
     token: {

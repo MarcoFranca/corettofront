@@ -23,6 +23,7 @@ import LogoIcon from '../../../../../public/assets/logoIcons/Icone_logo.svg'
 import {toastWarning} from "@/utils/toastWithSound";
 import { formatDistanceToNowStrict, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import {ExclamationCircleOutlined} from "@ant-design/icons";
 
 export default function PlansPage() {
     const [plans, setPlans] = useState<Plano[]>([]);
@@ -325,20 +326,50 @@ export default function PlansPage() {
                         if (!slugsValidos.includes(slug)) return null;
 
                         const isPlanoAtual = plan.id === planoAtualId;
-                        const temPlano = !!profile?.plano;
+                        const temPlano = profile?.assinatura_status === 'active' || (profile?.assinatura_status === 'trialing' && !!profile?.assinatura_id);
                         const precoAtual = Number(profile?.plano?.preco ?? 0);
                         const precoNovo = Number(plan.preco);
-                        const tipoAcao: 'plano-atual' | 'upgrade' | 'downgrade' | 'cancelar-downgrade' =
-                            plan.id === planoAtualId
-                                ? 'plano-atual'
-                                : plan.id === profile?.plano_agendado_id && profile?.cancel_at_period_end
-                                    ? 'cancelar-downgrade'
-                                    : precoNovo > precoAtual
-                                        ? 'upgrade'
-                                        : 'downgrade';
 
-                        console.log("🧩 Plano:", plan.nome, "→ Ação:", tipoAcao);
+                        const tipoAcao: 'plano-atual' | 'upgrade' | 'downgrade' | 'cancelar-downgrade' | 'escolher-plano' =
+                            !temPlano
+                                ? 'escolher-plano'
+                                : plan.id === planoAtualId
+                                    ? 'plano-atual'
+                                    : plan.id === profile?.plano_agendado_id && profile?.cancel_at_period_end
+                                        ? 'cancelar-downgrade'
+                                        : precoNovo > precoAtual
+                                            ? 'upgrade'
+                                            : 'downgrade';
 
+                        const handleSelecionarPlano = async () => {
+                            if (tipoAcao === 'escolher-plano') {
+                                // Checkout normal no Stripe
+                                try {
+                                    const res = await api.post('/pagamentos/create-checkout-session/', {
+                                        price_id: plan.stripe_price_id,
+                                        plano_id: plan.id,
+                                    });
+
+                                    const checkoutUrl = res.data.checkout_url;
+                                    window.location.href = checkoutUrl;
+                                } catch (err) {
+                                    console.error('Erro ao criar sessão de checkout:', err);
+                                    message.error('Erro ao criar sessão de pagamento.');
+                                }
+                            } else {
+                                // Modal de confirmação para upgrades e downgrades
+                                Modal.confirm({
+                                    title: 'Confirmar alteração de plano',
+                                    icon: <ExclamationCircleOutlined />,
+                                    content: `Esta ação pode alterar sua cobrança. Tem certeza que deseja ${tipoAcao === 'upgrade' ? 'fazer upgrade' : tipoAcao === 'downgrade' ? 'agendar downgrade' : 'alterar o plano'}?`,
+                                    okText: 'Confirmar',
+                                    okType: 'primary',
+                                    cancelText: 'Cancelar',
+                                    centered: true,
+                                    onOk: () => handleTrocaPlano(plan.id),
+                                });
+                            }
+                        };
 
                         return (
                             <PlanCard
@@ -347,13 +378,7 @@ export default function PlansPage() {
                                 descricao={plan.descricao}
                                 preco={Number(plan.preco).toFixed(2).replace('.', ',')}
                                 beneficios={beneficiosPorPlano[slug]}
-                                onSelect={() => {
-                                    if (tipoAcao === 'cancelar-downgrade') {
-                                        cancelarDowngrade();
-                                    } else {
-                                        handleTrocaPlano(plan.id);
-                                    }
-                                }}
+                                onSelect={handleSelecionarPlano} // ✅ agora é condicional!
                                 destaque={slug === 'pro'}
                                 modoTroca={temPlano}
                                 ocultarBotao={false}
@@ -361,8 +386,8 @@ export default function PlansPage() {
                             />
                         );
                     })}
-
                 </CardContainer>
+
             )}
             <DifferentialsSection>
                 <DifferentialItem>

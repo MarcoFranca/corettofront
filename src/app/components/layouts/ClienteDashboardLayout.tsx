@@ -17,6 +17,8 @@ import RouteChangeLoader from "@/app/components/ui/loading/RouteChangeLoader";
 import {setRouteLoading} from "@/store/slices/uiSlice";
 import {Modal} from "antd";
 import CoraDrawer from "@/app/components/openai/CoraDrawer";
+import {updateProfile} from "@/store/slices/profileSlice";
+import {showTrialTokensModal} from "@/app/components/popup/trialToken";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -47,27 +49,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const SidebarComponent = isClientPage ? ClientDashboardSidebar : DashboardSidebar;
 
     useEffect(() => {
-        const hasSeenPopup = localStorage.getItem('chatgptTrialShown');
-        if (!hasSeenPopup && profile) {
-            if (profile.assinatura_status === 'trialing' && profile.plano) {
-                Modal.info({
-                    title: '🎁 Você ganhou 10 chamadas de IA!',
-                    content: 'Durante seu período de avaliação, você pode experimentar nosso assistente com inteligência artificial. Deseja testar agora?',
-                    okText: 'Usar Agora',
-                    onOk: () => router.push('/dashboard/ia-chat'),
-                });
-                localStorage.setItem('chatgptTrialShown', 'true');
-            } else if (profile.assinatura_status === 'trialing' && !profile.plano) {
-                Modal.info({
-                    title: '👀 Experimente a IA!',
-                    content: 'Ative um plano e ganhe 10 chamadas para testar nosso assistente inteligente com GPT. Vamos ativar agora?',
-                    okText: 'Escolher Plano',
-                    onOk: () => router.push('/planos'),
-                });
-                localStorage.setItem('chatgptTrialShown', 'true');
-            }
+        if (!profile) return;
+
+        const hasSeenTokensModal = localStorage.getItem('trialTokensModalSeen');
+
+        const estaNoTrial = profile.assinatura_status === 'trialing';
+        const temPlano = !!profile.plano;
+        const tokensAindaNaoLiberados = !profile.trial_tokens_liberados;
+
+        if (!hasSeenTokensModal && estaNoTrial && temPlano && tokensAindaNaoLiberados) {
+            showTrialTokensModal();
         }
     }, [profile]);
+
 
 
     const handleLogout = () => {
@@ -98,6 +92,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             try {
                 const response = await api.get('/profiles/me/');
                 const profileData = response.data.profile;
+                dispatch(updateProfile(profileData));
 
                 const imageUrl = profileData.image;
                 const planoStatus = profileData.assinatura_status;
@@ -114,12 +109,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 }
 
                 setPlanoAtivo(isPlanoAtivo);
-
-                const isAlreadyInPerfil = pathname?.includes('/dashboard/perfil');
-                if (!isPlanoAtivo && !isAlreadyInPerfil) {
-                    setMessage('Seu plano está inativo. Por favor, escolha um plano para continuar.');
-                    router.push('/dashboard/perfil/');
-                }
 
                 setLoading(false);
             } catch (error) {

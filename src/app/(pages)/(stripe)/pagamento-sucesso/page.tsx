@@ -40,7 +40,7 @@ export default function PagamentoSucesso() {
                     <button className={styles.manageButton} onClick={() => router.push("/minha-assinatura")}>
                         Gerenciar Assinatura
                     </button>
-                    <button className={styles.exploreButton} onClick={() => router.push("/dashboard/config")}>
+                    <button className={styles.exploreButton} onClick={() => router.push("/dashboard")}>
                         Ir Para o Programa
                     </button>
                 </div>
