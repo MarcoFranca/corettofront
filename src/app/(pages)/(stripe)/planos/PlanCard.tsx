@@ -18,7 +18,11 @@ interface PlanCardProps {
     beneficios: string[];
     onSelect: () => void;
     destaque?: boolean;
+    modoTroca?: boolean;
+    ocultarBotao?: boolean;
+    tipoAcao?: 'plano-atual' | 'upgrade' | 'downgrade' | 'cancelar-downgrade';
 }
+
 
 
 
@@ -29,6 +33,8 @@ export default function PlanCard({
                                      beneficios,
                                      onSelect,
                                      destaque = false,
+                                     modoTroca = false,
+                                     tipoAcao,
                                  }: PlanCardProps) {
     return (
         <Card destaque={destaque}>
@@ -52,7 +58,21 @@ export default function PlanCard({
             }}>
                 * Você pode cancelar a qualquer momento
             </p>
-            <Button onClick={onSelect}>Escolher Plano</Button>
+            {tipoAcao === 'plano-atual' ? (
+                <Button disabled style={{ background: '#ccc', cursor: 'default' }}>
+                    Plano Atual
+                </Button>
+            ) : (
+                <Button onClick={onSelect}>
+                    {tipoAcao === 'cancelar-downgrade'
+                        ? 'Cancelar Downgrade'
+                        : tipoAcao === 'upgrade'
+                            ? 'Upgrade para este plano'
+                            : tipoAcao === 'downgrade'
+                                ? 'Agendar Downgrade'
+                                : 'Escolher Plano'}
+                </Button>
+            )}
         </Card>
     );
 }
