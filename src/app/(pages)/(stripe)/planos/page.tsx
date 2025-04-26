@@ -1,29 +1,33 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import api from '@/app/api/axios';
 import {useRouter, useSearchParams} from 'next/navigation';
-import { Plano } from '@/types/interfaces';
+import {Plano} from '@/types/interfaces';
 import PlanCard from "@/app/(pages)/(stripe)/planos/PlanCard";
 import {FaBolt, FaShieldAlt, FaUserCheck} from "react-icons/fa";
-import {Alert, message, Modal} from 'antd';
-
+import {message, Modal} from 'antd';
 import {
-    PageWrapper,
-    Title,
+    BackButton,
     CardContainer,
     DifferentialItem,
     DifferentialsSection,
-    Subtitle,
     FooterInfo,
     Logo,
+    PageWrapper,
+    Subtitle,
+    Title,
     TopBar,
-    BackButton, TopBarContant, TopBartext, TopBarContainer
+    TopBarContainer,
+    TopBarContant,
+    TopBartext
 } from "@/app/(pages)/(stripe)/planos/Planos.styles";
 import LogoIcon from '../../../../../public/assets/logoIcons/Icone_logo.svg'
 import {toastWarning} from "@/utils/toastWithSound";
-import { formatDistanceToNowStrict, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {formatDistanceToNowStrict, parseISO} from 'date-fns';
+import {ptBR} from 'date-fns/locale';
 import {ExclamationCircleOutlined} from "@ant-design/icons";
+import PlanoAlerts from "@/app/(pages)/(stripe)/planos/PlanoAlerts";
+
 
 export default function PlansPage() {
     const [plans, setPlans] = useState<Plano[]>([]);
@@ -36,17 +40,6 @@ export default function PlansPage() {
     const searchParams = useSearchParams();
     const slugsValidos = ['starter', 'pro', 'premium'] as const;
     const planoAtualId = profile?.plano?.id;
-
-    const cancelarDowngrade = async () => {
-        try {
-            await api.post('/pagamentos/cancelar-downgrade/');
-            message.success('Downgrade cancelado com sucesso!');
-            router.refresh();
-        } catch (err) {
-            console.error(err);
-            message.error('Erro ao cancelar downgrade. Tente novamente.');
-        }
-    };
 
 
     const beneficiosPorPlano: Record<'starter' | 'pro' | 'premium', string[]> = {
@@ -96,6 +89,7 @@ export default function PlansPage() {
             try {
                 const response = await api.get('/profiles/me/');
                 setProfile(response.data.profile);
+
             } catch {
                 console.error('Erro ao carregar o perfil');
             }
@@ -126,27 +120,6 @@ export default function PlansPage() {
         }
     };
 
-    const cancelarPlanoAtual = async () => {
-        const assinaturaId = profile?.assinatura_id;
-
-        if (!assinaturaId) {
-            message.error('Assinatura não encontrada.');
-            return;
-        }
-
-        try {
-            await api.post('/pagamentos/cancelar-assinatura/', {
-                subscription_id: assinaturaId,
-            });
-
-            message.success(`Plano cancelado! Você ainda terá acesso por ${diasRestantesTexto}.`);
-            router.refresh();
-        } catch (err) {
-            console.error(err);
-            message.error('Erro ao cancelar plano.');
-        }
-    };
-
     const diasRestantesTexto = profile?.current_period_end
         ? formatDistanceToNowStrict(parseISO(profile.current_period_end), {
             unit: 'day',
@@ -154,29 +127,6 @@ export default function PlansPage() {
             addSuffix: false
         })
         : null;
-
-    const handleReativarPlano = async () => {
-        try {
-            await api.post('/pagamentos/reativar-assinatura/');
-            message.success('Plano reativado com sucesso!');
-            router.refresh();
-        } catch (err: any) {
-            console.error(err);
-            const errorMsg = err?.response?.data?.error || 'Erro ao reativar plano.';
-            message.error(errorMsg);
-
-            if (errorMsg.includes("expirada")) {
-                Modal.confirm({
-                    title: 'Plano expirado',
-                    content: 'O período da assinatura já acabou. Você precisa escolher um novo plano.',
-                    okText: 'Ver planos',
-                    cancelText: 'Cancelar',
-                    onOk: () => router.push('/planos'),
-                });
-            }
-        }
-    };
-
 
     useEffect(() => {
 
@@ -194,6 +144,7 @@ export default function PlansPage() {
 
     return (
         <PageWrapper>
+            <PlanoAlerts profile={profile} planoFuturo={planoFuturo} />
             <TopBar>
                 <TopBarContainer>
                     <BackButton onClick={() => router.push('/dashboard')}>
@@ -210,104 +161,6 @@ export default function PlansPage() {
                     </TopBarContant>
                 </TopBarContainer>
             </TopBar>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px'}}>
-
-                {/* 🔥 Alerta de Downgrade ou Cancelamento agendado */}
-                {profile?.cancel_at_period_end && profile?.current_period_end && (
-                    <Alert
-                        message={
-                            profile?.plano_agendado_id && planoFuturo
-                                ? `🔔 Seu plano será alterado para "${planoFuturo.nome}" em ${formatDistanceToNowStrict(new Date(profile.current_period_end), {
-                                    unit: 'day',
-                                    locale: ptBR,
-                                    addSuffix: false
-                                })}.`
-                                : `🔔 Seu plano será cancelado em ${formatDistanceToNowStrict(new Date(profile.current_period_end), {
-                                    unit: 'day',
-                                    locale: ptBR,
-                                    addSuffix: false
-                                })}.`
-                        }
-                        description={
-                            profile?.plano_agendado_id && planoFuturo
-                                ? 'Se desejar manter seu plano atual, cancele o downgrade antes da data.'
-                                : 'Se desejar continuar usando o sistema, reative a sua assinatura antes da data.'
-                        }
-                        type="warning"
-                        showIcon
-                        action={
-                            <button
-                                onClick={cancelarDowngrade}
-                                style={{
-                                    marginLeft: '1rem',
-                                    backgroundColor: '#ff4d4f',
-                                    color: 'white',
-                                    border: 'none',
-                                    padding: '6px 12px',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                {profile?.plano_agendado_id ? 'Cancelar Downgrade' : 'Cancelar Cancelamento'}
-                            </button>
-                        }
-                    />
-                )}
-
-                {/* 🔁 Alerta de Plano Cancelado mas com acesso (depois do período) */}
-                {profile?.assinatura_status === 'inactive' && profile?.current_period_end && (
-                    <Alert
-                        message={`🔁 Seu plano foi cancelado. Você ainda tem acesso ao sistema por ${diasRestantesTexto}.`}
-                        description="Reative seu plano antes desse prazo e continue utilizando todos os recursos sem interrupção."
-                        type="info"
-                        showIcon
-                        action={
-                            <button
-                                onClick={handleReativarPlano}
-                                style={{
-                                    marginLeft: '1rem',
-                                    backgroundColor: '#1677ff',
-                                    color: 'white',
-                                    border: 'none',
-                                    padding: '6px 12px',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Reativar Plano
-                            </button>
-                        }
-                    />
-                )}
-
-                {/* ✅ Alerta para usuários ativos/trialing normais */}
-                {((profile?.assinatura_status === 'active' || profile?.assinatura_status === 'trialing') && !profile?.cancel_at_period_end) && (
-                    <Alert
-                        message={`✅ Sua assinatura está ativa!`}
-                        description="Se desejar, você pode agendar o cancelamento para o final do período."
-                        type="success"
-                        showIcon
-                        action={
-                            <button
-                                onClick={cancelarPlanoAtual}
-                                style={{
-                                    marginLeft: '1rem',
-                                    backgroundColor: '#ff4d4f',
-                                    color: 'white',
-                                    border: 'none',
-                                    padding: '6px 12px',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Agendar Cancelamento
-                            </button>
-                        }
-                    />
-                )}
-
-            </div>
-
 
             <Title>Escolha o Plano Ideal</Title>
             <Subtitle>
@@ -325,7 +178,6 @@ export default function PlansPage() {
 
                         if (!slugsValidos.includes(slug)) return null;
 
-                        const isPlanoAtual = plan.id === planoAtualId;
                         const temPlano = profile?.assinatura_status === 'active' || (profile?.assinatura_status === 'trialing' && !!profile?.assinatura_id);
                         const precoAtual = Number(profile?.plano?.preco ?? 0);
                         const precoNovo = Number(plan.preco);
@@ -350,8 +202,7 @@ export default function PlansPage() {
                                         plano_id: plan.id,
                                     });
 
-                                    const checkoutUrl = res.data.checkout_url;
-                                    window.location.href = checkoutUrl;
+                                    window.location.href = res.data.checkout_url;
                                 } catch (err) {
                                     console.error('Erro ao criar sessão de checkout:', err);
                                     message.error('Erro ao criar sessão de pagamento.');
