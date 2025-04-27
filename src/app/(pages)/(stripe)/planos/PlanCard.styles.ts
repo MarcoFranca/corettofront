@@ -1,16 +1,16 @@
 import styled from "styled-components";
 
-export const Card = styled.div<{ destaque?: boolean }>`
+export const Card = styled.div<{ $destaque?: boolean }>`
   background: #fff;
   border-radius: 16px;
-  box-shadow: ${({ destaque }) =>
-    destaque
+  box-shadow: ${({ $destaque }) =>
+          $destaque
         ? '0 0 15px rgba(51, 204, 204, 0.4)'
         : '0 2px 8px rgba(0, 0, 0, 0.1)'};
   padding: 24px;
   max-width: 360px;
   width: 100%;
-  border: ${({ destaque }) => (destaque ? '2px solid #33cccc' : 'none')};
+  border: ${({ $destaque }) => ($destaque ? '2px solid #33cccc' : 'none')};
   transition: transform 0.2s ease;
 
   &:hover {
@@ -79,15 +79,6 @@ export const Tag = styled.span`
   font-size: 0.75rem;
   margin-bottom: 12px;
   display: inline-block;
-`;
-
-const TopBar = styled.div`
-  width: 100%;
-  max-width: 1200px;
-  margin-bottom: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 `;
 
 export const Logo = styled.img`

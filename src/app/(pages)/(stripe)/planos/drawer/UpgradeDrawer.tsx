@@ -1,23 +1,23 @@
-// app/components/upgrade/UpgradeModal.tsx
+// app/components/upgrade/UpgradeDrawer.tsx
 'use client';
 
-import React, {useEffect, useState} from 'react';
-import { Modal, Divider, Input, Button, Tooltip, message, Space } from 'antd';
+import React, { useState } from 'react';
+import { Drawer, Divider, Input, Button, message, Space } from 'antd';
 import { FaRocket } from 'react-icons/fa';
 import {
     InfoGroup,
     Label,
     Value,
     HighlightValue,
-    SectionTitle,
+    SectionTitle
 } from '@/app/(pages)/(stripe)/planos/modal/UpgradeModal.styles';
 import { formatBRLCurrency } from '@/utils/maskUtils';
 import api from '@/app/api/axios';
 
-interface UpgradeModalProps {
+interface UpgradeDrawerProps {
     open: boolean;
-    onCancel: () => void;
-    onConfirm: () => Promise<void>;   // <- para podermos aguardar
+    onClose: () => void;
+    onConfirm: () => Promise<void>;
     planoAtualNome: string;
     planoNovoNome: string;
     precoAtual?: number;
@@ -26,15 +26,15 @@ interface UpgradeModalProps {
     valorProporcional?: number;
     desconto?: number;
     valorFinalAgora?: number;
-    /** Cupom que já veio da simulação  */
     cupomAplicado?: string | null;
+    descricaoCupom?: string;
+    promotionCode?: string | null;   // <===== ADICIONAR ISSO!
 }
 
-/* ------------------------- COMPONENT ------------------------- */
-export default function UpgradeModal(props: UpgradeModalProps) {
+export default function UpgradeDrawer(props: UpgradeDrawerProps) {
     const {
         open,
-        onCancel,
+        onClose,
         onConfirm,
         planoAtualNome,
         planoNovoNome,
@@ -43,42 +43,37 @@ export default function UpgradeModal(props: UpgradeModalProps) {
         diasRestantes,
         valorProporcional = 0,
         desconto = 0,
-        valorFinalAgora = 0,
-        cupomAplicado: cupomInical,
+        cupomAplicado: cupomInicial
     } = props;
 
-    /* --- state local p/ cupom & loading --- */
     const [cupom, setCupom] = useState('');
-    const [cupomAplicado, setCupomAplicado] = useState<string | null>(
-        cupomInical ?? null
-    );
+    const [descricaoCupom, setDescricaoCupom] = useState<string | null>(null);
+    const [promotionCode , setPromotionCode]    = useState<string|null>(null);
+    const [cupomAplicado, setCupomAplicado] = useState<string | null>(cupomInicial ?? null);
     const [descontoCupom, setDescontoCupom] = useState<number>(desconto);
     const [saving, setSaving] = useState(false);
+    const [loadingCupom, setLoadingCupom] = useState(false);
+    const brutoAgora = Number(valorProporcional ?? 0) - Number(descontoCupom ?? 0);
+    const totalAgora  = brutoAgora > 0 ? brutoAgora : 0;
 
-    /* --- aplicar cupom --- */
     const handleAplicarCupom = async () => {
         if (!cupom) return;
         try {
-            const { data } = await api.post('/pagamentos/aplicar-cupom/', {
-                codigo_cupom: cupom.trim(),
-            });
+            setLoadingCupom(true);
+            const { data } = await api.post('/pagamentos/aplicar-cupom/', { codigo_cupom: cupom.trim() });
             message.success(`Cupom ${data.cupom_aplicado} aplicado!`);
             setCupomAplicado(data.cupom_aplicado);
             setDescontoCupom(Number(data.desconto));
+            setPromotionCode(data.promotion_code);
+            setDescricaoCupom(data.descricao);          // <- novo state
             setCupom('');
         } catch (e: any) {
-            message.error(
-                e?.response?.data?.error || 'Não foi possível aplicar o cupom.'
-            );
+            message.error(e?.response?.data?.error || 'Não foi possível aplicar o cupom.');
+        } finally {
+            setLoadingCupom(false);
         }
     };
 
-    const handleRemoverCupom = () => {
-        setCupomAplicado(null);
-        setDescontoCupom(0);
-    };
-
-    /* --- confirmar (mostra loading) --- */
     const handleOk = async () => {
         try {
             setSaving(true);
@@ -88,29 +83,19 @@ export default function UpgradeModal(props: UpgradeModalProps) {
         }
     };
 
-    useEffect(() => {
-        if (cupomInical) {
-            setCupomAplicado(cupomInical);
-            setDescontoCupom(desconto);
-        }
-    }, [cupomInical, desconto]);
-
-
-    /* --- render --- */
     return (
-        <Modal
+        <Drawer
             open={open}
-            onCancel={onCancel}
-            onOk={handleOk}
-            okText="Atualizar Plano"
-            cancelText="Cancelar"
-            centered
-            closeIcon={false}
-            confirmLoading={saving}
-            title={
-                <>
-                    <FaRocket /> Atualização de Plano
-                </>
+            onClose={onClose}
+            title={<span><FaRocket /> Atualização de Plano</span>}
+            width={450}
+            footer={
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                    <Button onClick={onClose}>Cancelar</Button>
+                    <Button type="primary" loading={saving} onClick={handleOk}>
+                        Confirmar Atualização
+                    </Button>
+                </div>
             }
         >
             <SectionTitle>Planos</SectionTitle>
@@ -132,12 +117,7 @@ export default function UpgradeModal(props: UpgradeModalProps) {
 
             <SectionTitle>Proporcional deste ciclo</SectionTitle>
             <InfoGroup>
-                <Label>
-                    Dias restantes:{' '}
-                    <Tooltip title="Dias que faltam até o fim do ciclo atual">
-                        <span style={{ cursor: 'help' }}>🛈</span>
-                    </Tooltip>
-                </Label>
+                <Label>Dias restantes:</Label>
                 <Value>{diasRestantes} dias</Value>
             </InfoGroup>
 
@@ -148,35 +128,35 @@ export default function UpgradeModal(props: UpgradeModalProps) {
 
             {cupomAplicado && (
                 <InfoGroup>
-                    <Label>Desconto ({cupomAplicado}):</Label>
+                    <Label>Desconto ({ descricaoCupom }):</Label>
                     <Value>- {formatBRLCurrency(descontoCupom)}</Value>
                 </InfoGroup>
             )}
 
+
             <HighlightValue>
-                Valor a pagar agora:&nbsp;
-                {formatBRLCurrency(valorFinalAgora - descontoCupom)}
+                Valor a pagar agora:&nbsp;{formatBRLCurrency(totalAgora)}
             </HighlightValue>
 
             <Divider />
 
-            {/* 🧹 Campo Cupom  */}
+            {/* Campo de cupom */}
             <Space.Compact style={{ marginBottom: 16, width: '100%' }}>
                 <Input
-                    placeholder="Inserir cupom de desconto"
+                    style={{ width: '70%' }}
+                    placeholder="Inserir cupom"
                     value={cupom}
                     onChange={(e) => setCupom(e.target.value)}
-                    disabled={!!cupomAplicado}
+                    disabled={!!cupomAplicado || loadingCupom}
                 />
-                {!cupomAplicado ? (
-                    <Button type="primary" onClick={handleAplicarCupom} disabled={!cupom}>
-                        Aplicar Cupom
-                    </Button>
-                ) : (
-                    <Button danger onClick={handleRemoverCupom}>
-                        Remover Cupom
-                    </Button>
-                )}
+                <Button
+                    type="primary"
+                    onClick={handleAplicarCupom}
+                    loading={loadingCupom}
+                    disabled={!cupom || !!cupomAplicado}
+                >
+                    Aplicar
+                </Button>
             </Space.Compact>
 
             <SectionTitle>A partir do próximo ciclo</SectionTitle>
@@ -184,13 +164,6 @@ export default function UpgradeModal(props: UpgradeModalProps) {
                 <Label>Valor mensal:</Label>
                 <Value>{formatBRLCurrency(precoNovo)}</Value>
             </InfoGroup>
-
-
-            <SectionTitle>A partir do próximo ciclo</SectionTitle>
-            <InfoGroup>
-                <Label>Valor mensal:</Label>
-                <Value>{formatBRLCurrency(precoNovo)}</Value>
-            </InfoGroup>
-        </Modal>
+        </Drawer>
     );
 }

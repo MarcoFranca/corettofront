@@ -23,9 +23,6 @@ interface PlanCardProps {
     tipoAcao?: 'plano-atual' | 'upgrade' | 'downgrade' | 'cancelar-downgrade' | 'escolher-plano';
 }
 
-
-
-
 export default function PlanCard({
                                      nome,
                                      descricao,
@@ -33,11 +30,10 @@ export default function PlanCard({
                                      beneficios,
                                      onSelect,
                                      destaque = false,
-                                     modoTroca = false,
                                      tipoAcao,
                                  }: PlanCardProps) {
     return (
-        <Card destaque={destaque}>
+        <Card $destaque={destaque}>
             {destaque && <Tag>Plano Recomendado</Tag>}
             <Title>{nome}</Title>
             <Description>{descricao}</Description>

@@ -6,7 +6,6 @@ import api from '@/app/api/axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Plano } from '@/types/interfaces';
 import PlanCard from '@/app/(pages)/(stripe)/planos/PlanCard';
-import UpgradeModal from '@/app/(pages)/(stripe)/planos/modal/UpgradeModal';
 import { FaBolt, FaShieldAlt, FaUserCheck } from 'react-icons/fa';
 import { message } from 'antd';
 import {
@@ -26,9 +25,8 @@ import {
 } from '@/app/(pages)/(stripe)/planos/Planos.styles';
 import LogoIcon from '../../../../../public/assets/logoIcons/Icone_logo.svg';
 import { toastWarning } from '@/utils/toastWithSound';
-import { formatDistanceToNowStrict, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import PlanoAlerts from '@/app/(pages)/(stripe)/planos/PlanoAlerts';
+import UpgradeDrawer from "@/app/(pages)/(stripe)/planos/drawer/UpgradeDrawer";
 
 export default function PlansPage() {
     const [plans, setPlans] = useState<Plano[]>([]);
@@ -39,6 +37,7 @@ export default function PlansPage() {
     const [upgradeModalVisible, setUpgradeModalVisible] = useState(false);
     const [novoPlanoSelecionado, setNovoPlanoSelecionado] = useState<Plano | null>(null);
     const [simulacaoDados, setSimulacaoDados] = useState<any | null>(null);
+    const [promotionCode, setPromotionCode] = useState<string | null>(null);
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -104,9 +103,11 @@ export default function PlansPage() {
         if (!novoPlanoSelecionado) return;
 
         try {
-            await api.post('/pagamentos/trocar-plano/', {
+            const pirulito = await api.post('/pagamentos/trocar-plano/', {
                 plano_id: novoPlanoSelecionado.id,
+                promotion_code: promotionCode || undefined   // envia só se houver
             });
+            console.log('plano enviado', pirulito)
 
             message.success('Plano alterado com sucesso!');
             router.refresh();
@@ -249,12 +250,13 @@ export default function PlansPage() {
             </FooterInfo>
 
             {novoPlanoSelecionado && simulacaoDados && (
-                <UpgradeModal
+                <UpgradeDrawer
                     open={upgradeModalVisible}
-                    onCancel={() => setUpgradeModalVisible(false)}  // ✅ correto agora!
+                    onClose={() => setUpgradeModalVisible(false)}  // ✅ correto agora!
                     onConfirm={handleTrocaPlano}
                     planoAtualNome={profile?.plano?.nome}
                     planoNovoNome={novoPlanoSelecionado.nome}
+                    promotionCode={promotionCode}
                     precoAtual={simulacaoDados.preco_atual}
                     precoNovo={simulacaoDados.preco_novo}
                     diasRestantes={simulacaoDados.dias_restantes}
