@@ -1,11 +1,14 @@
+// src/app/(pages)/(stripe)/planos/PlansPage.tsx
 'use client';
-import React, {useEffect, useState} from 'react';
+
+import React, { useEffect, useState } from 'react';
 import api from '@/app/api/axios';
-import {useRouter, useSearchParams} from 'next/navigation';
-import {Plano} from '@/types/interfaces';
-import PlanCard from "@/app/(pages)/(stripe)/planos/PlanCard";
-import {FaBolt, FaShieldAlt, FaUserCheck} from "react-icons/fa";
-import {message, Modal} from 'antd';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Plano } from '@/types/interfaces';
+import PlanCard from '@/app/(pages)/(stripe)/planos/PlanCard';
+import UpgradeModal from '@/app/(pages)/(stripe)/planos/modal/UpgradeModal';
+import { FaBolt, FaShieldAlt, FaUserCheck } from 'react-icons/fa';
+import { message } from 'antd';
 import {
     BackButton,
     CardContainer,
@@ -20,14 +23,12 @@ import {
     TopBarContainer,
     TopBarContant,
     TopBartext
-} from "@/app/(pages)/(stripe)/planos/Planos.styles";
-import LogoIcon from '../../../../../public/assets/logoIcons/Icone_logo.svg'
-import {toastWarning} from "@/utils/toastWithSound";
-import {formatDistanceToNowStrict, parseISO} from 'date-fns';
-import {ptBR} from 'date-fns/locale';
-import {ExclamationCircleOutlined} from "@ant-design/icons";
-import PlanoAlerts from "@/app/(pages)/(stripe)/planos/PlanoAlerts";
-
+} from '@/app/(pages)/(stripe)/planos/Planos.styles';
+import LogoIcon from '../../../../../public/assets/logoIcons/Icone_logo.svg';
+import { toastWarning } from '@/utils/toastWithSound';
+import { formatDistanceToNowStrict, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import PlanoAlerts from '@/app/(pages)/(stripe)/planos/PlanoAlerts';
 
 export default function PlansPage() {
     const [plans, setPlans] = useState<Plano[]>([]);
@@ -35,12 +36,14 @@ export default function PlansPage() {
     const [error, setError] = useState('');
     const [profile, setProfile] = useState<any>(null);
     const [planoFuturo, setPlanoFuturo] = useState<Plano | null>(null);
+    const [upgradeModalVisible, setUpgradeModalVisible] = useState(false);
+    const [novoPlanoSelecionado, setNovoPlanoSelecionado] = useState<Plano | null>(null);
+    const [simulacaoDados, setSimulacaoDados] = useState<any | null>(null);
 
     const router = useRouter();
     const searchParams = useSearchParams();
     const slugsValidos = ['starter', 'pro', 'premium'] as const;
     const planoAtualId = profile?.plano?.id;
-
 
     const beneficiosPorPlano: Record<'starter' | 'pro' | 'premium', string[]> = {
         starter: [
@@ -89,7 +92,6 @@ export default function PlansPage() {
             try {
                 const response = await api.get('/profiles/me/');
                 setProfile(response.data.profile);
-
             } catch {
                 console.error('Erro ao carregar o perfil');
             }
@@ -98,63 +100,53 @@ export default function PlansPage() {
         fetchProfile();
     }, []);
 
-    const handleTrocaPlano = async (novoPlanoId: string) => {
-        console.log("🧪 tipo do planoId:", typeof novoPlanoId);
-        console.log("🧪 planoId bruto:", JSON.stringify(novoPlanoId));
+    const handleTrocaPlano = async () => {
+        if (!novoPlanoSelecionado) return;
 
         try {
-            await fetch('http://localhost:8000/api/v1/pagamentos/trocar-plano/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                },
-                body: JSON.stringify({ plano_id: novoPlanoId })
+            await api.post('/pagamentos/trocar-plano/', {
+                plano_id: novoPlanoSelecionado.id,
             });
 
             message.success('Plano alterado com sucesso!');
-            router.refresh(); // recarrega os dados atualizados no profile
+            router.refresh();
+            setUpgradeModalVisible(false);
         } catch (err) {
             console.error(err);
             message.error('Erro ao trocar o plano. Tente novamente.');
         }
     };
 
-    const diasRestantesTexto = profile?.current_period_end
-        ? formatDistanceToNowStrict(parseISO(profile.current_period_end), {
-            unit: 'day',
-            locale: ptBR,
-            addSuffix: false
-        })
-        : null;
+    // chama /pagamentos/simular-upgrade/ e devolve os números prontos
+    const fetchSimulacao = async (planoNovoId: string) => {
+        const { data } = await api.post('/pagamentos/simular-upgrade/', {
+            novo_plano_id: planoNovoId,
+        });
+        return data;  // {preco_atual, preco_novo, dias_restantes, proporcional_upgrade, desconto, valor_final_proporcional, cupom_aplicado}
+    };
 
     useEffect(() => {
-
         if (profile?.cancel_at_period_end && profile.plano_agendado_id) {
             api.get(`/pagamentos/planos/${profile.plano_agendado_id}/`)
                 .then((res) => setPlanoFuturo(res.data))
-                .catch((err) => console.error("Erro ao buscar plano futuro:", err));
-            console.log("💡 profile.current_period_end:", profile?.current_period_end);
-            console.log("💡 diasRestantesTexto:", diasRestantesTexto);
-            console.log("💡 profile.cancel_at_period_end:", profile?.cancel_at_period_end);
-            console.log("💡 planoFuturo:", planoFuturo);
+                .catch((err) => console.error('Erro ao buscar plano futuro:', err));
         }
     }, [profile]);
-
 
     return (
         <PageWrapper>
             <PlanoAlerts profile={profile} planoFuturo={planoFuturo} />
+
             <TopBar>
                 <TopBarContainer>
                     <BackButton onClick={() => router.push('/dashboard')}>
                         ← Voltar ao sistema
                     </BackButton>
                     <TopBarContant>
-                        <Logo src={LogoIcon} alt="CorretorLab" priority/>
+                        <Logo src={LogoIcon} alt="CorretorLab" priority />
                         <TopBartext>
-                            <strong style={{fontSize: '1rem', color: '#042a75'}}>CorretorLab</strong>
-                            <small style={{fontSize: '0.85rem', color: '#666'}}>
+                            <strong style={{ fontSize: '1rem', color: '#042a75' }}>CorretorLab</strong>
+                            <small style={{ fontSize: '0.85rem', color: '#666' }}>
                                 CRM especializado para corretores de seguros
                             </small>
                         </TopBartext>
@@ -167,6 +159,7 @@ export default function PlansPage() {
                 Uma única assinatura para transformar sua corretora. Simplifique sua rotina, aumente sua produtividade
                 e ofereça uma experiência premium aos seus clientes.
             </Subtitle>
+
             {loading ? (
                 <p>Carregando...</p>
             ) : error ? (
@@ -195,7 +188,6 @@ export default function PlansPage() {
 
                         const handleSelecionarPlano = async () => {
                             if (tipoAcao === 'escolher-plano') {
-                                // Checkout normal no Stripe
                                 try {
                                     const res = await api.post('/pagamentos/create-checkout-session/', {
                                         price_id: plan.stripe_price_id,
@@ -208,17 +200,14 @@ export default function PlansPage() {
                                     message.error('Erro ao criar sessão de pagamento.');
                                 }
                             } else {
-                                // Modal de confirmação para upgrades e downgrades
-                                Modal.confirm({
-                                    title: 'Confirmar alteração de plano',
-                                    icon: <ExclamationCircleOutlined />,
-                                    content: `Esta ação pode alterar sua cobrança. Tem certeza que deseja ${tipoAcao === 'upgrade' ? 'fazer upgrade' : tipoAcao === 'downgrade' ? 'agendar downgrade' : 'alterar o plano'}?`,
-                                    okText: 'Confirmar',
-                                    okType: 'primary',
-                                    cancelText: 'Cancelar',
-                                    centered: true,
-                                    onOk: () => handleTrocaPlano(plan.id),
-                                });
+                                try {
+                                    const simulacao = await fetchSimulacao(plan.id);
+                                    setSimulacaoDados(simulacao);          // novo state
+                                    setNovoPlanoSelecionado(plan);
+                                    setUpgradeModalVisible(true);
+                                } catch (e) {
+                                    message.error('Falha ao simular valores. Tente novamente.');
+                                }
                             }
                         };
 
@@ -229,7 +218,7 @@ export default function PlansPage() {
                                 descricao={plan.descricao}
                                 preco={Number(plan.preco).toFixed(2).replace('.', ',')}
                                 beneficios={beneficiosPorPlano[slug]}
-                                onSelect={handleSelecionarPlano} // ✅ agora é condicional!
+                                onSelect={handleSelecionarPlano}
                                 destaque={slug === 'pro'}
                                 modoTroca={temPlano}
                                 ocultarBotao={false}
@@ -238,25 +227,44 @@ export default function PlansPage() {
                         );
                     })}
                 </CardContainer>
-
             )}
+
             <DifferentialsSection>
                 <DifferentialItem>
-                    <FaUserCheck size={28}/>
+                    <FaUserCheck size={28} />
                     <p>Desenvolvido para corretores</p>
                 </DifferentialItem>
                 <DifferentialItem>
-                    <FaBolt size={28}/>
+                    <FaBolt size={28} />
                     <p>Ativação imediata</p>
                 </DifferentialItem>
                 <DifferentialItem>
-                    <FaShieldAlt size={28}/>
+                    <FaShieldAlt size={28} />
                     <p>Segurança de nível bancário</p>
                 </DifferentialItem>
             </DifferentialsSection>
+
             <FooterInfo>
                 Dúvidas? <a href="mailto:suporte@corretorlab.com">Fale com nosso suporte</a>
             </FooterInfo>
+
+            {novoPlanoSelecionado && simulacaoDados && (
+                <UpgradeModal
+                    open={upgradeModalVisible}
+                    onCancel={() => setUpgradeModalVisible(false)}  // ✅ correto agora!
+                    onConfirm={handleTrocaPlano}
+                    planoAtualNome={profile?.plano?.nome}
+                    planoNovoNome={novoPlanoSelecionado.nome}
+                    precoAtual={simulacaoDados.preco_atual}
+                    precoNovo={simulacaoDados.preco_novo}
+                    diasRestantes={simulacaoDados.dias_restantes}
+                    valorProporcional={simulacaoDados.proporcional_upgrade}
+                    desconto={simulacaoDados.desconto}
+                    valorFinalAgora={simulacaoDados.valor_final_proporcional}
+                    cupomAplicado={simulacaoDados.cupom_aplicado}
+                />
+            )}
+
         </PageWrapper>
     );
 }

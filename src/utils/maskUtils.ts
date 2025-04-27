@@ -118,6 +118,14 @@ export const formatCurrency = (value: string | number): string => {
     }).format(Number(value) || 0);
 };
 
+export const formatBRLCurrency = (value: number | undefined | null) =>
+    new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2,
+    }).format(value ?? 0);
+
+
 export const formatPhoneNumber = (telefone: string) => {
     const rawPhone = removeMask(telefone); // Remove qualquer formatação existente
 
