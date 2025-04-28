@@ -37,13 +37,13 @@ export const TipoPill = styled.button<TipoPillProps>`
     border: none;
     cursor: pointer;
     min-width: 120px;
-    background-color: ${({ active, theme }) => active ? theme.colors.primary : theme.colors.gray.light};
+    background-color: ${({ active, theme }) => active ? theme.colors.primary : theme.colors.gray.Light};
     color: ${({ active }) => (active ? '#fff' : '#555')};
     font-weight: 500;
     transition: background-color 0.3s ease;
 
     &:hover {
-        background-color: ${({ theme, active }) => active ? theme.colors.primaryDark : theme.colors.gray.light};
+        background-color: ${({ theme, active }) => active ? theme.colors.title : theme.colors.gray.Light};
     }
 `;
 
