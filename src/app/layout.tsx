@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProviderWrapper } from "@/contexts/ThemeContext";
 import RouterInterceptor from "@/utils/RouterInterceptor";
 import SoundPlayer from "@/utils/soundPlayer";
+import TokenAutoRefreshProvider from "@/app/TokenAutoRefreshProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,10 +33,12 @@ export default function RootLayout({
                                    }: {
     children: React.ReactNode;
 }) {
+
     return (
         <html lang="en">
         <body id={'__next'} className={inter.className}>
         <ReduxProvider>
+            <TokenAutoRefreshProvider />
             <GoogleProvider>
                 <ThemeProviderWrapper>
                     <SoundPlayer />

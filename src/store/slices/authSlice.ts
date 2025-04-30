@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState, User } from '@/types/interfaces';
-import qs from 'qs'; // Para serializar os dados no formato correto
 
 const initialState: AuthState = {
     user: null,
@@ -24,7 +23,8 @@ const authSlice = createSlice({
                 localStorage.removeItem('profileImage');
             }
         },
-        setToken: (state, action: PayloadAction<{ access: string; refresh?: string } | null>) => {
+
+        setToken: (state, action: PayloadAction<{ access: string; refresh?: string; expires_in?: number } | null>) => {
             state.token = action.payload
                 ? {
                     access: action.payload.access,
@@ -39,9 +39,16 @@ const authSlice = createSlice({
                 } else {
                     localStorage.removeItem('refreshToken');
                 }
+
+                // 💡 Aqui salva o timestamp de expiração em milissegundos
+                if (action.payload.expires_in) {
+                    const expiresAt = Date.now() + action.payload.expires_in * 1000;
+                    localStorage.setItem('accessTokenExpiresAt', expiresAt.toString());
+                }
             } else {
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
+                localStorage.removeItem('accessTokenExpiresAt');
             }
         },
 

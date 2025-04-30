@@ -42,7 +42,7 @@ instance.interceptors.response.use(
                     const oauthApi = axios.create();
 
                     // Requisição para o endpoint de refresh do OAuth2
-                    const { data } = await oauthApi.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/o/token/`, {
+                    const { data } = await oauthApi.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh-token/`, {
                         grant_type: 'refresh_token',
                         refresh_token: refreshToken,
                         client_id: process.env.NEXT_PUBLIC_CLIENT_ID,  // Adicionar o client_id

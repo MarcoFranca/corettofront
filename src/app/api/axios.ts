@@ -26,12 +26,10 @@ api.interceptors.response.use(
             const refreshToken = localStorage.getItem('refreshToken');
             if (refreshToken) {
                 try {
-                    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/o/token/`, {
-                        grant_type: 'refresh_token',
+                    const { data } = await api.post(`/auth/refresh-token/`, {
                         refresh_token: refreshToken,
-                        client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
-                        client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
                     });
+
 
                     const newAccessToken = data.access_token;
 
