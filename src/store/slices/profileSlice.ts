@@ -17,8 +17,10 @@ interface ProfileState {
             descricao: string;
             preco: string;
             limite_subusuarios: number;
+            tokens_chatgpt?: number; // pode adicionar se quiser
         } | null;
         current_period_end: string | null;
+        tokens_extras_chatgpt: number; // 👈 adicionado aqui
     } | null;
     subUserData: { id: string; role: string; username: string } | null;
     subUsers: any[];

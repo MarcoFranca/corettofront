@@ -1,35 +1,109 @@
-
 // styled-components
 import { Drawer as AntDrawer } from 'antd';
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+// Animação de fade suave
+const fadeIn = keyframes`
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+`;
 
 export const StyledDrawer = styled(AntDrawer)`
-    .ant-drawer-body {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 16px;
-        height: 100%;
-    }
+        .ant-drawer-body {
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 16px;
+                height: 100%;
+                overflow-y: auto;
+        }
 `;
 
 export const ChatContainer = styled.div`
-    flex-grow: 1;
-    overflow-y: auto;
-    margin-bottom: 16px;
+        flex-grow: 1;
+        margin-bottom: 200px;
+        display: flex;
+        width: 100%;
+        max-width: 1000px;
+        flex-direction: column;
+        gap: 18px;
+        scroll-behavior: smooth;
 `;
 
-export const MessageBubble = styled.div<{ role: 'user' | 'assistant' }>`
-    background-color: ${({ role }) => (role === 'user' ? '#d1e7ff' : '#e8e8e8')};
-    padding: 10px 14px;
-    margin: 8px 0;
-    border-radius: 10px;
-    align-self: ${({ role }) => (role === 'user' ? 'flex-end' : 'flex-start')};
-    max-width: 80%;
+export const MessageRow = styled.div<{ role: "user" | "assistant" }>`
+        display: flex;
+        align-items: flex-end;
+        justify-content: ${({ role }) => (role === "user" ? "flex-end" : "flex-start")};
+        gap: 12px;
+`;
+
+export const MessageBubble = styled.div<{ role: "user" | "assistant" }>`
+        position: relative;
+        background-color: ${({ role }) => (role === "user" ? "#e6f0ff" : "#f2f2f2")};
+        border-radius: ${({ role }) =>
+            role === "user" ? "16px 16px 0 16px" : "16px 16px 16px 0"};
+        padding: 12px 16px;
+        max-width: 70%;
+        font-size: 14px;
+        line-height: 1.6;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        word-break: break-word;
+        gap: 16px;
+        animation: ${fadeIn} 0.3s ease forwards;
+
+        &::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                ${({ role }) => role === "user"
+                    ? `right: -7px; border-left: 7px solid #e6f0ff;`
+                    : `left: -7px; border-right: 7px solid #f2f2f2;`}
+                border-top: 8px solid transparent;
+                border-bottom: 8px solid transparent;
+        }
+
+        & table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 10px;
+                background: white;
+        }
+
+        & th, & td {
+                border: 1px solid #dcdcdc;
+                padding: 6px 10px;
+                text-align: left;
+                font-size: 13px;
+        }
+
+        & th {
+                background-color: #f0f0f0;
+                font-weight: 600;
+        }
+
+        & strong {
+                color: #0a0a0a;
+        }
+
+        & p {
+                margin: 8px 0;
+        }
 `;
 
 export const InputArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+        display: flex;
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.83);
+        bottom: 10px;
+        flex-direction: column;
+        width: 80%;
+        gap: 8px;
+
+        textarea {
+                &::placeholder {
+                        color: #94a3b8;
+                        font-style: italic;
+                }
+        }
 `;
