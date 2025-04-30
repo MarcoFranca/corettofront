@@ -53,14 +53,15 @@ export default function PlansPage() {
         ],
         pro: [
             'Tudo do Starter ✅',
-            'Acesso contínuo à Cora com 2 subusuários incluídos',
+            'Acesso à Cora Avançada (50.000 tokens)',
+            'Até 2 subusuários incluídos',
             'Insights inteligentes e suporte prioritário',
         ],
         premium: [
             'Tudo do Pro ✅',
-            'Mais interações com a Cora por mês',
+            'Mais interações com a Cora por mês (100.000 tokens)',
+            'Cora Premium com as respostas mais inteligentes e aprofundadas.',
             'Até 3 subusuários incluídos',
-            'Suporte personalizado e relatórios estratégicos',
         ]
     };
 
