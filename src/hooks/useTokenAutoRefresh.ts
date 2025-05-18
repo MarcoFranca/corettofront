@@ -19,13 +19,10 @@ export const useTokenAutoRefresh = () => {
             if (expiresAt - now <= FIVE_MINUTES) {
                 try {
                     const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh-token/`, {
-
-                        grant_type: 'refresh_token',
-                        refresh_token: refreshToken,
-                        client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
-                        client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
+                        refresh_token: refreshToken
                     });
-                        console.log('[AutoRefresh] expiresAt:', new Date(expiresAt), '| agora:', new Date(now));
+
+                    console.log('[AutoRefresh] expiresAt:', new Date(expiresAt), '| agora:', new Date(now));
 
                     localStorage.setItem('accessToken', data.access_token);
                     localStorage.setItem('accessTokenExpiresAt', (Date.now() + data.expires_in * 1000).toString());
