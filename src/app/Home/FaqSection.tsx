@@ -50,7 +50,7 @@ export default function FaqSection() {
             <FaqWrapper>
                 <h2>Perguntas Frequentes</h2>
                 {faqs.map((faq, index) => (
-                    <QuestionItem key={index} onClick={() => toggle(index)} active={activeIndex === index}>
+                    <QuestionItem key={index} onClick={() => toggle(index)} $active={activeIndex === index}>
                         <QuestionTitle>
                             <AiOutlineQuestionCircle size={20} />
                             {faq.question}

@@ -17,13 +17,15 @@ export const FaqWrapper = styled.section`
   }
 `;
 
-export const QuestionItem = styled.div<{ active: boolean }>`
+export const QuestionItem = styled.div<{ $active: boolean }>`
   border-bottom: 1px solid #e0e6ed;
   padding: 1.2rem ;
   cursor: pointer;
   transition: all 0.3s ease;
 
-  &:hover {
+    background: ${({ $active }) => ($active ? "#eef3fb" : "transparent")};
+
+    &:hover {
     background: #eef3fb;
   }
 

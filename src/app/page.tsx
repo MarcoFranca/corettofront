@@ -46,7 +46,7 @@ export default function Home() {
                     viewport={{once: true}}
                 >
                     <FeaturesSection/>
-                    <WaveDivider rotate/>
+                    <WaveDivider $rotate/>
                 </motion.section>
 
                 {/* Plano disponível */}
@@ -71,7 +71,7 @@ export default function Home() {
                     viewport={{once: true}}
                 >
                     <CorretorJourneySection/>
-                    <WaveDivider rotate/>
+                    <WaveDivider $rotate/>
                 </motion.section>
 
                 {/*/!* Vídeo Demonstrativo *!/*/}
