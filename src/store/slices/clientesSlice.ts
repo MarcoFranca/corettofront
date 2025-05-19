@@ -69,33 +69,39 @@ export const fetchTodosClientesFiltrados = createAsyncThunk<Cliente[], { status?
                 statusQuery = `status__in=${status.map(encodeURIComponent).join(',')}`;
             }
 
-            const allClientes: Cliente[] = [];
-            let nextUrl: string | null = `/clientes/?${statusQuery}&limit=100/`;
+            // 1. Requisição inicial para pegar o count
+            const firstUrl = `/clientes/?${statusQuery}&limit=100/`;
+            const firstResponse = await api.get(firstUrl);
+            const { results: firstResults, count, next } = firstResponse.data;
 
-            while (nextUrl) {
-                const normalizedUrl = normalizeApiUrl(nextUrl);
-                if (!normalizedUrl) break; // Sai do loop se não tem url
-
-                const response = await api.get(normalizedUrl);
-                const data: { results: Cliente[]; next: string | null } = response.data;
-
-                if (!Array.isArray(data.results)) {
-                    return rejectWithValue("Formato de resposta inválido");
-                }
-
-                allClientes.push(...data.results);
-
-                nextUrl = data.next ? normalizeApiUrl(data.next) : null;
+            // 2. Se só tem uma página, retorna direto
+            if (!next) {
+                return firstResults;
             }
 
+            // 3. Calcula quantas páginas tem no total
+            const totalPages = Math.ceil(count / 100);
 
-            return allClientes;
+            // 4. Monta as urls das próximas páginas (começa em 1 porque já pegou a primeira)
+            const urls = [];
+            for (let i = 1; i < totalPages; i++) {
+                const offset = i * 100;
+                urls.push(`/clientes/?${statusQuery}&limit=100/&offset=${offset}`);
+            }
+
+            // 5. Faz todas as requisições das páginas em paralelo
+            const responses = await Promise.all(urls.map(url => api.get(url)));
+            const allResults = responses.flatMap(r => r.data.results);
+
+            // 6. Junta os resultados da primeira página + todas as outras
+            return [...firstResults, ...allResults];
         } catch (error: any) {
             console.error("❌ Erro ao buscar todos os clientes filtrados:", error);
             return rejectWithValue(error.response?.data || "Erro desconhecido ao buscar clientes");
         }
     }
 );
+
 
 
 export const fetchClienteById = createAsyncThunk(
