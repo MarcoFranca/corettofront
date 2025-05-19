@@ -49,8 +49,8 @@ export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
     }
 );
 
-function normalizeApiUrl(url: string | null): string | null {
-    if (!url) return null;
+function normalizeApiUrl(url: string | null): string {
+    if (!url) return '';
     try {
         const u = new URL(url, process.env.NEXT_PUBLIC_API_BASE_URL);
         return u.pathname.replace(/^\/api\/v1/, '') + u.search;
