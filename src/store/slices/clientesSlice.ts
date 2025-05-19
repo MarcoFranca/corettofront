@@ -14,6 +14,7 @@ const initialState: ClientesState = {
 };
 
 
+
 export const fetchClientes = createAsyncThunk<
     { results: Cliente[]; count: number },
     { status?: string; search?: string; page?: number; limit?: number } | undefined
@@ -48,6 +49,17 @@ export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
     }
 );
 
+function normalizeApiUrl(url: string | null): string | null {
+    if (!url) return null;
+    try {
+        const u = new URL(url, process.env.NEXT_PUBLIC_API_BASE_URL);
+        return u.pathname.replace(/^\/api\/v1/, '') + u.search;
+    } catch {
+        return url;
+    }
+}
+
+
 export const fetchTodosClientesFiltrados = createAsyncThunk<Cliente[], { status?: string[] }>(
     'clientes/fetchTodosClientesFiltrados',
     async ({ status }, { rejectWithValue }) => {
@@ -58,10 +70,13 @@ export const fetchTodosClientesFiltrados = createAsyncThunk<Cliente[], { status?
             }
 
             const allClientes: Cliente[] = [];
-            let nextUrl: string | null = `/clientes/?${statusQuery}&limit=100/`;
+            let nextUrl: string | null = `/clientes/?${statusQuery}&limit=100`;
 
             while (nextUrl) {
-                const response = await api.get(nextUrl);
+                const normalizedUrl = normalizeApiUrl(nextUrl);
+                if (!normalizedUrl) break; // Sai do loop se não tem url
+
+                const response = await api.get(normalizedUrl);
                 const data: { results: Cliente[]; next: string | null } = response.data;
 
                 if (!Array.isArray(data.results)) {
@@ -70,10 +85,9 @@ export const fetchTodosClientesFiltrados = createAsyncThunk<Cliente[], { status?
 
                 allClientes.push(...data.results);
 
-                nextUrl = data.next
-                    ? new URL(data.next).pathname + new URL(data.next).search
-                    : null;
+                nextUrl = data.next ? normalizeApiUrl(data.next) : null;
             }
+
 
             return allClientes;
         } catch (error: any) {
@@ -82,6 +96,7 @@ export const fetchTodosClientesFiltrados = createAsyncThunk<Cliente[], { status?
         }
     }
 );
+
 
 export const fetchClienteById = createAsyncThunk(
     'clientes/fetchById',
