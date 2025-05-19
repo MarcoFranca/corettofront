@@ -94,6 +94,7 @@ export default function RegisterForm() {
                     placeholder="Seu e-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
                     required
                 />
                 <StyledInput
@@ -101,6 +102,7 @@ export default function RegisterForm() {
                     placeholder="Nome de usuário (sem espaços)"
                     value={username}
                     onChange={(e) => setUsername(e.target.value.replace(/\s/g, ''))}
+                    autoComplete="username"
                     required
                 />
 
@@ -110,6 +112,7 @@ export default function RegisterForm() {
                         placeholder="Senha"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="new-password"
                         required
                     />
                     <TogglePasswordIcon onClick={() => setShowPassword(!showPassword)}>
@@ -123,6 +126,7 @@ export default function RegisterForm() {
                         placeholder="Confirme a senha"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
+                        autoComplete="new-password"
                         required
                     />
                     <TogglePasswordIcon onClick={() => setShowConfirmPassword(!showConfirmPassword)}>

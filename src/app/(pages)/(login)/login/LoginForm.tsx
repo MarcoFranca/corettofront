@@ -78,6 +78,7 @@ const LoginForm = () => {
                     placeholder="Nome de Usuário"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="username"
                     required
                 />
 
@@ -88,6 +89,7 @@ const LoginForm = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        autoComplete="current-password"
                     />
                     <TogglePasswordIcon onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <FaEyeSlash/> : <FaEye/>}
