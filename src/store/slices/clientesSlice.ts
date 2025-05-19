@@ -58,7 +58,7 @@ export const fetchTodosClientesFiltrados = createAsyncThunk<Cliente[], { status?
             }
 
             const allClientes: Cliente[] = [];
-            let nextUrl: string | null = `/clientes/?${statusQuery}&limit=100`;
+            let nextUrl: string | null = `/clientes/?${statusQuery}&limit=100/`;
 
             while (nextUrl) {
                 const response = await api.get(nextUrl);
