@@ -64,13 +64,14 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
 
     useEffect(() => {
         if (cliente && isOpen) {
-            const todasNegociacoes = cliente.relacionamentos?.negociacoes || [];
+            // Atualize aqui:
+            const todasNegociacoes = cliente.negociacoes || [];
             setNegociacoes(todasNegociacoes);
 
             if (todasNegociacoes.length > 0) {
                 setNegociacaoAtiva(todasNegociacoes[todasNegociacoes.length - 1]);
             } else {
-                setNegociacaoAtiva(null); // 🔥 garante que a UI ainda seja renderizada
+                setNegociacaoAtiva(null);
             }
 
             setLoading(false);
@@ -280,7 +281,7 @@ const NegotiationWizardModal: React.FC<NegotiationWizardModalProps> = ({ isOpen,
                         onCreated={async (id) => {
                             try {
                                 const clienteAtualizado = await dispatch(fetchClienteById(cliente.id)).unwrap();
-                                const novasNegociacoes = clienteAtualizado.relacionamentos?.negociacoes || [];
+                                const novasNegociacoes = clienteAtualizado.negociacoes || [];
                                 const nova = novasNegociacoes.find((n: NegociacaoCliente) => n.id === id);
 
                                 setNegociacoes(novasNegociacoes);
