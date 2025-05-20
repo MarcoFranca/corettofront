@@ -1,73 +1,74 @@
-import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/services/hooks/hooks';
-import {fetchClientes, deleteCliente, fetchClientesSearch} from '@/store/slices/clientesSlice';
-import { RootState } from '@/store';
-import { useRouter } from "next/navigation"; // 🔥 Importamos o hook de navegação
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css'; // Importa o CSS padrão do Tippy.js
-
-import {
-    MdPersonOutline,
-    MdMailOutline,
-    MdCloudDownload,
-    MdCloudUpload,
-    MdOutlineSimCardDownload, MdTouchApp
-} from 'react-icons/md';
-import {FaTrash, FaWhatsapp} from 'react-icons/fa';
-
-import Pagination from '@/app/components/Pagination';
-import { Badge, STATUS_DETAILS } from '@/app/components/ui/Badge';
-import {
-    Filters, Table, DeleteButton, Linked, FileInput, ButtonContain,
-    TableContainer, TableRow, TableHeader, TableActions,
-    TableData, ViewButton, SpanApolice, TippyContainer
-} from './ClientTable.styles';
+'use client';
+import React, { useEffect, useMemo, useState } from "react";
+import { Table, Button, Input, Select, Space, Tag, message, Upload, Dropdown, Pagination } from "antd";
+import { DownloadOutlined, UploadOutlined, FileExcelOutlined, MailOutlined, WhatsAppOutlined, DeleteOutlined, UserOutlined, MoreOutlined } from "@ant-design/icons";
+import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
+import { fetchClientes, deleteCliente } from "@/store/slices/clientesSlice";
 import api from "@/app/api/axios";
-import {toast} from "react-toastify";
+import { STATUS_CHOICES } from "@/utils/statusOptions";
 import InputMask from "react-input-mask-next";
-import {getPhoneMask} from "@/utils/maskUtils";
-import styles from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard.module.css";
-import Button from "@/app/components/ui/Button";
-import 'tippy.js/dist/tippy.css';
-import {STATUS_CHOICES} from "@/utils/statusOptions";
-import {toastSuccess} from "@/utils/toastWithSound";
-import {showToastWithSound} from "@/services/hooks/useToastMessageWithSound";
+import { getPhoneMask } from "@/utils/maskUtils";
+import { useRouter } from "next/navigation";
 
-
-const ClientesTable: React.FC = () => {
-    const router = useRouter(); // ✅ Hook de navegação do Next.js
-    const dispatch = useAppDispatch();
-    const clientes = useAppSelector((state: RootState) => state.clientes.clientes);
-    const totalClientes = useAppSelector((state: RootState) => state.clientes.totalClientes);
-    const status = useAppSelector((state: RootState) => state.clientes.status);
-    const error = useAppSelector((state: RootState) => state.clientes.error);
-
-    const [filter, setFilter] = useState<string | undefined>();
-    const [search, setSearch] = useState<string>('');
-    const [debouncedSearch, setDebouncedSearch] = useState<string>('');
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [itemsPerPage, setItemsPerPage] = useState<number>(10); // ✅ Agora podemos mudar
-    const [isProcessing, setIsProcessing] = useState<boolean>(false); // 🔥 Estado para exibir loader
-
+// Utilitário para debounce do search (sem biblioteca)
+function useDebounce(value: string, delay = 600) {
+    const [debounced, setDebounced] = useState(value);
     useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedSearch(search);
-        }, 600);
-
+        const handler = setTimeout(() => setDebounced(value), delay);
         return () => clearTimeout(handler);
-    }, [search]);
+    }, [value, delay]);
+    return debounced;
+}
 
+export default function ClientesTable() {
+    const dispatch = useAppDispatch();
+    const router = useRouter();
+
+    // Redux state
+    const clientes = useAppSelector((state) => state.clientes.clientes);
+    const totalClientes = useAppSelector((state) => state.clientes.totalClientes);
+    const status = useAppSelector((state) => state.clientes.status);
+    const error = useAppSelector((state) => state.clientes.error);
+
+    // State para filtros e paginação
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+    const [filter, setFilter] = useState<string | undefined>();
+    const [search, setSearch] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const debouncedSearch = useDebounce(search, 500);
+
+    // Fetch dos clientes
     useEffect(() => {
-        if (debouncedSearch) {
-            dispatch(fetchClientesSearch({ search: debouncedSearch }));
-        } else {
-            dispatch(fetchClientes({ status: filter, page: currentPage, limit: itemsPerPage }));
-        }
-    }, [dispatch, debouncedSearch, filter, currentPage, itemsPerPage]);
+        dispatch(fetchClientes({
+            status: filter,
+            page: pagination.current,
+            limit: pagination.pageSize,
+            search: debouncedSearch || undefined
+        }));
+    }, [dispatch, filter, pagination.current, pagination.pageSize, debouncedSearch]);
 
-    const handleDelete = (id: string) => {
-        dispatch(deleteCliente(id));
-        showToastWithSound({ type: "success", message: "🚀 Cliente removido com sucesso!" });
+    // --- Ações ---
+    const handleExport = async () => {
+        setIsProcessing(true);
+        try {
+            const response = await api.get('/clientes/exportar/', {
+                responseType: 'blob',
+                headers: { 'Accept': 'text/csv' },
+            });
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'clientes.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            message.success("Exportação concluída!");
+        } catch {
+            message.error("Erro ao exportar clientes.");
+        }
+        setIsProcessing(false);
     };
 
     const handleDownloadTemplate = async () => {
@@ -82,210 +83,232 @@ const ClientesTable: React.FC = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
-            showToastWithSound({ type: "success", message: "🚀 Modelo de importação baixado!" });
-        } catch (error) {
-            showToastWithSound({ type: "error", message: "❌ Erro ao baixar modelo de importação." });
+            message.success("Modelo de importação baixado!");
+        } catch {
+            message.error("Erro ao baixar modelo de importação.");
         }
         setIsProcessing(false);
     };
 
-
-    const handleExport = async () => {
+    const handleImport = async (file: File) => {
         setIsProcessing(true);
-        try {
-            const response = await api.get('/clientes/exportar/', {
-                responseType: 'blob',
-                headers: { 'Accept': 'text/csv' },
-            });
-
-            const blob = new Blob([response.data], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'clientes.csv');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            showToastWithSound({ type: "success", message: "Exportação concluída! 🎊🍾🎉" });
-            toast.success("Exportação concluída!");
-        } catch (error) {
-            showToastWithSound({ type: "error", message: "❌ Erro ao exportar clientes." });
-        }
-        setIsProcessing(false);
-    };
-
-
-    const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (!files || files.length === 0) {
-            toast.warn("Selecione um arquivo para importar.");
-            return;
-        }
-
-        const file = files[0];
         const formData = new FormData();
         formData.append('file', file);
-
-        setIsProcessing(true);
-        // 🔥 Mostra loading e guarda o ID do toast para atualização posterior
-        const toastId = toast.loading("Importando clientes...");
-
         try {
             await api.post('/clientes/importar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-            toast.update(toastId, {
-                render: "Importação concluída com sucesso!",
-                type: "success",
-                isLoading: false,
-                autoClose: 3000,
-            });            dispatch(fetchClientes());
-        } catch (error) {
-            toast.update(toastId, {
-                render: "Erro ao importar clientes.",
-                type: "error",
-                isLoading: false,
-                autoClose: 5000,
-            });
+            message.success("Importação concluída!");
+            dispatch(fetchClientes({ status: filter, page: pagination.current, limit: pagination.pageSize, search: debouncedSearch || undefined }));
+        } catch {
+            message.error("Erro ao importar clientes.");
         }
         setIsProcessing(false);
+        return false;
     };
 
+    // --- Menu de ações ---
+    const actionMenu = (record: any) => [
+        {
+            key: "perfil",
+            label: "Perfil",
+            icon: <UserOutlined />,
+            onClick: () => router.push(`/dashboard/cliente/${record.id}`)
+        },
+        {
+            key: "excluir",
+            label: "Excluir",
+            icon: <DeleteOutlined />,
+            danger: true,
+            onClick: () => dispatch(deleteCliente(record.id))
+        }
+    ];
 
-    return (
-        <>
-            <Filters>
-                <Button onClick={handleExport} disabled={isProcessing}>
-                    <ButtonContain>
-                        <MdCloudDownload size={20}/> <p>Exportar Clientes</p>
-                    </ButtonContain>
-                </Button>
-                <FileInput>
-                    <input type="file" onChange={handleImport} disabled={isProcessing}/>
-                    <ButtonContain>
-                        <MdCloudUpload size={20}/> Importar Clientes
-                    </ButtonContain>
-                </FileInput>
-                <Button onClick={handleDownloadTemplate} disabled={isProcessing}>
-                    <ButtonContain>
-                        <MdOutlineSimCardDownload size={20}/> Baixar Modelo
-                    </ButtonContain>
-                </Button>
-                <select value={filter || ''} onChange={(e) => setFilter(e.target.value || undefined)}>
-                    <option value="">Todos</option>
-                    {Object.entries(STATUS_CHOICES).map(([value, {label}]) => (
-                        <option key={value} value={value}>{label}</option>
+    // --- Columns da tabela ---
+    const columns = useMemo(() => [
+        {
+            title: "Nome",
+            dataIndex: "nome",
+            key: "nome",
+            render: (text: string, record: any) => (
+                <span style={{ fontWeight: 700, color: "#042a75", whiteSpace: "nowrap" }}>
+                    {text}
+                    <span style={{ fontWeight: 400, color: "#222", marginLeft: 4 }}>{record.sobre_nome}</span>
+                </span>
+            ),
+        },
+        {
+            title: "Email",
+            dataIndex: "email",
+            key: "email",
+            render: (email: string) => (
+                <a href={`mailto:${email}`} style={{ color: "#1890ff", fontWeight: 500, display: 'flex', alignItems: 'center' }}>
+                    <MailOutlined style={{ color: "#2196f3", marginRight: 5 }} />
+                    {email}
+                </a>
+            ),
+        },
+        {
+            title: "Telefone",
+            dataIndex: "telefone",
+            key: "telefone",
+            render: (telefone: string, record: any) => (
+                <div>
+                    <a
+                        href={`https://wa.me/+55${telefone}?text=${record.nome}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#25D366", fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 2 }}
+                    >
+                        <WhatsAppOutlined style={{ marginRight: 5, color: "#25D366" }} />
+                        <InputMask
+                            mask={getPhoneMask(telefone)}
+                            value={telefone}
+                            readOnly
+                            style={{ border: "none", background: "transparent", padding: 0, fontWeight: 500, color: "#333", width: 115 }}
+                        />
+                    </a>
+                    {record.relacionamentos?.contatos_adicionais?.map((contato: any, i: number) => (
+                        <a key={i}
+                           href={`https://wa.me/+55${contato.valor}?text=${record.nome}`}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           style={{ color: "#25D366", fontWeight: 400, display: 'flex', alignItems: 'center', marginLeft: 22 }}
+                        >
+                            <WhatsAppOutlined style={{ marginRight: 5, color: "#25D366" }} />
+                            <InputMask
+                                mask={getPhoneMask(contato.valor)}
+                                value={contato.valor}
+                                readOnly
+                                style={{ border: "none", background: "transparent", padding: 0, fontWeight: 400, color: "#555", width: 115 }}
+                            />
+                        </a>
                     ))}
-                </select>
-                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-                       placeholder="🔍 Buscar nome..."/>
-            </Filters>
-            <TableContainer>
+                </div>
+            ),
+        },
+        {
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            align: "center" as "center",
+            render: (status: string) => (
+                <Tag color={STATUS_CHOICES[status]?.color || 'blue'} style={{ minWidth: 90, display: "inline-block", textAlign: "center", fontWeight: 600 }}>
+                    {STATUS_CHOICES[status]?.label || status}
+                </Tag>
+            ),
+        },
+        {
+            title: "Apólices",
+            dataIndex: "total_apolices",
+            key: "total_apolices",
+            align: "center" as "center",
+            render: (total: number) =>
+                total
+                    ? <span style={{ color: "#042a75", fontWeight: 600 }}>{`📜 ${total} Apólices`}</span>
+                    : <span style={{ color: "#ccc" }}>Sem apólices ativas</span>
+        },
+        {
+            title: "Ações",
+            key: "acoes",
+            align: "center" as "center",
+            render: (_: any, record: any) => (
+                <Dropdown
+                    menu={{
+                        items: actionMenu(record),
+                        onClick: ({ key }) => {
+                            const item = actionMenu(record).find(i => i.key === key);
+                            if (item?.onClick) item.onClick();
+                        }
+                    }}
+                    trigger={["click"]}
+                >
+                    <Button icon={<MoreOutlined />} />
+                </Dropdown>
+            ),
+        }
+    ], [router, dispatch]);
 
-                <Table>
-                    {status === 'loading' && <p>Carregando...</p>}
-                    {error && <p className="text-red-500">{error}</p>}
-                    <thead>
-                    <TableRow>
-                        <TableHeader>Nome</TableHeader>
-                        <TableHeader>Email</TableHeader>
-                        <TableHeader>Telefone</TableHeader>
-                        <TableHeader>Status</TableHeader>
-                        <TableHeader>Apolices</TableHeader>
-                        <TableHeader>actions</TableHeader>
-                    </TableRow>
-                    </thead>
-                    <tbody>
-                    {clientes.length > 0 ? (
-                        clientes.map((cliente) => (
-                            <TableRow key={cliente.id}>
-                                <TableData>{cliente.nome} {cliente.sobre_nome}</TableData>
-                                <TableData>
-                                    <Linked href={`mailto:${cliente.email}`} passHref>
-                                        <MdMailOutline/> {cliente.email}
-                                    </Linked>
-                                </TableData>
-                                <TableData>
-                                    <Linked href={`https://wa.me/+55${cliente.telefone}?text=${cliente.nome}`} passHref
-                                            target={'_blank'}>
-                                        <FaWhatsapp/> <InputMask
-                                        mask={getPhoneMask(cliente.telefone)}
-                                        value={cliente.telefone}
-                                        readOnly
-                                        className={styles.phoneInput} // Estilo personalizado
-                                    />
-                                    </Linked>
-                                    {/* 🔹 Verifica se há contatos adicionais antes de mapear */}
-                                    {cliente.relacionamentos?.contatos_adicionais?.length ? (
-                                        cliente.relacionamentos.contatos_adicionais.map((contato, index) => (
-                                            <Linked key={index} href={`https://wa.me/+55${contato.valor}?text=${cliente.nome}`} passHref target={'_blank'}>
-                                                <FaWhatsapp />
-                                                <InputMask
-                                                    mask={getPhoneMask(contato.valor)}
-                                                    value={contato.valor}
-                                                    readOnly
-                                                    className={styles.phoneInput} // Estilo personalizado
-                                                />
-                                            </Linked>
-                                        ))
-                                    ) : (
-                                        <p></p> // 🔹 Mensagem caso não haja contatos
-                                    )}
+    // --- Filtros ---
+    return (
+        <div style={{ background: "#fff", borderRadius: 10, padding: 0 }}>
+            <Space style={{ marginBottom: 16, flexWrap: "wrap" }}>
+                <Input.Search
+                    allowClear
+                    placeholder="🔍 Buscar nome, e-mail ou telefone"
+                    value={search}
+                    onSearch={setSearch}
+                    onChange={e => setSearch(e.target.value)}
+                    style={{ width: 220 }}
+                />
+                <Select
+                    value={filter}
+                    onChange={value => { setFilter(value); setPagination(p => ({ ...p, current: 1 })); }}
+                    allowClear
+                    placeholder="Status"
+                    style={{ width: 150 }}
+                >
+                    {Object.entries(STATUS_CHOICES).map(([value, { label }]) => (
+                        <Select.Option key={value} value={value}>{label}</Select.Option>
+                    ))}
+                </Select>
+                <Button icon={<DownloadOutlined />} onClick={handleExport} loading={isProcessing}>
+                    Exportar CSV
+                </Button>
+                <Button icon={<FileExcelOutlined />} onClick={handleDownloadTemplate} loading={isProcessing}>
+                    Modelo Importação
+                </Button>
+                <Upload
+                    accept=".xlsx,.csv"
+                    customRequest={({ file }) => handleImport(file as File)}
+                    showUploadList={false}
+                    disabled={isProcessing}
+                >
+                    <Button icon={<UploadOutlined />} loading={isProcessing}>
+                        Importar Clientes
+                    </Button>
+                </Upload>
+            </Space>
 
-                                </TableData>
-                                <TableData>
-                                    <Badge $variant="outline" $status={cliente.status}>
-                                        {STATUS_DETAILS[cliente.status]?.label || cliente.status}
-                                    </Badge>
-                                </TableData>
-                                <TableData>
-                                    {cliente.total_apolices? <SpanApolice>📜 {cliente.total_apolices} Apólices</SpanApolice> : (
-                                        <SpanApolice>Não tem apólices ativas</SpanApolice>
-                                    )}
-                                </TableData>
-                                <TableActions>
-                                    <Tippy
-                                        content={
-                                                <TippyContainer className={styles.tippyClick}>
-                                                    <MdTouchApp size={18}/>
-                                                    <p>Perfil do cliente</p>
-                                                </TippyContainer>
+            <div style={{
+                overflow: 'hidden',
+                borderRadius: 8,
+                boxShadow: "0 2px 10px 0 #e6eef7"
+            }}>
+                <Table
+                    rowKey="id"
+                    columns={columns}
+                    dataSource={clientes}
+                    loading={status === "loading"}
+                    scroll={{ y: "75vh" }}
+                    pagination={false}
+                    bordered
+                    size="middle"
+                    style={{ minWidth: "80%", background: "#fff" }}
+                />
+            </div>
 
-                                        }
-                                        placement="bottom"
-                                        theme="custom"
-                                        animation="shift-away"
-                                        delay={[1000, 200]} // Atraso para exibir e esconder [show, hide]
-
-                                    >
-                                    <ViewButton
-                                        onClick={() => router.push(`/dashboard/cliente/${cliente.id}`)}
-                                    >
-                                        <MdPersonOutline />
-                                    </ViewButton>
-                                    </Tippy>
-
-                                    <DeleteButton onClick={() => handleDelete(cliente.id)}>
-                                        <FaTrash />
-                                    </DeleteButton>
-                                </TableActions>
-                            </TableRow>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan={4}>Nenhum cliente encontrado.</td>
-                        </tr>
-                    )}
-                    </tbody>
-                </Table>
-            </TableContainer>
-            <Pagination
-                currentPage={currentPage}
-                totalPages={Math.ceil(totalClientes / itemsPerPage)}
-                onPageChange={setCurrentPage}
-                itemsPerPage={itemsPerPage}
-                setItemsPerPage={setItemsPerPage}
-            />
-        </>
+            <div style={{
+                position: "sticky",
+                bottom: 0,
+                background: "#fff",
+                zIndex: 10,
+                borderTop: "1px solid #eee",
+                padding: "12px 0 0 0"
+            }}>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Pagination
+                        current={pagination.current}
+                        pageSize={pagination.pageSize}
+                        total={totalClientes}
+                        showSizeChanger
+                        onChange={(page: number, pageSize?: number) => {
+                            setPagination({ current: page, pageSize: pageSize || 10 });
+                        }}
+                        pageSizeOptions={['10', '20', '30', '50']}
+                        style={{ margin: 0, padding: 0 }}
+                    />
+                </div>
+            </div>
+            {error && <div style={{ color: 'red', marginTop: 12 }}>{error}</div>}
+        </div>
     );
-};
-
-export default ClientesTable;
+}
