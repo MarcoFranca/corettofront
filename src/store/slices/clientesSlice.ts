@@ -49,16 +49,13 @@ export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
     }
 );
 
-function normalizeApiUrl(url: string | null): string {
-    if (!url) return '';
-    try {
-        const u = new URL(url, process.env.NEXT_PUBLIC_API_BASE_URL);
-        return u.pathname.replace(/^\/api\/v1/, '') + u.search;
-    } catch {
-        return url;
+export const fetchClientesNegociacoes = createAsyncThunk(
+    'clientes/fetchClientesNegociacoes',
+    async () => {
+        const response = await api.get('/clientes/negociacoes/');
+        return response.data;
     }
-}
-
+);
 
 export const fetchTodosClientesFiltrados = createAsyncThunk<Cliente[], { status?: string[] }>(
     'clientes/fetchTodosClientesFiltrados',
@@ -233,6 +230,11 @@ const clientesSlice = createSlice({
         builder
             .addCase(fetchClientes.pending, (state) => {
                 state.status = 'loading';
+            })
+            .addCase(fetchClientesNegociacoes.fulfilled, (state, action) => {
+                state.clientes = action.payload;
+                state.totalClientes = action.payload.length;
+                state.status = 'succeeded';
             })
             .addCase(fetchClientes.fulfilled, (state, action) => {
                 console.log("📢 Atualizando Redux com clientes da página:", action.payload.results);

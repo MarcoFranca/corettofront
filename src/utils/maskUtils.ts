@@ -126,15 +126,18 @@ export const formatBRLCurrency = (value: number | undefined | null) =>
     }).format(value ?? 0);
 
 
-export const formatPhoneNumber = (telefone: string) => {
-    const rawPhone = removeMask(telefone); // Remove qualquer formatação existente
+export function formatPhoneNumber(telefone?: string | null): string {
+    if (!telefone) return "";  // <- Protege contra undefined/null
+
+    const rawPhone = removeMask(telefone) || "";
 
     if (rawPhone.length === 10) {
         // Telefone fixo (XX) XXXX-XXXX
         return rawPhone.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
     } else if (rawPhone.length === 11) {
-        // Celular (XX) XXXXX-XXXX
+        // Celular (XX) 9XXXX-XXXX
         return rawPhone.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
     }
-    return telefone; // Se o número estiver inválido, mantém como está
-};
+    // Se não encaixa nos padrões, retorna o valor sem máscara
+    return telefone;
+}

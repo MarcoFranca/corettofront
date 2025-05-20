@@ -5,10 +5,9 @@ import { Button, Drawer, Dropdown, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import {
-    fetchTodosClientesFiltrados,
     deleteCliente,
     updateCliente,
-    createCliente, fetchClientes,
+    createCliente, fetchClientes, fetchClientesNegociacoes,
 } from "@/store/slices/clientesSlice";
 import { Cliente, NegociacaoCliente } from "@/types/interfaces";
 import { ContainerCanva } from "./LeadTable.styles";
@@ -68,7 +67,7 @@ const LeadTable: React.FC = () => {
 
     // Busca todos leads/negociações de uma vez
     useEffect(() => {
-        dispatch(fetchTodosClientesFiltrados({ status: ["lead", "negociacao", "nova_negociacao"] }));
+        dispatch(fetchClientesNegociacoes());
     }, [dispatch]);
 
     useEffect(() => {
@@ -243,30 +242,32 @@ const LeadTable: React.FC = () => {
         },
         {
             title: "Negociações",
-            dataIndex: "relacionamentos.negociacoes",
+            dataIndex: "negociacoes",
             key: "negociacoes",
             render: (_: any, record: Cliente) => {
-                const negociacoes = record.relacionamentos?.negociacoes || [];
+                const negociacoes = record.negociacoes || [];
                 const total = negociacoes.length;
+
+                // Exemplo: última reunião
                 const ultimaReuniao = negociacoes
-                    .flatMap(n => n.reunioes || [])
+                    .flatMap((n: any) => n.reunioes || [])
                     .sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime())[0];
 
                 return (
                     <Tooltip title="Clique para ver os detalhes">
-            <span
-                style={{ cursor: 'pointer', color: '#1890ff' }}
-                onClick={() => {
-                    setNegociacoesSelecionadas(negociacoes);
-                    setNegociacoesModalVisible(true);
-                }}>
-              {total} negociação{total !== 1 ? "es" : ""}
-                {ultimaReuniao && (
-                    <span style={{ marginLeft: 6 }}>
-                  📅 {new Date(ultimaReuniao.start_time).toLocaleDateString("pt-BR")}
+                <span
+                    style={{ cursor: 'pointer', color: '#1890ff' }}
+                    onClick={() => {
+                        setNegociacoesSelecionadas(negociacoes);
+                        setNegociacoesModalVisible(true);
+                    }}>
+                    {total} negociação{total !== 1 ? "es" : ""}
+                    {ultimaReuniao && (
+                        <span style={{ marginLeft: 6 }}>
+                            📅 {new Date(ultimaReuniao.start_time).toLocaleDateString("pt-BR")}
+                        </span>
+                    )}
                 </span>
-                )}
-            </span>
                     </Tooltip>
                 );
             }
