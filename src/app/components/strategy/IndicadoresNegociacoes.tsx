@@ -31,7 +31,7 @@ const IndicadoresNegociacoes: React.FC = () => {
         });
     }, []);
 
-    if (loading || !dados) return <Skeleton active paragraph={{ rows: 6 }} />;
+    if (loading || !dados) return <Skeleton active paragraph={{ rows: 3 }} />;
 
     return (
         <div style={{

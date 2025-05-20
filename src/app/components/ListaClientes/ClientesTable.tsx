@@ -9,7 +9,6 @@ import { STATUS_CHOICES } from "@/utils/statusOptions";
 import InputMask from "react-input-mask-next";
 import { getPhoneMask } from "@/utils/maskUtils";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
 
 // Utilitário para debounce do search (sem biblioteca)
 function useDebounce(value: string, delay = 600) {
@@ -36,22 +35,17 @@ export default function ClientesTable() {
     const [filter, setFilter] = useState<string | undefined>();
     const [search, setSearch] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
-    const alreadyFetched = useRef(false);
     const debouncedSearch = useDebounce(search, 500);
 
     // Fetch dos clientes
     useEffect(() => {
-        // Só dispara se ainda não fez
-        if (alreadyFetched.current) return;
-        alreadyFetched.current = true;
         dispatch(fetchClientes({
             status: filter,
             page: pagination.current,
             limit: pagination.pageSize,
-            search: search || undefined
+            search: debouncedSearch || undefined
         }));
-        // eslint-disable-next-line
-    }, [filter, pagination.current, pagination.pageSize, search]);
+    }, [dispatch, filter, pagination.current, pagination.pageSize, debouncedSearch]);
 
     // --- Ações ---
     const handleExport = async () => {
