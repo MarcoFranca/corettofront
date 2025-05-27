@@ -15,3 +15,15 @@ export const removeMoneyMask = (value: string): string => {
     // Remove tudo que não é dígito ou ponto decimal
     return value.replace(/[^\d.-]/g, '');
 };
+
+export function capitalizeName(name: String): string {
+    if (!name) return "";
+    return name
+        .split(" ")
+        .filter(Boolean)
+        .map((s) => s[0]?.toUpperCase() + s.slice(1).toLowerCase())
+        .join(" ");
+
+}
+
+
