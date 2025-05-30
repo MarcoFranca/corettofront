@@ -8,6 +8,8 @@ import { RootState } from "@/store";
 import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import Lottie from 'react-lottie-player';
+import coraAnimation from '@/../public/lotties/cora1.json';
 
 const { TextArea } = Input;
 
@@ -150,7 +152,23 @@ const CoraDrawer = ({ open, onClose }: { open: boolean; onClose: () => void }) =
     };
 
     return (
-        <StyledDrawer title="🤖 Cora - sua assistente" placement="right" width={"80vw"} onClose={onClose} open={open}>
+        <StyledDrawer
+            title={
+                <span style={{display: "flex", alignItems: "center", gap: 10}}>
+            <Lottie
+                animationData={coraAnimation}
+                play
+                loop={false}
+                style={{ width: 36, height: 36, marginRight: 2 }}
+            />
+            <span style={{fontWeight: 600, fontSize: 18}}>Cora — sua assistente</span>
+        </span>
+            }
+            placement="right"
+            width={"80vw"}
+            onClose={onClose}
+            open={open}
+        >
             <DrawerFlex>
                 {/* SIDEBAR CONVERSAS */}
                 <Sidebar>

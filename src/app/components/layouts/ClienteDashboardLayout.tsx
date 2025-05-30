@@ -15,10 +15,12 @@ import { logout } from "@/store/slices/authSlice";
 import ThemeToggle from "@/app/components/ui/Button/ThemeToggle";
 import RouteChangeLoader from "@/app/components/ui/loading/RouteChangeLoader";
 import {setRouteLoading} from "@/store/slices/uiSlice";
-import {Modal} from "antd";
 import CoraDrawer from "@/app/components/openai/CoraDrawer";
 import {updateProfile} from "@/store/slices/profileSlice";
 import {showTrialTokensModal} from "@/app/components/popup/trialToken";
+import Lottie from 'react-lottie-player';
+import coraAnimation from '@/../public/lotties/cora3.json';
+
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -39,7 +41,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const [profileData, setProfileData] = useState<any>(null); // novo
     const [hideTrialBanner, setHideTrialBanner] = useState(false);
     const [coraVisible, setCoraVisible] = useState(false);
-
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [hasMouseLeft, setHasMouseLeft] = useState(false);
+    const [animationKey, setAnimationKey] = useState(Math.random());
 
     const user = useSelector((state: RootState) => state.auth?.user);
     const token = useSelector((state: RootState) => state.auth?.token);
@@ -47,6 +51,21 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     // Lógica para decidir qual sidebar exibir
     const isClientPage = pathname?.startsWith('/dashboard/cliente/');
     const SidebarComponent = isClientPage ? ClientDashboardSidebar : DashboardSidebar;
+
+    const handleMouseEnter = () => {
+        setAnimationKey(Math.random()); // Reinicia do início
+        setIsPlaying(true);
+        setHasMouseLeft(false);
+    };
+
+    // Ao sair, só para após terminar
+    const handleMouseLeave = () => {
+        setHasMouseLeft(true);
+    };
+
+    const handleAnimationComplete = () => {
+        if (hasMouseLeft) setIsPlaying(false);
+    };
 
     useEffect(() => {
         if (!profile) return;
@@ -170,10 +189,21 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         return (
             <main className={styles.dashboardLayout}>
                 <button
-                    className={styles.coraButton}
+                    className={styles.coraButtonLottie}
                     onClick={() => setCoraVisible(true)}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    tabIndex={0}
+                    aria-label="Abrir assistente Cora"
                 >
-                    🤖
+                    <Lottie
+                        key={animationKey}
+                        loop={false}
+                        animationData={coraAnimation}
+                        play={isPlaying}
+                        style={{width: 54, height: 54}}
+                        onComplete={handleAnimationComplete}
+                    />
                 </button>
 
                 <div className={styles.dashboardLayoutContaint}>
@@ -202,7 +232,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                             </div>
                         )}
                         {children}
-                        <CoraDrawer open={coraVisible} onClose={() => setCoraVisible(false)} />
+                        <CoraDrawer open={coraVisible} onClose={() => setCoraVisible(false)}/>
                     </div>
                 </div>
                 <RouteChangeLoader/>
@@ -212,7 +242,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     return (
         <main className={styles.dashboardLayoutMobile}>
-        <div className={styles.dashboardLayoutContaintMobile}>
+            <div className={styles.dashboardLayoutContaintMobile}>
                 <MenuMobile
                     profileImage={profileImage}
                     user={user}
@@ -220,7 +250,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 />
                 <div className={styles.canvaLayoutMobile}>{children}</div>
             </div>
-            <RouteChangeLoader />
+            <RouteChangeLoader/>
         </main>
     );
 };
