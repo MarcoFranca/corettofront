@@ -35,10 +35,6 @@ const LeadTable: React.FC = () => {
         setInsightDrawerOpen,     // << PASSE AQUI!
     });
 
-    const apolicesDoCliente = insightCliente?.apolices || [];
-    const negociacoesDoCliente = insightCliente?.negociacoes || [];
-    const reunioesDoCliente = (negociacoesDoCliente || []).flatMap((n: any) => n.reunioes || []);
-
     return (
         <>
             <ContainerCanva>
@@ -102,10 +98,8 @@ const LeadTable: React.FC = () => {
                 open={insightDrawerOpen}
                 onClose={() => setInsightDrawerOpen(false)}
                 cliente={insightCliente}
-                negociacoes={negociacoesDoCliente}
-                apolices={apolicesDoCliente}
-                reunioes={reunioesDoCliente}
             />
+
         </>
     );
 };

@@ -200,11 +200,11 @@ const ClienteInsightDrawer: React.FC<ClienteInsightDrawerProps> = ({
                         </div>
                     ) : (
                         messages.map((msg, i) => (
-                            <MessageRow key={i} role={msg.role} >
+                            <MessageRow key={i} role={msg.role}>
                                 {msg.role === "assistant" && (
                                     <Avatar icon={<RobotOutlined />} style={{ background: "#dbeafe" }} />
                                 )}
-                                <MessageBubble role={msg.role} style={{ marginBottom: '16px' }}>
+                                <MessageBubble role={msg.role} style={{ marginBottom: "16px" }}>
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                                 </MessageBubble>
                                 {msg.role === "user" && (
@@ -225,7 +225,7 @@ const ClienteInsightDrawer: React.FC<ClienteInsightDrawerProps> = ({
                         value={descricao}
                         onChange={e => setDescricao(e.target.value)}
                         onPressEnter={e => { e.preventDefault(); handlePedirInsight(); }}
-                        disabled={loading || (messages.length === 0 && !selectedThreadId)}
+                        disabled={loading || loadingThreads || loadingHistorico || (messages.length === 0 && !selectedThreadId)}
                         style={{ marginBottom: 8 }}
                     />
                     <Button type="primary"
