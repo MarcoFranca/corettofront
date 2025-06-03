@@ -9,6 +9,7 @@ import {
     sidebarStyle
 } from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/ClienteInsightDrower.styles";
 import {MessageBubble, MessageRow} from "@/app/components/openai/CoraDrower.styles";
+import {Cliente} from "@/types/interfaces";
 
 // Styles sugeridos (ou use styled-components igual ao chat)
 
@@ -27,7 +28,7 @@ interface HistoricoMsg {
 interface ClienteInsightDrawerProps {
     open: boolean;
     onClose: () => void;
-    cliente: any;
+    cliente: Cliente | null;
     // Se quiser filtrar threads só desse cliente, pode passar o clienteId
     clienteId?: string;
 }
@@ -39,6 +40,7 @@ interface Message {
 const ClienteInsightDrawer: React.FC<ClienteInsightDrawerProps> = ({
                                                                        open, onClose, cliente
                                                                    }) => {
+
     const [descricao, setDescricao] = useState("");
     const [loading, setLoading] = useState(false);
     const [erro, setErro] = useState<string | null>(null);
@@ -102,7 +104,7 @@ const ClienteInsightDrawer: React.FC<ClienteInsightDrawerProps> = ({
             setErro(null);
             try {
                 const result = await api.post("/integrations/chatgpt/insight/", {
-                    cliente_id: cliente.id,
+                    cliente_id: cliente?.id,
                     mensagem: descricao,
                     thread_id: selectedThreadId
                 });
@@ -114,7 +116,7 @@ const ClienteInsightDrawer: React.FC<ClienteInsightDrawerProps> = ({
                 const thread = result.data.thread_id || selectedThreadId;
                 if (thread) {
                     const historicoResult = await api.get(
-                        `/integrations/chatgpt/historico/?thread_id=${thread}&modelo_usado=Cora Insight&cliente_id=${cliente.id}`
+                        `/integrations/chatgpt/historico/?thread_id=${thread}&modelo_usado=Cora Insight&cliente_id=${cliente?.id}`
                     );
                     setHistorico(historicoResult.data);
                 }
@@ -130,14 +132,14 @@ const ClienteInsightDrawer: React.FC<ClienteInsightDrawerProps> = ({
         setErro(null);
         try {
             const result = await api.post("/integrations/chatgpt/insight/", {
-                cliente_id: cliente.id,
+                cliente_id: cliente?.id,
                 mensagem: descricao,
                 thread_id: selectedThreadId
             });
             setDescricao("");
             const thread = result.data.thread_id || selectedThreadId;
             if (thread) {
-                const historicoResult = await api.get(`/integrations/chatgpt/historico/?thread_id=${thread}&modelo_usado=Cora Insight&cliente_id=${cliente.id}`);
+                const historicoResult = await api.get(`/integrations/chatgpt/historico/?thread_id=${thread}&modelo_usado=Cora Insight&cliente_id=${cliente?.id}`);
                 setHistorico(historicoResult.data);
             }
         } catch (err) {
