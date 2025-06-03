@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useState} from "react";
 import { Table, Drawer } from "antd";
 import { ContainerCanva } from "./LeadTable.styles";
 import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
@@ -13,12 +13,14 @@ import {
     useLeadTable,
     useNegotiationSeen
 } from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/components/useLeadTable";
+import ClienteInsightDrawer from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/ClienteInsightDrawer";
 
 const LeadTable: React.FC = () => {
     const dispatch = useAppDispatch();
     const clientes = useAppSelector((state) => state.clientes.clientes);
     const usuarioId = String(useAppSelector(state => state.auth.user?.id ?? "")); // Força string
-
+    const [insightDrawerOpen, setInsightDrawerOpen] = useState(false);
+    const [insightCliente, setInsightCliente] = useState<any>(null);
     // Hooks para vistos
     const { negociacoesVistas, marcarComoVisto, foiVistoHoje } = useNegotiationSeen(usuarioId);
 
@@ -29,7 +31,13 @@ const LeadTable: React.FC = () => {
         negociacoesVistas,
         marcarComoVisto,
         foiVistoHoje,
+        setInsightCliente,        // << PASSE AQUI!
+        setInsightDrawerOpen,     // << PASSE AQUI!
     });
+
+    const apolicesDoCliente = insightCliente?.apolices || [];
+    const negociacoesDoCliente = insightCliente?.negociacoes || [];
+    const reunioesDoCliente = (negociacoesDoCliente || []).flatMap((n: any) => n.reunioes || []);
 
     return (
         <>
@@ -90,6 +98,14 @@ const LeadTable: React.FC = () => {
                     onClose={() => leadTable.setShowClienteDrawer(false)}
                 />
             )}
+            <ClienteInsightDrawer
+                open={insightDrawerOpen}
+                onClose={() => setInsightDrawerOpen(false)}
+                cliente={insightCliente}
+                negociacoes={negociacoesDoCliente}
+                apolices={apolicesDoCliente}
+                reunioes={reunioesDoCliente}
+            />
         </>
     );
 };

@@ -1,8 +1,9 @@
 import React from "react";
-import { Dropdown, Button } from "antd";
+import { Dropdown, Button, Tooltip } from "antd";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import type { MenuProps } from "antd";
 import { Cliente } from "@/types/interfaces";
+import { ThunderboltOutlined } from "@ant-design/icons";
 
 interface TableActionsProps {
     record: Cliente;
@@ -11,6 +12,8 @@ interface TableActionsProps {
     setShowNegotiationWizard: (open: boolean) => void;
     handleDelete: (id: string) => void;
     foiVistoHoje: (id: string) => void;
+    setInsightCliente: (c: Cliente) => void;           // <<< ADICIONE
+    setInsightDrawerOpen: (v: boolean) => void;        // <<< ADICIONE
 }
 
 export const TableActions: React.FC<TableActionsProps> = ({
@@ -20,30 +23,55 @@ export const TableActions: React.FC<TableActionsProps> = ({
                                                               setShowNegotiationWizard,
                                                               handleDelete,
                                                               foiVistoHoje,
+                                                              setInsightCliente,
+                                                              setInsightDrawerOpen,
                                                           }) => {
-    const items: MenuProps['items'] = [
+    const items: MenuProps["items"] = [
         {
-            key: 'edit',
-            label: '✏️ Editar',
+            key: "insight",
+            label: (
+                <Tooltip title="Pedir insight de venda personalizado">
+                    <span
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            fontWeight: 500,
+                        }}
+                        onClick={e => {
+                            e.stopPropagation();
+                            setInsightCliente(record);
+                            setInsightDrawerOpen(true);
+                        }}
+                    >
+                        <ThunderboltOutlined style={{ color: "#FFB800", fontSize: 16 }} />
+                        Insight da Cora
+                    </span>
+                </Tooltip>
+            ),
+        },
+        {
+            key: "edit",
+            label: "✏️ Editar",
             onClick: () => {
                 setSelectedLead(record);
                 setIsEditModalOpen(true);
-            }
+            },
         },
         {
-            key: 'negociar',
-            label: '⚡ Negociação',
+            key: "negociar",
+            label: "⚡ Negociação",
             onClick: () => {
                 setSelectedLead(record);
                 setShowNegotiationWizard(true);
-            }
+            },
         },
         {
-            key: 'delete',
-            label: '🗑️ Excluir',
+            key: "delete",
+            label: "🗑️ Excluir",
             danger: true,
             onClick: () => handleDelete(record.id),
-        }
+        },
     ];
 
     return (

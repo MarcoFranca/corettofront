@@ -20,6 +20,8 @@ type UseLeadTableProps = {
     negociacoesVistas: Record<string, string>;
     marcarComoVisto: (id: string) => void;
     foiVistoHoje: (id: string) => boolean;
+    setInsightCliente: (c: Cliente) => void;
+    setInsightDrawerOpen: (v: boolean) => void;
 };
 
 function getToday() {
@@ -65,6 +67,8 @@ export function useLeadTable({
                                  negociacoesVistas,
                                  marcarComoVisto,
                                  foiVistoHoje,
+                                 setInsightCliente,        // << RECEBA AQUI!
+                                 setInsightDrawerOpen,
                              }: UseLeadTableProps) {    const filtroIndicacao = getFiltroIndicacao(clientes);
     // States principais
     const [filteredLeads, setFilteredLeads] = useState<Cliente[]>([]);
@@ -75,6 +79,7 @@ export function useLeadTable({
     const [negociacoesSelecionadas, setNegociacoesSelecionadas] = useState<NegociacaoCliente[]>([]);
     const [showNegotiationWizard, setShowNegotiationWizard] = useState(false);
     const [showClienteDrawer, setShowClienteDrawer] = useState(false);
+    const [threadId, setThreadId] = useState<string | null>(null);
 
     const { confirm } = useConfirm();
     const { saveBackup, getBackup } = useLeadBackup();
@@ -171,7 +176,10 @@ export function useLeadTable({
         negociacoesVistas,
         marcarComoVisto,
         foiVistoHoje,
+        setInsightCliente,          // <<< PASSE AQUI!
+        setInsightDrawerOpen        // <<< PASSE AQUI!
     });
+
 
     // Indicação (os filtros da coluna)
     const parceirosUnicos = Array.from(

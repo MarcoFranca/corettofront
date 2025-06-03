@@ -1,12 +1,12 @@
 import React, {type Key} from "react";
-import {Tag, Tooltip, Dropdown, Button, Menu} from "antd";
+import {Tag, Tooltip, Dropdown, Menu} from "antd";
 import { FaWhatsapp } from "react-icons/fa";
 import { formatPhoneNumber } from "@/utils/maskUtils";
 import { getWhatsAppLink } from "@/utils/functions";
 import type { ColumnsType } from "antd/es/table";
 import type { Cliente, NegociacaoCliente } from "@/types/interfaces";
 import { TableActions } from "./TableActions";
-import {CheckCircleOutlined, EditOutlined, ExclamationCircleOutlined, ThunderboltOutlined} from "@ant-design/icons";
+import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
 import {capitalizeName} from "@/utils/utils";
 import {statusMap} from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/helpers/functions";
 import {
@@ -39,8 +39,9 @@ interface LeadTableColumnsProps {
     negociacoesVistas: Record<string, string>;
     marcarComoVisto: (id: string) => void;
     foiVistoHoje: (id: string) => boolean;
+    setInsightCliente: (c: Cliente) => void;
+    setInsightDrawerOpen: (v: boolean) => void;
 }
-
 
 // Função que retorna as columns prontas
 export function getLeadTableColumns({
@@ -50,18 +51,19 @@ export function getLeadTableColumns({
                                         handleDelete,
                                         setNegociacoesSelecionadas,
                                         setNegociacoesModalVisible,
-                                        setShowClienteDrawer,
                                         filtroIndicacao,
-                                        negociacoesVistas,
                                         marcarComoVisto,
                                         foiVistoHoje,
+                                        setInsightCliente,         // <--- adicione aqui (faltando atualmente)
+                                        setInsightDrawerOpen,      // <--- adicione aqui (faltando atualmente)
                                     }: LeadTableColumnsProps): ColumnsType<Cliente> {
+
 const dispatch = useAppDispatch();
     return [
         {
             title: "Ações",
             key: "actions",
-            fixed: "right" as const, // <--- Aqui corrige o erro TS do fixed
+            fixed: "right" as const,
             width: 70,
             render: (_: unknown, record: Cliente) => (
                 <TableActions
@@ -71,6 +73,8 @@ const dispatch = useAppDispatch();
                     setShowNegotiationWizard={setShowNegotiationWizard}
                     handleDelete={handleDelete}
                     foiVistoHoje={foiVistoHoje}
+                    setInsightCliente={setInsightCliente}             // <<< ADICIONE
+                    setInsightDrawerOpen={setInsightDrawerOpen}       // <<< ADICIONE
                 />
             )
         },
