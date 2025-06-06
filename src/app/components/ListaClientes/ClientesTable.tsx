@@ -9,6 +9,7 @@ import { STATUS_CHOICES } from "@/utils/statusOptions";
 import InputMask from "react-input-mask-next";
 import { getPhoneMask } from "@/utils/maskUtils";
 import { useRouter } from "next/navigation";
+import ClientePerfilDrawer from "@/app/(pages)/dashboard/(painel_admin)/carteira/ClientePerfilDrawer";
 
 // Utilitário para debounce do search (sem biblioteca)
 function useDebounce(value: string, delay = 600) {
@@ -35,17 +36,23 @@ export default function ClientesTable() {
     const [filter, setFilter] = useState<string | undefined>();
     const [search, setSearch] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [selectedClienteId, setSelectedClienteId] = useState<string | null>(null);
+    const [filterIsVip, setFilterIsVip] = useState<boolean | 'all'>('all');
     const debouncedSearch = useDebounce(search, 500);
 
     // Fetch dos clientes
     useEffect(() => {
         dispatch(fetchClientes({
-            status: filter,
+            status: filter && filter !== "favorito" ? filter : undefined,
+            is_vip: filter === "favorito" ? true : undefined, // sempre boolean ou undefined
+            // outros filtros
             page: pagination.current,
             limit: pagination.pageSize,
-            search: debouncedSearch || undefined
+            search: debouncedSearch || undefined,
         }));
     }, [dispatch, filter, pagination.current, pagination.pageSize, debouncedSearch]);
+
 
     // --- Ações ---
     const handleExport = async () => {
@@ -124,14 +131,55 @@ export default function ClientesTable() {
     // --- Columns da tabela ---
     const columns = useMemo(() => [
         {
+            title: "⭐",
+            dataIndex: "is_vip",
+            key: "is_vip",
+            filters: [
+                { text: "Favoritos", value: true },
+                { text: "Todos", value: "all" },
+            ],
+            filteredValue: filterIsVip !== 'all' ? [filterIsVip] : null,
+            onFilter: (value: any | null, record: any) => {
+                if (value === "all") return true;
+                return record.is_vip === value;
+            },
+            align: "center" as "center",
+            width: 40,
+            render: (is_vip: boolean, record: any) => (
+                <span
+                    style={{ cursor: "pointer", fontSize: 22, color: is_vip ? "#ffd700" : "#ccc" }}
+                    title={is_vip ? "Remover dos favoritos" : "Marcar como favorito"}
+                    onClick={async () => {
+                        try {
+                            await api.patch(`/clientes/${record.id}/`, { is_vip: !is_vip });
+                            dispatch(fetchClientes({
+                                is_vip: filterIsVip === true ? true : undefined, // só filtra no backend se for "favoritos"
+                                page: pagination.current,
+                                limit: pagination.pageSize,
+                                search: debouncedSearch || undefined,
+                            }));
+                            message.success(is_vip ? "Removido dos favoritos!" : "Adicionado aos favoritos!");
+                        } catch {
+                            message.error("Erro ao atualizar favorito.");
+                        }
+                    }}
+                >
+      ★
+    </span>
+            ),
+        },
+        {
             title: "Nome",
             dataIndex: "nome",
             key: "nome",
             render: (text: string, record: any) => (
-                <span style={{ fontWeight: 700, color: "#042a75", whiteSpace: "nowrap" }}>
-                    {text}
+                <span
+                    style={{ fontWeight: 700, color: "#042a75", cursor: "pointer" }}
+                    onClick={() => { setDrawerOpen(true); setSelectedClienteId(record.id); }}
+                >
+        {text}
                     <span style={{ fontWeight: 400, color: "#222", marginLeft: 4 }}>{record.sobre_nome}</span>
-                </span>
+    </span>
             ),
         },
         {
@@ -240,15 +288,21 @@ export default function ClientesTable() {
                 />
                 <Select
                     value={filter}
-                    onChange={value => { setFilter(value); setPagination(p => ({ ...p, current: 1 })); }}
+                    onChange={value => {
+                        setFilter(value);
+                        setPagination(p => ({ ...p, current: 1 }));
+                    }}
                     allowClear
                     placeholder="Status"
                     style={{ width: 150 }}
                 >
+                    <Select.Option value="todos">Todos</Select.Option>
                     {Object.entries(STATUS_CHOICES).map(([value, { label }]) => (
                         <Select.Option key={value} value={value}>{label}</Select.Option>
                     ))}
+                    <Select.Option value="favorito">⭐ Favoritos</Select.Option>
                 </Select>
+
                 <Button icon={<DownloadOutlined />} onClick={handleExport} loading={isProcessing}>
                     Exportar CSV
                 </Button>
@@ -282,6 +336,25 @@ export default function ClientesTable() {
                     bordered
                     size="middle"
                     style={{ minWidth: "80%", background: "#fff" }}
+                    onChange={(pagination, filters) => {
+                        const vipFilter = filters.is_vip as (boolean | "all")[] | null;
+                        if (vipFilter && vipFilter.length > 0) {
+                            setFilterIsVip(vipFilter[0]);
+                            dispatch(fetchClientes({
+                                is_vip: vipFilter[0] === true ? true : undefined, // só filtra se for true
+                                page: pagination.current,
+                                limit: pagination.pageSize,
+                                search: debouncedSearch || undefined,
+                            }));
+                        } else {
+                            setFilterIsVip("all");
+                            dispatch(fetchClientes({
+                                page: pagination.current,
+                                limit: pagination.pageSize,
+                                search: debouncedSearch || undefined,
+                            }));
+                        }
+                    }}
                 />
             </div>
 
@@ -308,6 +381,12 @@ export default function ClientesTable() {
                 </div>
             </div>
             {error && <div style={{ color: 'red', marginTop: 12 }}>{error}</div>}
+            <ClientePerfilDrawer
+                clienteId={selectedClienteId}
+                open={drawerOpen}
+                onClose={() => setDrawerOpen(false)}
+            />
+
         </div>
     );
 }

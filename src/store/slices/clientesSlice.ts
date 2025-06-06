@@ -11,19 +11,25 @@ const initialState: ClientesState = {
     statusDetalhe: 'idle',
     error: null,
     errorDetalhe: null,
+    is_vip: false,
 };
 
 
 
 export const fetchClientes = createAsyncThunk<
     { results: Cliente[]; count: number },
-    { status?: string; search?: string; page?: number; limit?: number } | undefined
+    { status?: string; search?: string; page?: number; limit?: number; is_vip?: boolean | undefined } | undefined
 >("clientes/fetchClientes", async (params) => {
-    const response = await api.get("/clientes/", { params });
+    const { is_vip, ...rest } = params || {};
+    let apiParams: any = { ...rest };
+    if (typeof is_vip === 'boolean') {
+        apiParams.is_vip = is_vip ? "true" : "false";
+    }
+    const response = await api.get("/clientes/", { params: apiParams });
     console.log('clientes da pagina', response.data.results)
     return {
-        results: response.data.results, // ✅ Apenas os clientes da página atual
-        count: response.data.count, // ✅ Total de clientes
+        results: response.data.results,
+        count: response.data.count,
     };
 });
 

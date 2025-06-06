@@ -239,6 +239,7 @@ export interface ClientesState {
     statusDetalhe: "idle" | "loading" | "succeeded" | "failed";
     error: string | null;
     errorDetalhe: string | null;
+    is_vip: boolean | undefined
 }
 
 export interface EditClientModalProps {
