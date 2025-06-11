@@ -1,11 +1,12 @@
 import React from "react";
-import { Button, Dropdown, Tooltip, Tag } from "antd";
+import {Button, Dropdown, Tooltip, Tag, message} from "antd";
 import { MailOutlined, WhatsAppOutlined, MoreOutlined, StarFilled, StarOutlined, EditOutlined } from "@ant-design/icons";
 import InputMask from "react-input-mask-next";
 import { STATUS_CHOICES } from "@/utils/statusOptions";
 import { getPhoneMask } from "@/utils/maskUtils";
 import type { Cliente } from "@/types/interfaces";
 import {TableActions} from "@/app/components/ListaClientes/TableActions";
+import api from "@/app/api/axios";
 
 export function getClientesColumns({
                                        actionMenu,
@@ -32,26 +33,32 @@ export function getClientesColumns({
                 record.is_vip === (value === true || value === "true" || value === 1 || value === "1"),
             render: (_: any, record: Cliente) => (
                 <Tooltip title={record.is_vip ? "Remover dos favoritos" : "Marcar como favorito"}>
-                    <span
-                        style={{
-                            cursor: "pointer",
-                            fontSize: 22,
-                            color: record.is_vip ? "#FFD700" : "#ccc",
-                            display: "inline-block",
-                        }}
-                        onClick={async (e) => {
-                            e.stopPropagation(); // Para não abrir o Drawer sem querer
-                            await dispatch(fetchClientes({
-                                is_vip: !record.is_vip,
-                                status: filterStatus && filterStatus.length > 0 ? filterStatus : undefined,
-                                page: pagination.current,
-                                limit: pagination.pageSize,
-                                search: debouncedSearch || undefined,
-                            }));
-                        }}
-                    >
-                        {record.is_vip ? <StarFilled /> : <StarOutlined />}
-                    </span>
+        <span
+            style={{
+                cursor: "pointer",
+                fontSize: 22,
+                color: record.is_vip ? "#FFD700" : "#ccc",
+                display: "inline-block",
+            }}
+            onClick={async (e) => {
+                e.stopPropagation(); // Para não abrir o Drawer sem querer
+                try {
+                    await api.patch(`/clientes/${record.id}/`, { is_vip: !record.is_vip });
+                    dispatch(fetchClientes({
+                        is_vip: filterIsVip === true ? true : undefined,
+                        status: filterStatus && filterStatus.length > 0 ? filterStatus : undefined,
+                        page: pagination.current,
+                        limit: pagination.pageSize,
+                        search: debouncedSearch || undefined,
+                    }));
+                    message.success(!record.is_vip ? "Adicionado aos favoritos!" : "Removido dos favoritos!");
+                } catch {
+                    message.error("Erro ao atualizar favorito.");
+                }
+            }}
+        >
+            {record.is_vip ? <StarFilled /> : <StarOutlined />}
+        </span>
                 </Tooltip>
             ),
         },
@@ -75,9 +82,6 @@ export function getClientesColumns({
                     <Button
                         icon={<MoreOutlined />}
                         size="small"
-                        // Não coloque type="text"!
-                        // Não coloque style customizado!
-                        // Deixe o Ant Design fazer o trabalho :)
                         style={{
                             display: "flex",
                             alignItems: "center",
