@@ -199,6 +199,7 @@ export interface Cliente {
     identidade?: string;
     tipo_identidade?:string;
     data_nascimento?: string;
+    is_vip?: boolean;
     genero?: string;
     profissao?: Profissao;
     profissao_id?: string | null;

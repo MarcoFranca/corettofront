@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/app/api/axios';
 import { Cliente, ClientesState } from '@/types/interfaces';
 import { Saude } from "@/types/interfaces";
+import qs from 'qs';
 
 const initialState: ClientesState = {
     clientes: [],
@@ -15,23 +16,35 @@ const initialState: ClientesState = {
 };
 
 
-
 export const fetchClientes = createAsyncThunk<
     { results: Cliente[]; count: number },
-    { status?: string; search?: string; page?: number; limit?: number; is_vip?: boolean | undefined } | undefined
+    { status?: string[] | string; search?: string; page?: number; limit?: number; is_vip?: boolean }
 >("clientes/fetchClientes", async (params) => {
-    const { is_vip, ...rest } = params || {};
-    let apiParams: any = { ...rest };
+    const { is_vip, status, ...rest } = params || {};
+    const apiParams: any = { ...rest };
+
     if (typeof is_vip === 'boolean') {
         apiParams.is_vip = is_vip ? "true" : "false";
     }
-    const response = await api.get("/clientes/", { params: apiParams });
-    console.log('clientes da pagina', response.data.results)
+
+    if (Array.isArray(status)) {
+        apiParams.status = status; // Axios + qs trata como múltiplos
+    } else if (typeof status === 'string') {
+        apiParams.status = [status];
+    }
+
+    const response = await api.get("/clientes/", {
+        params: apiParams,
+        paramsSerializer: (params) =>
+            qs.stringify(params, { arrayFormat: 'repeat' }),
+    });
+
     return {
         results: response.data.results,
         count: response.data.count,
     };
 });
+
 
 export const fetchClientesSearch = createAsyncThunk<
     { results: Cliente[]; count: number },
@@ -115,15 +128,22 @@ export const fetchClienteById = createAsyncThunk(
     }
 );
 
-export const updateClienteToActive = createAsyncThunk<Cliente, { id: string; updatedCliente: Partial<Cliente> }>(
+export const updateClienteToActive = createAsyncThunk<
+    Cliente,
+    { id: string; updatedCliente?: Partial<Cliente> }
+>(
     'clientes/updateClienteToActive',
-    async ({ id, updatedCliente }, { dispatch }) => {
-        // Atualizando o status do cliente para 'ativo' junto com os dados atualizados
-        const response = await api.patch(`/clientes/${id}/`, { ...updatedCliente, status: 'ativo' });
-        dispatch(fetchClientes());
+    async ({ id, updatedCliente = {} }, { dispatch }) => {
+        const response = await api.patch(`/clientes/${id}/`, {
+            ...updatedCliente,
+            status: 'ativo',
+        });
+        dispatch(fetchClienteDetalhe(id));
         return response.data;
     }
 );
+
+
 
 export const updateClienteStatus = createAsyncThunk<
     Cliente,
