@@ -1,6 +1,5 @@
 'use client';
 
-
 import ClientesTable from "@/app/components/ListaClientes/ClientesTable";
 import React from "react";
 import {Container} from "./CarteiraPage.styles";

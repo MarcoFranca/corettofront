@@ -24,6 +24,7 @@ type UseLeadTableProps = {
     setInsightDrawerOpen: (v: boolean) => void;
 };
 
+
 function getToday() {
     return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
@@ -69,7 +70,12 @@ export function useLeadTable({
                                  foiVistoHoje,
                                  setInsightCliente,        // << RECEBA AQUI!
                                  setInsightDrawerOpen,
-                             }: UseLeadTableProps) {    const filtroIndicacao = getFiltroIndicacao(clientes);
+                             }: UseLeadTableProps) {
+    const arrClientes: Cliente[] = Array.isArray(clientes)
+        ? clientes
+        : (clientes && Array.isArray((clientes as any).results))
+            ? (clientes as any).results
+            : [];    const filtroIndicacao = getFiltroIndicacao(clientes);
     // States principais
     const [filteredLeads, setFilteredLeads] = useState<Cliente[]>([]);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
@@ -79,7 +85,6 @@ export function useLeadTable({
     const [negociacoesSelecionadas, setNegociacoesSelecionadas] = useState<NegociacaoCliente[]>([]);
     const [showNegotiationWizard, setShowNegotiationWizard] = useState(false);
     const [showClienteDrawer, setShowClienteDrawer] = useState(false);
-    const [threadId, setThreadId] = useState<string | null>(null);
 
     const { confirm } = useConfirm();
     const { saveBackup, getBackup } = useLeadBackup();
@@ -121,13 +126,12 @@ export function useLeadTable({
     // Filtrar leads por status
     useEffect(() => {
         setFilteredLeads(
-            Array.isArray(clientes)
-                ? clientes.filter((cliente: Cliente) =>
+            arrClientes.filter(
+                (cliente: Cliente) =>
                     ["lead", "negociacao", "nova_negociacao"].includes(cliente.status)
-                )
-                : []
+            )
         );
-    }, [clientes]);
+    }, [arrClientes]);
 
     // Handler para fechar formulário de reunião
     function handleScheduleFormClose() {
@@ -184,7 +188,7 @@ export function useLeadTable({
     // Indicação (os filtros da coluna)
     const parceirosUnicos = Array.from(
         new Set(
-            clientes
+            arrClientes
                 .map((c) => c.indicado_por_detalhes)
                 .filter(
                     (i): i is NonNullable<Cliente["indicado_por_detalhes"]> =>
@@ -199,7 +203,7 @@ export function useLeadTable({
 
     const clientesIndicadores = Array.from(
         new Set(
-            clientes
+            arrClientes
                 .map((c) => c.indicado_por_detalhes)
                 .filter(
                     (i): i is NonNullable<Cliente["indicado_por_detalhes"]> =>

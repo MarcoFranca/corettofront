@@ -5,7 +5,6 @@ import InputMask from "react-input-mask-next";
 import { STATUS_CHOICES } from "@/utils/statusOptions";
 import { getPhoneMask } from "@/utils/maskUtils";
 import type { Cliente } from "@/types/interfaces";
-import {TableActions} from "@/app/components/ListaClientes/TableActions";
 import api from "@/app/api/axios";
 
 export function getClientesColumns({
@@ -62,7 +61,6 @@ export function getClientesColumns({
                 </Tooltip>
             ),
         },
-
         {
             title: "Ações",
             key: "acoes",
@@ -92,8 +90,6 @@ export function getClientesColumns({
                 </Dropdown>
             ),
         },
-
-        // Nome Completo (sem width, apenas ellipsis)
         {
             title: "Nome Completo",
             dataIndex: "nome",
@@ -126,8 +122,6 @@ export function getClientesColumns({
                 );
             }
         },
-
-        // Email (sem width, apenas ellipsis)
         {
             title: "Email",
             dataIndex: "email",
@@ -151,7 +145,6 @@ export function getClientesColumns({
                 ) : <span style={{ color: "#bbb" }}>Sem cadastro</span>
         },
 
-        // Telefone (WhatsApp) -- aqui width para caber icone + numero
         {
             title: "Telefone",
             dataIndex: "telefone",
@@ -197,8 +190,6 @@ export function getClientesColumns({
                     <span style={{ color: "#bbb" }}>Sem cadastro</span>
                 ),
         },
-
-        // Observações (sem width, só ellipsis)
         {
             title: "Observações",
             dataIndex: "observacoes",
@@ -224,8 +215,6 @@ export function getClientesColumns({
                 </span>
             )
         },
-
-        // Status
         {
             title: "Status",
             dataIndex: "status",
@@ -243,8 +232,6 @@ export function getClientesColumns({
                 </Tag>
             ),
         },
-
-        // Apólices
         {
             title: "Apólices",
             dataIndex: "total_apolices",

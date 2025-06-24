@@ -33,7 +33,7 @@ export const fetchClientes = createAsyncThunk<
         apiParams.status = [status];
     }
 
-    const response = await api.get("/clientes/", {
+    const response = await api.get("/clientes/carteira/", {
         params: apiParams,
         paramsSerializer: (params) =>
             qs.stringify(params, { arrayFormat: 'repeat' }),
@@ -71,7 +71,7 @@ export const fetchClienteDetalhe = createAsyncThunk<Cliente, string>(
 export const fetchClientesNegociacoes = createAsyncThunk(
     'clientes/fetchClientesNegociacoes',
     async () => {
-        const response = await api.get('/clientes/negociacoes/');
+        const response = await api.get('/clientes/lista-negociacoes/');
         return response.data;
     }
 );

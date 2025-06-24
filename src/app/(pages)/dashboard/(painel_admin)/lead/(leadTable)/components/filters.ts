@@ -1,14 +1,22 @@
-import { Cliente } from "@/types/interfaces";
+import { Cliente, IndicadoPor } from "@/types/interfaces";
 
-export function getFiltroIndicacao(clientes: Cliente[]) {
+export function getFiltroIndicacao(clientesInput: Cliente[] | { results: Cliente[] }): any[] {
+    // Sempre normaliza para array puro!
+    const clientes: Cliente[] = Array.isArray(clientesInput)
+        ? clientesInput
+        : (clientesInput && Array.isArray((clientesInput as any).results))
+            ? (clientesInput as any).results
+            : [];
+
     const parceirosUnicos = Array.from(
         new Set(
             clientes
-                .map((c) => c.indicado_por_detalhes)
-                .filter((i): i is NonNullable<Cliente["indicado_por_detalhes"]> => !!i && i.tipo === "parceiro" && typeof i.nome === "string")
-                .map((i) => i.nome)
+                .map((c: Cliente) => c.indicado_por_detalhes)
+                .filter((i: IndicadoPor | undefined | null): i is IndicadoPor =>
+                    !!i && i.tipo === "parceiro")
+                .map((i: IndicadoPor) => i.nome)
         )
-    ).map((nome) => ({
+    ).map((nome: string) => ({
         text: `Parceiro: ${nome}`,
         value: `parceiro:${nome}`,
     }));
@@ -16,11 +24,12 @@ export function getFiltroIndicacao(clientes: Cliente[]) {
     const clientesIndicadores = Array.from(
         new Set(
             clientes
-                .map((c) => c.indicado_por_detalhes)
-                .filter((i): i is NonNullable<Cliente["indicado_por_detalhes"]> => !!i && i.tipo === "cliente" && typeof i.nome === "string")
-                .map((i) => i.nome)
+                .map((c: Cliente) => c.indicado_por_detalhes)
+                .filter((i: IndicadoPor | undefined | null): i is IndicadoPor =>
+                    !!i && i.tipo === "cliente")
+                .map((i: IndicadoPor) => i.nome)
         )
-    ).map((nome) => ({
+    ).map((nome: string) => ({
         text: `Cliente: ${nome}`,
         value: `cliente:${nome}`,
     }));

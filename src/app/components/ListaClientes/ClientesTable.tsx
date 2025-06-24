@@ -1,16 +1,12 @@
 'use client';
-import React, { useEffect, useMemo, useState } from "react";
-import { Table, Button, Input, Select, Space, Tag, message, Upload, Dropdown, Pagination } from "antd";
-import { DownloadOutlined, UploadOutlined, FileExcelOutlined, MailOutlined, WhatsAppOutlined, DeleteOutlined, UserOutlined, MoreOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Input, Space, message, Upload, Pagination } from "antd";
+import { DownloadOutlined, UploadOutlined, FileExcelOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
 import { fetchClientes, deleteCliente } from "@/store/slices/clientesSlice";
 import api from "@/app/api/axios";
-import { STATUS_CHOICES } from "@/utils/statusOptions";
-import InputMask from "react-input-mask-next";
-import { getPhoneMask } from "@/utils/maskUtils";
 import { useRouter } from "next/navigation";
 import ClientePerfilDrawer from "@/app/(pages)/dashboard/(painel_admin)/carteira/ClientePerfilDrawer";
-import { Cliente } from "@/types/interfaces";
 import { getClientesColumns } from "./ClientesColumns";
 
 // Utilitário para debounce do search (sem biblioteca)
@@ -50,7 +46,7 @@ export default function ClientesTable() {
     useEffect(() => {
         dispatch(fetchClientes({
             is_vip: filterIsVip === true ? true : undefined,
-            status: filterStatus && filterStatus.length > 0 ? filterStatus : undefined, // <--- AQUI
+            status: filterStatus && filterStatus.length > 0 ? filterStatus : undefined,
             page: pagination.current,
             limit: pagination.pageSize,
             search: debouncedSearch || undefined,
