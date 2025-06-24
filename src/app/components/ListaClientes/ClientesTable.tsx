@@ -1,15 +1,14 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { Table, Button, Input, Space, message, Upload, Pagination } from "antd";
+import { Table, Button, Input, Space, message, Upload } from "antd";
 import { DownloadOutlined, UploadOutlined, FileExcelOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
-import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
-import { fetchClientes, deleteCliente } from "@/store/slices/clientesSlice";
 import api from "@/app/api/axios";
 import { useRouter } from "next/navigation";
 import ClientePerfilDrawer from "@/app/(pages)/dashboard/(painel_admin)/carteira/ClientePerfilDrawer";
 import { getClientesColumns } from "./ClientesColumns";
+import InfiniteScroll from 'react-infinite-scroll-component';
 
-// Utilitário para debounce do search (sem biblioteca)
+// Utilitário para debounce do search
 function useDebounce(value: string, delay = 600) {
     const [debounced, setDebounced] = useState(value);
     useEffect(() => {
@@ -20,41 +19,67 @@ function useDebounce(value: string, delay = 600) {
 }
 
 export default function ClientesTable() {
-    const dispatch = useAppDispatch();
     const router = useRouter();
 
-    // Redux state
-    const clientes = useAppSelector((state) => state.clientes.clientes);
-    const totalClientes = useAppSelector((state) => state.clientes.totalClientes);
-    const status = useAppSelector((state) => state.clientes.status);
-    const error = useAppSelector((state) => state.clientes.error);
-
-    // State para filtros e paginação
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+    // Estado local para scroll infinito
+    const [clientes, setClientes] = useState<any[]>([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [search, setSearch] = useState("");
-    const [isProcessing, setIsProcessing] = useState(false);
+    const debouncedSearch = useDebounce(search, 500);
+
+    // Drawer
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedClienteId, setSelectedClienteId] = useState<string | null>(null);
 
-    // Filtros individuais
+    // Filtros (pode evoluir para filtros avançados depois)
     const [filterIsVip, setFilterIsVip] = useState<boolean | 'all'>('all');
     const [filterStatus, setFilterStatus] = useState<string[] | null>(null);
 
-    const debouncedSearch = useDebounce(search, 500);
+    // Processando (import/export)
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    // Fetch dos clientes - status como string ou undefined, is_vip como boolean ou undefined
+    // Reseta lista ao trocar a busca/filtros
     useEffect(() => {
-        dispatch(fetchClientes({
-            is_vip: filterIsVip === true ? true : undefined,
-            status: filterStatus && filterStatus.length > 0 ? filterStatus : undefined,
-            page: pagination.current,
-            limit: pagination.pageSize,
-            search: debouncedSearch || undefined,
-        }));
-    }, [dispatch, filterIsVip, filterStatus, pagination.current, pagination.pageSize, debouncedSearch]);
+        setClientes([]);
+        setPage(1);
+        setHasMore(true);
+        fetchMoreClientes(1, true);
+        // eslint-disable-next-line
+    }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus)]);
 
+    // Setar ID no corpo da tabela para scrollableTarget
+    useEffect(() => {
+        const body = document.querySelector("#clientes-table-infinite-scroll .ant-table-body");
+        if (body) body.setAttribute("id", "scrollableClientesTableBody");
+    }, [clientes]);
 
-    // --- Ações ---
+    // Função para buscar mais clientes (página atual, replace se é busca nova)
+    const fetchMoreClientes = async (currentPage = page, replace = false) => {
+        if (isLoading || !hasMore) return;
+        setIsLoading(true);
+        try {
+            const params: any = {
+                page: currentPage,
+                limit: 20,
+                search: debouncedSearch || undefined,
+            };
+            if (filterIsVip === true) params.is_vip = true;
+            if (filterStatus && filterStatus.length > 0) params.status = filterStatus;
+            const response = await api.get('/clientes/carteira/', { params });
+            const novosClientes = response.data.results;
+            setClientes(prev => replace ? novosClientes : [...prev, ...novosClientes]);
+            if (!response.data.next || novosClientes.length === 0) setHasMore(false);
+            setPage(currentPage + 1);
+        } catch (e) {
+            message.error("Erro ao carregar clientes.");
+            setHasMore(false);
+        }
+        setIsLoading(false);
+    };
+
+    // Ações de export/import
     const handleExport = async () => {
         setIsProcessing(true);
         try {
@@ -103,13 +128,10 @@ export default function ClientesTable() {
         try {
             await api.post('/clientes/importar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
             message.success("Importação concluída!");
-            dispatch(fetchClientes({
-                is_vip: filterIsVip === true ? true : undefined,
-                status: filterStatus && filterStatus.length > 0 ? filterStatus[0] : undefined,
-                page: pagination.current,
-                limit: pagination.pageSize,
-                search: debouncedSearch || undefined
-            }));
+            setClientes([]);
+            setPage(1);
+            setHasMore(true);
+            fetchMoreClientes(1, true); // Recarrega tudo do zero!
         } catch {
             message.error("Erro ao importar clientes.");
         }
@@ -117,7 +139,7 @@ export default function ClientesTable() {
         return false;
     };
 
-    // --- Menu de ações ---
+    // Menu de ações da tabela
     const actionMenu = (record: any) => [
         {
             key: "perfil",
@@ -130,10 +152,9 @@ export default function ClientesTable() {
             label: "Excluir",
             icon: <DeleteOutlined />,
             danger: true,
-            onClick: () => dispatch(deleteCliente(record.id))
+            onClick: () => message.warning("Exclusão implementa pelo Redux, ajuste aqui se necessário!")
         }
     ];
-
 
     return (
         <div style={{ background: "#fff", borderRadius: 10, padding: 0 }}>
@@ -146,7 +167,6 @@ export default function ClientesTable() {
                     onChange={e => setSearch(e.target.value)}
                     style={{ width: 220 }}
                 />
-
                 <Button icon={<DownloadOutlined />} onClick={handleExport} loading={isProcessing}>
                     Exportar CSV
                 </Button>
@@ -165,80 +185,40 @@ export default function ClientesTable() {
                 </Upload>
             </Space>
 
-            <div style={{
-                overflow: 'hidden',
-                borderRadius: 8,
-                boxShadow: "0 2px 10px 0 #e6eef7"
-            }}>
-
-                <Table
-                    rowKey="id"
-                    columns={getClientesColumns({
-                        actionMenu,
-                        filterIsVip,
-                        filterStatus,
-                        dispatch,
-                        fetchClientes,
-                        debouncedSearch,
-                        pagination,
-                        setDrawerOpen,
-                        setSelectedClienteId,
-                    })}
-                    dataSource={clientes}
-                    loading={status === "loading"}
-                    scroll={{ y: "75vh" }}
-                    pagination={false}
-                    bordered
-                    size="middle"
-                    style={{ minWidth: "80%", background: "#fff" }}
-                    onChange={(pagination, filters) => {
-                        const vipFilter = filters.is_vip as boolean[] | undefined;
-                        const statusFilter = filters.status as string[] | undefined;
-
-                        setPagination({
-                            current: pagination.current || 1,
-                            pageSize: pagination.pageSize || 10
-                        });
-
-                        setFilterIsVip(vipFilter?.[0] ?? 'all');
-                        setFilterStatus(statusFilter ?? null);
-
-                        // 🔥 Dispara a busca já com o filtro correto!
-                        dispatch(fetchClientes({
-                            is_vip: vipFilter?.[0] === true ? true : undefined,
-                            status: statusFilter && statusFilter.length > 0 ? statusFilter : undefined,
-                            page: pagination.current || 1,
-                            limit: pagination.pageSize || 10,
-                            search: debouncedSearch || undefined,
-                        }));
-                    }}
-
-                />
-            </div>
-
-            <div style={{
-                position: "sticky",
-                bottom: 0,
-                background: "#fff",
-                zIndex: 10,
-                borderTop: "1px solid #eee",
-                padding: "12px 0 0 0"
-            }}>
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                    <Pagination
-                        current={pagination.current}
-                        pageSize={pagination.pageSize}
-                        total={totalClientes}
-                        showSizeChanger
-                        onChange={(page: number, pageSize?: number) => {
-                            setPagination({ current: page, pageSize: pageSize || 10 });
-                        }}
-                        pageSizeOptions={['10', '20', '30', '50']}
-                        style={{ margin: 0, padding: 0 }}
+            <div>
+                <InfiniteScroll
+                    dataLength={clientes.length}
+                    next={() => fetchMoreClientes(page)}
+                    hasMore={hasMore}
+                    loader={<div style={{ textAlign: "center", padding: 16 }}>Carregando...</div>}
+                    endMessage={
+                        <div style={{ textAlign: "center", padding: 16, color: "#aaa" }}>
+                            Fim da lista!
+                        </div>
+                    }
+                    scrollableTarget="scrollableClientesTableBody"
+                >
+                    <Table
+                        id="clientes-table-infinite-scroll"
+                        rowKey="id"
+                        columns={getClientesColumns({
+                            actionMenu,
+                            filterIsVip,
+                            filterStatus,
+                            setDrawerOpen,
+                            setSelectedClienteId,
+                        })}
+                        dataSource={clientes}
+                        loading={isLoading && clientes.length === 0}
+                        pagination={false}
+                        bordered
+                        size="middle"
+                        scroll={{ x: "max-content", y: "75vh" }}
+                        style={{ minWidth: "80%", background: "#fff" }}
                     />
-                </div>
+                </InfiniteScroll>
             </div>
-            {error && <div style={{ color: 'red', marginTop: 12 }}>{error}</div>}
+
             <ClientePerfilDrawer
                 clienteId={selectedClienteId}
                 open={drawerOpen}
