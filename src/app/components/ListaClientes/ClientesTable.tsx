@@ -1,12 +1,11 @@
 'use client';
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Table, Button, Input, Space, message, Upload } from "antd";
 import { DownloadOutlined, UploadOutlined, FileExcelOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
 import api from "@/app/api/axios";
 import { useRouter } from "next/navigation";
 import ClientePerfilDrawer from "@/app/(pages)/dashboard/(painel_admin)/carteira/ClientePerfilDrawer";
 import { getClientesColumns } from "./ClientesColumns";
-import InfiniteScroll from 'react-infinite-scroll-component';
 
 // Utilitário para debounce do search
 function useDebounce(value: string, delay = 600) {
@@ -33,15 +32,14 @@ export default function ClientesTable() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedClienteId, setSelectedClienteId] = useState<string | null>(null);
 
-    // Filtros (pode evoluir para filtros avançados depois)
+    // Filtros
     const [filterIsVip, setFilterIsVip] = useState<boolean | 'all'>('all');
     const [filterStatus, setFilterStatus] = useState<string[] | null>(null);
 
     // Processando (import/export)
     const [isProcessing, setIsProcessing] = useState(false);
-    const observerRef = useRef<MutationObserver | null>(null);
 
-    // Reseta lista ao trocar a busca/filtros
+    // Reseta lista ao trocar busca/filtros
     useEffect(() => {
         setClientes([]);
         setPage(1);
@@ -50,41 +48,25 @@ export default function ClientesTable() {
         // eslint-disable-next-line
     }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus)]);
 
+    // Scroll infinito manual na .ant-table-body
     useEffect(() => {
-        // Função para procurar o body da tabela e setar o id
-        function trySetScrollId() {
-            const bodies = document.querySelectorAll("#clientes-table-infinite-scroll .ant-table-body");
-            console.log("[DEBUG] Quantos .ant-table-body achou?", bodies.length);
-            bodies.forEach(body => {
-                if (body && body.id !== "scrollableClientesTableBody") {
-                    console.log("[DEBUG] Setando id no ant-table-body");
-                    body.setAttribute("id", "scrollableClientesTableBody");
-                }
-            });
-        }
+        const tableBody = document.querySelector('.ant-table-body');
+        if (!tableBody) return;
 
-        // 1. Tenta logo ao montar
-        trySetScrollId();
-
-        // 2. Instancia o observer, se ainda não houver
-        if (observerRef.current) observerRef.current.disconnect();
-
-        const tableWrap = document.querySelector("#clientes-table-infinite-scroll");
-        if (tableWrap) {
-            observerRef.current = new MutationObserver(() => {
-                trySetScrollId();
-            });
-            observerRef.current.observe(tableWrap, { childList: true, subtree: true });
-        }
-
-        // 3. Cleanup
-        return () => {
-            if (observerRef.current) observerRef.current.disconnect();
+        const handleScroll = (e: any) => {
+            const { scrollTop, scrollHeight, clientHeight } = e.target;
+            // Quando chega próximo do fim, busca mais (ajuste o valor conforme quiser)
+            if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
+                fetchMoreClientes();
+            }
         };
-    }, [clientes.length]);
 
+        tableBody.addEventListener('scroll', handleScroll);
+        return () => tableBody.removeEventListener('scroll', handleScroll);
+        // Dependências garantem que novo evento é criado se lista muda
+    }, [clientes, hasMore, isLoading]);
 
-    // Função para buscar mais clientes (página atual, replace se é busca nova)
+    // Buscar mais clientes (página atual, replace se é busca nova)
     const fetchMoreClientes = async (currentPage = page, replace = false) => {
         if (isLoading || !hasMore) return;
         setIsLoading(true);
@@ -108,7 +90,7 @@ export default function ClientesTable() {
         setIsLoading(false);
     };
 
-    // Ações de export/import
+    // Exportação/Importação (igual antes)
     const handleExport = async () => {
         setIsProcessing(true);
         try {
@@ -214,39 +196,29 @@ export default function ClientesTable() {
                 </Upload>
             </Space>
 
-            <div>
-                <InfiniteScroll
-                    dataLength={clientes.length}
-                    next={() => fetchMoreClientes(page)}
-                    hasMore={hasMore}
-                    loader={<div style={{ textAlign: "center", padding: 16 }}>Carregando...</div>}
-                    endMessage={
-                        <div style={{ textAlign: "center", padding: 16, color: "#aaa" }}>
-                            Fim da lista!
-                        </div>
-                    }
-                    scrollableTarget="scrollableClientesTableBody"
-                >
-                    <Table
-                        id="clientes-table-infinite-scroll"
-                        rowKey="id"
-                        columns={getClientesColumns({
-                            actionMenu,
-                            filterIsVip,
-                            filterStatus,
-                            setDrawerOpen,
-                            setSelectedClienteId,
-                        })}
-                        dataSource={clientes}
-                        loading={isLoading && clientes.length === 0}
-                        pagination={false}
-                        bordered
-                        size="middle"
-                        scroll={{ x: "max-content", y: "75vh" }}
-                        style={{ minWidth: "80%", background: "#fff" }}
-                    />
-                </InfiniteScroll>
-            </div>
+            <Table
+                rowKey="id"
+                columns={getClientesColumns({
+                    actionMenu,
+                    filterIsVip,
+                    filterStatus,
+                    setDrawerOpen,
+                    setSelectedClienteId,
+                })}
+                dataSource={clientes}
+                loading={isLoading && clientes.length === 0}
+                pagination={false}
+                bordered
+                size="middle"
+                scroll={{ x: "max-content", y: "75vh" }}
+                style={{ minWidth: "80%", background: "#fff" }}
+            />
+
+            {(!hasMore && clientes.length > 0) && (
+                <div style={{ textAlign: "center", padding: 16, color: "#aaa" }}>
+                    Fim da lista!
+                </div>
+            )}
 
             <ClientePerfilDrawer
                 clienteId={selectedClienteId}
