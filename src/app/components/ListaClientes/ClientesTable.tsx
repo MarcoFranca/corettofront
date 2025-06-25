@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Table, Button, Input, Space, message, Upload } from "antd";
 import { DownloadOutlined, UploadOutlined, FileExcelOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
 import api from "@/app/api/axios";
@@ -39,6 +39,7 @@ export default function ClientesTable() {
 
     // Processando (import/export)
     const [isProcessing, setIsProcessing] = useState(false);
+    const observerRef = useRef<MutationObserver | null>(null);
 
     // Reseta lista ao trocar a busca/filtros
     useEffect(() => {
@@ -51,9 +52,34 @@ export default function ClientesTable() {
 
     // Setar ID no corpo da tabela para scrollableTarget
     useEffect(() => {
-        const body = document.querySelector("#clientes-table-infinite-scroll .ant-table-body");
-        if (body) body.setAttribute("id", "scrollableClientesTableBody");
-    }, [clientes]);
+        function setScrollId() {
+            const body = document.querySelector("#clientes-table-infinite-scroll .ant-table-body");
+            if (body && !body.id) {
+                body.setAttribute("id", "scrollableClientesTableBody");
+            }
+        }
+
+        // Sempre tenta ao montar
+        setScrollId();
+
+        // Se já existe, desconecta o observer anterior
+        if (observerRef.current) observerRef.current.disconnect();
+
+        // Observer para monitorar mudanças na tabela
+        observerRef.current = new MutationObserver(() => {
+            setScrollId();
+        });
+
+        const tableWrap = document.querySelector("#clientes-table-infinite-scroll");
+        if (tableWrap) {
+            observerRef.current.observe(tableWrap, { childList: true, subtree: true });
+        }
+
+        // Cleanup
+        return () => {
+            if (observerRef.current) observerRef.current.disconnect();
+        };
+    }, [clientes.length]); // dispara sempre que muda a lista
 
     // Função para buscar mais clientes (página atual, replace se é busca nova)
     const fetchMoreClientes = async (currentPage = page, replace = false) => {
