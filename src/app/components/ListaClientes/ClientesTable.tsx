@@ -50,36 +50,39 @@ export default function ClientesTable() {
         // eslint-disable-next-line
     }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus)]);
 
-    // Setar ID no corpo da tabela para scrollableTarget
     useEffect(() => {
-        function setScrollId() {
-            const body = document.querySelector("#clientes-table-infinite-scroll .ant-table-body");
-            if (body && !body.id) {
-                body.setAttribute("id", "scrollableClientesTableBody");
-            }
+        // Função para procurar o body da tabela e setar o id
+        function trySetScrollId() {
+            const bodies = document.querySelectorAll("#clientes-table-infinite-scroll .ant-table-body");
+            console.log("[DEBUG] Quantos .ant-table-body achou?", bodies.length);
+            bodies.forEach(body => {
+                if (body && body.id !== "scrollableClientesTableBody") {
+                    console.log("[DEBUG] Setando id no ant-table-body");
+                    body.setAttribute("id", "scrollableClientesTableBody");
+                }
+            });
         }
 
-        // Sempre tenta ao montar
-        setScrollId();
+        // 1. Tenta logo ao montar
+        trySetScrollId();
 
-        // Se já existe, desconecta o observer anterior
+        // 2. Instancia o observer, se ainda não houver
         if (observerRef.current) observerRef.current.disconnect();
-
-        // Observer para monitorar mudanças na tabela
-        observerRef.current = new MutationObserver(() => {
-            setScrollId();
-        });
 
         const tableWrap = document.querySelector("#clientes-table-infinite-scroll");
         if (tableWrap) {
+            observerRef.current = new MutationObserver(() => {
+                trySetScrollId();
+            });
             observerRef.current.observe(tableWrap, { childList: true, subtree: true });
         }
 
-        // Cleanup
+        // 3. Cleanup
         return () => {
             if (observerRef.current) observerRef.current.disconnect();
         };
-    }, [clientes.length]); // dispara sempre que muda a lista
+    }, [clientes.length]);
+
 
     // Função para buscar mais clientes (página atual, replace se é busca nova)
     const fetchMoreClientes = async (currentPage = page, replace = false) => {
