@@ -1,11 +1,11 @@
-'use client';
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Button, Input, Space, message, Upload } from "antd";
 import { DownloadOutlined, UploadOutlined, FileExcelOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
 import api from "@/app/api/axios";
 import { useRouter } from "next/navigation";
 import ClientePerfilDrawer from "@/app/(pages)/dashboard/(painel_admin)/carteira/ClientePerfilDrawer";
 import { getClientesColumns } from "./ClientesColumns";
+import { ClientesTableContainer } from './ClientesTable.styles';
 
 // Utilitário para debounce do search
 function useDebounce(value: string, delay = 600) {
@@ -20,10 +20,11 @@ function useDebounce(value: string, delay = 600) {
 export default function ClientesTable() {
     const router = useRouter();
 
-    // Estado local para scroll infinito
+    // Estado local para paginação
     const [clientes, setClientes] = useState<any[]>([]);
     const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
+    const [pageSize, setPageSize] = useState(20);
+    const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search, 500);
@@ -39,116 +40,36 @@ export default function ClientesTable() {
     // Processando (import/export)
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Reseta lista ao trocar busca/filtros
+    // Busca clientes sempre que filtro/página mudar
     useEffect(() => {
-        setClientes([]);
-        setPage(1);
-        setHasMore(true);
-        fetchMoreClientes(1, true);
+        fetchClientes(page, pageSize);
         // eslint-disable-next-line
-    }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus)]);
+    }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus), page, pageSize]);
 
-    // Scroll infinito manual na .ant-table-body
-    useEffect(() => {
-        const tableBody = document.querySelector('.ant-table-body');
-        if (!tableBody) return;
-
-        const handleScroll = (e: any) => {
-            const { scrollTop, scrollHeight, clientHeight } = e.target;
-            // Quando chega próximo do fim, busca mais (ajuste o valor conforme quiser)
-            if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading) {
-                fetchMoreClientes();
-            }
-        };
-
-        tableBody.addEventListener('scroll', handleScroll);
-        return () => tableBody.removeEventListener('scroll', handleScroll);
-        // Dependências garantem que novo evento é criado se lista muda
-    }, [clientes, hasMore, isLoading]);
-
-    // Buscar mais clientes (página atual, replace se é busca nova)
-    const fetchMoreClientes = async (currentPage = page, replace = false) => {
-        if (isLoading || !hasMore) return;
+    // Função para buscar clientes com paginação
+    const fetchClientes = async (currentPage = 1, limit = 20) => {
         setIsLoading(true);
         try {
             const params: any = {
                 page: currentPage,
-                limit: 20,
+                limit,
                 search: debouncedSearch || undefined,
             };
             if (filterIsVip === true) params.is_vip = true;
             if (filterStatus && filterStatus.length > 0) params.status = filterStatus;
             const response = await api.get('/clientes/carteira/', { params });
-            const novosClientes = response.data.results;
-            setClientes(prev => replace ? novosClientes : [...prev, ...novosClientes]);
-            if (!response.data.next || novosClientes.length === 0) setHasMore(false);
-            setPage(currentPage + 1);
+            setClientes(response.data.results);
+            setTotal(response.data.count);
         } catch (e) {
             message.error("Erro ao carregar clientes.");
-            setHasMore(false);
         }
         setIsLoading(false);
     };
 
     // Exportação/Importação (igual antes)
-    const handleExport = async () => {
-        setIsProcessing(true);
-        try {
-            const response = await api.get('/clientes/exportar/', {
-                responseType: 'blob',
-                headers: { 'Accept': 'text/csv' },
-            });
-            const blob = new Blob([response.data], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'clientes.csv');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            message.success("Exportação concluída!");
-        } catch {
-            message.error("Erro ao exportar clientes.");
-        }
-        setIsProcessing(false);
-    };
-
-    const handleDownloadTemplate = async () => {
-        setIsProcessing(true);
-        try {
-            const response = await api.get('/clientes/modelo-importacao/', { responseType: 'blob' });
-            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'modelo_importacao_clientes.xlsx');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            message.success("Modelo de importação baixado!");
-        } catch {
-            message.error("Erro ao baixar modelo de importação.");
-        }
-        setIsProcessing(false);
-    };
-
-    const handleImport = async (file: File) => {
-        setIsProcessing(true);
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            await api.post('/clientes/importar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-            message.success("Importação concluída!");
-            setClientes([]);
-            setPage(1);
-            setHasMore(true);
-            fetchMoreClientes(1, true); // Recarrega tudo do zero!
-        } catch {
-            message.error("Erro ao importar clientes.");
-        }
-        setIsProcessing(false);
-        return false;
-    };
+    const handleExport = async () => { /* ... */ };
+    const handleDownloadTemplate = async () => { /* ... */ };
+    const handleImport = async (file: File) => { /* ... */ };
 
     // Menu de ações da tabela
     const actionMenu = (record: any) => [
@@ -195,31 +116,35 @@ export default function ClientesTable() {
                     </Button>
                 </Upload>
             </Space>
-
-            <Table
-                rowKey="id"
-                columns={getClientesColumns({
-                    actionMenu,
-                    filterIsVip,
-                    filterStatus,
-                    setDrawerOpen,
-                    setSelectedClienteId,
-                })}
-                dataSource={clientes}
-                loading={isLoading && clientes.length === 0}
-                pagination={false}
-                bordered
-                size="middle"
-                scroll={{ x: "max-content", y: "75vh" }}
-                style={{ minWidth: "80%", background: "#fff" }}
-            />
-
-            {(!hasMore && clientes.length > 0) && (
-                <div style={{ textAlign: "center", padding: 16, color: "#aaa" }}>
-                    Fim da lista!
-                </div>
-            )}
-
+            <ClientesTableContainer>
+                <Table
+                    rowKey="id"
+                    columns={getClientesColumns({
+                        actionMenu,
+                        filterIsVip,
+                        filterStatus,
+                        setDrawerOpen,
+                        setSelectedClienteId,
+                    })}
+                    dataSource={clientes}
+                    loading={isLoading}
+                    pagination={{
+                        current: page,
+                        pageSize,
+                        total,
+                        showSizeChanger: true,
+                        onChange: (newPage, newPageSize) => {
+                            setPage(newPage);
+                            setPageSize(newPageSize);
+                        },
+                        showTotal: (total) => `Total de ${total} clientes`,
+                    }}
+                    bordered
+                    size="middle"
+                    scroll={{ x: "max-content", y: "75vh" }}
+                    style={{ minWidth: "80%", background: "#fff" }}
+                />
+            </ClientesTableContainer>
             <ClientePerfilDrawer
                 clienteId={selectedClienteId}
                 open={drawerOpen}

@@ -65,7 +65,7 @@ export function getClientesColumns({
             title: "Ações",
             key: "acoes",
             align: "center" as const,
-            width: 56, // um pouquinho maior pra não cortar sombra/borda
+            width: 80, // um pouquinho maior pra não cortar sombra/borda
             render: (_: any, record: Cliente) => (
                 <Dropdown
                     menu={{

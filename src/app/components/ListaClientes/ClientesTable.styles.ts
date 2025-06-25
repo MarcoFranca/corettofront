@@ -6,6 +6,12 @@ export const ClientesTableContainer = styled.div`
     padding: 0;
     box-shadow: 0 2px 10px 0 #e6eef7;
 
+    .ant-pagination {
+        display: flex;
+        justify-content: center !important;
+        margin: 24px 0 0 0 !important; // Espaço acima, remove espaço à esquerda
+    }
+
     .ant-table-thead > tr > th {
         background: #fafbfc;
         font-weight: 600;
