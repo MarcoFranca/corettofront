@@ -1,5 +1,5 @@
 import React, {type Key} from "react";
-import {Tag, Tooltip, Dropdown, Menu} from "antd";
+import {Tag, Tooltip} from "antd";
 import { FaWhatsapp } from "react-icons/fa";
 import { formatPhoneNumber } from "@/utils/maskUtils";
 import { getWhatsAppLink } from "@/utils/functions";
@@ -8,13 +8,6 @@ import type { Cliente, NegociacaoCliente } from "@/types/interfaces";
 import { TableActions } from "./TableActions";
 import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
 import {capitalizeName} from "@/utils/utils";
-import {statusMap} from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/etapas/helpers/functions";
-import {
-    atualizarReuniaoRapida,
-    getNextMeeting,
-    getStartTime,
-    getStatusReuniao
-} from "@/services/helpers/meetingHelpers";
 import {updateCliente} from "@/store/slices/clientesSlice";
 import ObservacaoCell from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/components/ObservacaoCell";
 import {useAppDispatch} from "@/services/hooks/hooks";
@@ -41,6 +34,7 @@ interface LeadTableColumnsProps {
     foiVistoHoje: (id: string) => boolean;
     setInsightCliente: (c: Cliente) => void;
     setInsightDrawerOpen: (v: boolean) => void;
+    handleOpenNegotiationWizard: (lead: Cliente) => void;
 }
 
 // Função que retorna as columns prontas
@@ -56,6 +50,7 @@ export function getLeadTableColumns({
                                         foiVistoHoje,
                                         setInsightCliente,         // <--- adicione aqui (faltando atualmente)
                                         setInsightDrawerOpen,      // <--- adicione aqui (faltando atualmente)
+                                        handleOpenNegotiationWizard,
                                     }: LeadTableColumnsProps): ColumnsType<Cliente> {
 
 const dispatch = useAppDispatch();
@@ -96,7 +91,7 @@ const dispatch = useAppDispatch();
                 }}
                 onClick={() => {
                     setSelectedLead(record);
-                    setShowNegotiationWizard(true);
+                    handleOpenNegotiationWizard(record);
                     marcarComoVisto(record.id);
                 }}
             >
@@ -120,12 +115,12 @@ const dispatch = useAppDispatch();
             title: "Negociações",
             key: "negociacoes",
             render: (_: any, record: Cliente) => {
-                const total = (record.negociacoes || []).length;
+                const total = record.num_negociacoes ?? 0; // 🚩 troque de record.negociacoes.length para record.num_negociacoes
                 return (
                     <span
                         style={{ cursor: 'pointer', color: '#1890ff' }}
                         onClick={() => {
-                            setNegociacoesSelecionadas(record.negociacoes || []);
+                            setSelectedLead(record);
                             setNegociacoesModalVisible(true);
                         }}>
                 {total} negociação{total !== 1 ? "es" : ""}
@@ -165,54 +160,24 @@ const dispatch = useAppDispatch();
             title: "Próxima Reunião",
             key: "proxima_reuniao",
             render: (_: any, record: Cliente) => {
-                const reunioes = (record.negociacoes || []).flatMap(n => n.reunioes || []);
-                const proxima = getNextMeeting(reunioes);
+                // Pega a data vinda do backend (annotation do Django)
+                const dataProximaReuniao = record.data_proxima_reuniao;
+                if (!dataProximaReuniao) return "Nenhuma agendada";
 
-                if (!proxima) return "Nenhuma agendada";
-
-                const status = getStatusReuniao(proxima);
-                const start = getStartTime(proxima) || "";
-                const dataReuniao = start ? new Date(start) : null;
-
-                const now = new Date();
-                const estaAtrasada =
-                    !!dataReuniao &&
-                    dataReuniao < now &&
-                    status &&
-                    ["agendada", "remarcada", "confirmada"].includes(status);
-
-                const statusInfo = status ? statusMap[status] : null;
-
-                const menu = (
-                    <Menu
-                        onClick={async ({ key }) => {
-                            // Exemplo PATCH rápido
-                            await atualizarReuniaoRapida(proxima.id, key);
-                        }}
-                        items={[
-                            { label: "Confirmar", key: "confirmada" },
-                            { label: "Realizada", key: "realizada" },
-                            { label: "No-show", key: "no_show" },
-                            { label: "Remarcada", key: "remarcada" },
-                            { label: "Cancelada", key: "cancelada" },
-                        ]}
-                    />
-                );
+                // Converte para Date e verifica atraso
+                const dataReuniao = new Date(dataProximaReuniao);
+                const agora = new Date();
+                const estaAtrasada = dataReuniao < agora;
 
                 return (
-                    <Dropdown overlay={menu} trigger={["click"]}>
-                <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-                    {dataReuniao?.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}
-                    {estaAtrasada && (
-                        <Tag color="red" icon={<ExclamationCircleOutlined />}>Atrasada</Tag>
-                    )}
-                    {statusInfo && (
-                        <Tag color={statusInfo.color} icon={statusInfo.icon}>
-                            {statusInfo.label}
-                        </Tag>
-                    )}
-                </span>
-                    </Dropdown>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {dataReuniao.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}
+                        {estaAtrasada && (
+                            <Tag color="red" icon={<ExclamationCircleOutlined />}>
+                                Atrasada
+                            </Tag>
+                        )}
+            </span>
                 );
             }
         },

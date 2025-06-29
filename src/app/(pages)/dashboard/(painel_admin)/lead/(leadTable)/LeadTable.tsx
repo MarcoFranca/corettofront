@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Table, Drawer, message } from "antd";
+import {Table, Drawer, message, Tabs, Spin} from "antd";
 import { ContainerCanva } from "./LeadTable.styles";
-import InfiniteScroll from "react-infinite-scroll-component";
 import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
 import EditLeadModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/EditLead";
 import NegociacoesModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/NegociacoesModal";
@@ -13,26 +12,21 @@ import ClienteInsightDrawer from "@/app/(pages)/dashboard/(painel_admin)/lead/(l
 import { getLeadTableColumns } from "./components/columns";
 import api from "@/app/api/axios";
 import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
-import {
-    useNegotiationSeen
-} from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/components/useLeadTable";
-
-const LIMIT = 10; // Quantos leads por página
+import { useNegotiationSeen } from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/components/useLeadTable";
+import { Cliente } from "@/types/interfaces";
 
 const LeadTable: React.FC = () => {
     const dispatch = useAppDispatch();
-    const usuarioId = String(useAppSelector(state => state.auth.user?.id ?? "")); // Força string
+    const usuarioId = String(useAppSelector(state => state.auth.user?.id ?? ""));
 
-    // ==== ESTADOS PRINCIPAIS (scroll infinito local) ====
-    const [leads, setLeads] = useState<any[]>([]);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
+    // ==== ESTADOS PRINCIPAIS ====
+    const [leads, setLeads] = useState<Cliente[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [tab, setTab] = useState("leads-puros");
 
-    // ==== Modais/Drawers (mantém igual seu fluxo) ====
+    // ==== Modais/Drawers ====
     const [insightDrawerOpen, setInsightDrawerOpen] = useState(false);
     const [insightCliente, setInsightCliente] = useState<any>(null);
-
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -40,9 +34,23 @@ const LeadTable: React.FC = () => {
     const [negociacoesSelecionadas, setNegociacoesSelecionadas] = useState<any[]>([]);
     const [showNegotiationWizard, setShowNegotiationWizard] = useState(false);
     const [showClienteDrawer, setShowClienteDrawer] = useState(false);
+    const [clienteDetalhado, setClienteDetalhado] = useState<Cliente | null>(null);
+    const [loadingDetalhe, setLoadingDetalhe] = useState(false);
 
     // ==== Vistos (igual seu hook) ====
     const { negociacoesVistas, marcarComoVisto, foiVistoHoje } = useNegotiationSeen(usuarioId);
+
+    const handleOpenNegotiationWizard = async (lead: Cliente) => {
+        setShowNegotiationWizard(true);
+        setLoadingDetalhe(true);
+        try {
+            const { data } = await api.get(`/clientes/${lead.id}/`);
+            setClienteDetalhado(data);
+        } catch (e) {
+            message.error('Erro ao buscar detalhes do cliente.');
+        }
+        setLoadingDetalhe(false);
+    };
 
     // ==== COLUNAS ====
     const columns = getLeadTableColumns({
@@ -62,91 +70,109 @@ const LeadTable: React.FC = () => {
         foiVistoHoje,
         setInsightCliente,
         setInsightDrawerOpen,
+        handleOpenNegotiationWizard,
     });
 
+    // ==== Buscar leads negociáveis ao montar/ao mudar aba ====
     useEffect(() => {
-        const body = document.querySelector("#lead-table-infinite-scroll .ant-table-body");
-        if (body) body.setAttribute("id", "scrollableTableBody");
-    }, [leads]);
+        fetchLeads(tab);
+    }, [tab]);
 
-
-    // ==== Fetch inicial / reset ao montar ====
-    useEffect(() => {
-        setLeads([]); setPage(1); setHasMore(true);
-        fetchMoreLeads(1, true);
-    }, []);
-
-    // ==== Função para buscar próxima página ====
-    const fetchMoreLeads = async (currentPage = page, replace = false) => {
-        if (isLoading || !hasMore) return;
+    // Core para trocar backend para endpoints dedicados no futuro!
+    const fetchLeads = async (tabKey: string) => {
         setIsLoading(true);
+        let endpoint = "/clientes/";
+        switch (tabKey) {
+            case "leads-puros":
+                endpoint += "leads-puros/";
+                break;
+            case "negociacao":
+                endpoint += "em-negociacao/";
+                break;
+            case "descartados":
+                endpoint += "descartados/";
+                break;
+            // Aqui poderia adicionar outros (ex: "ativos", "inativos") se quiser expandir depois
+            default:
+                endpoint += "";
+        }
         try {
-            const params = {
-                page: currentPage,
-                limit: LIMIT,
-                status: ["lead", "negociacao", "nova_negociacao"],
-            };
-            const response = await api.get("/clientes/lista-negociacoes/", { params });
-            const novosLeads = response.data.results;
-            setLeads(prev => replace ? novosLeads : [...prev, ...novosLeads]);
-            setHasMore(!!response.data.next && novosLeads.length > 0);
-            setPage(currentPage + 1);
+            const response = await api.get(endpoint);
+            setLeads(response.data.results || response.data);
         } catch (e) {
             message.error("Erro ao carregar leads.");
-            setHasMore(false);
+            setLeads([]);
         }
         setIsLoading(false);
     };
 
-    // ==== Altura da tabela responsiva ====
-    const [tableHeight, setTableHeight] = useState(430);
-    useEffect(() => {
-        const updateHeight = () => {
-            const headerOffset = 430;
-            setTableHeight(window.innerHeight - headerOffset);
-        };
-        updateHeight();
-        window.addEventListener("resize", updateHeight);
-        return () => window.removeEventListener("resize", updateHeight);
-    }, []);
-
-    // ==== Filtro de leads visíveis ====
-    // Se quiser aplicar mais filtros, use aqui (hoje já vem só leads negociáveis do backend)
-    const filteredLeads = leads;
+    // ==== Tabs para navegação (mínimo de lógica, máximo de clareza) ====
+    const tabItems = [
+        {
+            key: "leads-puros",
+            label: <>Leads Puros</>,
+            children: (
+                <Table
+                    rowKey="id"
+                    columns={columns}
+                    dataSource={leads}
+                    loading={isLoading}
+                    pagination={false}
+                    bordered
+                    size="middle"
+                    scroll={{ x: "max-content", y: 500 }}
+                    style={{ minWidth: "80%", background: "#fff" }}
+                />
+            ),
+        },
+        {
+            key: "negociacao",
+            label: <>Em Negociação</>,
+            children: (
+                <Table
+                    rowKey="id"
+                    columns={columns}
+                    dataSource={leads}
+                    loading={isLoading}
+                    pagination={false}
+                    bordered
+                    size="middle"
+                    scroll={{ x: "max-content", y: 500 }}
+                    style={{ minWidth: "80%", background: "#fff" }}
+                />
+            ),
+        },
+        {
+            key: "descartados",
+            label: <>Descartados</>,
+            children: (
+                <Table
+                    rowKey="id"
+                    columns={columns}
+                    dataSource={leads}
+                    loading={isLoading}
+                    pagination={false}
+                    bordered
+                    size="middle"
+                    scroll={{ x: "max-content", y: 500 }}
+                    style={{ minWidth: "80%", background: "#fff" }}
+                />
+            ),
+        }
+    ];
 
     return (
         <>
             <ContainerCanva>
-                <h2>📋 Gestão Completa de Leads</h2>
+                <h2>📋 Gestão Completa de Negociações</h2>
                 <IndicadoresNegociacoes />
-                <div>
-                    <InfiniteScroll
-                        dataLength={leads.length}
-                        next={() => fetchMoreLeads(page)}
-                        hasMore={hasMore}
-                        loader={<div style={{ textAlign: "center", padding: 16 }}>Carregando...</div>}
-                        endMessage={
-                            <div style={{ textAlign: "center", padding: 16, color: "#aaa" }}>
-                                Fim da lista!
-                            </div>
-                        }
-                        scrollableTarget="scrollableTableBody"
-                    >
-                        <Table
-                            id="lead-table-infinite-scroll"
-                            rowKey="id"
-                            columns={columns}
-                            dataSource={leads}
-                            loading={isLoading && leads.length === 0}
-                            pagination={false}
-                            bordered
-                            size="middle"
-                            scroll={{ x: "max-content", y: 500 }} // <-- ALTURA FIXA DO TABELA
-                            style={{ minWidth: "80%", background: "#fff" }}
-                        />
+                <Tabs
+                    activeKey={tab}
+                    onChange={setTab}
+                    items={tabItems}
+                    destroyInactiveTabPane
+                />
 
-                    </InfiniteScroll>
-                </div>
                 {/* SCHEDULE MODAL */}
                 {selectedLead && showScheduleForm && (
                     <ScheduleMeetingForm
@@ -181,11 +207,15 @@ const LeadTable: React.FC = () => {
                     open={showNegotiationWizard}
                     destroyOnClose
                 >
-                    <NegotiationWizardModal
-                        isOpen={showNegotiationWizard}
-                        onClose={() => setShowNegotiationWizard(false)}
-                        cliente={selectedLead}
-                    />
+                    {loadingDetalhe ? (
+                        <Spin size="large" style={{ marginTop: 32 }} />
+                    ) : clienteDetalhado && (
+                        <NegotiationWizardModal
+                            isOpen={showNegotiationWizard}
+                            onClose={() => setShowNegotiationWizard(false)}
+                            cliente={clienteDetalhado}
+                        />
+                    )}
                 </Drawer>
             )}
             {/* DRAWER PERFIL */}

@@ -208,6 +208,7 @@ export interface Cliente {
     status_reuniao?: string;
     status: "lead" | "ativo" | "negociacao" | "nova_negociacao" | "inativo" | "recusado" | "reativacao_pendente" | "cancelado";
     negociacoes?: NegociacaoCliente[];
+    num_negociacoes?: number;
     possui_apolice_ativa?: boolean;
     pipeline_stage?: string;
     idade?: string;
@@ -223,10 +224,11 @@ export interface Cliente {
     estado_civil?: string;
     endereco?: Endereco;
     parceiros?: Parceiro;
-    relacionamentos?: Relacionamentos; // ✅ Garantindo o tipo correto
+    relacionamentos?: Relacionamentos;
     indicado_por_detalhes?: IndicadoPor;
-    indicado_por_cliente_id?: string; // <- Adicione esta linha se não existir
-    indicado_por_parceiros_ids?: string[]; // <- Adicione esta linha se não exist
+    indicado_por_cliente_id?: string;
+    data_proxima_reuniao?: string;
+    indicado_por_parceiros_ids?: string[];
     created_at?: string;
     updated_at?: string;
 }

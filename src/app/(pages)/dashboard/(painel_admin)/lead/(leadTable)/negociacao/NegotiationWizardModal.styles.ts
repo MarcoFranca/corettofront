@@ -38,7 +38,7 @@ export const HeaderActions = styled.div`
     align-items: center;
     gap: 1rem;
     margin-bottom: 25px;
-
+    margin-top: 1rem;
     .ant-select {
         min-width: 220px;
     }
