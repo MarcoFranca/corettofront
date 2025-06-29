@@ -168,6 +168,12 @@ export function useLeadTable({
         });
     }
 
+    function handleOpenNegotiationWizard(lead: Cliente) {
+        setSelectedLead(lead);
+        setShowNegotiationWizard(true);
+    }
+
+
     const columns = getLeadTableColumns({
         setSelectedLead,
         setIsEditModalOpen,
@@ -180,9 +186,11 @@ export function useLeadTable({
         negociacoesVistas,
         marcarComoVisto,
         foiVistoHoje,
-        setInsightCliente,          // <<< PASSE AQUI!
-        setInsightDrawerOpen        // <<< PASSE AQUI!
+        setInsightCliente,
+        setInsightDrawerOpen,
+        handleOpenNegotiationWizard // <<< Adicione aqui!
     });
+
 
 
     // Indicação (os filtros da coluna)
