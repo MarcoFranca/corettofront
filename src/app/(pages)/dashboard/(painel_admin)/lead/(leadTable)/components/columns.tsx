@@ -53,7 +53,7 @@ export function getLeadTableColumns({
                                         handleOpenNegotiationWizard,
                                     }: LeadTableColumnsProps): ColumnsType<Cliente> {
 
-const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
     return [
         {
             title: "Ações",
@@ -115,16 +115,34 @@ const dispatch = useAppDispatch();
             title: "Negociações",
             key: "negociacoes",
             render: (_: any, record: Cliente) => {
-                const total = record.num_negociacoes ?? 0; // 🚩 troque de record.negociacoes.length para record.num_negociacoes
+                // Garantindo fallback para 0
+                const ativas = record.num_negociacoes_ativas ?? 0;
+                const recusadas = record.num_negociacoes_recusadas ?? 0;
+
+                // Exibição customizada
                 return (
                     <span
-                        style={{ cursor: 'pointer', color: '#1890ff' }}
+                        style={{cursor: 'pointer', color: '#1890ff'}}
                         onClick={() => {
                             setSelectedLead(record);
                             setNegociacoesModalVisible(true);
-                        }}>
-                {total} negociação{total !== 1 ? "es" : ""}
-            </span>
+                        }}
+                    >
+                {ativas > 0 && (
+                    <Tag color="green" icon={<CheckCircleOutlined/>}>
+                        {ativas} ativa{ativas !== 1 ? "s" : ""}
+                    </Tag>
+                )}
+                        {recusadas > 0 && (
+                            <Tag color="red" icon={<ExclamationCircleOutlined/>}>
+                                {recusadas} recusada{recusadas !== 1 ? "s" : ""}
+                            </Tag>
+                        )}
+                        {/* Se quiser mostrar "Nenhuma" quando ambos forem zero: */}
+                        {ativas === 0 && recusadas === 0 && (
+                            <span style={{color: "#aaa"}}>Nenhuma</span>
+                        )}
+                    </span>
                 );
             }
         },
@@ -133,12 +151,12 @@ const dispatch = useAppDispatch();
             dataIndex: "pipeline_stage",
             key: "pipeline_stage",
             filters: [
-                { text: "Leads de Entrada", value: "leads de entrada" },
-                { text: "Negociando", value: "negociando" },
-                { text: "Finalização", value: "finalização" },
-                { text: "Pouco Interesse", value: "pouco interesse" },
-                { text: "Clientes Ativos", value: "clientes ativos" },
-                { text: "Clientes Perdidos", value: "clientes perdidos" },
+                {text: "Leads de Entrada", value: "leads de entrada"},
+                {text: "Negociando", value: "negociando"},
+                {text: "Finalização", value: "finalização"},
+                {text: "Pouco Interesse", value: "pouco interesse"},
+                {text: "Clientes Ativos", value: "clientes ativos"},
+                {text: "Clientes Perdidos", value: "clientes perdidos"},
             ],
             onFilter: (value: boolean | Key, record: Cliente) => record.pipeline_stage === value,
         },
@@ -148,7 +166,7 @@ const dispatch = useAppDispatch();
             key: "possui_apolice_ativa",
             width: 130,
             filters: [
-                { text: "Sim", value: "true" },
+                {text: "Sim", value: "true" },
                 { text: "Não", value: "false" }
             ],
             onFilter: (value: Key | boolean, record: Cliente) =>

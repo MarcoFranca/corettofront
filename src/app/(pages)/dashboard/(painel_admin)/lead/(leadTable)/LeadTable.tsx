@@ -52,6 +52,26 @@ const LeadTable: React.FC = () => {
         setLoadingDetalhe(false);
     };
 
+    // Gere o filtro de indicação dinâmico antes de chamar getLeadTableColumns
+    const filtroIndicacao = [
+        { text: "Sem indicação", value: "sem_indicacao" },
+        { text: "Cliente", value: "tipo:cliente" },
+        { text: "Parceiro", value: "tipo:parceiro" },
+        ...leads
+            .map(l => {
+                if (!l.indicado_por_detalhes) return null;
+                const tipo = l.indicado_por_detalhes.tipo;
+                const nome = l.indicado_por_detalhes.nome;
+                return {
+                    text: `${tipo === "cliente" ? "Cliente: " : "Parceiro: "}${nome}`,
+                    value: `${tipo}:${nome}`,
+                };
+            })
+            .filter((v): v is {text: string, value: string} => !!v)
+            // Remove duplicados
+            .filter((v, i, arr) => arr.findIndex(t => t.value === v.value) === i)
+    ];
+
     // ==== COLUNAS ====
     const columns = getLeadTableColumns({
         setSelectedLead,
@@ -64,7 +84,7 @@ const LeadTable: React.FC = () => {
         setNegociacoesSelecionadas,
         setNegociacoesModalVisible,
         setShowClienteDrawer,
-        filtroIndicacao: [],
+        filtroIndicacao,
         negociacoesVistas,
         marcarComoVisto,
         foiVistoHoje,
@@ -99,6 +119,7 @@ const LeadTable: React.FC = () => {
         try {
             const response = await api.get(endpoint);
             setLeads(response.data.results || response.data);
+            console.log(response);
         } catch (e) {
             message.error("Erro ao carregar leads.");
             setLeads([]);

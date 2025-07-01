@@ -209,6 +209,8 @@ export interface Cliente {
     status: "lead" | "ativo" | "negociacao" | "nova_negociacao" | "inativo" | "recusado" | "reativacao_pendente" | "cancelado";
     negociacoes?: NegociacaoCliente[];
     num_negociacoes?: number;
+    num_negociacoes_ativas?: number;
+    num_negociacoes_recusadas?: number;
     possui_apolice_ativa?: boolean;
     pipeline_stage?: string;
     idade?: string;
