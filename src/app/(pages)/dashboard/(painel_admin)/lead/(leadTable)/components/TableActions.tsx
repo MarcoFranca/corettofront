@@ -12,20 +12,24 @@ interface TableActionsProps {
     setShowNegotiationWizard: (open: boolean) => void;
     handleDelete: (id: string) => void;
     foiVistoHoje: (id: string) => void;
-    setInsightCliente: (c: Cliente) => void;           // <<< ADICIONE
-    setInsightDrawerOpen: (v: boolean) => void;        // <<< ADICIONE
+    setInsightCliente: (c: Cliente) => void;
+    setInsightDrawerOpen: (v: boolean) => void;
+    handleOpenNegotiationWizard: (lead: Cliente) => void;
+    marcarComoVisto: (id: string) => void
 }
 
-export const TableActions: React.FC<TableActionsProps> = ({
-                                                              record,
-                                                              setSelectedLead,
-                                                              setIsEditModalOpen,
-                                                              setShowNegotiationWizard,
-                                                              handleDelete,
-                                                              foiVistoHoje,
-                                                              setInsightCliente,
-                                                              setInsightDrawerOpen,
-                                                          }) => {
+export const TableActions: React.FC<TableActionsProps> = (
+    {
+        record,
+        setSelectedLead,
+        setIsEditModalOpen,
+        handleDelete,
+        setInsightCliente,
+        setInsightDrawerOpen,
+        handleOpenNegotiationWizard,
+        marcarComoVisto,
+
+    }) => {
     const items: MenuProps["items"] = [
         {
             key: "insight",
@@ -62,8 +66,8 @@ export const TableActions: React.FC<TableActionsProps> = ({
             key: "negociar",
             label: "⚡ Negociação",
             onClick: () => {
-                setSelectedLead(record);
-                setShowNegotiationWizard(true);
+                handleOpenNegotiationWizard(record);
+                marcarComoVisto(record.id); // Pode marcar aqui sem problemas!
             },
         },
         {

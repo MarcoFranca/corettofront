@@ -11,12 +11,15 @@ import ClientePerfilDrawer from "@/app/components/cliente/ClientePerfilDrawer";
 import ClienteInsightDrawer from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/ClienteInsightDrawer";
 import { getLeadTableColumns } from "./components/columns";
 import api from "@/app/api/axios";
-import { useAppDispatch, useAppSelector } from "@/services/hooks/hooks";
+import { useAppSelector } from "@/services/hooks/hooks";
 import { useNegotiationSeen } from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/components/useLeadTable";
 import { Cliente } from "@/types/interfaces";
 
-const LeadTable: React.FC = () => {
-    const dispatch = useAppDispatch();
+interface LeadTableProps {
+    reloadLeads?: boolean;
+}
+
+const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
     const usuarioId = String(useAppSelector(state => state.auth.user?.id ?? ""));
 
     // ==== ESTADOS PRINCIPAIS ====
@@ -42,6 +45,7 @@ const LeadTable: React.FC = () => {
 
     const handleOpenNegotiationWizard = async (lead: Cliente) => {
         setShowNegotiationWizard(true);
+        setClienteDetalhado(null);
         setLoadingDetalhe(true);
         try {
             const { data } = await api.get(`/clientes/${lead.id}/`);
@@ -126,6 +130,10 @@ const LeadTable: React.FC = () => {
         }
         setIsLoading(false);
     };
+
+    useEffect(() => {
+        fetchLeads(tab);
+    }, [tab, reloadLeads]);
 
     // ==== Tabs para navegação (mínimo de lógica, máximo de clareza) ====
     const tabItems = [

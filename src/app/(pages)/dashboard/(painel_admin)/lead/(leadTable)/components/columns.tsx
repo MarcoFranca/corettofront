@@ -43,13 +43,12 @@ export function getLeadTableColumns({
                                         setIsEditModalOpen,
                                         setShowNegotiationWizard,
                                         handleDelete,
-                                        setNegociacoesSelecionadas,
                                         setNegociacoesModalVisible,
                                         filtroIndicacao,
                                         marcarComoVisto,
                                         foiVistoHoje,
-                                        setInsightCliente,         // <--- adicione aqui (faltando atualmente)
-                                        setInsightDrawerOpen,      // <--- adicione aqui (faltando atualmente)
+                                        setInsightCliente,
+                                        setInsightDrawerOpen,
                                         handleOpenNegotiationWizard,
                                     }: LeadTableColumnsProps): ColumnsType<Cliente> {
 
@@ -68,8 +67,10 @@ export function getLeadTableColumns({
                     setShowNegotiationWizard={setShowNegotiationWizard}
                     handleDelete={handleDelete}
                     foiVistoHoje={foiVistoHoje}
-                    setInsightCliente={setInsightCliente}             // <<< ADICIONE
-                    setInsightDrawerOpen={setInsightDrawerOpen}       // <<< ADICIONE
+                    setInsightCliente={setInsightCliente}
+                    setInsightDrawerOpen={setInsightDrawerOpen}
+                    handleOpenNegotiationWizard={handleOpenNegotiationWizard}
+                    marcarComoVisto={marcarComoVisto}
                 />
             )
         },

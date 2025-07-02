@@ -1,15 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import LeadBoard from "@/app/(pages)/dashboard/(painel_admin)/lead/leadBoard/LeadBoard";
 import {ToggleContainer, ToggleButton, LeadButton, Contairer} from "./LeadPage.styles";
 import LeadTable from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/LeadTable";
 import CadastroLead from "../../../../../../public/assets/pages/leads/cadastroLead.svg";
-import LeadModal from "@/app/components/Modal/LeadModal";
+import LeadDrawer from "@/app/components/Drawer/LeadDrawer"; // ou o caminho correto
 
 const LeadPage = () => {
     const [viewMode, setViewMode] = useState<string>(() => {
-        return typeof window !== "undefined" ? localStorage.getItem("leadViewMode") || "kanban" : "kanban";
+        return typeof window !== "undefined" ? localStorage.getItem("leadViewMode") || "kanban" : "table";
     });
+    const [reloadLeads, setReloadLeads] = useState(false);
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -27,17 +27,31 @@ const LeadPage = () => {
             <ToggleContainer>
                 <LeadButton src={CadastroLead} alt="Cadastro" onClick={openModal} />
 
-                <ToggleButton  $active={viewMode === "kanban"} onClick={() => setViewMode("kanban")}>
-                    Kanban
+                <ToggleButton $active={viewMode === "kanban"} onClick={() => setViewMode("kanban")}>
+                    Kanban <span style={{
+                    fontSize: 12,
+                    color: "#888",
+                    marginLeft: 6,
+                    background: "#eee",
+                    borderRadius: 8,
+                    padding: "0 6px"
+                }}>(em breve)</span>
                 </ToggleButton>
+
                 <ToggleButton $active={viewMode === "tabela"} onClick={() => setViewMode("tabela")}>
                     Tabela
                 </ToggleButton>
             </ToggleContainer>
 
-            <LeadModal isOpen={modalIsOpen} onRequestClose={closeModal} />
+            <LeadDrawer open={modalIsOpen} onClose={closeModal} onReload={() => setReloadLeads(v => !v)} />
 
-            {viewMode === "kanban" ? <LeadBoard /> : <LeadTable />}
+            {viewMode === "kanban"
+                ? <div style={{padding: 40, textAlign: "center", color: "#999"}}>
+                    <h3>Visualização Kanban em breve!</h3>
+                    <p>Estamos preparando uma experiência ainda mais avançada para sua gestão de leads.</p>
+                </div>
+                : <LeadTable reloadLeads={reloadLeads} />
+            }
         </Contairer>
     );
 };
