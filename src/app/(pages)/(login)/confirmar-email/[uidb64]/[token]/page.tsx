@@ -44,7 +44,7 @@ const Spinner = styled.div`
 
 
 
-export default function ConfirmEmailPage({ params }: { params: { uidb64: string; token: string } }) {
+export default function ConfirmEmailPage({ params }: any) {
     const { uidb64, token } = params;
     const [status, setStatus] = useState<'success' | 'error' | 'none'>('none');
     const router = useRouter();
