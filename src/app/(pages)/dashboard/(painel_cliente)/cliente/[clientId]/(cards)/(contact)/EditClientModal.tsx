@@ -15,10 +15,11 @@ import {
     RemoveButton,
     EmptyMessage,
     ContactSelect,
-    PhoneInput, TipoContainer, TipoButton,
+    TipoContainer, TipoButton,
 } from "./EditClientModal.Styles";
-import InputMask from "react-input-mask-next";
 import {showToastWithSound} from "@/services/hooks/useToastMessageWithSound";
+import PhoneInputBase from "@/app/components/ui/input/PhoneInputBase";
+import PhoneInput from "@/app/components/ui/input/PhoneInput";
 
 const EditClientModal: React.FC<EditClientModalProps> =
     ({
@@ -158,17 +159,13 @@ const EditClientModal: React.FC<EditClientModalProps> =
             </InputGroup>
 
             <InputGroup>
-                <FloatingMaskedInput
+                <PhoneInput
                     label="Telefone"
                     name="telefone"
-                    type="text"
-                    mask="(99) 99999-9999"
+                    control={control}
+                    setValue={setValue}
                     required
-                    register={register}
-                    setValue={setValue} // ✅ Agora `setValue` está correto
-                    control={control} // ✅ Agora `control` está correto
                 />
-
             </InputGroup>
 
             <h4>Contatos Adicionais</h4>
@@ -191,7 +188,7 @@ const EditClientModal: React.FC<EditClientModalProps> =
                                     </TipoButton>
                                 ))}
                             </TipoContainer>
-                            <PhoneInput
+                            <PhoneInputBase
                                 mask={contato.tipo !== "residencial" ? "(99) 99999-9999" : "(99) 9999-9999"}
                                 value={contato.valor}
                                 onChange={(e) => handleContatoChange(index, e)}

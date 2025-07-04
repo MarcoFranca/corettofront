@@ -109,7 +109,6 @@ const EditPersonalInfoModal: React.FC<EditPersonalInfoModalProps> = ({ isOpen, o
                         name="data_nascimento"
                         label="Data de Nascimento"
                         type="date"
-                        value={initialData.data_nascimento} // Adicione isso para garantir que o valor inicial seja passado
                         required
                     />
                 </FormGroup>

@@ -1,6 +1,6 @@
 // src/app/components/Modal/profile/EditClientModal.styles.ts
 import styled, { keyframes } from "styled-components";
-import InputMask from "react-input-mask-next";
+import { IMaskInput } from "react-imask";
 
 // 🔹 Estilização do Container do Modal
 export const ModalContainer = styled.div``;
@@ -126,7 +126,7 @@ export const EmptyMessage = styled.p`
     margin-top: 10px;
 `;
 
-export const PhoneInput = styled(InputMask)`
+export const PhoneInput = styled(IMaskInput)`
     flex: 1;
     padding: 8px;
     border: 1px solid #ccc;

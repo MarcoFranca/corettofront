@@ -4,8 +4,7 @@ import { useAppSelector } from '@/services/hooks/hooks';
 import Image from "next/image";
 import EditDocumentsModal from "./EditDocumentsModal";
 import { RootState } from "@/store";
-
-// Importando os estilos do `styled-components`
+import { IMaskInput } from "react-imask";
 import {
     DocumentContainer,
     DocumentHeader,
@@ -13,16 +12,24 @@ import {
     DocumentIconButton,
     EmptyMessage
 } from "./DocumentInfoCard.styles";
-
-// Importando imagens
 import DocumentosImage from "../../../../../../../../../public/assets/pages/profile/Documentos.svg";
 import EditImage from "../../../../../../../../../public/assets/common/edit.svg";
 import {getCpfMask, getIdentityMask} from "@/utils/maskUtils";
-import InputMask from "react-input-mask-next";
 import {
     DetailsContainer
 } from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(documents)/DocumentsFolder.styles";
 import {useModalSoundEffect} from "@/services/hooks/useModalSoundEffect";
+
+// (Opcional) Para manter estilos:
+import styled from "styled-components";
+const MaskInput = styled(IMaskInput)`
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    color: #222;
+    padding: 0;
+    width: auto;
+`;
 
 interface DocumentInfoCardProps {
     cliente: Cliente;
@@ -32,7 +39,7 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ cliente }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const error = useAppSelector((state: RootState) => state.clientes.error);
     useModalSoundEffect(modalIsOpen);
-console.log("cliente",cliente)
+
     const openModal = () => setModalIsOpen(true);
     const closeModal = () => setModalIsOpen(false);
 
@@ -55,19 +62,17 @@ console.log("cliente",cliente)
             {cliente.cpf || cliente.identidade ? (
                 <DetailsContainer>
                     <p>📋 <strong>CPF:</strong> {cliente.cpf ? (
-                        <InputMask
-
+                        <MaskInput
                             mask={getCpfMask(cliente.cpf)}
                             value={cliente.cpf}
                             readOnly
-                            className={"maskInput"}
-
+                            className="maskInput"
                         />
                     ) : "Não informado"}</p>
 
                     <p>🆔 <strong>Identidade:</strong> {cliente.identidade ? (
                         <div>
-                            <InputMask
+                            <MaskInput
                                 mask={getIdentityMask(cliente.tipo_identidade)}
                                 value={cliente.identidade}
                                 readOnly
@@ -79,13 +84,13 @@ console.log("cliente",cliente)
             ) : (
                 <EmptyMessage>Nenhum documento cadastrado.</EmptyMessage>
             )}
+
             {/* 🔹 Modal de Edição */}
             <EditDocumentsModal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 cliente={cliente}
             />
-
         </DocumentContainer>
     );
 };
