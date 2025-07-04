@@ -14,12 +14,12 @@ import { LeadProps, Cliente, StatusReuniao } from "@/types/interfaces";
 import ScheduleMeetingForm from '@/app/components/Modal/meeting/ScheduleMeetingForm';
 import EditLeadForm from '@/app/components/leads/EditLeadForm';
 import Tippy from '@tippyjs/react';
-import InputMask from 'react-input-mask-next';
 import 'tippy.js/dist/tippy.css';
 import '@/app/(styles)/globals.css';
 import {FaWhatsapp} from "react-icons/fa";
 import {getPhoneMask} from "@/utils/maskUtils";
 import {playSound} from "@/store/slices/soundSlice";
+import {IMaskInput} from "react-imask";
 
 const statusColors: Record<StatusReuniao, string> = {
     'reuniao_marcada': 'green',
@@ -185,11 +185,12 @@ const LeadComponent: React.FC<LeadProps> = ({ lead, index }) => {
                                         className={styles.phoneAnchor}
                                     >
                                         <FaWhatsapp size={16}/>
-                                        <InputMask
+                                        <IMaskInput
                                             mask={getPhoneMask(currentLead.telefone)}
-                                            value={currentLead.telefone}
+                                            value={currentLead.telefone || ""}
                                             readOnly
-                                            className={styles.phoneInput} // Estilo personalizado
+                                            className={styles.phoneInput}
+                                            // (Opcional: pode usar style direto aqui também)
                                         />
                                     </a>
                                 </p>
