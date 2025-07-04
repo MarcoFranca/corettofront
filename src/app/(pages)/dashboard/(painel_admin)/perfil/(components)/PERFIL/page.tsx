@@ -34,15 +34,16 @@ export default function ProfilePage() {
     useEffect(() => { dispatch(fetchProfile()); }, [dispatch]);
 
     useEffect(() => {
+        if (profile?.user) {
+            setValue('first_name', profile.user.first_name || '');
+            setValue('last_name', profile.user.last_name || '');
+        }
+    }, [profile, setValue]);
+
+
+    useEffect(() => {
         if (profile && !subUserData) dispatch(fetchSubUsers());
     }, [profile, subUserData, dispatch]);
-
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        if (profile) {
-            dispatch(updateProfile({ user: { ...profile.user, [name]: value } }));
-        }
-    };
 
     const handleSubUserChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -180,8 +181,25 @@ export default function ProfilePage() {
             {showEditModal && (
                 <Modal show={showEditModal} onClose={closeEditModal} title="Editar Perfil">
                     <form onSubmit={handleSubmit}>
-                        <FloatingMaskedInput label="Nome" type="text" name="first_name" value={profile?.user.first_name || ''} onChange={handleInputChange} required floatLabel={true} register={register} setValue={setValue} control={control} />
-                        <FloatingMaskedInput label="Sobrenome" type="text" name="last_name" value={profile?.user.last_name || ''} onChange={handleInputChange} floatLabel={true} register={register} setValue={setValue} control={control} />
+                        <FloatingMaskedInput
+                            label="Nome"
+                            type="text"
+                            name="first_name"
+                            required
+                            floatLabel={true}
+                            register={register}
+                            setValue={setValue}
+                            control={control}
+                        />
+                        <FloatingMaskedInput
+                            label="Sobrenome"
+                            type="text"
+                            name="last_name"
+                            floatLabel={true}
+                            register={register}
+                            setValue={setValue}
+                            control={control}
+                        />
                         <label htmlFor="foto">Foto</label>
                         <input type="file" name="foto" accept="image/*" onChange={handleFileChange} />
                         <Index variant="primary" type="submit">Salvar</Index>
