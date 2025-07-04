@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import {Table, Drawer, message, Tabs, Spin} from "antd";
 import { ContainerCanva } from "./LeadTable.styles";
 import ScheduleMeetingForm from "@/app/components/Modal/meeting/ScheduleMeetingForm";
-import EditLeadModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/EditLead";
+import EditLeadDrawer from "@/app/components/Drawer/EditLeadDrawer";
 import NegociacoesModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/NegociacoesModal";
 import NegotiationWizardModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/NegotiationWizardModal";
 import IndicadoresNegociacoes from "@/app/components/strategy/IndicadoresNegociacoes";
@@ -32,13 +32,13 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
     const [insightCliente, setInsightCliente] = useState<any>(null);
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [negociacoesModalVisible, setNegociacoesModalVisible] = useState(false);
     const [negociacoesSelecionadas, setNegociacoesSelecionadas] = useState<any[]>([]);
     const [showNegotiationWizard, setShowNegotiationWizard] = useState(false);
     const [showClienteDrawer, setShowClienteDrawer] = useState(false);
     const [clienteDetalhado, setClienteDetalhado] = useState<Cliente | null>(null);
     const [loadingDetalhe, setLoadingDetalhe] = useState(false);
+    const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
     // ==== Vistos (igual seu hook) ====
     const { negociacoesVistas, marcarComoVisto, foiVistoHoje } = useNegotiationSeen(usuarioId);
@@ -79,7 +79,7 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
     // ==== COLUNAS ====
     const columns = getLeadTableColumns({
         setSelectedLead,
-        setIsEditModalOpen,
+        setIsEditDrawerOpen,
         setShowNegotiationWizard,
         handleDelete: (id: string) => {
             setLeads((prev) => prev.filter((lead) => lead.id !== id));
@@ -96,11 +96,6 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
         setInsightDrawerOpen,
         handleOpenNegotiationWizard,
     });
-
-    // ==== Buscar leads negociáveis ao montar/ao mudar aba ====
-    useEffect(() => {
-        fetchLeads(tab);
-    }, [tab]);
 
     // Core para trocar backend para endpoints dedicados no futuro!
     const fetchLeads = async (tabKey: string) => {
@@ -139,7 +134,7 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
     const tabItems = [
         {
             key: "leads-puros",
-            label: <>Leads Puros</>,
+            label: <>Leads de entrada</>,
             children: (
                 <Table
                     rowKey="id"
@@ -212,11 +207,20 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
                     />
                 )}
                 {/* EDIT MODAL */}
-                {selectedLead && isEditModalOpen && (
-                    <EditLeadModal
-                        isOpen={isEditModalOpen}
-                        onClose={() => setIsEditModalOpen(false)}
+                {selectedLead && isEditDrawerOpen && (
+                    <EditLeadDrawer
+                        open={isEditDrawerOpen}
+                        onClose={() => {
+                            setIsEditDrawerOpen(false);
+                            setSelectedLead(null);
+                        }}
                         cliente={selectedLead}
+                        onSuccess={() => {
+                            setIsEditDrawerOpen(false);
+                            setSelectedLead(null);
+                            fetchLeads(tab);
+
+                        }}
                     />
                 )}
             </ContainerCanva>

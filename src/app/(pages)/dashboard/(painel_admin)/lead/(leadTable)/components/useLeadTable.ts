@@ -68,7 +68,7 @@ export function useLeadTable({
                                  negociacoesVistas,
                                  marcarComoVisto,
                                  foiVistoHoje,
-                                 setInsightCliente,        // << RECEBA AQUI!
+                                 setInsightCliente,
                                  setInsightDrawerOpen,
                              }: UseLeadTableProps) {
     const arrClientes: Cliente[] = Array.isArray(clientes)
@@ -85,11 +85,11 @@ export function useLeadTable({
     const [negociacoesSelecionadas, setNegociacoesSelecionadas] = useState<NegociacaoCliente[]>([]);
     const [showNegotiationWizard, setShowNegotiationWizard] = useState(false);
     const [showClienteDrawer, setShowClienteDrawer] = useState(false);
+    const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
     const { confirm } = useConfirm();
     const { saveBackup, getBackup } = useLeadBackup();
 
-    // SFX dos modais
     const prevEditModalOpen = useRef(false);
     useEffect(() => {
         if (prevEditModalOpen.current !== isEditModalOpen) {
@@ -176,7 +176,7 @@ export function useLeadTable({
 
     const columns = getLeadTableColumns({
         setSelectedLead,
-        setIsEditModalOpen,
+        setIsEditDrawerOpen,
         setShowNegotiationWizard,
         handleDelete,
         setNegociacoesSelecionadas,
@@ -190,45 +190,6 @@ export function useLeadTable({
         setInsightDrawerOpen,
         handleOpenNegotiationWizard // <<< Adicione aqui!
     });
-
-
-
-    // Indicação (os filtros da coluna)
-    const parceirosUnicos = Array.from(
-        new Set(
-            arrClientes
-                .map((c) => c.indicado_por_detalhes)
-                .filter(
-                    (i): i is NonNullable<Cliente["indicado_por_detalhes"]> =>
-                        !!i && i.tipo === "parceiro" && typeof i.nome === "string"
-                )
-                .map((i) => i.nome)
-        )
-    ).map((nome) => ({
-        text: `Parceiro: ${nome}`,
-        value: `parceiro:${nome}`,
-    }));
-
-    const clientesIndicadores = Array.from(
-        new Set(
-            arrClientes
-                .map((c) => c.indicado_por_detalhes)
-                .filter(
-                    (i): i is NonNullable<Cliente["indicado_por_detalhes"]> =>
-                        !!i && i.tipo === "cliente" && typeof i.nome === "string"
-                )
-                .map((i) => i.nome)
-        )
-    ).map((nome) => ({
-        text: `Cliente: ${nome}`,
-        value: `cliente:${nome}`,
-    }));
-
-    const filtrosFixos = [
-        { text: "Sem Indicação", value: "sem_indicacao" },
-        { text: "Indicado por Parceiro", value: "tipo:parceiro" },
-        { text: "Indicado por Cliente", value: "tipo:cliente" },
-    ];
 
     // Retorne tudo agrupado por contexto
     return {

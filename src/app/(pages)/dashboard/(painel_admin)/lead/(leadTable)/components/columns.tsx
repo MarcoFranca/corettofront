@@ -22,7 +22,7 @@ export const STATUS_REUNIAO_MAP: Record<string, string> = {
 
 interface LeadTableColumnsProps {
     setSelectedLead: (c: Cliente) => void;
-    setIsEditModalOpen: (open: boolean) => void;
+    setIsEditDrawerOpen: (open: boolean) => void;
     setShowNegotiationWizard: (open: boolean) => void;
     handleDelete: (id: string) => void;
     setNegociacoesSelecionadas: (n: NegociacaoCliente[]) => void;
@@ -40,7 +40,7 @@ interface LeadTableColumnsProps {
 // Função que retorna as columns prontas
 export function getLeadTableColumns({
                                         setSelectedLead,
-                                        setIsEditModalOpen,
+                                        setIsEditDrawerOpen,
                                         setShowNegotiationWizard,
                                         handleDelete,
                                         setNegociacoesModalVisible,
@@ -63,7 +63,7 @@ export function getLeadTableColumns({
                 <TableActions
                     record={record}
                     setSelectedLead={setSelectedLead}
-                    setIsEditModalOpen={setIsEditModalOpen}
+                    setIsEditDrawerOpen={setIsEditDrawerOpen}
                     setShowNegotiationWizard={setShowNegotiationWizard}
                     handleDelete={handleDelete}
                     foiVistoHoje={foiVistoHoje}

@@ -37,7 +37,7 @@ interface Message {
 }
 
 const ClienteInsightDrawer: React.FC<ClienteInsightDrawerProps> = ({
-                                                                       open, onClose, cliente, clienteId
+                                                                       open, onClose, cliente
                                                                    }) => {
     const [descricao, setDescricao] = useState("");
     const [loading, setLoading] = useState(false);
@@ -158,7 +158,7 @@ const ClienteInsightDrawer: React.FC<ClienteInsightDrawerProps> = ({
             open={open}
             onClose={onClose}
             destroyOnClose
-            bodyStyle={{ display: "flex", padding: 0, minHeight: 600 }}
+            styles={{ body: { paddingBottom: 80 } }}
         >
             {/* Sidebar */}
             <div style={sidebarStyle}>

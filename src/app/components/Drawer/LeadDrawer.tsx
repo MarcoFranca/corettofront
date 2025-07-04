@@ -27,7 +27,7 @@ const LeadDrawer: React.FC<LeadDrawerProps> = ({ open, onClose, onReload }) => {
             onClose={onClose}
             destroyOnClose
             maskClosable
-            bodyStyle={{ paddingBottom: 80 }}
+            styles={{ body: { paddingBottom: 80 } }}
         >
             <CadastroLeadForm
                 onSuccess={() => {

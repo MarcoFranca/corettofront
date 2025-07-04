@@ -8,7 +8,7 @@ import { ThunderboltOutlined } from "@ant-design/icons";
 interface TableActionsProps {
     record: Cliente;
     setSelectedLead: (c: Cliente) => void;
-    setIsEditModalOpen: (open: boolean) => void;
+    setIsEditDrawerOpen: (open: boolean) => void;
     setShowNegotiationWizard: (open: boolean) => void;
     handleDelete: (id: string) => void;
     foiVistoHoje: (id: string) => void;
@@ -22,7 +22,7 @@ export const TableActions: React.FC<TableActionsProps> = (
     {
         record,
         setSelectedLead,
-        setIsEditModalOpen,
+        setIsEditDrawerOpen,
         handleDelete,
         setInsightCliente,
         setInsightDrawerOpen,
@@ -59,7 +59,7 @@ export const TableActions: React.FC<TableActionsProps> = (
             label: "✏️ Editar",
             onClick: () => {
                 setSelectedLead(record);
-                setIsEditModalOpen(true);
+                setIsEditDrawerOpen(true);
             },
         },
         {
