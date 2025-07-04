@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Select, { SingleValue, GroupBase, StylesConfig } from "react-select";
+import React, { useEffect, useMemo } from "react";
+import Select, { SingleValue, StylesConfig } from "react-select";
 import { Controller } from "react-hook-form";
-import { fetchProfissoesOrganizadas, Option } from "../selectUtils";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchProfissoesThunk } from "@/store/slices/profissoesSlice";
+import type { AppDispatch, RootState } from "@/store";
+import type { Option } from "../selectUtils";
+
 
 interface SelectProfissaoProps {
     name: string;
@@ -22,35 +26,30 @@ const SelectProfissao: React.FC<SelectProfissaoProps> = ({
                                                              required = false,
                                                              showLabel = true,
                                                              errorMessage = "",
-                                                             options = [],
+                                                             options,
                                                          }) => {
-    const [profissoes, setProfissoes] = useState<GroupBase<Option>[]>([]);
-    const [loaded, setLoaded] = useState(false);
+    const dispatch = useDispatch<AppDispatch>();
+    const profissoesRedux = useSelector((state: RootState) => state.profissoes.data);
 
-    useEffect(() => {
-        if (!loaded && (!options || options.length === 0)) {
-            setLoaded(true); // garante que só chama uma vez
-            fetchProfissoesOrganizadas().then((data) => {
-                const seen = new Set<string>();
-                const deduplicated = data.map((group) => ({
-                    ...group,
-                    options: group.options.filter((opt) => {
-                        if (seen.has(opt.value)) return false;
-                        seen.add(opt.value);
-                        return true;
-                    }),
-                }));
-                setProfissoes(deduplicated);
-            });
-        } else if (options && options.length > 0) {
-            setProfissoes([
+    // Use as opções do redux, exceto que o options seja passado via props
+    const profissoes = useMemo(() => {
+        if (options && options.length > 0) {
+            return [
                 {
                     label: "Profissões",
                     options: options.filter((p) => p.label !== "nan"),
                 },
-            ]);
+            ];
         }
-    }, [loaded, options]);
+        return profissoesRedux;
+    }, [options, profissoesRedux]);
+
+    // Busca só se necessário
+    useEffect(() => {
+        if ((!profissoesRedux || profissoesRedux.length === 0) && (!options || options.length === 0)) {
+            dispatch(fetchProfissoesThunk());
+        }
+    }, [dispatch, profissoesRedux, options]);
 
     const customStyles: StylesConfig<Option, false> = {
         control: (base, state) => ({
@@ -115,12 +114,13 @@ const SelectProfissao: React.FC<SelectProfissaoProps> = ({
                         styles={customStyles}
                         value={
                             profissoes
-                                .flatMap((group) => group.options)
+                                ?.flatMap((group) => group.options)
                                 .find((opt) => opt.value === field.value) || null
                         }
                         onChange={(selected: SingleValue<Option>) => {
                             field.onChange(selected ? selected.value : "");
                         }}
+                        isLoading={!profissoes || profissoes.length === 0}
                     />
                 )}
             />

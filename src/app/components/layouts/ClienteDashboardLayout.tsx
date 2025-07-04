@@ -7,7 +7,7 @@ import styles from './styles.module.css';
 import DashboardSidebar from "@/app/components/common/Header/DashboardSidebar";
 import ClientDashboardSidebar from "@/app/components/common/Header/ClientDashboardSidebar";
 import api from "@/app/api/axios";
-import {RootState} from "@/store";
+import {AppDispatch, RootState} from "@/store";
 import {useMediaQuery} from "@/services/hooks/hooks";
 import MenuMobile from "@/app/components/common/Header/DashboardMobile/MenuMobile";
 import {setTokenFromLocalStorage, setUserFromLocalStorage} from "@/store/slices/authSlice";
@@ -20,6 +20,7 @@ import {updateProfile} from "@/store/slices/profileSlice";
 import {showTrialTokensModal} from "@/app/components/popup/trialToken";
 import Lottie from 'react-lottie-player';
 import coraAnimation from '@/../public/lotties/cora3.json';
+import {fetchProfissoesThunk} from "@/store/slices/profissoesSlice";
 
 
 interface DashboardLayoutProps {
@@ -28,7 +29,7 @@ interface DashboardLayoutProps {
 
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
     const pathname = usePathname(); // Obtemos a URL atual
     const [loading, setLoading] = useState(true);
@@ -81,6 +82,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         }
     }, [profile]);
 
+    useEffect(() => {
+        dispatch(fetchProfissoesThunk());
+    }, [dispatch]);
 
 
     const handleLogout = () => {

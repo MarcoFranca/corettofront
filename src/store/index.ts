@@ -13,6 +13,7 @@ import uiReducer from './slices/uiSlice'
 import soundReducer from './slices/soundSlice';
 import negociacaoReducer from './slices/negociacoesSlice'
 import todoReducer from './slices/todoSlice';
+import profissoesReducer from './slices/profissoesSlice'
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
     profile: profileReducer,
     googleIntegration: googleIntegrationReducer,
     parceiros: parceirosReducer,
+    profissoes: profissoesReducer,
     ui: uiReducer,
     sound: soundReducer,
     negociacao: negociacaoReducer,
