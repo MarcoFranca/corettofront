@@ -28,4 +28,12 @@ export const GlobalStyles = createGlobalStyle`
     ::-webkit-scrollbar-thumb:hover {
         background: ${({ theme }) => theme.colors.secondary};
     }
+    .ja-foi-cliente-row > td:first-child {
+        border-left: 6px solid #042a75 !important;
+    }
+    .negociacao-sem-carteira-row > td:first-child {
+        border-left: 6px solid #ffd420 !important;
+    }
+
+
 `;

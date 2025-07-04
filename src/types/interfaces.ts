@@ -198,6 +198,7 @@ export interface Cliente {
     cpf?: string;
     identidade?: string;
     tipo_identidade?:string;
+    ja_foi_cliente?: boolean;
     data_nascimento?: string;
     is_vip?: boolean;
     genero?: string;

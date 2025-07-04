@@ -175,6 +175,10 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
                     size="middle"
                     scroll={{ x: "max-content", y: 500 }}
                     style={{ minWidth: "80%", background: "#fff" }}
+                    rowClassName={record => {
+                        if (record.ja_foi_cliente) return "ja-foi-cliente-row";
+                        return "negociacao-sem-carteira-row";
+                    }}
                 />
             ),
         },
@@ -202,6 +206,28 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
             <ContainerCanva>
                 <h2>📋 Gestão Completa de Negociações</h2>
                 <IndicadoresNegociacoes />
+                {/* LEGENDA DE CORES - Coloque AQUI */}
+                <div style={{
+                    display: "flex", gap: 16, marginBottom: 16,
+                    alignItems: "center", fontSize: 14
+                }}>
+    <span style={{
+        display: "inline-block",
+        borderLeft: "6px solid #042a75", background: "#fff",
+        padding: "3px 16px", borderRadius: 8, fontWeight: 500, color: "#042a75"
+    }}>
+        Já foi cliente
+    </span>
+                    <span style={{
+                        display: "inline-block",
+                        borderLeft: "6px solid #ffd420", background: "#fff",
+                        padding: "3px 16px", borderRadius: 8, fontWeight: 500, color: "#ad9000"
+                    }}>
+        Em negociação, ainda não é cliente
+    </span>
+                </div>
+
+                {/* FIM DA LEGENDA */}
                 <Tabs
                     activeKey={tab}
                     onChange={setTab}
