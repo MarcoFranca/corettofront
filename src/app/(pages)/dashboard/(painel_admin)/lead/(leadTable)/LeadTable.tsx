@@ -21,6 +21,7 @@ interface LeadTableProps {
 
 const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
     const usuarioId = String(useAppSelector(state => state.auth.user?.id ?? ""));
+    const handleReloadLeads = () => fetchLeads(tab);
 
     // ==== ESTADOS PRINCIPAIS ====
     const [leads, setLeads] = useState<Cliente[]>([]);
@@ -76,6 +77,15 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
             .filter((v, i, arr) => arr.findIndex(t => t.value === v.value) === i)
     ];
 
+    const handleObservacaoUpdate = (leadId: string, newObs: string) => {
+        setLeads((leads) =>
+            leads.map((lead) =>
+                lead.id === leadId ? { ...lead, observacoes: newObs } : lead
+            )
+        );
+    };
+
+
     // ==== COLUNAS ====
     const columns = getLeadTableColumns({
         setSelectedLead,
@@ -95,6 +105,8 @@ const LeadTable: React.FC<LeadTableProps> = ({ reloadLeads }) => {
         setInsightCliente,
         setInsightDrawerOpen,
         handleOpenNegotiationWizard,
+        onUpdate: handleReloadLeads,
+        onObservacaoUpdate: handleObservacaoUpdate,
     });
 
     // Core para trocar backend para endpoints dedicados no futuro!

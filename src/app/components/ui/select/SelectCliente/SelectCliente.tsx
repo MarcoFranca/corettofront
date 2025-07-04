@@ -1,7 +1,7 @@
 import React from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Controller } from "react-hook-form";
-import { loadClienteOptions, Option } from "../selectUtils";
+import { loadClienteSelectOptions, Option} from "../selectUtils";
 import styled from "styled-components";
 
 interface SelectClienteProps {
@@ -47,7 +47,7 @@ const SelectCliente: React.FC<SelectClienteProps> = ({
                 render={({ field }) => (
                     <AsyncPaginate
                         {...field}
-                        loadOptions={loadClienteOptions}
+                        loadOptions={loadClienteSelectOptions}
                         defaultOptions
                         isSearchable
                         additional={{ page: 1 }}

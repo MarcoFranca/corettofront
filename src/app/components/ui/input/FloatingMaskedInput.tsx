@@ -1,14 +1,13 @@
 import React from "react";
-import InputMask from "react-input-mask-next";
+import { IMaskInput } from "react-imask";
 import { InputContainer, Label, Input, Required, FloatingLabelWrapper, StaticLabelWrapper } from "./FloatingMaskedInput.styles";
-import {Controller, UseFormRegister, UseFormSetValue} from "react-hook-form";
+import { Controller, UseFormRegister, UseFormSetValue } from "react-hook-form";
 import currency from "currency.js";
 
 interface FloatingMaskedInputProps {
-    label: React.ReactNode; // ✅ Aceita `JSX.Element` ou `string`
+    label: React.ReactNode;
     name: string;
     type?: string;
-    value?: string;
     mask?: string;
     maskPlaceholder?: string | null;
     required?: boolean;
@@ -17,221 +16,295 @@ interface FloatingMaskedInputProps {
     placeholder?: string;
     floatLabel?: boolean;
     errorMessage?: string;
-    control: any; // ✅ Agora `control` é obrigatório
-    setValue: UseFormSetValue<any>; // ✅ Agora aceita qualquer campo
-    register: UseFormRegister<any>; // ✅ Agora register está tipado corretamente
+    control: any;
+    setValue: UseFormSetValue<any>;
+    register: UseFormRegister<any>;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> = ({
+                                                                     label,
+                                                                     name,
+                                                                     type = "text",
+                                                                     mask,
+                                                                     required = false,
+                                                                     onChange,
+                                                                     className = "",
+                                                                     placeholder = "",
+                                                                     floatLabel = true,
+                                                                     errorMessage = "",
+                                                                     control,
+                                                                     setValue,
+                                                                 }) => {
+    // Utilitário de formatação
+    const formatCurrency = (value: string | number) => {
+        return currency(value, {
+            symbol: "R$ ",
+            separator: ".",
+            decimal: ",",
+            precision: 2,
+        }).format();
+    };
 
+    const cleanCurrency = (value: string) => {
+        return value.replace(/[^\d]/g, "");
+    };
 
-const FloatingMaskedInput: React.FC<FloatingMaskedInputProps> =
-    ({
-         label,
-         name,
-         type = "text",
-         value = "",
-         mask,
-         maskPlaceholder,
-         required = false,
-         onChange,
-         className = "",
-         placeholder = "",
-         floatLabel = true,
-         errorMessage = "",
-         control,
-         setValue,
-         register, // ✅ Adicionado suporte ao `register`
-     }) => {
+    // Formata para input de data do tipo string/date
+    const formatDateToInput = (date: string | Date): string => {
+        if (!date) return "";
+        if (date instanceof Date) {
+            return date.toISOString().split("T")[0];
+        }
+        return date;
+    };
 
-        const inputProps = register
-            ? register(name, required ? { required: { value: true, message: "Campo obrigatório" } } : {})
-            : {};
+    // Input com label flutuante
+    const renderFloating = () => {
+        if (type === "date") {
+            return (
+                <Controller
+                    name={name}
+                    control={control}
+                    render={({ field }) => (
+                        <Input
+                            {...field}
+                            id={name}
+                            type="date"
+                            required={required}
+                            placeholder=" "
+                            value={formatDateToInput(field.value)}
+                            onChange={e => {
+                                field.onChange(e.target.value);
+                                setValue(name, e.target.value, { shouldValidate: true });
+                                if (onChange) onChange(e);
+                            }}
+                        />
+                    )}
+                />
+            );
+        }
 
-        const formatDateToInput = (date: string | Date): string => {
-            if (!date) return "";
-            if (date instanceof Date) {
-                return date.toISOString().split("T")[0];
-            }
-            return date;
-        };
+        if (mask) {
+            // Com máscara usando react-imask
+            return (
+                <Controller
+                    name={name}
+                    control={control}
+                    render={({ field }) => (
+                        <IMaskInput
+                            {...field}
+                            mask={mask}
+                            unmask={false}
+                            value={field.value || ""}
+                            onAccept={(value: any) => {
+                                field.onChange(value);
+                                setValue(name, value, { shouldValidate: true });
+                            }}
+                            placeholder=" "
+                            required={required}
+                            style={{ width: "100%", border: "none", outline: "none", background: "transparent" }}
+                        />
+                    )}
+                />
+            );
+        }
 
-        // 🏦 Formata valor em moeda corretamente para exibição
-        const formatCurrency = (value: string | number) => {
-            return currency(value, {
-                symbol: "R$ ",
-                separator: ".",
-                decimal: ",",
-                precision: 2,
-            }).format();
-        };
+        // Input monetário (exibe formatado, armazena valor puro)
+        if (type === "money") {
+            return (
+                <Controller
+                    name={name}
+                    control={control}
+                    render={({ field }) => (
+                        <Input
+                            id={name}
+                            type="text"
+                            required={required}
+                            placeholder=" "
+                            value={
+                                field.value !== undefined && field.value !== null && field.value !== ""
+                                    ? formatCurrency(field.value)
+                                    : ""
+                            }
+                            onChange={e => {
+                                const raw = cleanCurrency(e.target.value);
+                                const numericValue = Number(raw) / 100;
+                                setValue(name, numericValue, { shouldValidate: true });
+                                field.onChange(numericValue);
+                            }}
+                        />
+                    )}
+                />
+            );
+        }
 
-        // 🔥 Remove qualquer caractere não numérico para números
-        const cleanCurrency = (value: string) => {
-            return value.replace(/[^\d]/g, ""); // Remove qualquer caractere não numérico
-        };
+        // Input number simples
+        if (type === "number") {
+            return (
+                <Controller
+                    name={name}
+                    control={control}
+                    render={({ field }) => (
+                        <Input
+                            id={name}
+                            type="number"
+                            required={required}
+                            placeholder=" "
+                            value={field.value ?? ""}
+                            onChange={e => {
+                                const numericValue = Number(e.target.value);
+                                setValue(name, numericValue, { shouldValidate: true });
+                                field.onChange(numericValue);
+                            }}
+                        />
+                    )}
+                />
+            );
+        }
 
-        // 🏦 Manipula mudanças no input garantindo que o backend receba o valor correto
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>, fieldOnChange?: (value: any) => void) => {
-            let value = e.target.value;
-
-            if (type === "money") {
-                const cleanValue = cleanCurrency(value);
-                const numericValue = Number(cleanValue) / 100; // Converte para decimal
-
-
-                // 🔥 Garante que o formulário armazena o valor correto sem máscara
-                setValue(name, numericValue, { shouldValidate: true });
-                if (fieldOnChange) fieldOnChange(numericValue);
-
-                // **🔥 ATUALIZA APENAS O ELEMENTO SEM ALTERAR O RHF**
-                e.target.value = formatCurrency(numericValue);
-            }
-            else if (type === "number") {
-                // ✅ Garante que valores numéricos sejam enviados corretamente ao backend
-                const numericValue = Number(value);
-                setValue(name, numericValue, {shouldValidate: true});
-                if (fieldOnChange) fieldOnChange(numericValue);
-
-            }
-            else {
-                setValue(name, value, { shouldValidate: true });
-                if (fieldOnChange) fieldOnChange(value);
-            }
-
-            if (onChange) onChange(e);
-        };
-
-
+        // Default: texto normal
         return (
-            <InputContainer className={className}>
-                {floatLabel ? (
-                    <FloatingLabelWrapper>
-                        {type === "date" ? (
-                            // 🔥 Caso o tipo seja "date", usamos um input padrão
-                            <Controller
-                                name={name}
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        {...field}
-                                        id={name}
-                                        type={type}
-                                        value={type === "date" ? formatDateToInput(field.value) : field.value || ""}
-                                        required={required}
-                                        placeholder=" "
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            field.onChange(value); // ✅ Atualiza o formulário corretamente
-                                            setValue(name, value, { shouldValidate: true }); // ✅ Atualiza manualmente
-                                            if (onChange) onChange(e);
-                                        }}
-                                    />
-                                )}
-                            />
-                        ) : mask ? (
-                            <Controller
-                                name={name}
-                                control={control}
-                                rules={{ required }}
-                                render={({ field }) => (
-                                    <InputMask
-                                        mask={mask}
-                                        maskPlaceholder={maskPlaceholder}
-                                        value={field.value || ""}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            setValue(name, value, { shouldValidate: true });
-                                            field.onChange(value);
-                                            if (onChange) onChange(e);
-                                        }}
-                                    >
-                                        <Input id={name} required={required} placeholder=" " />
-                                    </InputMask>
-                                )}
-                            />
-
-                        ) : (
-                            <Input
-                                {...inputProps}
-                                id={name}
-                                type={type}
-                                required={required}
-                                placeholder={placeholder || ""}
-                                onChange={handleChange} // 🔥 Garante que `react-hook-form` detecta a mudança
-                            />
-                        )}
-                        <Label htmlFor={name} className="float">
-                            {label} {required && <Required>*</Required>}
-                        </Label>
-                    </FloatingLabelWrapper>
-                ) : (
-                    <StaticLabelWrapper> {/* 🔥 Agora o label fica fixo acima do input */}
-                        <Label htmlFor={name} className="static-label">
-                            {label} {required && <Required>*</Required>}
-                        </Label>
-                        {mask ? (
-                            <InputMask
-                                mask={mask}
-                                maskPlaceholder={maskPlaceholder}
-                                {...register(name, { required })}
-                                onChange={handleChange}
-                                inputRef={register(name).ref} // ✅ Passa a ref diretamente
-                            >
-                                <Input
-                                    id={name}
-                                    required={required}
-                                    placeholder=" "
-                                />
-                            </InputMask>
-                        ) : (
-                            <Controller
-                                name={name}
-                                control={control}
-                                render={({ field: { onChange, onBlur, value, ref } }) => {
-                                    const formattedValue =
-                                        type === "money" && value !== undefined && value !== null
-                                            ? currency(value, {
-                                                symbol: "R$ ",
-                                                separator: ".",
-                                                decimal: ",",
-                                                precision: 2,
-                                            }).format()
-                                            : value ?? "";
-
-                                    return (
-                                        <Input
-                                            id={name}
-                                            type={type === "money" ? "text" : type}
-                                            placeholder={placeholder || ""}
-                                            required={required}
-                                            value={formattedValue}
-                                            onChange={(e) => {
-                                                if (type === "money") {
-                                                    const raw = e.target.value.replace(/[^\d]/g, "");
-                                                    const numericValue = Number(raw) / 100;
-                                                    setValue(name, numericValue, { shouldValidate: true });
-                                                    onChange(numericValue);
-                                                } else {
-                                                    setValue(name, e.target.value, { shouldValidate: true });
-                                                    onChange(e.target.value);
-                                                }
-
-                                                if (onChange) onChange(e);
-                                            }}
-                                            onBlur={onBlur}
-                                            ref={ref}
-                                        />
-                                    );
-                                }}
-                            />
-                        )}
-                    </StaticLabelWrapper>
+            <Controller
+                name={name}
+                control={control}
+                render={({ field }) => (
+                    <Input
+                        {...field}
+                        id={name}
+                        type={type}
+                        required={required}
+                        placeholder=" "
+                        onChange={e => {
+                            field.onChange(e.target.value);
+                            setValue(name, e.target.value, { shouldValidate: true });
+                            if (onChange) onChange(e);
+                        }}
+                    />
                 )}
-
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
-            </InputContainer>
+            />
         );
     };
+
+    // Input com label fixo acima
+    const renderStatic = () => {
+        if (mask) {
+            return (
+                <Controller
+                    name={name}
+                    control={control}
+                    render={({ field }) => (
+                        <IMaskInput
+                            {...field}
+                            mask={mask}
+                            unmask={false}
+                            value={field.value || ""}
+                            onAccept={value => {
+                                field.onChange(value);
+                                setValue(name, value, { shouldValidate: true });
+                            }}
+                            placeholder={placeholder}
+                            required={required}
+                            style={{ width: "100%", border: "none", outline: "none", background: "transparent" }}
+                        />
+                    )}
+                />
+            );
+        }
+
+        if (type === "money") {
+            return (
+                <Controller
+                    name={name}
+                    control={control}
+                    render={({ field }) => (
+                        <Input
+                            id={name}
+                            type="text"
+                            required={required}
+                            placeholder={placeholder}
+                            value={
+                                field.value !== undefined && field.value !== null && field.value !== ""
+                                    ? formatCurrency(field.value)
+                                    : ""
+                            }
+                            onChange={e => {
+                                const raw = cleanCurrency(e.target.value);
+                                const numericValue = Number(raw) / 100;
+                                setValue(name, numericValue, { shouldValidate: true });
+                                field.onChange(numericValue);
+                            }}
+                        />
+                    )}
+                />
+            );
+        }
+
+        if (type === "number") {
+            return (
+                <Controller
+                    name={name}
+                    control={control}
+                    render={({ field }) => (
+                        <Input
+                            id={name}
+                            type="number"
+                            required={required}
+                            placeholder={placeholder}
+                            value={field.value ?? ""}
+                            onChange={e => {
+                                const numericValue = Number(e.target.value);
+                                setValue(name, numericValue, { shouldValidate: true });
+                                field.onChange(numericValue);
+                            }}
+                        />
+                    )}
+                />
+            );
+        }
+
+        return (
+            <Controller
+                name={name}
+                control={control}
+                render={({ field }) => (
+                    <Input
+                        {...field}
+                        id={name}
+                        type={type}
+                        required={required}
+                        placeholder={placeholder}
+                        onChange={e => {
+                            field.onChange(e.target.value);
+                            setValue(name, e.target.value, { shouldValidate: true });
+                            if (onChange) onChange(e);
+                        }}
+                    />
+                )}
+            />
+        );
+    };
+
+    return (
+        <InputContainer className={className}>
+            {floatLabel ? (
+                <FloatingLabelWrapper>
+                    {renderFloating()}
+                    <Label htmlFor={name} className="float">
+                        {label} {required && <Required>*</Required>}
+                    </Label>
+                </FloatingLabelWrapper>
+            ) : (
+                <StaticLabelWrapper>
+                    <Label htmlFor={name} className="static-label">
+                        {label} {required && <Required>*</Required>}
+                    </Label>
+                    {renderStatic()}
+                </StaticLabelWrapper>
+            )}
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+        </InputContainer>
+    );
+};
 
 export default FloatingMaskedInput;

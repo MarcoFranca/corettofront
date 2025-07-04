@@ -11,7 +11,8 @@ import {toastSuccess, toastError} from "@/utils/toastWithSound";
 import {
     DrawerFormWrapper, NameContainer, ContatoContainer, SubmitButton, SelectDiv
 } from "./CadastroLeadForm.styles";
-import type { AppDispatch } from "@/store"; // já deve existir
+import type { AppDispatch } from "@/store";
+import PhoneInput from "@/app/components/ui/input/PhoneInput"; // já deve existir
 
 interface EditLeadFormProps {
     cliente: Cliente;
@@ -85,16 +86,13 @@ const EditLeadForm: React.FC<EditLeadFormProps> = ({ cliente, onSuccess }) => {
                     />
                 </NameContainer>
                 <ContatoContainer>
-                    <FloatingMaskedInput
-                        label="Telefone"
+                    <PhoneInput
                         name="telefone"
-                        type="text"
-                        mask="(99) 99999-9999"
-                        register={register}
-                        setValue={setValue}
+                        label="Telefone"
                         control={control}
-                        errorMessage={errors.telefone?.message}
+                        setValue={setValue}
                         required
+                        errorMessage={errors.telefone?.message}
                     />
                     <FloatingMaskedInput
                         label="Email"

@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { createCliente } from "@/store/slices/clientesSlice";
@@ -10,12 +9,13 @@ import { useForm } from "react-hook-form";
 import SelectCustom from "@/app/components/ui/select/SelectCustom";
 import SelectProfissao from "@/app/components/ui/select/SelectProfissao/SelectProfissao";
 import SelectCliente from "@/app/components/ui/select/SelectCliente/SelectCliente";
-import {toastError, toastSuccess} from "@/utils/toastWithSound";
+import { toastError, toastSuccess } from "@/utils/toastWithSound";
 import {
     DrawerFormWrapper, Section, Fieldset, Legend, RadioGroup, RadioOption, ResetIndicacao,
     NameContainer, ContatoContainer, ErrorMessage, SubmitButton, SelectDiv
 } from "./CadastroLeadForm.styles";
 import api from "@/app/api/axios";
+import PhoneInput from "@/app/components/ui/input/PhoneInput";
 
 interface CadastroLeadFormProps {
     onSuccess: () => void;
@@ -26,15 +26,11 @@ const CadastroLeadForm: React.FC<CadastroLeadFormProps> = ({ onSuccess }) => {
 
     // 📌 Estados do Formulário
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
     // 📌 Indicação
     const [indicadoPorTipo, setIndicadoPorTipo] = useState<"cliente" | "parceiro" | "">("");
     const [parceirosDisponiveis, setParceirosDisponiveis] = useState<any[]>([]);
     const [indicadosPorParceiros, setIndicadosPorParceiros] = useState<string[]>([]);
-
-    // 📌 Profissões principais (caso queira popular o select por fora)
-    // const [profissoesPrincipais, setProfissoesPrincipais] = useState<ProfissaoOption[]>([]);
 
     const methods = useForm({
         mode: "onChange",
@@ -50,7 +46,8 @@ const CadastroLeadForm: React.FC<CadastroLeadFormProps> = ({ onSuccess }) => {
         },
     });
 
-    const { register, setValue, reset } = methods;
+    // *** Pegue os helpers e estados do RHF ***
+    const { register, setValue, reset, control, formState: { errors } } = methods;
 
     // Carrega parceiros ao montar
     useEffect(() => {
@@ -158,11 +155,11 @@ const CadastroLeadForm: React.FC<CadastroLeadFormProps> = ({ onSuccess }) => {
                                 <SelectCliente
                                     label="Cliente"
                                     name="indicado_por_cliente_id"
-                                    control={methods.control}
+                                    control={control}
                                     placeholder="Selecione um cliente"
                                     required
                                     showLabel={false}
-                                    errorMessage={fieldErrors.indicado_por_cliente_id}
+                                    errorMessage={errors.indicado_por_cliente_id?.message}
                                 />
                             ) : indicadoPorTipo === "parceiro" ? (
                                 <Select
@@ -178,13 +175,12 @@ const CadastroLeadForm: React.FC<CadastroLeadFormProps> = ({ onSuccess }) => {
                                 />
                             ) : null}
                         </div>
-                        {(fieldErrors.indicado_por_cliente_id ||
-                            fieldErrors.indicado_por_parceiro_id) && (
+                        {errors.indicado_por_cliente_id?.message && (
                             <ErrorMessage>
-                                {fieldErrors.indicado_por_cliente_id ||
-                                    fieldErrors.indicado_por_parceiro_id}
+                                {errors.indicado_por_cliente_id?.message}
                             </ErrorMessage>
                         )}
+
                     </Fieldset>
                 </Section>
                 <NameContainer>
@@ -194,9 +190,9 @@ const CadastroLeadForm: React.FC<CadastroLeadFormProps> = ({ onSuccess }) => {
                         type="text"
                         register={register}
                         setValue={setValue}
-                        control={methods.control}
+                        control={control}
                         required
-                        errorMessage={fieldErrors.nome}
+                        errorMessage={errors.nome?.message}
                     />
                     <FloatingMaskedInput
                         label="Sobre Nome"
@@ -204,21 +200,18 @@ const CadastroLeadForm: React.FC<CadastroLeadFormProps> = ({ onSuccess }) => {
                         type="text"
                         register={register}
                         setValue={setValue}
-                        control={methods.control}
-                        errorMessage={fieldErrors.sobrenome}
+                        control={control}
+                        errorMessage={errors.sobrenome?.message}
                     />
                 </NameContainer>
                 <ContatoContainer>
-                    <FloatingMaskedInput
-                        label="Telefone"
+                    <PhoneInput
                         name="telefone"
-                        type="text"
-                        mask="(99) 99999-9999"
-                        register={register}
+                        label="Telefone"
+                        control={control}
                         setValue={setValue}
-                        control={methods.control}
-                        errorMessage={fieldErrors.telefone}
                         required
+                        errorMessage={errors.telefone?.message}
                     />
                     <FloatingMaskedInput
                         label="Email"
@@ -226,15 +219,15 @@ const CadastroLeadForm: React.FC<CadastroLeadFormProps> = ({ onSuccess }) => {
                         type="email"
                         register={register}
                         setValue={setValue}
-                        control={methods.control}
-                        errorMessage={fieldErrors.email}
+                        control={control}
+                        errorMessage={errors.email?.message}
                     />
                 </ContatoContainer>
                 <SelectDiv>
 
                     <SelectCustom
                         name="genero"
-                        control={methods.control}
+                        control={control}
                         label="Gênero"
                         showLabel={false}
                         placeholder="Selecione um gênero"
@@ -243,17 +236,17 @@ const CadastroLeadForm: React.FC<CadastroLeadFormProps> = ({ onSuccess }) => {
                             { value: "F", label: "Feminino" },
                         ]}
                         required
-                        errorMessage={fieldErrors.genero}
+                        errorMessage={errors.genero?.message}
                     />
 
-                    {fieldErrors.genero && <ErrorMessage>{fieldErrors.genero}</ErrorMessage>}
+                    {errors.genero?.message && <ErrorMessage>{errors.genero?.message}</ErrorMessage>}
 
                     <SelectProfissao
                         name="profissao_id"
-                        control={methods.control}
+                        control={control}
                         placeholder="Selecione a profissão"
                         showLabel={false}
-                        errorMessage={fieldErrors.profissao_id}
+                        errorMessage={errors.profissao_id?.message}
                     />
 
                 </SelectDiv>

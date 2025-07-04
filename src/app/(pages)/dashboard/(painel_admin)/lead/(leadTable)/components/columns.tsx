@@ -35,6 +35,9 @@ interface LeadTableColumnsProps {
     setInsightCliente: (c: Cliente) => void;
     setInsightDrawerOpen: (v: boolean) => void;
     handleOpenNegotiationWizard: (lead: Cliente) => void;
+    onUpdate?: () => void;
+    onObservacaoUpdate?: (leadId: string, newObs: string) => void;
+
 }
 
 // Função que retorna as columns prontas
@@ -50,6 +53,7 @@ export function getLeadTableColumns({
                                         setInsightCliente,
                                         setInsightDrawerOpen,
                                         handleOpenNegotiationWizard,
+                                        onObservacaoUpdate
                                     }: LeadTableColumnsProps): ColumnsType<Cliente> {
 
     const dispatch = useAppDispatch();
@@ -209,9 +213,11 @@ export function getLeadTableColumns({
                     obs={obs}
                     onSave={async (newObs) => {
                         await dispatch(updateCliente({ id: record.id, updatedCliente: { observacoes: newObs } }));
+                        if (onObservacaoUpdate) onObservacaoUpdate(record.id, newObs);
                     }}
                 />
             )
+
         },
         {
             title: "Indicação",

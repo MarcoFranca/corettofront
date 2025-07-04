@@ -71,7 +71,7 @@ export const loadAdministradoraOptions = async (produto: string) => {
  */
 export const loadClienteOptions: LoadOptions<Option, never, { page: number }> = async (
     searchQuery = "",
-    loadedOptions: readonly Option[], // 🔥 Agora é readonly conforme esperado
+    loadedOptions: readonly Option[],
     additional = { page: 1 }
 ) => {
     const { page } = additional;
@@ -92,6 +92,25 @@ export const loadClienteOptions: LoadOptions<Option, never, { page: number }> = 
         return { options: [], hasMore: false };
     }
 };
+
+export const loadClienteSelectOptions = async (
+    searchQuery = ""
+): Promise<{ options: Option[]; hasMore: boolean }> => {
+    try {
+        const response = await api.get(`/clientes/select/?search=${searchQuery}`);
+        return {
+            options: (response.data || []).map((cliente: any) => ({
+                value: cliente.id,
+                label: `${cliente.nome} ${cliente.sobre_nome || ""}`,
+            })),
+            hasMore: false,  // Não tem paginação!
+        };
+    } catch (error) {
+        toast.error("Erro ao carregar clientes.");
+        return { options: [], hasMore: false };
+    }
+};
+
 
 /**
  * Busca clientes ou parceiros com paginação para o `AsyncPaginate`.
@@ -122,27 +141,3 @@ export const loadIndicadoOptions = async (
         return { options: [], hasMore: false, additional: { page } };
     }
 };
-
-
-export const loadParceiroOptions = async (
-    searchQuery = "",
-    loadedOptions = [],
-    additional = { page: 1 }
-): Promise<{ options: Option[]; hasMore: boolean }> => {
-    try {
-        const response = await api.get("/parceiros/?search=" + searchQuery);
-        const parceiros = response.data;
-
-        return {
-            options: parceiros.map((parceiro: any) => ({
-                value: parceiro.id,           // ID técnico
-                label: parceiro.nome,         // Nome amigável
-            })),
-            hasMore: false,
-        };
-    } catch (error) {
-        toast.error("Erro ao carregar parceiros.");
-        return { options: [], hasMore: false };
-    }
-};
-

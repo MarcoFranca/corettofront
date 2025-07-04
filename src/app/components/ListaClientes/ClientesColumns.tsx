@@ -1,9 +1,8 @@
 import React from "react";
 import {Button, Dropdown, Tooltip, Tag, message} from "antd";
 import { MailOutlined, WhatsAppOutlined, MoreOutlined, StarFilled, StarOutlined, EditOutlined } from "@ant-design/icons";
-import InputMask from "react-input-mask-next";
 import { STATUS_CHOICES } from "@/utils/statusOptions";
-import { getPhoneMask } from "@/utils/maskUtils";
+import {formatPhoneNumber, removeMask} from "@/utils/maskUtils";
 import type { Cliente } from "@/types/interfaces";
 import api from "@/app/api/axios";
 
@@ -152,9 +151,9 @@ export function getClientesColumns({
             ellipsis: true,
             render: (telefone: string, record: Cliente) =>
                 telefone && telefone !== "NaN" && telefone !== "nan" ? (
-                    <Tooltip title={telefone}>
+                    <Tooltip title={formatPhoneNumber(telefone)}>
                         <a
-                            href={`https://wa.me/+55${telefone}?text=${record.nome}`}
+                            href={`https://wa.me/+55${removeMask(telefone)}?text=${record.nome}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
@@ -170,20 +169,15 @@ export function getClientesColumns({
                             onClick={e => e.stopPropagation()}
                         >
                             <WhatsAppOutlined style={{ marginRight: 5 }} />
-                            <InputMask
-                                mask={getPhoneMask(telefone)}
-                                value={telefone}
-                                readOnly
+                            <span
                                 style={{
-                                    border: "none",
-                                    background: "transparent",
-                                    padding: 0,
                                     fontWeight: 500,
                                     color: "#333",
-                                    cursor: "pointer",
-                                    width: "100%",
+                                    letterSpacing: 1,
                                 }}
-                            />
+                            >
+                        {formatPhoneNumber(telefone)}
+                    </span>
                         </a>
                     </Tooltip>
                 ) : (
