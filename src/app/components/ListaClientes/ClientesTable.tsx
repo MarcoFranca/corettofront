@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Input, Space, message, Upload } from "antd";
-import { DownloadOutlined, UploadOutlined, FileExcelOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
+import { Table, Button, Input, Space, message, Upload, Drawer, Spin } from "antd";
+import {
+    DownloadOutlined,
+    UploadOutlined,
+    FileExcelOutlined,
+    DeleteOutlined,
+    UserOutlined,
+    EditOutlined
+} from "@ant-design/icons";
 import api from "@/app/api/axios";
 import { useRouter } from "next/navigation";
 import ClientePerfilDrawer from "@/app/(pages)/dashboard/(painel_admin)/carteira/ClientePerfilDrawer";
 import { getClientesColumns } from "./ClientesColumns";
 import { ClientesTableContainer } from './ClientesTable.styles';
+import NegotiationWizardModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/NegotiationWizardModal";
 
-// Utilitário para debounce do search
 function useDebounce(value: string, delay = 600) {
     const [debounced, setDebounced] = useState(value);
     useEffect(() => {
@@ -20,7 +27,7 @@ function useDebounce(value: string, delay = 600) {
 export default function ClientesTable() {
     const router = useRouter();
 
-    // Estado local para paginação
+    // Estados principais
     const [clientes, setClientes] = useState<any[]>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(20);
@@ -29,9 +36,14 @@ export default function ClientesTable() {
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search, 500);
 
-    // Drawer
+    // Drawer lateral de perfil
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedClienteId, setSelectedClienteId] = useState<string | null>(null);
+
+    // Wizard/modal de negociação
+    const [negociacaoDrawerOpen, setNegociacaoDrawerOpen] = useState(false);
+    const [clienteNegociacao, setClienteNegociacao] = useState<any>(null);
+    const [loadingNegociacao, setLoadingNegociacao] = useState(false);
 
     // Filtros
     const [filterIsVip, setFilterIsVip] = useState<boolean | 'all'>('all');
@@ -40,13 +52,7 @@ export default function ClientesTable() {
     // Processando (import/export)
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Busca clientes sempre que filtro/página mudar
-    useEffect(() => {
-        fetchClientes(page, pageSize);
-        // eslint-disable-next-line
-    }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus), page, pageSize]);
-
-    // Função para buscar clientes com paginação
+    // Função para buscar clientes
     const fetchClientes = async (currentPage = 1, limit = 20) => {
         setIsLoading(true);
         try {
@@ -66,10 +72,30 @@ export default function ClientesTable() {
         setIsLoading(false);
     };
 
-    // Exportação/Importação (igual antes)
+    useEffect(() => {
+        fetchClientes(page, pageSize);
+        // eslint-disable-next-line
+    }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus), page, pageSize]);
+
+    // Handlers export/import
     const handleExport = async () => { /* ... */ };
     const handleDownloadTemplate = async () => { /* ... */ };
     const handleImport = async (file: File) => { /* ... */ };
+
+    // Novo handler para negociação
+    const handleOpenNegotiationWizard = async (cliente: any) => {
+        setNegociacaoDrawerOpen(true);
+        setClienteNegociacao(null);
+        setLoadingNegociacao(true);
+        try {
+            const { data } = await api.get(`/clientes/${cliente.id}/`);
+            setClienteNegociacao(data);
+        } catch (e) {
+            message.error('Erro ao buscar detalhes do cliente.');
+        }
+        setLoadingNegociacao(false);
+    };
+
 
     // Menu de ações da tabela
     const actionMenu = (record: any) => [
@@ -80,13 +106,20 @@ export default function ClientesTable() {
             onClick: () => router.push(`/dashboard/cliente/${record.id}`)
         },
         {
+            key: "iniciar_negociacao",
+            label: "Negociação",
+            icon: <EditOutlined />,
+            onClick: () => handleOpenNegotiationWizard(record),
+        },
+        {
             key: "excluir",
             label: "Excluir",
             icon: <DeleteOutlined />,
             danger: true,
-            onClick: () => message.warning("Exclusão implementa pelo Redux, ajuste aqui se necessário!")
+            onClick: () => message.warning("Exclusão implementada pelo Redux, ajuste aqui se necessário!")
         }
     ];
+
 
     return (
         <div style={{ background: "#fff", borderRadius: 10, padding: 0 }}>
@@ -150,6 +183,27 @@ export default function ClientesTable() {
                 open={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
             />
+
+            {/* Drawer para iniciar negociação */}
+            <Drawer
+                title={clienteNegociacao ? `Negociação: ${clienteNegociacao.nome}` : "Negociação"}
+                placement="right"
+                width={900}
+                onClose={() => setNegociacaoDrawerOpen(false)}
+                open={negociacaoDrawerOpen}
+                destroyOnClose
+            >
+                {loadingNegociacao ? (
+                    <Spin size="large" style={{ marginTop: 32 }} />
+                ) : clienteNegociacao && (
+                    <NegotiationWizardModal
+                        isOpen={negociacaoDrawerOpen}
+                        onClose={() => setNegociacaoDrawerOpen(false)}
+                        cliente={clienteNegociacao}
+                    />
+                )}
+            </Drawer>
+
         </div>
     );
 }
