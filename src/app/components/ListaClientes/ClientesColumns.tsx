@@ -5,15 +5,16 @@ import { STATUS_CHOICES } from "@/utils/statusOptions";
 import {formatPhoneNumber, removeMask} from "@/utils/maskUtils";
 import type { Cliente } from "@/types/interfaces";
 import api from "@/app/api/axios";
+import page from "@/app/(pages)/user/page";
 
 export function getClientesColumns({
                                        actionMenu,
                                        filterIsVip,
                                        filterStatus,
-                                       dispatch,
                                        fetchClientes,
+                                       page,
+                                       pageSize,
                                        debouncedSearch,
-                                       pagination,
                                        setDrawerOpen,
                                        setSelectedClienteId,
                                    }: any) {
@@ -27,36 +28,28 @@ export function getClientesColumns({
             align: "center" as const,
             filters: [{ text: "Favoritos", value: true }],
             filteredValue: filterIsVip === true ? [true] : null,
-            onFilter: (value: any, record: Cliente) =>
-                record.is_vip === (value === true || value === "true" || value === 1 || value === "1"),
             render: (_: any, record: Cliente) => (
                 <Tooltip title={record.is_vip ? "Remover dos favoritos" : "Marcar como favorito"}>
-        <span
-            style={{
-                cursor: "pointer",
-                fontSize: 22,
-                color: record.is_vip ? "#FFD700" : "#ccc",
-                display: "inline-block",
-            }}
-            onClick={async (e) => {
-                e.stopPropagation(); // Para não abrir o Drawer sem querer
-                try {
-                    await api.patch(`/clientes/${record.id}/`, { is_vip: !record.is_vip });
-                    dispatch(fetchClientes({
-                        is_vip: filterIsVip === true ? true : undefined,
-                        status: filterStatus && filterStatus.length > 0 ? filterStatus : undefined,
-                        page: pagination.current,
-                        limit: pagination.pageSize,
-                        search: debouncedSearch || undefined,
-                    }));
-                    message.success(!record.is_vip ? "Adicionado aos favoritos!" : "Removido dos favoritos!");
-                } catch {
-                    message.error("Erro ao atualizar favorito.");
-                }
-            }}
-        >
-            {record.is_vip ? <StarFilled /> : <StarOutlined />}
-        </span>
+            <span
+                style={{
+                    cursor: "pointer",
+                    fontSize: 22,
+                    color: record.is_vip ? "#FFD700" : "#ccc",
+                    display: "inline-block",
+                }}
+                onClick={async (e) => {
+                    e.stopPropagation();
+                    try {
+                        await api.patch(`/clientes/${record.id}/`, { is_vip: !record.is_vip });
+                        await fetchClientes(page, pageSize); // Atualiza com filtros atuais!
+                        message.success(!record.is_vip ? "Adicionado aos favoritos!" : "Removido dos favoritos!");
+                    } catch {
+                        message.error("Erro ao atualizar favorito.");
+                    }
+                }}
+            >
+                {record.is_vip ? <StarFilled /> : <StarOutlined />}
+            </span>
                 </Tooltip>
             ),
         },
@@ -218,7 +211,7 @@ export function getClientesColumns({
                 text: label,
                 value,
             })),
-            filteredValue: filterStatus,
+            filteredValue: filterStatus && filterStatus.length > 0 ? filterStatus : null,
             align: "center" as const,
             render: (status: string) => (
                 <Tag color={STATUS_CHOICES[status]?.color || "blue"}>

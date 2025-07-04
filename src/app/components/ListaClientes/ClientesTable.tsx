@@ -14,6 +14,7 @@ import ClientePerfilDrawer from "@/app/(pages)/dashboard/(painel_admin)/carteira
 import { getClientesColumns } from "./ClientesColumns";
 import { ClientesTableContainer } from './ClientesTable.styles';
 import NegotiationWizardModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/NegotiationWizardModal";
+import qs from 'qs';
 
 function useDebounce(value: string, delay = 600) {
     const [debounced, setDebounced] = useState(value);
@@ -63,7 +64,14 @@ export default function ClientesTable() {
             };
             if (filterIsVip === true) params.is_vip = true;
             if (filterStatus && filterStatus.length > 0) params.status = filterStatus;
-            const response = await api.get('/clientes/carteira/', { params });
+
+            console.log("Fetch params:", params);
+
+            const response = await api.get('/clientes/carteira/', {
+                params,
+                paramsSerializer: params => qs.stringify(params, { arrayFormat: 'repeat' }) // USE 'repeat'
+            });
+
             setClientes(response.data.results);
             setTotal(response.data.count);
         } catch (e) {
@@ -73,9 +81,11 @@ export default function ClientesTable() {
     };
 
     useEffect(() => {
+        console.log("Disparou fetchClientes. Filtros:", { filterIsVip, filterStatus, page, pageSize });
         fetchClientes(page, pageSize);
         // eslint-disable-next-line
     }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus), page, pageSize]);
+
 
     // Handlers export/import
     const handleExport = async () => { /* ... */ };
@@ -156,6 +166,10 @@ export default function ClientesTable() {
                         actionMenu,
                         filterIsVip,
                         filterStatus,
+                        fetchClientes,
+                        page,
+                        pageSize,
+                        debouncedSearch,
                         setDrawerOpen,
                         setSelectedClienteId,
                     })}
@@ -176,7 +190,33 @@ export default function ClientesTable() {
                     size="middle"
                     scroll={{ x: "max-content", y: "75vh" }}
                     style={{ minWidth: "80%", background: "#fff" }}
+                    // ----------- AQUI: handler de filtro do Ant Design
+                    onChange={(pagination, filters) => {
+                        console.log("Filters mudou:", filters);
+
+                        // ⭐ Favoritos
+                        if (Array.isArray(filters.is_vip) && filters.is_vip.length > 0) {
+                            const vipValue = filters.is_vip[0];
+                            if (vipValue === true || vipValue === "true" || vipValue === 1 || vipValue === "1") {
+                                setFilterIsVip(true);
+                            } else {
+                                setFilterIsVip('all');
+                            }
+                        } else {
+                            setFilterIsVip('all');
+                        }
+
+                        // Status
+                        if (Array.isArray(filters.status) && filters.status.length > 0) {
+                            setFilterStatus(filters.status.map(String));
+                        } else {
+                            setFilterStatus(null);
+                        }
+
+                        setPage(1); // Sempre volta pra página 1
+                    }}
                 />
+
             </ClientesTableContainer>
             <ClientePerfilDrawer
                 clienteId={selectedClienteId}
