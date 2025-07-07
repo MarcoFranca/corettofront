@@ -21,8 +21,13 @@ const categoriaOptions = [
     { value: "comprovante_residencia", label: "Comprovante de Residência" },
     { value: "declaracao_saude", label: "Declaração de Saúde" },
     { value: "contrato", label: "Contrato" },
+    { value: "proposta", label: "Proposta de Seguro" },
+    { value: "apolice", label: "Apólice" },
+    { value: "cartao", label: "Cartão do Plano" },
+    { value: "boleto", label: "Boleto/Comprovante de Pagamento" },
     { value: "outros", label: "Outros" },
 ];
+
 
 const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, onRequestClose, cliente, refreshDocuments }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);

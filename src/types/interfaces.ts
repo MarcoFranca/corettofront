@@ -93,7 +93,13 @@ export interface OptionType {
 
 // ** Cliente Interfaces **
 export interface ContatoAdicional {
-    id: string;  // O ID pode ser opcional ao cadastrar um novo contato
+    id?: string;  // O ID pode ser opcional ao cadastrar um novo contato
+    tipo: string; // Tipo do contato (ex: "Telefone Secundário", "E-mail Alternativo", etc.)
+    valor: string; // O número de telefone ou e-mail adicional
+}
+
+export interface relacionamentos {
+    id?: string;  // O ID pode ser opcional ao cadastrar um novo contato
     tipo: string; // Tipo do contato (ex: "Telefone Secundário", "E-mail Alternativo", etc.)
     valor: string; // O número de telefone ou e-mail adicional
 }
@@ -195,6 +201,8 @@ export interface Cliente {
     sobre_nome: string;
     telefone: string;
     email: string;
+    nome_mae:string;
+    nome_pai:string;
     cpf?: string;
     identidade?: string;
     tipo_identidade?:string;
@@ -203,6 +211,7 @@ export interface Cliente {
     is_vip?: boolean;
     genero?: string;
     profissao?: Profissao;
+    proxima_reuniao?:string;
     profissao_id?: string | null;
     oportunidades?: Oportunidade[];
     observacoes?: string;
@@ -222,8 +231,11 @@ export interface Cliente {
     vida_financeira?: VidaFinanceira;
     filhos?: Filho[];
     conjuge?: Conjuge;
+    contato_preferido?:string;
     contato?:string;
     contatos_adicionais?: ContatoAdicional[];
+    imagem_perfil?: string;
+    foto?: string;
     estado_civil?: string;
     endereco?: Endereco;
     parceiros?: Parceiro;
@@ -266,6 +278,48 @@ export interface EditAddressModalProps {
     onSave: (data: any) => void;
     initialData: EnderecoCadastro;
 }
+
+export const clienteDemo: Cliente = {
+    id: "mock-id",
+    user: "mock-user",
+    nome: "João",
+    sobre_nome: "Silva",
+    nome_mae:"Joana Dark",
+    nome_pai:"Carlos Junque",
+    telefone: "(00) 00000-0000",
+    email: "joao@demo.com",
+    status: "ativo",
+    genero: "M",
+    created_at: "2025-07-04T10:40:00Z",
+    // ---- campos mínimos extra: ----
+    negociacoes: [],
+    oportunidades: [],
+    profissao: { id: "1", nome: "Corretor" },
+    contatos_adicionais: [],
+    vida_financeira: {},
+    filhos: [],
+    conjuge: undefined,
+    endereco: undefined,
+    pipeline_stage: "",
+    apolices: [],
+    apolices_detalhes: undefined,
+    total_apolices: 0,
+    reunioes: [],
+    possui_apolice_ativa: false,
+    observacoes: "",
+    estado_civil: "",
+    parceiros: undefined,
+    relacionamentos: undefined,
+    indicado_por_detalhes: undefined,
+    indicado_por_cliente_id: undefined,
+    indicado_por_parceiros_ids: undefined,
+    updated_at: "2025-07-04T10:40:00Z",
+    is_vip: false,
+    data_nascimento: "",
+    status_reuniao: "",
+    idade: "",
+    contato: "",
+};
 
 export interface EditPersonalInfoModalProps {
     isOpen: boolean;

@@ -209,6 +209,19 @@ export const updateCliente = createAsyncThunk<
     }
 );
 
+export const uploadFotoCliente = createAsyncThunk(
+    'clientes/uploadFotoCliente',
+    async ({ id, file }: { id: string, file: File }, thunkAPI) => {
+        const formData = new FormData();
+        formData.append('imagem_perfil', file);
+        const response = await api.patch(`/clientes/${id}/`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
+    }
+);
+
+
 export const updateClienteSaude = createAsyncThunk<
     Saude, // Retorno
     { id: string; saudeData: Partial<Saude> }

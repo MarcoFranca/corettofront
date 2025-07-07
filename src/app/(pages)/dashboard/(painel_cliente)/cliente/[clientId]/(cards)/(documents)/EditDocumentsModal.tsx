@@ -7,11 +7,9 @@ import { Cliente } from "@/types/interfaces";
 import { useAppDispatch } from "@/services/hooks/hooks";
 import { updateCliente } from "@/store/slices/clientesSlice";
 import { ModalContainer, FormGroup } from "./EditDocumentsModal.styles";
-import { removeMask, getCpfMask, getIdentityMask } from "@/utils/maskUtils";
-import {useModalSound} from "@/services/hooks/useModalSound";
-import SelectCustom from "@/app/components/ui/select/SelectCustom";
-import {identidadeOptions} from "@/utils/statusOptions";
-import {getIdentityPlaceholder} from "@/utils/functions";
+import IdentidadeInput from "@/app/components/ui/input/IdInput";
+import CPFInput from "@/app/components/ui/input/CpfInput";
+import { removeMask } from "@/utils/maskUtils";
 
 interface EditDocumentsModalProps {
     isOpen: boolean;
@@ -25,61 +23,57 @@ const EditDocumentsModal: React.FC<EditDocumentsModalProps> = ({
                                                                    cliente,
                                                                }) => {
     const dispatch = useAppDispatch();
-
     const methods = useForm({
         defaultValues: {
             cpf: "",
             identidade: "",
-            tipo_identidade: "RG",
+            tipo_identidade: "",
+            data_nascimento: "",
+            nome_mae: "",
         },
     });
 
-    useModalSound(isOpen); // 👈 Toca som ao abrir/fechar
+    const { control, handleSubmit, setValue, register, reset, watch } = methods;
 
-
-    const {
-        control,
-        handleSubmit,
-        setValue,
-        register,
-        reset
-    } = methods;
-
-    // Preenche os valores iniciais do formulário quando o modal é aberto
     useEffect(() => {
         if (isOpen && cliente) {
             reset({
                 cpf: cliente.cpf || "",
                 identidade: cliente.identidade || "",
+                tipo_identidade: cliente.tipo_identidade || "RG",
+                data_nascimento: cliente.data_nascimento || "",
+                nome_mae: cliente.nome_mae || "",
             });
         }
     }, [isOpen, cliente, reset]);
 
-    useEffect(() => {
-        // Quando o tipo de identidade mudar, limpa o valor da identidade
-        setValue("identidade", "");
-    }, [methods.watch("tipo_identidade")]);
+    // NÃO zere identidade se só está abrindo, só zere se trocar tipo_identidade no Select do IdInput!
 
+    // Helper seguro para enviar só campos preenchidos e obrigatórios
+    const buildSafePayload = (data: any, cliente: Cliente) => {
+        const payload: any = {
+            nome: cliente.nome,
+            genero: cliente.genero,
+            telefone: cliente.telefone,
+        };
+        if (removeMask(data.cpf)) payload.cpf = removeMask(data.cpf);
+        if (removeMask(data.identidade)) {
+            payload.identidade = removeMask(data.identidade);
+            payload.tipo_identidade = data.tipo_identidade;
+        }
+        if (data.data_nascimento) payload.data_nascimento = data.data_nascimento;
+        if (data.nome_mae) payload.nome_mae = data.nome_mae;
+        return payload;
+    };
 
     const onSubmit = async (data: any) => {
-        if (!data.cpf && !data.identidade) {
-            toast.error("⚠️ Preencha pelo menos um dos campos.");
-            return;
-        }
-
-        const payload = {
-            cpf: removeMask(data.cpf), // 🔥 Enviamos o CPF sem máscara
-            identidade: removeMask(data.identidade), // 🔥 Enviamos a Identidade sem máscara
-            tipo_identidade: data.tipo_identidade
-        };
-
+        const payload = buildSafePayload(data, cliente);
         try {
             await dispatch(updateCliente({ id: cliente.id, updatedCliente: payload })).unwrap();
-            toast.success("📜 Documentos atualizados com sucesso!");
+            toast.success("📜 Dados salvos com sucesso!");
             onRequestClose();
         } catch (error) {
-            console.error("Erro ao atualizar documentos:", error);
-            toast.error("❌ Erro ao atualizar documentos. Tente novamente.");
+            toast.error("❌ Erro ao atualizar. Tente novamente.");
         }
     };
 
@@ -94,47 +88,41 @@ const EditDocumentsModal: React.FC<EditDocumentsModalProps> = ({
         >
             <ModalContainer>
                 <FormGroup>
-                    <FloatingMaskedInput
+                    <CPFInput
                         name="cpf"
-                        label="CPF"
-                        type="text"
                         control={control}
                         setValue={setValue}
-                        register={register} // ✅ Agora passamos `register`
-                        placeholder="Digite o CPF"
-                        mask={getCpfMask(methods.watch("cpf"))} // ✅ Calcula máscara dinamicamente
+                        required={false}
                     />
                 </FormGroup>
-
                 <FormGroup>
-                    <SelectCustom
-                        name="tipo_identidade"
-                        isMulti={false}
-                        control={control}
-                        label="Tipo de Documento"
-                        options={identidadeOptions}
-                        placeholder={getIdentityPlaceholder(methods.watch("tipo_identidade"))}
-                        onChange={(value) => {
-                            if (typeof value === "string") {
-                                setValue("tipo_identidade", value);
-                            }
-                        }}
-                    />
-                    <FloatingMaskedInput
+                    <IdentidadeInput
                         name="identidade"
-                        label="Identidade"
+                        control={control}
+                        setValue={setValue}
+                        required={false}
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <FloatingMaskedInput
+                        name="data_nascimento"
+                        label="Data de Nascimento"
+                        type="date"
+                        control={control}
+                        setValue={setValue}
+                        register={register}
+                        placeholder="DD/MM/AAAA"
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <FloatingMaskedInput
+                        name="nome_mae"
+                        label="Nome da Mãe"
                         type="text"
                         control={control}
                         setValue={setValue}
                         register={register}
-                        mask={getIdentityMask(methods.watch("tipo_identidade"))}
-
-                        onChange={(value) => {
-                            if (typeof value === "string") {
-                                setValue("tipo_identidade", value);
-                                setValue("identidade", ""); // limpa o campo se o tipo mudar
-                            }
-                        }}
+                        placeholder="Digite o nome completo"
                     />
                 </FormGroup>
             </ModalContainer>

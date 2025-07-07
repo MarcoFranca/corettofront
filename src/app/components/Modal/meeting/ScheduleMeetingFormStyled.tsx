@@ -25,7 +25,7 @@ interface Props {
     open: boolean;
     onClose: () => void;
     cliente: Cliente;
-    negociacao: NegociacaoCliente;
+    negociacao?: NegociacaoCliente;
     modelo?: Partial<Meeting>;
     onSaved: () => void;
 }
@@ -44,7 +44,7 @@ const ScheduleMeetingDrawer: React.FC<Props> = ({ open, onClose, cliente, negoci
             title: values.title,
             description: values.description,
             cliente: cliente.id,
-            negociacao: negociacao.id,
+            ...(negociacao && { negociacao: negociacao.id }),
             start_time: start,
             end_time: end,
             add_to_google_calendar: values.add_to_google_calendar,
@@ -56,15 +56,17 @@ const ScheduleMeetingDrawer: React.FC<Props> = ({ open, onClose, cliente, negoci
         try {
             await dispatch(createAgendaItem(payload)).unwrap();
 
-            // cria atividade relacionada
-            await dispatch(createAtividade({
-                cliente: cliente.id,
-                negociacao: negociacao.id,
-                descricao: `📅 Reunião agendada: ${values.title}`,
-                observacao: values.description,
-                tipo: 'reuniao',
-                data: start,
-            }));
+            // Só cria atividade se existir negociação!
+            if (negociacao) {
+                await dispatch(createAtividade({
+                    cliente: cliente.id,
+                    negociacao: negociacao.id,
+                    descricao: `📅 Reunião agendada: ${values.title}`,
+                    observacao: values.description,
+                    tipo: 'reuniao',
+                    data: start,
+                }));
+            }
 
             toast.success('Reunião criada com sucesso!');
             onSaved();
@@ -76,6 +78,7 @@ const ScheduleMeetingDrawer: React.FC<Props> = ({ open, onClose, cliente, negoci
             setLoading(false);
         }
     };
+
 
     return (
         <Drawer

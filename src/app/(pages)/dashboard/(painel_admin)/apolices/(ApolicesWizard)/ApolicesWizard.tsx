@@ -27,7 +27,7 @@ import {cleanMoneyValue, extrairDetalhesFromApolice, formattedDataBase, formatte
 import {toastSuccess} from "@/utils/toastWithSound";
 
 
-const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
+const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice, clienteSelecionado }) => {
     const [step, setStep] = useState(0);
     const [loading, setLoading] = useState(false);
     const [parceirosDisponiveis, setParceirosDisponiveis] = useState<{ value: string; label: string }[]>([]);
@@ -43,8 +43,14 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice }) => {
     } = useForm<ApoliceFormData>({
         mode: "onSubmit",
         defaultValues: {
-            cliente: "",
-            tipoApolice: "",
+            cliente: apolice
+                ? undefined // Vai ser setado no useEffect
+                : clienteSelecionado
+                    ? {
+                        value: clienteSelecionado.id,
+                        label: `${clienteSelecionado.nome} ${clienteSelecionado.sobre_nome ?? ""}`.trim(),
+                    }
+                    : "",
             detalhes: {},
             coberturas: [],
             arquivoApolice: null,

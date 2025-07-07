@@ -1,26 +1,3 @@
-// ** Agenda Interfaces **
-// export interface AgendaItem {
-//     id: string;
-//     title: string;
-//     description?: string;
-//     start_time: string;
-//     end_time: string;
-//     due_date?: string;
-//     cliente?: string | null;
-//     urgency?: 'Low' | 'Medium' | 'High' | 'Critical';
-//     type: 'task' | 'meeting';
-//     completed?: boolean; // Propriedade opcional adicionada
-//     add_to_google_calendar?: boolean;
-//     add_to_google_meet?: boolean;
-//     add_to_zoom?: boolean;
-//     negociacao?: string;
-//     google_meet_link?: string;
-//     zoom_meeting_link?: string;
-//     status_reuniao?:string;
-//     motivo_cancelamento?:string;
-//     created_at?: string;
-//     updated_at?: string;
-// }
 
 // ** Meeting Interfaces **
 export interface Meeting {

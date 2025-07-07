@@ -1,4 +1,4 @@
-// utils/phoneUtils.ts
+// utils/maskUtils.ts
 
 /**
  * Remove todos os caracteres que não sejam números.
@@ -36,34 +36,66 @@ export const getCpfMask = (cpf: string): string => {
  * @returns A máscara correta para a Identidade.
  */
 
-export const getIdentityMask = (tipoIdentidade?: string): string => {
-    switch (tipoIdentidade) {
+
+export function formatIdentidade(valor: string, tipo?: string): string {
+    if (!valor) return "";
+
+    // Limpa tudo que não é número/letra
+    let clean = valor.replace(/[^0-9A-Za-z]/g, "");
+
+    // Aplica as máscaras conhecidas (você pode expandir se quiser)
+    switch (tipo) {
         case "RG - SP":
-            return "99.999.999-9"; // 9 dígitos com dígito verificador
         case "RG - RJ":
-            return "99.999.999-9"; // 8 a 9 dígitos com verificador
-        case "RG - MG":
-            return "99.999.99-9"; // idem
-        case "RG - PR":
-            return "99.999.999"; // 8 dígitos sem verificador
         case "RG - Outros":
-            return "99.999.999-9"; // formato genérico
-        case "RIC":
-            return "9999999999-9"; // 10+1 dígitos (novo RG nacional)
-        case "CNH":
-            return "99999999999"; // 11 dígitos
-        case "CRM":
-        case "CRO":
-            return "999999"; // 6 dígitos comuns
         case "SSP":
         case "IFP":
-            return "99.999.999-9"; // mesmo formato que RG
-        case "Outro":
-            return ""; // sem máscara
+            return clean.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, "$1.$2.$3-$4");
+        case "RG - MG":
+            return clean.replace(/^(\d{2})(\d{3})(\d{2})(\d{1})$/, "$1.$2.$3-$4");
+        case "RG - PR":
+            return clean.replace(/^(\d{2})(\d{3})(\d{3})$/, "$1.$2.$3");
+        case "RIC":
+        case "CREA":
+            return clean.replace(/^(\d{10})(\d{1})$/, "$1-$2");
+        case "CNH":
+            return clean.replace(/^(\d{11})$/, "$1");
+        case "PASSAPORTE":
+            return clean; // Pode criar regex, depende do país
         default:
-            return ""; // fallback
+            return valor; // Não mascara se tipo desconhecido
     }
+}
+
+export const IDENTITY_MASKS: Record<string, string> = {
+    "RG - SP": "99.999.999-9",
+    "RG - RJ": "99.999.999-9",
+    "RG - MG": "99.999.99-9",
+    "RG - PR": "99.999.999",
+    "RG - Outros": "99.999.999-9",
+    "RIC": "9999999999-9",
+    "CNH": "99999999999",
+    "CRM": "999999",
+    "CRO": "999999",
+    "SSP": "99.999.999-9",
+    "IFP": "99.999.999-9",
+    "Outro": "",
+    "CREA": "9999999999-9",
+    "OAB": "999999",
+    "PASSAPORTE": "AA9999999",
 };
+
+export const getIdentityMask = (tipoIdentidade?: string): string => {
+    return IDENTITY_MASKS[tipoIdentidade ?? ""] || "";
+};
+
+export const identidadeOptions = Object.keys(IDENTITY_MASKS)
+    .filter(opt => opt && opt !== "Outro") // Se não quiser o "Outro" no select
+    .map(key => ({
+        value: key,
+        label: key.replace(/_/g, " "),
+    }));
+
 
 /**
  * Remove a máscara e deixa apenas números.

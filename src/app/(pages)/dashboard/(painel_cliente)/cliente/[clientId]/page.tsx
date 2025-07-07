@@ -1,14 +1,22 @@
-'use client';
+'use client'
+import ClientDetailPage from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/ClientDetailPage";
+import styled from "styled-components";
 
-
-import ClientProfile
-    from "./(CustomerComponents)/ClientProfile";
+const Container = styled.div`
+    padding: 38px 32px 32px 32px;
+    background: #f8fbff;
+    min-height: 100vh;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+`;
 
 const ClientPage = () => {
-
     return (
-            <ClientProfile />
-    );
+        <Container >
+            <ClientDetailPage />
+        </Container>
+    )
 };
 
 export default ClientPage;

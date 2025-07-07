@@ -1,3 +1,4 @@
+import {Cliente} from "@/types/interfaces";
 
 export interface ApoliceFormData {
     coberturas: { descricao: string; valor: number }[];
@@ -31,6 +32,7 @@ interface ParceiroOption {
 export interface ApoliceWizardProps {
     apolice?: Partial<ApoliceFormData> & { id?: string } | ApoliceDetalhada;
     onClose: () => void;
+    clienteSelecionado?: Cliente;
 }
 
 export const tipoApoliceParaEndpoint: Record<string, string> = {

@@ -5,6 +5,7 @@ export const ModalContainer = styled.div`
     flex-direction: column;
     gap: 15px;
     padding: 20px;
+    z-index: 99999;
 `;
 
 export const FormGroup = styled.div`

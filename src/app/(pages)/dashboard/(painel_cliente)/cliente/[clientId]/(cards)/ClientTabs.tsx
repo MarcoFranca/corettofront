@@ -10,9 +10,10 @@ import DocumentsFolder
     from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(documents)/DocumentsFolder";
 
 interface ClientTabsProps {
-    cliente: any; // Ajuste o tipo conforme necessário
-    financeData: any; // Dados para o gráfico
+    cliente: any;
+    financeData: any;
 }
+import { FaUser, FaEnvelope, FaPhone, FaBriefcase, FaMapMarkerAlt, FaStar } from "react-icons/fa";
 
 import {
     FaHeartbeat,
@@ -22,18 +23,26 @@ import {
 } from "react-icons/fa";
 import { MdInsights, MdReportProblem } from "react-icons/md";
 import {
-    ApoliceConsorcio,
     ApoliceDetalhada,
-    ApolicePlanoSaude,
-    ApolicePrevidencia,
-    ApolicesAgrupadas,
-    ApoliceSeguroVida
 } from "@/types/ApolicesInterface";
 import {useParams} from "next/navigation";
 import api from "@/app/api/axios";
-import {
-    ProdutoContainer
-} from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable.styles";
+import ClientProfileInfoCard
+    from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(perfil)/ClientProfileInfoCard";
+import DadosPropostaCard
+    from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(perfil)/DadosPropostaCard";
+import {ContainerTab} from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/ClientTabs.styles";
+import ClienteFastInfoCard
+    from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(perfil)/ClienteFastInfoCard";
+
+function renderValue(label: string, value: string | undefined | null) {
+    return (
+        <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
+            <span style={{ minWidth: 90, fontWeight: 500 }}>{label}:</span>
+            <span style={{ color: "#222" }}>{value || "Não informado"}</span>
+        </div>
+    );
+}
 
 const ClientTabs: React.FC<ClientTabsProps> = ({ cliente, financeData }) => {
     const { clientId } = useParams();
@@ -70,6 +79,9 @@ const ClientTabs: React.FC<ClientTabsProps> = ({ cliente, financeData }) => {
         <Tabs>
             <TabList className={styles.tabList}>
                 <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
+                    <FaUser /> Perfil
+                </Tab>
+                <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
                     <FaHeartbeat /> Saúde
                 </Tab>
                 <Tab className={styles.tab} selectedClassName={styles.tabSelected}>
@@ -89,6 +101,13 @@ const ClientTabs: React.FC<ClientTabsProps> = ({ cliente, financeData }) => {
                 </Tab>
             </TabList>
 
+            <TabPanel>
+                <ClienteFastInfoCard
+                    cliente={cliente}
+                    documentos={cliente.relacionamentos?.documentos || []}
+                    onBaixarTudoPDF={() => {/* Implementar PDF aqui */}}
+                />
+            </TabPanel>
             <TabPanel>
                 <HealthInfoCard cliente={cliente} />
             </TabPanel>

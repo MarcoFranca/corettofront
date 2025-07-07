@@ -27,9 +27,10 @@ interface Document {
 
 interface Props {
     cliente: Cliente;
+    onAddDocument?: () => void;
 }
 
-const DocumentsFolder: React.FC<Props> = ({ cliente }) => {
+const DocumentsFolder: React.FC<Props> = ({ cliente, onAddDocument }) => {
     const [documents, setDocuments] = useState<Document[]>([]);
     const [isUploadModalOpen, setUploadModalOpen] = useState(false);
 
@@ -60,7 +61,9 @@ const DocumentsFolder: React.FC<Props> = ({ cliente }) => {
 
             <Header>
                 <h3>📁 Documentos do Cliente</h3>
-                <UploadButton onClick={() => setUploadModalOpen(true)}>
+                <UploadButton type="button" onClick={() => {
+                    setUploadModalOpen(true);
+                }}>
                     <FaPlus /> Adicionar Documento
                 </UploadButton>
             </Header>
