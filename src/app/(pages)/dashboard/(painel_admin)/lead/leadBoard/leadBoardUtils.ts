@@ -35,15 +35,19 @@ export const initializeData = (leadsFromStore: any[] = []): Data => {
             telefone: lead.telefone || '',
             endereco: lead.endereco || '',
             contato: lead.contato || '',
-            pipeline_stage: lead.pipeline_stage || 'LEADS DE ENTRADA', // 🚀 Fallback para pipeline_stage
+            pipeline_stage: lead.pipeline_stage || 'LEADS DE ENTRADA',
             status_reuniao: lead.status_reuniao || '',
             created_at: lead.created_at || '',
             updated_at: lead.updated_at || '',
             indicado_por_detalhes: lead.indicado_por_detalhes || null,
             oportunidades: lead.relacionamentos?.oportunidades || [],
             parceiros: lead.relacionamentos?.parceiros || [],
-            observacoes: lead.observacoes || '', // ✅ Agora `observacoes` é preservado!
+            observacoes: lead.observacoes || '',
+            // Adicione estes:
+            nome_mae: lead.nome_mae || '', // ou null se sua interface permitir
+            nome_pai: lead.nome_pai || '', // idem acima
         };
+
 
         // 🚀 Verifica o `pipeline_stage` e categoriza corretamente
         const pipelineStage = (lead.pipeline_stage || '').toLowerCase().trim();
