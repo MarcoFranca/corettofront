@@ -88,12 +88,10 @@ const EditClientDrawer: React.FC<Props> = ({
         },
     });
 
-    const { control, handleSubmit, setValue, reset, register, watch } = methods;
+    const { control, handleSubmit, setValue, reset, watch } = methods;
 
     useEffect(() => {
         if (open && cliente) {
-            const endereco = cliente.relacionamentos?.endereco || cliente.endereco || {};
-            const saude = cliente.relacionamentos?.saude || {};
 
             reset({
                 nome: cliente.nome || "",
@@ -111,13 +109,13 @@ const EditClientDrawer: React.FC<Props> = ({
                 telefone: cliente.telefone || "",
                 is_vip: cliente.is_vip || false,
                 foto: cliente.imagem_perfil || "",
-                logradouro: cliente.relacionamentos?.endereco.logradouro || "",
-                numero: cliente.relacionamentos?.endereco.numero || "",
-                complemento: cliente.relacionamentos?.endereco.complemento || "",
-                bairro: cliente.relacionamentos?.endereco.bairro || "",
-                cidade: cliente.relacionamentos?.endereco.cidade || "",
-                uf: cliente.relacionamentos?.endereco.uf || "",
-                cep: cliente.relacionamentos?.endereco.cep || "",
+                logradouro: cliente.relacionamentos?.endereco?.logradouro || "",
+                numero: cliente.relacionamentos?.endereco?.numero || "",
+                complemento: cliente.relacionamentos?.endereco?.complemento || "",
+                bairro: cliente.relacionamentos?.endereco?.bairro || "",
+                cidade: cliente.relacionamentos?.endereco?.cidade || "",
+                uf: cliente.relacionamentos?.endereco?.uf || "",
+                cep: cliente.relacionamentos?.endereco?.cep || "",
 
                 peso: cliente.relacionamentos?.saude?.peso !== undefined &&
                 cliente.relacionamentos?.saude?.peso !== null ? String(cliente.relacionamentos?.saude?.peso) : "",
