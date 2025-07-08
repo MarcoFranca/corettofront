@@ -13,7 +13,7 @@ interface ClientTabsProps {
     cliente: any;
     financeData: any;
 }
-import { FaUser, FaEnvelope, FaPhone, FaBriefcase, FaMapMarkerAlt, FaStar } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 
 import {
     FaHeartbeat,
@@ -27,11 +27,6 @@ import {
 } from "@/types/ApolicesInterface";
 import {useParams} from "next/navigation";
 import api from "@/app/api/axios";
-import ClientProfileInfoCard
-    from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(perfil)/ClientProfileInfoCard";
-import DadosPropostaCard
-    from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(perfil)/DadosPropostaCard";
-import {ContainerTab} from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/ClientTabs.styles";
 import ClienteFastInfoCard
     from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/(cards)/(perfil)/ClienteFastInfoCard";
 
@@ -102,12 +97,9 @@ const ClientTabs: React.FC<ClientTabsProps> = ({ cliente, financeData }) => {
             </TabList>
 
             <TabPanel>
-                <ClienteFastInfoCard
-                    cliente={cliente}
-                    documentos={cliente.relacionamentos?.documentos || []}
-                    onBaixarTudoPDF={() => {/* Implementar PDF aqui */}}
-                />
+                <ClienteFastInfoCard cliente={cliente} />
             </TabPanel>
+
             <TabPanel>
                 <HealthInfoCard cliente={cliente} />
             </TabPanel>
