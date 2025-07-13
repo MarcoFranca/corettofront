@@ -17,6 +17,8 @@ import SeguroResidencial
     from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/SeguroResidencial";
 import SeguroProfissional
     from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/SeguroProfissional";
+import SeguroAuto
+    from "@/app/(pages)/dashboard/(painel_admin)/apolices/(ApolicesWizard)/(steps)/(tipoApolices)/SeguroAuto";
 
 
 interface StepDetalhesApoliceProps {
@@ -52,6 +54,8 @@ const StepDetalhesApolice: React.FC<StepDetalhesApoliceProps> =
                 return <SeguroResidencial watch={watch} control={control} setValue={setValue} register={register} />;
             case "Seguro Profissional":
                 return <SeguroProfissional watch={watch} control={control} setValue={setValue} register={register} />;
+            case "Seguro Auto":
+                return <SeguroAuto control={control} setValue={setValue} register={register} watch={watch} />;
             default:
                 return <p>Selecione um tipo de apólice</p>;
         }

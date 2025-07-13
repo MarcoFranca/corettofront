@@ -186,4 +186,27 @@ export const formattedDataByType = {
         valor_investido_money: cleanMoneyValue(data.detalhes.valor_investido_money)
     }),
 
+    "Seguro Auto": (data: ApoliceFormData) => ({
+        marca: formatString(data.detalhes.marca),
+        modelo: formatString(data.detalhes.modelo),
+        ano_fabricacao: formatNumber(data.detalhes.ano_fabricacao),
+        ano_modelo: formatNumber(data.detalhes.ano_modelo),
+        placa: formatString(data.detalhes.placa),
+        chassi: formatString(data.detalhes.chassi),
+        renavam: formatString(data.detalhes.renavam),
+        cor: formatString(data.detalhes.cor),
+        combustivel: formatString(data.detalhes.combustivel),
+        categoria_veiculo: formatString(data.detalhes.categoria_veiculo),
+        tipo_cobertura: formatString(data.detalhes.tipo_cobertura),
+        valor_veiculo: cleanMoneyValue(data.detalhes.valor_veiculo),
+        valor_fipe: cleanMoneyValue(data.detalhes.valor_fipe),
+        franquia: formatString(data.detalhes.franquia),
+        cep_pernoite: formatString(data.detalhes.cep_pernoite),
+        cep_circulacao: formatString(data.detalhes.cep_circulacao),
+        // Fazendo parse para boolean:
+        possui_garagem: data.detalhes.possui_garagem === true || data.detalhes.possui_garagem === "true",
+        possui_rastreador: data.detalhes.possui_rastreador === true || data.detalhes.possui_rastreador === "true",
+    }),
+
+
 };

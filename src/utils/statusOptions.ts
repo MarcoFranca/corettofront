@@ -59,4 +59,25 @@ export const identidadeOptions = [
     { value: "Outro", label: "Outro" },
 ];
 
+export const combustivelOptions = [
+    { value: "gasolina", label: "Gasolina" },
+    { value: "alcool", label: "Álcool" },
+    { value: "flex", label: "Flex" },
+    { value: "diesel", label: "Diesel" },
+    { value: "eletrico", label: "Elétrico" }
+];
+
+export const categoriaVeiculoOptions = [
+    { value: "passeio", label: "Passeio" },
+    { value: "utilitario", label: "Utilitário" },
+    { value: "caminhao", label: "Caminhão" },
+    { value: "moto", label: "Moto" }
+];
+
+export const tipoCoberturaAutoOptions = [
+    { value: "compreensiva", label: "Compreensiva" },
+    { value: "roubo_furto", label: "Roubo/Furto" },
+    { value: "terceiros", label: "Terceiros" },
+    { value: "incendio", label: "Incêndio" }
+];
 

@@ -44,7 +44,7 @@ const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
             {tiposApolice.map(({ tipo, label }) => (
                 <TipoPill
                     key={tipo}
-                    active={tipoFiltro === tipo}
+                    $active={tipoFiltro === tipo}
                     onClick={() => handleNavigate(tipo)}
                 >
                     {label}

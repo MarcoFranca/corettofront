@@ -231,11 +231,6 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice, cliente
         setValue(name as Path<ApoliceFormData>, value as PathValue<ApoliceFormData, Path<ApoliceFormData>>);
     };
 
-    // 🔥 Função para limpar valores vazios antes do envio
-    const formatValue = (value: any) => {
-        return value === "" || value === undefined ? null : value;
-    };
-
     const onSubmit = async (data: ApoliceFormData) => {
         const isEditing = !!apolice;
 
@@ -274,6 +269,22 @@ const ApoliceWizard: React.FC<ApoliceWizardProps> = ({ onClose, apolice, cliente
                     }))
                     : [];
             }
+            // Antes de enviar (no formattedData, por exemplo)
+
+            if (
+                data.tipoApolice === "Seguro Auto" &&
+                data.detalhes &&
+                typeof data.detalhes === "object" &&
+                "possui_garagem" in data.detalhes &&
+                "possui_rastreador" in data.detalhes
+            ) {
+                (formattedData as any).beneficiarios = {
+                    ...data.detalhes,
+                    possui_garagem: data.detalhes.possui_garagem === "true",
+                    possui_rastreador: data.detalhes.possui_rastreador === "true"
+                };
+            }
+
 
             // ✅ Adicionamos os beneficiários apenas para Plano de Saúde
             if (

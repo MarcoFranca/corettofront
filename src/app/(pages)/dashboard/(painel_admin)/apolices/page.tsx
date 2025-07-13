@@ -9,7 +9,6 @@ const ApolicesTable = dynamic(() =>
     import('@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceTable'),
     { loading: () => <RouteChangeLoader /> });
 import ApoliceFilter from "@/app/(pages)/dashboard/(painel_cliente)/cliente/[clientId]/apolice/(component)/ApoliceFilter";
-
 import {ApolicesContainer, HeaderContainer, StyledButton, Title, ContentContainer, FilterContainer, IconButton}
     from "./ApolicesPage.styles";
 import {FaPlus} from "react-icons/fa";

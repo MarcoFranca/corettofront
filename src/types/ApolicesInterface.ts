@@ -42,7 +42,8 @@ export const tipoApoliceParaEndpoint: Record<string, string> = {
     "Previdência": "apolices/previdencia/",
     "Investimento": "apolices/investimento/",
     "Seguro Profissional": "apolices/seguro_profissional/",
-    "Seguro Residencial": "apolices/seguro_residencial/"
+    "Seguro Residencial": "apolices/seguro_residencial/",
+    "Seguro Auto": "apolices/seguro_auto/"
 };
 
 export const moneyFields = ["premioPago", "valorParcela", "valorFinalCarta", "aporte", "valor_cota"];
@@ -166,10 +167,37 @@ export interface ApolicePrevidencia extends BaseApolice {
     regime_contratacao: string;
 }
 
+export interface ApoliceSeguroAuto extends BaseApolice {
+    marca: string;
+    modelo: string;
+    ano_fabricacao: number;
+    ano_modelo: number;
+    placa: string;
+    chassi?: string;
+    renavam?: string;
+    cor?: string;
+    combustivel?: string;
+    categoria_veiculo?: string;
+    tipo_cobertura: string;
+    valor_veiculo: string;
+    valor_veiculo_money: string;
+    valor_fipe?: string;
+    franquia: string;
+    coberturas_adicionais?: any; // Pode tipar melhor se quiser
+    condutor_principal?: string;
+    perfil_condutor?: any;
+    outros_condutores?: any[];
+    cep_pernoite?: string;
+    cep_circulacao?: string;
+    possui_garagem?: boolean;
+    possui_rastreador?: boolean;
+}
+
 export interface ApolicesAgrupadas {
     plano_saude: ApolicePlanoSaude[];
     seguro_vida: ApoliceSeguroVida[];
     previdencia: ApolicePrevidencia[];
+    seguro_auto: ApoliceSeguroAuto[];
     consorcio: ApoliceConsorcio[];
     investimento: any[]; // se ainda for implementar depois
     seguro_profissional: any[];
@@ -177,6 +205,12 @@ export interface ApolicesAgrupadas {
 }
 
 
+
 // 🔄 Tipo Genérico para todas as Apólices Detalhadas
-export type ApoliceDetalhada = ApolicePlanoSaude | ApoliceSeguroVida | ApoliceConsorcio | ApolicePrevidencia;
+export type ApoliceDetalhada =
+    ApolicePlanoSaude |
+    ApoliceSeguroVida |
+    ApoliceConsorcio |
+    ApolicePrevidencia |
+    ApoliceSeguroAuto;
 
