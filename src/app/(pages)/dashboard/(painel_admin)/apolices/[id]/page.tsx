@@ -7,7 +7,14 @@ import PlanoSaudeDetalhes from "./PlanoSaudeDetalhes";
 import SeguroVidaDetalhes from "./SeguroVidaDetalhes";
 import ConsorcioDetalhes from "./ConsorcioDetalhes";
 import { Loader, PageContainer } from "./ApoliceDetalhes.styles";
-import {ApoliceConsorcio, ApoliceDetalhada, ApolicePlanoSaude, ApoliceSeguroVida} from "@/types/ApolicesInterface";
+import {
+    ApoliceConsorcio,
+    ApoliceDetalhada,
+    ApolicePlanoSaude,
+    ApoliceSeguroAuto,
+    ApoliceSeguroVida
+} from "@/types/ApolicesInterface";
+import SeguroAutoDetalhes from "@/app/(pages)/dashboard/(painel_admin)/apolices/[id]/SeguroAutoDetalhes";
 
 
 const ApoliceDetalhesPage: React.FC = () => {
@@ -36,20 +43,25 @@ const ApoliceDetalhesPage: React.FC = () => {
     if (loading) return <Loader>🔄 Carregando...</Loader>;
     if (!apolice) return <p>⚠️ Apólice não encontrada!</p>;
 
+    const tipoProduto = apolice.tipo_produto?.toLowerCase().replace(/_/g, " ").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
     return (
         <PageContainer>
-            {apolice.tipo_produto.toLowerCase() === "plano de saúde" && (
+            {tipoProduto === "plano de saude" && (
                 <PlanoSaudeDetalhes apolice={apolice as ApolicePlanoSaude} />
             )}
-            {apolice.tipo_produto.toLowerCase() === "seguro de vida" && (
+            {tipoProduto === "seguro de vida" && (
                 <SeguroVidaDetalhes apolice={apolice as ApoliceSeguroVida} />
             )}
-            {apolice.tipo_produto.toLowerCase() === "consórcio" && (
+            {tipoProduto === "consorcio" && (
                 <ConsorcioDetalhes apolice={apolice as ApoliceConsorcio} />
             )}
-
+            {tipoProduto === "seguro auto" && (
+                <SeguroAutoDetalhes apolice={apolice as ApoliceSeguroAuto} />
+            )}
         </PageContainer>
     );
+
 };
 
 export default ApoliceDetalhesPage;

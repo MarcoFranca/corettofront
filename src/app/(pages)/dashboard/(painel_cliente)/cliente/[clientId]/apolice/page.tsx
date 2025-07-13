@@ -14,6 +14,7 @@ import {
     ApolicePlanoSaude,
     ApolicePrevidencia,
     ApolicesAgrupadas,
+    ApoliceSeguroAuto,
     ApoliceSeguroVida
 } from "@/types/ApolicesInterface";
 
@@ -38,6 +39,7 @@ const ApolicesPage: React.FC = () => {
             investimento: apolicesArray.filter(apolice => apolice.tipo_produto === "Investimento"),
             seguro_profissional: apolicesArray.filter(apolice => apolice.tipo_produto === "Seguro Profissional"),
             seguro_residencial: apolicesArray.filter(apolice => apolice.tipo_produto === "Seguro Residencial"),
+            seguro_auto: apolicesArray.filter(apolice => apolice.tipo_produto === "Seguro Auto") as ApoliceSeguroAuto[],
         };
     };
 

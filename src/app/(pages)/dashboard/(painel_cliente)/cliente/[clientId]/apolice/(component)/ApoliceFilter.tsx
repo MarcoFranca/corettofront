@@ -26,6 +26,7 @@ const tiposApolice = [
     { tipo: 'investimento', label: 'Investimento' },
     { tipo: 'seguro_profissional', label: 'Seguro Profissional' },
     { tipo: 'seguro_residencial', label: 'Seguro Residencial' },
+    { tipo: 'seguro_auto', label: 'Seguro Auto' },
 ];
 
 const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
@@ -66,6 +67,7 @@ const ApoliceFiltro: React.FC<ApoliceFiltroProps> = ({
                 <option value="plano_saude">Plano de Saúde</option>
                 <option value="investimento">Investimento</option>
                 <option value="previdencia">Previdência</option>
+                <option value="seguro_auto">Auto</option>
             </FiltroSelect>
         </FiltroContainer>
     );
