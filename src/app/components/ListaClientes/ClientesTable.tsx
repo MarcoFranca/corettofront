@@ -88,7 +88,23 @@ export default function ClientesTable() {
 
 
     // Handlers export/import
-    const handleExport = async () => { /* ... */ };
+    const handleExport = async () => {
+        setIsProcessing(true);
+        try {
+            const response = await api.get('/clientes/exportar/', { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'clientes.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            message.success('Exportação realizada com sucesso!');
+        } catch (e) {
+            message.error('Erro ao exportar clientes.');
+        }
+        setIsProcessing(false);
+    };
     const handleDownloadTemplate = async () => { /* ... */ };
     const handleImport = async (file: File) => { /* ... */ };
 
