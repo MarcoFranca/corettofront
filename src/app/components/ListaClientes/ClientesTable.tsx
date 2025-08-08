@@ -15,6 +15,7 @@ import { getClientesColumns } from "./ClientesColumns";
 import { ClientesTableContainer } from './ClientesTable.styles';
 import NegotiationWizardModal from "@/app/(pages)/dashboard/(painel_admin)/lead/(leadTable)/negociacao/NegotiationWizardModal";
 import qs from 'qs';
+import {toast} from "react-toastify";
 
 function useDebounce(value: string, delay = 600) {
     const [debounced, setDebounced] = useState(value);
@@ -81,32 +82,87 @@ export default function ClientesTable() {
     };
 
     useEffect(() => {
-        console.log("Disparou fetchClientes. Filtros:", { filterIsVip, filterStatus, page, pageSize });
+        setPage(1);
+    }, [debouncedSearch]);
+
+// Atualiza clientes com base em página, tamanho, filtros e busca
+    useEffect(() => {
         fetchClientes(page, pageSize);
-        // eslint-disable-next-line
-    }, [debouncedSearch, filterIsVip, JSON.stringify(filterStatus), page, pageSize]);
+    }, [page, pageSize, debouncedSearch, filterIsVip, JSON.stringify(filterStatus)]);
 
 
     // Handlers export/import
-    const handleExport = async () => {
-        setIsProcessing(true);
+    const handleDownloadTemplate = async () => {
         try {
-            const response = await api.get('/clientes/exportar/', { responseType: 'blob' });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const response = await api.get('/clientes/modelo-importacao/', {
+                responseType: 'blob',
+            });
+
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'modelo_importacao_clientes.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Erro ao baixar modelo de importação:', error);
+        }
+    };
+
+
+    const handleExport = async () => {
+        try {
+            const response = await api.get('/clientes/exportar/', {
+                responseType: 'blob', // Importante para baixar arquivos
+                headers: {
+                    'Accept': 'text/csv',
+                },
+            });
+
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', 'clientes.csv');
             document.body.appendChild(link);
             link.click();
             link.remove();
-            message.success('Exportação realizada com sucesso!');
-        } catch (e) {
-            message.error('Erro ao exportar clientes.');
+        } catch (error) {
+            console.error('Erro ao exportar clientes:', error);
         }
-        setIsProcessing(false);
     };
-    const handleDownloadTemplate = async () => { /* ... */ };
-    const handleImport = async (file: File) => { /* ... */ };
+
+
+    const handleImport = async (file: File) => {
+        if (!file) {
+            toast.warn("Por favor, selecione um arquivo para importar.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await api.post('/clientes/importar/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.status === 200) {
+                toast.success("Importação concluída com sucesso!");
+                fetchClientes(); // Atualiza a tabela
+            } else {
+                toast.error("Erro ao importar clientes. Verifique o arquivo e tente novamente.");
+            }
+        } catch (error) {
+            console.error('Erro ao importar clientes:', error);
+            toast.error("Erro ao importar clientes. Verifique se o arquivo está correto.");
+        }
+    };
+
 
     // Novo handler para negociação
     const handleOpenNegotiationWizard = async (cliente: any) => {
@@ -207,10 +263,11 @@ export default function ClientesTable() {
                     scroll={{ x: "max-content", y: "75vh" }}
                     style={{ minWidth: "80%", background: "#fff" }}
                     // ----------- AQUI: handler de filtro do Ant Design
-                    onChange={(pagination, filters) => {
+                    onChange={(pagination, filters, sorter, extra) => {
+                        // Atualiza filtros normalmente
                         console.log("Filters mudou:", filters);
 
-                        // ⭐ Favoritos
+                        // Filtros: VIP
                         if (Array.isArray(filters.is_vip) && filters.is_vip.length > 0) {
                             const vipValue = filters.is_vip[0];
                             if (vipValue === true || vipValue === "true" || vipValue === 1 || vipValue === "1") {
@@ -222,15 +279,19 @@ export default function ClientesTable() {
                             setFilterIsVip('all');
                         }
 
-                        // Status
+                        // Filtros: Status
                         if (Array.isArray(filters.status) && filters.status.length > 0) {
                             setFilterStatus(filters.status.map(String));
                         } else {
                             setFilterStatus(null);
                         }
 
-                        setPage(1); // Sempre volta pra página 1
+                        // Só zera a página se os filtros mudarem, não a paginação
+                        if (extra.action !== 'paginate') {
+                            setPage(1);
+                        }
                     }}
+
                 />
 
             </ClientesTableContainer>
