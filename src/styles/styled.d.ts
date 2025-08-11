@@ -1,4 +1,3 @@
-// styled.d.ts
 import 'styled-components';
 
 declare module 'styled-components' {
@@ -7,9 +6,7 @@ declare module 'styled-components' {
         colors: {
             primary: string;
             secondary: string;
-            gray: {
-                Light: string;
-            };
+            gray: { Light: string };
             background: string;
             text: string;
             title: string;

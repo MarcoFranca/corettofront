@@ -11,6 +11,7 @@ import { ThemeProviderWrapper } from "@/contexts/ThemeContext";
 import RouterInterceptor from "@/utils/RouterInterceptor";
 import SoundPlayer from "@/utils/soundPlayer";
 import TokenAutoRefreshProvider from "@/app/TokenAutoRefreshProvider";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,9 @@ if (!googleClientId) {
     throw new Error("NEXT_PUBLIC_GOOGLE_CLIENT_ID não está definido no arquivo .env.local.");
 }
 
+const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+
+
 export default function RootLayout({
                                        children,
                                    }: {
@@ -36,14 +40,61 @@ export default function RootLayout({
 
     return (
         <html lang="en">
+        <head>
+            <title>Corretor Lab - CRM</title>
+
+            {/* Google tag (gtag.js) - Google Ads */}
+            {googleAdsId && (
+                <>
+                    <Script
+                        id="gtag-src"
+                        src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
+                        strategy="afterInteractive"
+                    />
+                    <Script
+                        id="gtag-init"
+                        strategy="afterInteractive"
+                        dangerouslySetInnerHTML={{
+                            __html: `
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+                        gtag('config', '${googleAdsId}');
+                    `,
+                        }}
+                    />
+                </>
+            )}
+
+            {/* Consent Mode padrão */}
+            <Script
+                id="gtag-consent-default"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{
+                    __html: `
+                if (!window.gtag) {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'analytics_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'region': ['BR']
+                });
+            `,
+                }}
+            />
+        </head>
         <body id={'__next'} className={inter.className}>
         <ReduxProvider>
-            <TokenAutoRefreshProvider />
+            <TokenAutoRefreshProvider/>
             <GoogleProvider>
                 <ThemeProviderWrapper>
-                    <SoundPlayer />
+                    <SoundPlayer/>
                     {children}
-                    <RouterInterceptor />
+                    <RouterInterceptor/>
                     <ToastContainer
                         position="top-right"
                         autoClose={5000}
