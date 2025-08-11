@@ -1,6 +1,6 @@
 'use client'
-import { LegalActions, LegalContainer, LegalContent } from "./Legal.styles";
-import termsHtml from "@/app/legal/text/terms_v1";
+import { LegalActions, LegalContainer, LegalContent } from "../terms_of_service/Legal.styles";
+import dpaHtml from "@/app/legal/text/dpa_v1";
 
 export default function Page() {
     const onPrint = () => window.print();
@@ -9,7 +9,7 @@ export default function Page() {
             <LegalActions>
                 <button onClick={onPrint}>Imprimir</button>
             </LegalActions>
-            <LegalContent dangerouslySetInnerHTML={{ __html: termsHtml }} />
+            <LegalContent dangerouslySetInnerHTML={{ __html: dpaHtml }} />
         </LegalContainer>
     );
 }

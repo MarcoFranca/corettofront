@@ -21,6 +21,8 @@ import {showTrialTokensModal} from "@/app/components/popup/trialToken";
 import Lottie from 'react-lottie-player';
 import coraAnimation from '@/../public/lotties/cora3.json';
 import {fetchProfissoesThunk} from "@/store/slices/profissoesSlice";
+import {useTermsConsent} from "@/hooks/useTermsConsent";
+import TermsConsentModal from "@/app/components/legal/TermsConsentModal";
 
 
 interface DashboardLayoutProps {
@@ -45,6 +47,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [hasMouseLeft, setHasMouseLeft] = useState(false);
     const [animationKey, setAnimationKey] = useState(Math.random());
+    const { open: termsOpen, version: termsVersion, loading: termsLoading, fetchStatus, accept } = useTermsConsent();
 
     const user = useSelector((state: RootState) => state.auth?.user);
     const token = useSelector((state: RootState) => state.auth?.token);
@@ -112,6 +115,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     useEffect(() => {
         async function fetchProfileAndPlanStatus() {
+
             try {
                 const response = await api.get('/profiles/me/');
                 const profileData = response.data.profile;
@@ -134,6 +138,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 setPlanoAtivo(isPlanoAtivo);
 
                 setLoading(false);
+                await fetchStatus(); // dispara verificação de termos após perfil carregar
             } catch (error) {
                 console.error('Erro ao carregar o perfil ou status do plano:', error);
                 setLoading(false);
@@ -168,6 +173,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         if (!planoAtivo) {
             return (
                 <main className={styles.dashboardLayout}>
+                    <TermsConsentModal
+                        open={termsOpen}
+                        version={termsVersion}
+                        loading={termsLoading}
+                        onAccept={accept}
+                    />
                     <div className={styles.notificationBar}>
                         <div className={styles.notificationBarContent}>
                             <h1 className={styles.notificationBarText}>{message}</h1>
@@ -192,6 +203,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
         return (
             <main className={styles.dashboardLayout}>
+                <TermsConsentModal
+                    open={termsOpen}
+                    version={termsVersion}
+                    loading={termsLoading}
+                    onAccept={accept}
+                />
                 <button
                     className={styles.coraButtonLottie}
                     onClick={() => setCoraVisible(true)}
@@ -246,6 +263,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     return (
         <main className={styles.dashboardLayoutMobile}>
+            <TermsConsentModal
+                open={termsOpen}
+                version={termsVersion}
+                loading={termsLoading}
+                onAccept={accept}
+            />
             <div className={styles.dashboardLayoutContaintMobile}>
                 <MenuMobile
                     profileImage={profileImage}

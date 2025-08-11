@@ -16,6 +16,12 @@ export const SectionTitle = styled.h2`
 
 export const CardContainer = styled.div`
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    gap: 24px;  
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
 `;

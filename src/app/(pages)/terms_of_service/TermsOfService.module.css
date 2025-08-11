@@ -1,79 +1,105 @@
 .body {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-    width: 100%;
+    --brand: #042a75;
+    --accent: #33cccc;
+    --text: #333;
+    --muted: #6b7280;
+    --bg: #f5f9ff;
+    --card: #ffffff;
+    --border: #dce6f1;
+
+    font-family: Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
     min-height: 100vh;
-    background-color: #f9f9f9;
-    color: #333;
-    font-family: 'Arial', sans-serif;
 }
 
+/* Header com gradiente leve, combinando com a Home */
 .headerTerms {
-    background-color: #020f60;
-    color: white;
-    padding: 20px;
+    padding: 6rem 2rem 3rem;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #eef3fb 0%, #dff4ff 100%);
+    border-bottom: 1px solid var(--border);
 }
-
-.headerTerms > h1 {
-    color: #ededef;
+.headerTerms h1 {
     margin: 0;
-    font-size: 2.5em;
+    font-size: clamp(26px, 3vw, 38px);
+    font-weight: 800;
+    color: var(--brand);
+    letter-spacing: .2px;
 }
 
+/* Card central */
 .containerContent {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    width: min(980px, 92%);
+    margin: 24px auto 72px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: clamp(20px, 3.2vw, 36px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.05);
 }
 
+/* Tipografia */
 .containerContent h2 {
-    color: #020f60;
-    text-align: center;
-    font-size: 1.8em;
-    margin-bottom: 10px;
+    margin: 28px 0 10px;
+    font-size: clamp(20px, 2.3vw, 26px);
+    color: var(--brand);
+    font-weight: 700;
+}
+.containerContent p {
+    margin: 8px 0 14px;
+    line-height: 1.75;
+    font-size: clamp(14px, 1.8vw, 16px);
 }
 
-.containerContent p,
-.containerContent ul {
-    line-height: 1.6;
-    text-align: justify;
-    font-size: 1.2em;
-    color: #444;
-}
-
-.containerContent ul {
-    list-style-type: disc;
-    margin-left: 20px;
-}
-
+/* Links */
 .containerContent a {
-    color: #0d6efd;
+    color: var(--brand);
+    font-weight: 600;
     text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color .2s ease, border-color .2s ease;
 }
-
 .containerContent a:hover {
-    text-decoration: underline;
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
+/* Listas */
+.containerContent ul {
+    padding-left: 1.2rem;
+    margin: 8px 0 16px;
+}
+.containerContent ul li {
+    margin: 6px 0;
+    line-height: 1.7;
+}
+.containerContent ul li::marker {
+    color: var(--accent);
+}
+
+/* Callout legal (se quiser destacar avisos) */
+.alertLegal {
+    border-left: 4px solid var(--accent);
+    background: #fff;
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin: 18px 0 22px;
+    color: var(--text);
+    box-shadow: 0 4px 12px rgba(0,0,0,.04);
+}
+
+/* Rodapé */
 .footerTerms {
-    margin-top: 20px;
-    padding: 10px;
+    width: min(980px, 92%);
+    margin: 0 auto 56px;
+    color: var(--muted);
     text-align: center;
-    background-color: #020f60;
-    color: white;
+    font-size: 13px;
 }
 
-.footerTerms p {
-    margin: 0;
+/* Responsivo */
+@media (max-width: 768px) {
+    .headerTerms { padding: 4.5rem 1.5rem 2.5rem; }
+    .containerContent { padding: 18px; }
 }
